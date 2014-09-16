@@ -1,0 +1,11 @@
+RELEASE NOTES FOR BamQC v0.1
+----------------------------
+
+
+
+
+You can report feedback either though our bug reporting tool at:
+
+www.bioinformatics.bbsrc.ac.uk/bugzilla/
+
+...or directly to simon.andrews@bbsrc.ac.uk
