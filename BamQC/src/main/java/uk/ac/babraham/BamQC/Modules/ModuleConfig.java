@@ -81,8 +81,8 @@ public class ModuleConfig {
 
 		try {
 			if (BamQCConfig.getInstance().limits_file == null) {
-				InputStream rsrc = ModuleConfig.class.getResourceAsStream("/Configuration/limits.txt");
-				if (rsrc == null) throw new FileNotFoundException("cannot find Configuration/limits.txt");
+				InputStream rsrc = ModuleConfig.class.getResourceAsStream("limits.txt");
+				if (rsrc == null) throw new FileNotFoundException("cannot find limits.txt");
 				br = new BufferedReader(new InputStreamReader(rsrc));
 			}
 			else {
