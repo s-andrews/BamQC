@@ -36,6 +36,7 @@ import net.sf.samtools.SAMRecord;
 import org.apache.log4j.Logger;
 
 import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
+import uk.ac.babraham.BamQC.Annotation.FeatureClass;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
@@ -56,7 +57,14 @@ public class QCModuleBam1 extends AbstractQCModule {
 
 	@Override
 	public void processAnnotationSet(AnnotationSet annotation) {
-		// TODO Auto-generated method stub
+		log.info("annotation + " + annotation);
+		String[] types = annotation.listFeatureTypes();
+				
+		for (String type : types) {
+			FeatureClass featureClass = annotation.getFeatureClassForType(type);
+			
+			log.info(String.format("Type %s Feature class %s", type, featureClass.getClass()));
+		}
 	}
 
 	@Override
@@ -133,8 +141,7 @@ public class QCModuleBam1 extends AbstractQCModule {
 
 	@Override
 	public void reset() {
-		// TODO Auto-generated method stub
-
+		readCount = 0L;
 	}
 
 	@Override
@@ -156,12 +163,18 @@ public class QCModuleBam1 extends AbstractQCModule {
 
 	@Override
 	public boolean needsToSeeAnnotation() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean ignoreInReport() {
 		return false;
 	}
+
+	public long getReadCount() {
+		return readCount;
+	}
+	
+	
 	
 }
