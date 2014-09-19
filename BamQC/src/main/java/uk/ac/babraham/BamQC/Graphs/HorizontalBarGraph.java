@@ -63,7 +63,7 @@ public class HorizontalBarGraph extends JPanel {
 	}
 
 	public Dimension getMinimumSize () {
-		return new Dimension(100,200);
+		return new Dimension(400,800);
 	}
 
 	

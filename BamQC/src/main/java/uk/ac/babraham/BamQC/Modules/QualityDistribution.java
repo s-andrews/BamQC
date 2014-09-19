@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import net.sf.samtools.SAMRecord;
 import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
+import uk.ac.babraham.BamQC.Graphs.HorizontalBarGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
@@ -16,12 +17,14 @@ public class QualityDistribution extends AbstractQCModule {
 
 	private static Logger log = Logger.getLogger(QualityDistribution.class);
 	
-	private int[] distribution = new int[256];
-	private int[] label = new int[256];
+	private final static int QUALITY_MAP_SIZE = 5;
+	
+	private int[] distribution = new int[QUALITY_MAP_SIZE];
+	private String[] label = new String[QUALITY_MAP_SIZE];
 	
 	public QualityDistribution(){
-		for (int i = 0; i < 256; i++) {
-			label[i] = i;
+		for (int i = 0; i < QUALITY_MAP_SIZE; i++) {
+			label[i] = Integer.toString(i);
 		}
 	}
 	
@@ -35,19 +38,18 @@ public class QualityDistribution extends AbstractQCModule {
 	}
 
 	@Override
-	public void processFile(SequenceFile file) {
-		// TODO Auto-generated method stub
-	}
+	public void processFile(SequenceFile file) { }
 
 	@Override
 	public void processAnnotationSet(AnnotationSet annotation) {
-		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("processAnnotationSet called");
 	}
 
 	@Override
 	public JPanel getResultsPanel() {
-		// TODO Auto-generated method stub
-		return null;
+		float[] distributionFloat = getDistributionFolat();
+		
+		return new HorizontalBarGraph(label, distributionFloat, "Quality Map Distribution");
 	}
 
 	@Override
@@ -62,19 +64,16 @@ public class QualityDistribution extends AbstractQCModule {
 
 	@Override
 	public void reset() {
-		// TODO Auto-generated method stub
-
+		distribution = new int[QUALITY_MAP_SIZE];
 	}
 
 	@Override
 	public boolean raisesError() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean raisesWarning() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -101,6 +100,15 @@ public class QualityDistribution extends AbstractQCModule {
 
 	public int[] getDistribution() {
 		return distribution;
+	}
+	
+	public float[] getDistributionFolat() {
+		float[] distributionFloat = new float[QUALITY_MAP_SIZE];
+		
+		for (int i = 0; i < QUALITY_MAP_SIZE; i++) {
+			distributionFloat[i] = distribution[i];
+		}
+		return distributionFloat;
 	}
 
 }

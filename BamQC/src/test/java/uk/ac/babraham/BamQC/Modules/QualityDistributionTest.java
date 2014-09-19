@@ -38,6 +38,9 @@ public class QualityDistributionTest {
 	@After
 	public void tearDown() throws Exception {}
 
+	
+	
+	
 	@Test
 	public void testDistribution() {
 		log.info("testDistribution");
@@ -61,5 +64,17 @@ public class QualityDistributionTest {
 		assertEquals(2, distribution[0]);
 		assertEquals(2, distribution[255]);
 		assertEquals(2, distribution[10]);
+		
+		for (int i = 1; i < 256; i++) {
+			if (i != 10 && i != 255) {
+				assertEquals(0, distribution[i]);
+			}
+		}
+		float[] distributionFloat = qualityDistribution.getDistributionFolat();
+		
+		assertEquals(2.0, distributionFloat[0], 0.0000001);
+		assertEquals(2.0, distributionFloat[255], 0.0000001);
+		assertEquals(2.0, distributionFloat[10], 0.0000001);
+		
 	}
 }

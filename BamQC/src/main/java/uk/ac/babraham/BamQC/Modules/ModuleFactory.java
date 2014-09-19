@@ -29,6 +29,7 @@ public class ModuleFactory {
 				new ChromosomeDensity(),
 				new FeatureCoverage(),
 				new QCModuleBam1(),
+				new QualityDistribution(),
 			};
 	
 		return (module_list);
