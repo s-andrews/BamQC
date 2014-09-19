@@ -20,71 +20,122 @@
 
 package uk.ac.babraham.BamQC.Modules;
 
+import java.awt.GridLayout;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Vector;
+import java.util.List;
 
 import javax.swing.JPanel;
 import javax.xml.stream.XMLStreamException;
 
+import net.sf.samtools.CigarElement;
+import net.sf.samtools.CigarOperator;
 import net.sf.samtools.SAMRecord;
 import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
-import uk.ac.babraham.BamQC.Annotation.Chromosome;
-import uk.ac.babraham.BamQC.Graphs.HorizontalBarGraph;
+import uk.ac.babraham.BamQC.Graphs.LineGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
 public class SoftClipDistribution extends AbstractQCModule {
 
-	private String [] chromosomeNames;
-	private float [] readDensities;
+	private long [] leftClipCounts = new long[1];
+	private long [] rightClipCounts = new long[1];
 	
-	public void processSequence(SAMRecord read) {}
-
-	public void processFile(SequenceFile file) {}
-
-	public void processAnnotationSet(AnnotationSet annotation) {
-
-		Chromosome [] chromosomes = annotation.chromosomeFactory().getAllChromosomes();
+	public void processSequence(SAMRecord read) {
 		
-		Vector<Chromosome> keptChromosomes = new Vector<Chromosome>();
+		if (read.getReadUnmappedFlag()) return;
 		
-		for (int c=0;c<chromosomes.length;c++) {
-			if (chromosomes[c].seqCount() > 0) {
-				keptChromosomes.add(chromosomes[c]);
+		int leftClip = 0;
+		int rightClip = 0;
+		
+		List<CigarElement> elements = read.getCigar().getCigarElements();
+
+		if (elements.get(elements.size()-1).getOperator().equals(CigarOperator.S)) {
+			if (read.getReadNegativeStrandFlag()) {
+				leftClip = elements.get(elements.size()-1).getLength();
+			}
+			else {
+				rightClip = elements.get(elements.size()-1).getLength();
+			}			
+		}
+
+		
+		if (elements.get(0).getOperator().equals(CigarOperator.S)) {
+			if (read.getReadNegativeStrandFlag()) {
+				rightClip = elements.get(0).getLength();
+			}
+			else {
+				leftClip = elements.get(0).getLength();				
 			}
 		}
+
+		int max=leftClip;
+		if (rightClip>leftClip)max=rightClip;
 		
-		chromosomes = keptChromosomes.toArray(new Chromosome[0]);
+		if (max+1 > leftClipCounts.length) expandCounts(max+1);
 		
-		Arrays.sort(chromosomes);
+		leftClipCounts[leftClip]++;
+		rightClipCounts[rightClip]++;
 		
-		chromosomeNames = new String [chromosomes.length];
-		readDensities = new float[chromosomes.length];
-		
-		for (int c=0;c<chromosomes.length;c++) {
-			chromosomeNames[c] = chromosomes[c].name();
-			readDensities[c] = chromosomes[c].seqCount()/(chromosomes[c].length()/1000f);
-			
-//			System.err.println("Density of "+chromosomeNames[c]+" is "+readDensities[c]);
-		}
 	}
 
+	private void expandCounts (int newLen) {
+		long [] temp = new long[newLen];
+		for (int i=0;i<leftClipCounts.length;i++) {
+			temp[i] = leftClipCounts[i];
+		}
+		leftClipCounts = temp;
+		
+		temp = new long[newLen];
+		for (int i=0;i<rightClipCounts.length;i++) {
+			temp[i] = rightClipCounts[i];
+		}
+		rightClipCounts = temp;
+	}
+	
+	public void processFile(SequenceFile file) {}
+
+	public void processAnnotationSet(AnnotationSet annotation) {}
+
 	public JPanel getResultsPanel() {
-		return new HorizontalBarGraph(chromosomeNames, readDensities, "Per-chromosome read density");
+
+		JPanel resultsPanel = new JPanel();
+		resultsPanel.setLayout(new GridLayout(2,1));
+		
+		String [] labels = new String[leftClipCounts.length];
+		double [][] leftData = new double[1][leftClipCounts.length];
+		double [][] rightData = new double[1][leftClipCounts.length];
+		
+		double maxLeft=1;
+		double maxRight=1;
+		
+		for (int i=0;i<leftClipCounts.length;i++) {
+			labels[i] = ""+i;
+			leftData[0][i] = leftClipCounts[i];
+			rightData[0][i] = rightClipCounts[i];
+			
+			if (leftData[0][i] > maxLeft) maxLeft = leftData[0][i];
+			if (rightData[0][i] > maxRight) maxRight = rightData[0][i];
+		}
+		
+		
+		resultsPanel.add(new LineGraph(leftData, 0, maxLeft, "Clip Length", new String[]{"Left (5') clips"}, labels,"Soft clip distribution at the left (5') end"));
+		resultsPanel.add(new LineGraph(rightData, 0, maxRight, "Clip Length", new String[]{"Right (3') clips"},labels, "Soft clip distribution at the right (3') end"));
+		
+		return (resultsPanel);
 	}
 
 	public String name() {
-		return "Chromosome Read Density";
+		return "Soft clip length distributions";
 	}
 
 	public String description() {
-		return "Tells if the read density varies between chromosomes";
+		return "Looks at how much of your reads have been soft clipped";
 	}
 
 	public void reset() {
-		// TODO Auto-generated method stub
-
+		leftClipCounts = new long[1];
+		rightClipCounts = new long[1];
+		
 	}
 
 	public boolean raisesError() {
@@ -98,15 +149,15 @@ public class SoftClipDistribution extends AbstractQCModule {
 	}
 
 	public boolean needsToSeeSequences() {
-		return false;
-	}
-
-	public boolean needsToSeeAnnotation() {
 		return true;
 	}
 
-	public boolean ignoreInReport() {
+	public boolean needsToSeeAnnotation() {
 		return false;
+	}
+
+	public boolean ignoreInReport() {
+		return leftClipCounts.length==1 && rightClipCounts.length==1;
 	}
 
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
