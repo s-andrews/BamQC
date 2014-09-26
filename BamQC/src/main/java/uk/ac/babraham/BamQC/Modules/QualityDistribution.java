@@ -5,40 +5,44 @@ import java.io.IOException;
 import javax.swing.JPanel;
 import javax.xml.stream.XMLStreamException;
 
+import net.sf.samtools.SAMRecord;
+
 import org.apache.log4j.Logger;
 
-import net.sf.samtools.SAMRecord;
 import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
-import uk.ac.babraham.BamQC.Graphs.HorizontalBarGraph;
+import uk.ac.babraham.BamQC.Graphs.LineGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
 public class QualityDistribution extends AbstractQCModule {
 
 	private static Logger log = Logger.getLogger(QualityDistribution.class);
-	
-	private final static int QUALITY_MAP_SIZE = 5;
-	
+
+	private final static int QUALITY_MAP_SIZE = 256;
+
+	private int maxCount = 0;
 	private int[] distribution = new int[QUALITY_MAP_SIZE];
 	private String[] label = new String[QUALITY_MAP_SIZE];
-	
-	public QualityDistribution(){
+
+	public QualityDistribution() {
 		for (int i = 0; i < QUALITY_MAP_SIZE; i++) {
 			label[i] = Integer.toString(i);
 		}
 	}
-	
+
 	@Override
 	public void processSequence(SAMRecord read) {
 		int quality = read.getMappingQuality();
-		
+
 		log.info("quality = " + quality);
-		
+
 		distribution[quality]++;
+
+		if (distribution[quality] > maxCount) maxCount = distribution[quality];
 	}
 
 	@Override
-	public void processFile(SequenceFile file) { }
+	public void processFile(SequenceFile file) {}
 
 	@Override
 	public void processAnnotationSet(AnnotationSet annotation) {
@@ -47,9 +51,11 @@ public class QualityDistribution extends AbstractQCModule {
 
 	@Override
 	public JPanel getResultsPanel() {
-		float[] distributionFloat = getDistributionFolat();
-		
-		return new HorizontalBarGraph(label, distributionFloat, "Quality Map Distribution");
+		double[] distributionFloat = getDistributionFolat();
+		double[][] data = new double[][] { distributionFloat };
+		String[] xTitles = new String[] { "Counts" };
+
+		return new LineGraph(data, 0.0D, maxCount, "Distribution", xTitles, label, "Quality Distribution");
 	}
 
 	@Override
@@ -65,6 +71,7 @@ public class QualityDistribution extends AbstractQCModule {
 	@Override
 	public void reset() {
 		distribution = new int[QUALITY_MAP_SIZE];
+		maxCount = 0;
 	}
 
 	@Override
@@ -101,14 +108,20 @@ public class QualityDistribution extends AbstractQCModule {
 	public int[] getDistribution() {
 		return distribution;
 	}
-	
-	public float[] getDistributionFolat() {
-		float[] distributionFloat = new float[QUALITY_MAP_SIZE];
-		
+
+	public double[] getDistributionFolat() {
+		double[] distributionFloat = new double[QUALITY_MAP_SIZE];
+
 		for (int i = 0; i < QUALITY_MAP_SIZE; i++) {
 			distributionFloat[i] = distribution[i];
 		}
 		return distributionFloat;
 	}
+
+	public int getMaxCount() {
+		return maxCount;
+	}
+	
+	
 
 }

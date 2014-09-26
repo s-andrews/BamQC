@@ -52,7 +52,8 @@ public class QualityDistributionTest {
 		assertEquals(1, distribution[0]);
 		assertEquals(1, distribution[255]);
 		assertEquals(1, distribution[10]);
-	
+		assertEquals(1, qualityDistribution.getMaxCount());
+		
 		for (int i = 1; i < 256; i++) {
 			if (i != 10 && i != 255) {
 				assertEquals(0, distribution[i]);
@@ -64,17 +65,31 @@ public class QualityDistributionTest {
 		assertEquals(2, distribution[0]);
 		assertEquals(2, distribution[255]);
 		assertEquals(2, distribution[10]);
+		assertEquals(2, qualityDistribution.getMaxCount());
 		
 		for (int i = 1; i < 256; i++) {
 			if (i != 10 && i != 255) {
 				assertEquals(0, distribution[i]);
 			}
 		}
-		float[] distributionFloat = qualityDistribution.getDistributionFolat();
+		double[] distributionFloat = qualityDistribution.getDistributionFolat();
 		
 		assertEquals(2.0, distributionFloat[0], 0.0000001);
 		assertEquals(2.0, distributionFloat[255], 0.0000001);
 		assertEquals(2.0, distributionFloat[10], 0.0000001);
 		
+		// test reset
+		qualityDistribution.reset();
+		
+		distribution = qualityDistribution.getDistribution();
+		
+		assertEquals(0, qualityDistribution.getMaxCount());
+		for (int i = 0; i < 256; i++) {
+			assertEquals(0, distribution[i]);
+		}
+		distributionFloat = qualityDistribution.getDistributionFolat();
+		for (int i = 0; i < 256; i++) {
+			assertEquals(0.0, distributionFloat[i], 0.0000001);
+		}
 	}
 }

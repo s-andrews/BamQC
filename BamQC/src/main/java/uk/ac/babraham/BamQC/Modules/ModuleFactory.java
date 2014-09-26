@@ -28,7 +28,7 @@ public class ModuleFactory {
 				new BasicStats(),
 				new ChromosomeDensity(),
 				new FeatureCoverage(),
-				new QCModuleBam1(),
+				//new QCModuleBam1(),
 				new QualityDistribution(),
 			};
 	
