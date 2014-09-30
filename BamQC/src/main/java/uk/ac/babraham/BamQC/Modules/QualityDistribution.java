@@ -10,6 +10,7 @@ import net.sf.samtools.SAMRecord;
 import org.apache.log4j.Logger;
 
 import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
+import uk.ac.babraham.BamQC.Graphs.BarGraph;
 import uk.ac.babraham.BamQC.Graphs.LineGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
@@ -52,10 +53,11 @@ public class QualityDistribution extends AbstractQCModule {
 	@Override
 	public JPanel getResultsPanel() {
 		double[] distributionFloat = getDistributionFolat();
-		double[][] data = new double[][] { distributionFloat };
-		String[] xTitles = new String[] { "Counts" };
+		String[] xTitles = new String[] { "" };
 
-		return new LineGraph(data, 0.0D, maxCount, "Distribution", xTitles, label, "Quality Distribution");
+		
+		
+		return new BarGraph(distributionFloat, 0.0D, maxCount, "Distribution", xTitles, label, "Quality Mapping Distribution");
 	}
 
 	@Override

@@ -22,7 +22,7 @@ public class BarGraph extends JPanel {
 	private String[] xTitles;
 	private String xLabel;
 	private String[] xCategories;
-	private double[][] data;
+	private double[] data;
 	private String graphTitle;
 	private double minY;
 	private double maxY;
@@ -32,7 +32,7 @@ public class BarGraph extends JPanel {
 
 	private static final Color[] COLOURS = new Color[] { new Color(220, 0, 0), new Color(0, 0, 220), new Color(0, 220, 0), Color.DARK_GRAY, Color.MAGENTA, Color.ORANGE, Color.YELLOW, Color.CYAN, Color.PINK, Color.LIGHT_GRAY };
 
-	public BarGraph(double[][] data, double minY, double maxY, String xLabel, String[] xTitles, int[] xCategories, String graphTitle) {
+	public BarGraph(double[] data, double minY, double maxY, String xLabel, String[] xTitles, int[] xCategories, String graphTitle) {
 		this(data, minY, maxY, xLabel, xTitles, new String[0], graphTitle);
 		this.xCategories = new String[xCategories.length];
 
@@ -41,7 +41,7 @@ public class BarGraph extends JPanel {
 		}
 	}
 
-	public BarGraph(double[][] data, double minY, double maxY, String xLabel, String[] xTitles, String[] xCategories, String graphTitle) {
+	public BarGraph(double[] data, double minY, double maxY, String xLabel, String[] xTitles, String[] xCategories, String graphTitle) {
 		this.data = data;
 		this.minY = minY;
 		this.maxY = maxY;
@@ -145,7 +145,7 @@ public class BarGraph extends JPanel {
 		g.drawString(xLabel, (getWidth() / 2) - (g.getFontMetrics().stringWidth(xLabel) / 2), getHeight() - 5);
 
 		// Now draw the data points
-		int baseWidth = (getWidth() - (xOffset + 10)) / data[0].length;
+		int baseWidth = (getWidth() - (xOffset + 10)) / data.length;
 		if (baseWidth < 1) baseWidth = 1;
 
 		// System.out.println("Base Width is "+baseWidth);
@@ -155,7 +155,7 @@ public class BarGraph extends JPanel {
 		// labels
 		int lastXLabelEnd = 0;
 
-		for (int i = 0; i < data[0].length; i++) {
+		for (int i = 0; i < data.length; i++) {
 			if (i % 2 != 0) {
 				g.setColor(new Color(230, 230, 230));
 				g.fillRect(xOffset + (baseWidth * i), 40, baseWidth, getHeight() - 80);
@@ -185,14 +185,28 @@ public class BarGraph extends JPanel {
 
 		for (int d = 0; d < data.length; d++) {
 			g.setColor(COLOURS[d % COLOURS.length]);
+			int xValue = d + 1;
 
-			lastY = getY(data[d][0]);
-			for (int i = 1; i < data[d].length; i++) {
-				int thisY = getY(data[d][i]);
-				g.drawLine((baseWidth / 2) + xOffset + (baseWidth * (i - 1)), lastY, (baseWidth / 2) + xOffset + (baseWidth * i), thisY);
-				lastY = thisY;
-			}
+			lastY = getY(xValue);
+
+			log.info(String.format("d = %d, lastY %d", xValue, lastY));
+
+			int thisY = getY(data[d]);
+			log.info(String.format("i = %d, data %f = lastY %d", d, data[d], thisY));
+
+			int x1 = (baseWidth / 2) + xOffset + (baseWidth * d);
+			int y1 = getY(0);
+			int y2 = thisY;
+
+			// log.info(String.format("x1 %d, y1 %d, x2 %d, y2 %d", x1, y1, x2,
+			// y2));
+			// log.info(String.format("x1 %d, y1 %d, x2 %d, y2 %d", x1, xOffset,
+			// x1, y1));
+
+			g.drawLine(x1, y1, x1, y2);
+			lastY = thisY;
 		}
+
 		// Now draw the data legend
 		if (g instanceof Graphics2D) {
 			((Graphics2D) g).setStroke(new BasicStroke(1));
@@ -228,13 +242,12 @@ public class BarGraph extends JPanel {
 
 			@Override
 			public void run() {
-
-				double[][] data = new double[][] { { 1, 2 }, { 3, 4 } };
+				double[] data = new double[] { 2.0d, 4.0d };
 				double minY = 0.0;
 				double maxY = 5.0;
 				String xLabel = "xLAbel";
-				String[] xTitles = new String[] {"xTitle"};
-				String[] xCategories = new String[] {"xCategory1","xCategory2",};
+				String[] xTitles = new String[] { "xTitle" };
+				String[] xCategories = new String[] { "one", "two", };
 				String graphTitle = "graphTitle";
 
 				JFrame frame = new JFrame();
@@ -247,7 +260,6 @@ public class BarGraph extends JPanel {
 				frame.setVisible(true);
 			}
 		});
-
 	}
 
 }
