@@ -242,12 +242,12 @@ public class BarGraph extends JPanel {
 
 			@Override
 			public void run() {
-				double[] data = new double[] { 2.0d, 4.0d };
+				double[] data = new double[] { 2.0d, 4.0d, 5.0d, 1.5d };
 				double minY = 0.0;
 				double maxY = 5.0;
 				String xLabel = "xLAbel";
 				String[] xTitles = new String[] { "xTitle" };
-				String[] xCategories = new String[] { "one", "two", };
+				String[] xCategories = new String[] { "one", "two", "three", "four"};
 				String graphTitle = "graphTitle";
 
 				JFrame frame = new JFrame();

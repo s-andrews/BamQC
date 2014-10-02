@@ -55,8 +55,6 @@ public class QualityDistribution extends AbstractQCModule {
 		double[] distributionFloat = getDistributionFolat();
 		String[] xTitles = new String[] { "" };
 
-		
-		
 		return new BarGraph(distributionFloat, 0.0D, maxCount, "Distribution", xTitles, label, "Quality Mapping Distribution");
 	}
 
