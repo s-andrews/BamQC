@@ -28,7 +28,7 @@ public class ModuleFactory {
 				new BasicStats(),
 				new ChromosomeDensity(),
 				new FeatureCoverage(),
-				new SoftClipDistribution(),
+				new QualityDistribution(),
 			};
 	
 		return (module_list);
