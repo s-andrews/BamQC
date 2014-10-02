@@ -23,7 +23,6 @@ public class ModuleFactory {
 
 	public static QCModule [] getStandardModuleList () {
 
-		
 		QCModule [] module_list = new QCModule [] {
 				new BasicStats(),
 				new ChromosomeDensity(),
@@ -31,6 +30,7 @@ public class ModuleFactory {
 				new SoftClipDistribution(),
 				new SNPFrequencies(),
 				new QualityDistribution(),
+				new PercentageMapped(),
 			};
 	
 		return (module_list);
