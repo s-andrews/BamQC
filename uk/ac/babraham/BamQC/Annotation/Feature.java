@@ -24,7 +24,7 @@ import net.sf.samtools.SAMRecord;
 public class Feature implements Comparable<Feature>{
 
 	private String type;
-	private String biotype;
+	private String subclass;
 	private Chromosome chr;
 	private Location location;
 	
@@ -33,9 +33,9 @@ public class Feature implements Comparable<Feature>{
 		this.chr = chr;
 	}
 
-	public Feature (String type, String biotype, Chromosome chr) {
+	public Feature (String type, String subclass, Chromosome chr) {
 		this.type = type;
-		this.biotype = biotype;
+		this.subclass = subclass;
 		this.chr = chr;
 	}
 
@@ -53,9 +53,9 @@ public class Feature implements Comparable<Feature>{
 		return type;
 	}
 	
-	public String biotype () {
-		if (biotype != null) return biotype;
-		return null;
+	public String subclass () {
+		if (subclass != null) return subclass;
+		return "";
 	}
 	
 	public Chromosome chr () {

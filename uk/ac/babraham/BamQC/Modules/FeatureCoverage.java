@@ -21,7 +21,6 @@
 package uk.ac.babraham.BamQC.Modules;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Vector;
 
 import javax.swing.JPanel;
@@ -29,7 +28,7 @@ import javax.xml.stream.XMLStreamException;
 
 import net.sf.samtools.SAMRecord;
 import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
-import uk.ac.babraham.BamQC.Annotation.Chromosome;
+import uk.ac.babraham.BamQC.Annotation.FeatureClass;
 import uk.ac.babraham.BamQC.Graphs.HorizontalBarGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
@@ -47,11 +46,33 @@ public class FeatureCoverage extends AbstractQCModule {
 
 		featureNames = annotation.listFeatureTypes();
 		
-		readCounts = new float[featureNames.length];
+		Vector<String> names = new Vector<String>();
+		Vector<Float> values = new Vector<Float>();		
 		
 		for (int i=0;i<featureNames.length;i++) {
-			readCounts[i] = annotation.getFeatureClassForType(featureNames[i]).count();
+			
+			FeatureClass fc = annotation.getFeatureClassForType(featureNames[i]);
+			
+			String [] subclasses = fc.getSubclassNames();
+			
+			for (int s=0;s<subclasses.length;s++) {
+				if (subclasses[s].equals("")) {
+					names.add(featureNames[i]);
+				}
+				else {
+					names.add(""+featureNames[i]+"_"+subclasses[s]);
+				}
+				values.add((float)annotation.getFeatureClassForType(featureNames[i]).getSubclassForName(subclasses[s]).count());
+			}			
 		}
+		
+		featureNames = names.toArray(new String[0]);
+		readCounts = new float[featureNames.length];
+		for (int i=0;i<readCounts.length;i++) {
+			readCounts[i] = values.elementAt(i);
+		}
+		
+		
 	}
 
 	public JPanel getResultsPanel() {

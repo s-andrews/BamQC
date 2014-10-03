@@ -43,6 +43,7 @@ public class AnnotationSet {
 		}
 		
 		features.get(f.type()).addFeature(f);
+		
 	}
 	
 	public boolean hasFeatures () {
