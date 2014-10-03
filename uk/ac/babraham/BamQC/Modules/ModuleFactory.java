@@ -29,6 +29,7 @@ public class ModuleFactory {
 				new ChromosomeDensity(),
 				new FeatureCoverage(),
 				new SoftClipDistribution(),
+				new SNPFrequencies(),
 			};
 	
 		return (module_list);

@@ -32,7 +32,7 @@ import java.util.Vector;
  */
 
 
-public class GFF3AnnotationParser {
+public class GFF3AnnotationParser implements AnnotationParser {
 
 	public void parseAnnotation(AnnotationSet annotationSet, File file) throws Exception {
 				

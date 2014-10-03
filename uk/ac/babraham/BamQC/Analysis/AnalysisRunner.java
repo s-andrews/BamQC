@@ -24,10 +24,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.sf.samtools.SAMRecord;
-
 import uk.ac.babraham.BamQC.BamQCConfig;
+import uk.ac.babraham.BamQC.Annotation.AnnotationParser;
 import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
 import uk.ac.babraham.BamQC.Annotation.GFF3AnnotationParser;
+import uk.ac.babraham.BamQC.Annotation.GTFParser;
 import uk.ac.babraham.BamQC.Modules.QCModule;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 import uk.ac.babraham.BamQC.Sequence.SequenceFormatException;
@@ -74,7 +75,14 @@ public class AnalysisRunner implements Runnable {
 		AnnotationSet annotation = new AnnotationSet();
 				
 		if (BamQCConfig.getInstance().gff_file != null) {
-			GFF3AnnotationParser parser = new GFF3AnnotationParser();
+			AnnotationParser parser;
+			
+			if (BamQCConfig.getInstance().gff_file.getName().toLowerCase().endsWith("gtf")) {
+				parser = new GTFParser();
+			}
+			else {
+				parser = new GFF3AnnotationParser();
+			}
 			try {
 				parser.parseAnnotation(annotation, BamQCConfig.getInstance().gff_file);
 			}
