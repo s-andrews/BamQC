@@ -30,6 +30,7 @@ public class ModuleFactory {
 				new FeatureCoverage(),
 				new SoftClipDistribution(),
 				new SNPFrequencies(),
+				new QualityDistribution(),
 			};
 	
 		return (module_list);
