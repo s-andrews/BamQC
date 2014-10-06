@@ -26,7 +26,7 @@ public class ReadFlagStatistics extends AbstractQCModule {
 	private static final int TENTH_BIT = 0x200;
 	private static final int ELEVENTH_BIT = 0x400;
 	private static final int ROWS = 5;
-	
+
 	private static Logger log = Logger.getLogger(ReadFlagStatistics.class);
 
 	private int readNumber = 0;
@@ -34,12 +34,8 @@ public class ReadFlagStatistics extends AbstractQCModule {
 	private int mappedPairNumber = 0;
 	private int duplicateNumber = 0;
 	private int failedQualityControlNumber = 0;
-	
-	private String[] resultNames = new String[]{"Read Number","Pair %","Mapped Pair %","Duplicate %","FailedQuality Control %"};
-	
-	public ReadFlagStatistics () {
-		
-	}
+
+	private String[] resultNames = new String[] { "Read Number", "Pair %", "Mapped Pair %","FailedQuality Control %" ,"Duplicate %"};
 
 	@Override
 	public void reset() {
@@ -96,7 +92,7 @@ public class ReadFlagStatistics extends AbstractQCModule {
 	private class ResultsTable extends AbstractTableModel {
 		private static final long serialVersionUID = 1L;
 		private double[] results = new double[ROWS];
-		
+
 		public ResultsTable() {
 			results[0] = readNumber;
 			results[1] = getPercentage(pairNumber, readNumber);
@@ -104,7 +100,7 @@ public class ReadFlagStatistics extends AbstractQCModule {
 			results[3] = getPercentage(failedQualityControlNumber, readNumber);
 			results[4] = getPercentage(duplicateNumber, readNumber);
 		}
-		
+
 		@Override
 		public int getRowCount() {
 			return ROWS;
@@ -158,7 +154,6 @@ public class ReadFlagStatistics extends AbstractQCModule {
 
 	@Override
 	public boolean raisesError() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -184,7 +179,7 @@ public class ReadFlagStatistics extends AbstractQCModule {
 
 	@Override
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
-		// TODO Auto-generated method stub
+		super.writeTable(report, new ResultsTable());
 	}
 
 	public int getReadNumber() {
