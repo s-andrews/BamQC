@@ -24,6 +24,10 @@ public class TestObjectFactory {
 		samRecord2.setMappingQuality(255);
 		samRecord3.setMappingQuality(10);
 		
+		samRecord1.setFlags(1027);
+		samRecord2.setFlags(513);
+		samRecord3.setFlags(1026);
+		
 		samRecords.add(samRecord1);
 		samRecords.add(samRecord2);
 		samRecords.add(samRecord3);

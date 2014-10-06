@@ -23,14 +23,14 @@ public class ModuleFactory {
 
 	public static QCModule [] getStandardModuleList () {
 
-		
 		QCModule [] module_list = new QCModule [] {
 				new BasicStats(),
 				new ChromosomeDensity(),
 				new FeatureCoverage(),
 				new SoftClipDistribution(),
-				new SNPFrequencies(),
+				//new SNPFrequencies(),
 				new QualityDistribution(),
+				new ReadFlagStatistics(),
 			};
 	
 		return (module_list);

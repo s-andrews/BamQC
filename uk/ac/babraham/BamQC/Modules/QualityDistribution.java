@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
 
 import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
 import uk.ac.babraham.BamQC.Graphs.BarGraph;
-import uk.ac.babraham.BamQC.Graphs.LineGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
