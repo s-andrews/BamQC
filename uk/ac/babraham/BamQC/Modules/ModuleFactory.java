@@ -30,7 +30,7 @@ public class ModuleFactory {
 				new SoftClipDistribution(),
 				new SNPFrequencies(),
 				new QualityDistribution(),
-				new PercentageMapped(),
+				new ReadFlagStatistics(),
 			};
 	
 		return (module_list);

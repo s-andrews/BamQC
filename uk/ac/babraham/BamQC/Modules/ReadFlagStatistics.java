@@ -13,31 +13,51 @@ import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
-public class PercentageMapped extends AbstractQCModule {
+public class ReadFlagStatistics extends AbstractQCModule {
 
-	private static final int TWO = 0x02;  // Second bit is set
-	
-	private static Logger log = Logger.getLogger(PercentageMapped.class);
-	
-	private boolean flagAlignedProperley = false;
+	private static final int FIRST_BIT = 0x01;
+	private static final int SECOND_BIT = 0x02;
+	private static final int ELEVENTH_BIT = 0x400;
+
+	private static Logger log = Logger.getLogger(ReadFlagStatistics.class);
+
 	private int readNumber = 0;
 	private int alignedReadNumber = 0;
-	
+	private int duplicateReadNumber = 0;
+	private int failedReadNumber = 0;
+
 	@Override
-	public void processSequence(SAMRecord read) {
-		int flag = read.getFlags();
-		
-		flagAlignedProperley = (flag & TWO) == TWO;
-		
-		readNumber++;
-		if (flagAlignedProperley) alignedReadNumber++;
-		
-		log.info("flag = " + flag);
-		log.info("flagAlignedProperley = " + flagAlignedProperley);
+	public void reset() {
+		readNumber = 0;
+		alignedReadNumber = 0;
+		duplicateReadNumber = 0;
+		failedReadNumber = 0;
 	}
 
 	@Override
-	public void processFile(SequenceFile file) { }
+	public void processSequence(SAMRecord read) {
+		int flag = read.getFlags();
+		boolean pairedRead = (flag & FIRST_BIT) == FIRST_BIT;
+		boolean flagAlignedProperley = (flag & SECOND_BIT) == SECOND_BIT;
+		boolean duplicateRead = (flag & ELEVENTH_BIT) == ELEVENTH_BIT;
+
+		readNumber++;
+
+		// if (pairedRead) {
+		if (duplicateRead) duplicateReadNumber++;
+		if (flagAlignedProperley) alignedReadNumber++;
+
+		log.info("flag = " + flag);
+		log.info("flagAlignedProperley = " + flagAlignedProperley);
+		log.info(String.format("percentage = %7.3f %%", getPercentage(alignedReadNumber, readNumber)));
+	}
+	
+	private double getPercentage(int count, int total) {
+		return ((double) count / (double) total) * 100.0;
+	}
+
+	@Override
+	public void processFile(SequenceFile file) {}
 
 	@Override
 	public void processAnnotationSet(AnnotationSet annotation) {
@@ -52,18 +72,12 @@ public class PercentageMapped extends AbstractQCModule {
 
 	@Override
 	public String name() {
-		return "Percentage Mapped";
+		return "Read Flag Statistics";
 	}
 
 	@Override
 	public String description() {
-		return "Percentage of reads that are mapped to the reference sequence";
-	}
-
-	@Override
-	public void reset() {
-		readNumber = 0;
-		alignedReadNumber = 0;
+		return "Statistics of the Read's Flag field";
 	}
 
 	@Override
@@ -97,10 +111,6 @@ public class PercentageMapped extends AbstractQCModule {
 		// TODO Auto-generated method stub
 	}
 
-	public boolean isFlagAlignedProperley() {
-		return flagAlignedProperley;
-	}
-
 	public int getReadNumber() {
 		return readNumber;
 	}
@@ -108,7 +118,9 @@ public class PercentageMapped extends AbstractQCModule {
 	public int getAlignedReadNumber() {
 		return alignedReadNumber;
 	}
-	
-	
+
+	public int getDuplicateReadNumber() {
+		return duplicateReadNumber;
+	}
 
 }
