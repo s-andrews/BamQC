@@ -53,7 +53,7 @@ public class ReadFlagStatistics extends AbstractQCModule {
 		boolean mappedPair = (flag & SECOND_BIT) == SECOND_BIT;
 		boolean failedQualityControl = (flag & TENTH_BIT) == TENTH_BIT;
 		boolean duplicate = (flag & ELEVENTH_BIT) == ELEVENTH_BIT;
-
+		
 		readNumber++;
 
 		if (pair) pairNumber++;
@@ -61,7 +61,7 @@ public class ReadFlagStatistics extends AbstractQCModule {
 		if (failedQualityControl) failedQualityControlNumber++;
 		if (duplicate) duplicateNumber++;
 
-		log.info("flag = " + flag);
+		log.debug("flag = " + flag);
 	}
 
 	private double getPercentage(int count, int total) {
@@ -69,7 +69,9 @@ public class ReadFlagStatistics extends AbstractQCModule {
 	}
 
 	@Override
-	public void processFile(SequenceFile file) {}
+	public void processFile(SequenceFile file) {
+		log.info("processFile called");
+	}
 
 	@Override
 	public void processAnnotationSet(AnnotationSet annotation) {
@@ -80,7 +82,7 @@ public class ReadFlagStatistics extends AbstractQCModule {
 	public JPanel getResultsPanel() {
 		JPanel returnPanel = new JPanel();
 		returnPanel.setLayout(new BorderLayout());
-		returnPanel.add(new JLabel("Basic sequence stats", JLabel.CENTER), BorderLayout.NORTH);
+		returnPanel.add(new JLabel("Read Flag Statistics", JLabel.CENTER), BorderLayout.NORTH);
 
 		TableModel model = new ResultsTable();
 
