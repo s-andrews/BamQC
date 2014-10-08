@@ -1,3 +1,23 @@
+/**
+ * Copyright Copyright 2014 Bart Ailey Eagle Genomics Ltd
+ *
+ *    This file is part of BamQC.
+ *
+ *    BamQC is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 3 of the License, or
+ *    (at your option) any later version.
+ *
+ *    BamQC is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with BamQC; if not, write to the Free Software
+ *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 package uk.ac.babraham.BamQC.Modules;
 
 import java.io.IOException;
@@ -13,6 +33,8 @@ import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMRecord;
 import net.sf.samtools.SAMSequenceRecord;
 import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
+import uk.ac.babraham.BamQC.Graphs.BarGraph;
+import uk.ac.babraham.BamQC.Graphs.LineGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
@@ -24,6 +46,7 @@ public class GenomeCoverage extends AbstractQCModule {
 
 	private List<float[]> coverage = new ArrayList<float[]>();
 	private List<int[]> binSize = new ArrayList<int[]>();
+	private double maxCount;
 
 	private float[] getNewReadReferenceCoverage(int referenceIndex, SAMFileHeader header) {
 		SAMSequenceRecord samSequenceRecord = header.getSequence(referenceIndex);
@@ -85,6 +108,8 @@ public class GenomeCoverage extends AbstractQCModule {
 
 			readReferenceCoverage[index] += binCoverage;
 
+			if (readReferenceCoverage[index] > maxCount) maxCount = readReferenceCoverage[index];
+			
 			log.debug(String.format("Start %d - End %d, index %d, binCoverage %f, ", alignmentStart, alignmentEnd, index, binCoverage, readReferenceCoverage[index]));
 
 			index++;
@@ -159,8 +184,32 @@ public class GenomeCoverage extends AbstractQCModule {
 
 	@Override
 	public JPanel getResultsPanel() {
-		// TODO Auto-generated method stub
-		return null;
+		double[][] coverageData = getCoverageData();
+		double minY =  0.0D;
+		double maxY = maxCount;
+		String xLabel = "Coverage";
+		String[] xTitles = new String[]{"xTitles"};
+		String[] xCategories = new String[]{"Coverage"};
+		String graphTitle = "Reference Kilobase Coverage";
+		
+		return new LineGraph(coverageData, minY, maxY, xLabel, xTitles, xCategories, graphTitle);
+	}
+	
+	private double[][] getCoverageData() {
+		List<Float> data = new ArrayList<Float>();
+		
+		for (float[] referenceCoverage : coverage) {
+			for (float binCoverage :  referenceCoverage) {
+				data.add(binCoverage);
+			}
+		}
+		double[][] coverageData = new double[1][data.size()];
+		int i = 0;
+		
+		for (float binCoverage : data) {
+			coverageData[0][i++] = binCoverage;
+		}
+		return coverageData;
 	}
 
 	@Override
