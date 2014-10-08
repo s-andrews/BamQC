@@ -19,31 +19,47 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 public class GenomeCoverage extends AbstractQCModule {
 
 	private static final int NUCLEOTIDES_BIN = 1000;
-	
+
 	private static Logger log = Logger.getLogger(GenomeCoverage.class);
-	
+
 	private List<float[]> coverage = new ArrayList<float[]>();
-	
-	
+	private List<int[]> binSize = new ArrayList<int[]>();
+
 	private float[] getNewReadReferenceCoverage(int referenceIndex, SAMFileHeader header) {
 		SAMSequenceRecord samSequenceRecord = header.getSequence(referenceIndex);
 		int referenceSequenceLength = samSequenceRecord.getSequenceLength();
 		int coverageLength = (referenceSequenceLength / NUCLEOTIDES_BIN);
+		int modulus = referenceSequenceLength % NUCLEOTIDES_BIN;
+
+		if (modulus != 0) coverageLength++;
+
+		int[] referenceBinSize = new int[coverageLength];
+		for (int i = 0; i < coverageLength; i++) {
+			referenceBinSize[i] = NUCLEOTIDES_BIN;
+		}
+		if (modulus != 0) {
+			referenceBinSize[coverageLength - 1] = modulus;
+		}
 		
-		if (referenceSequenceLength % NUCLEOTIDES_BIN != 0) coverageLength++;
+		if (binSize.size() <= referenceIndex) {
+			for (int i = binSize.size(); i <= referenceIndex; i++) {
+				binSize.add(null);
+			}
+		}
+		binSize.set(referenceIndex, referenceBinSize);
 		
 		return new float[coverageLength];
 	}
-	
+
 	private float[] getReadReferenceCoverage(int referenceIndex, SAMFileHeader header) {
 		float[] readReferenceCoverage = null;
-		
+
 		if (referenceIndex < coverage.size()) {
 			readReferenceCoverage = coverage.get(referenceIndex);
 		}
 		else {
 			readReferenceCoverage = getNewReadReferenceCoverage(referenceIndex, header);
-			
+
 			if (referenceIndex >= coverage.size()) {
 				for (int i = coverage.size(); i <= referenceIndex; i++) {
 					coverage.add(null);
@@ -53,38 +69,39 @@ public class GenomeCoverage extends AbstractQCModule {
 		}
 		return readReferenceCoverage;
 	}
-	
-	private void recordCoverage(long alignmentStart, long alignmentEnd, float[] readReferenceCoverage) {
+
+	private void recordCoverage(long alignmentStart, long alignmentEnd, float[] readReferenceCoverage, int[] referenceBinSize) {
 		int startIndex = (int) alignmentStart / NUCLEOTIDES_BIN;
 		int endIndex = (int) alignmentEnd / NUCLEOTIDES_BIN;
 		int index = startIndex;
-		
+
 		while (index <= endIndex) {
 			long binStart = index * NUCLEOTIDES_BIN;
 			long binEnd = (index + 1) * NUCLEOTIDES_BIN;
-			long start = alignmentStart > binStart? alignmentStart : binStart;
+			long start = alignmentStart > binStart ? alignmentStart : binStart;
 			long end = alignmentEnd > binEnd ? binEnd : alignmentEnd;
 			float length = (float) (end - start);
-			float binCoverage = length / NUCLEOTIDES_BIN;
-			
+			float binCoverage = length / referenceBinSize[index];
+
 			readReferenceCoverage[index] += binCoverage;
-		
+
 			log.info(String.format("Start %d - End %d, index %d, binCoverage %f, ", alignmentStart, alignmentEnd, index, binCoverage, readReferenceCoverage[index]));
-			
+
 			index++;
 		}
 	}
-	
+
 	@Override
 	public void processSequence(SAMRecord read) {
 		SAMFileHeader header = read.getHeader();
 		int referenceIndex = read.getReferenceIndex();
 		long alignmentStart = read.getAlignmentStart();
 		long alignmentEnd = read.getAlignmentEnd();
-		float[] readReferenceCoverage = getReadReferenceCoverage(referenceIndex, header); 
+		float[] readReferenceCoverage = getReadReferenceCoverage(referenceIndex, header);
+		int[] referenceBinSize = binSize.get(referenceIndex);
 		
-		recordCoverage(alignmentStart, alignmentEnd, readReferenceCoverage);
-		
+		recordCoverage(alignmentStart, alignmentEnd, readReferenceCoverage, referenceBinSize);
+
 		log.info("header = " + header);
 		log.info("referenceIndex = " + referenceIndex);
 	}
@@ -127,14 +144,14 @@ public class GenomeCoverage extends AbstractQCModule {
 
 	@Override
 	public boolean needsToSeeAnnotation() {
-		return false ;
+		return false;
 	}
 
 	@Override
 	public boolean ignoreInReport() {
 		return false;
 	}
-	
+
 	@Override
 	public void processAnnotationSet(AnnotationSet annotation) {
 		throw new UnsupportedOperationException("processAnnotationSet called");
@@ -145,7 +162,7 @@ public class GenomeCoverage extends AbstractQCModule {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
 		// TODO Auto-generated method stub
@@ -154,5 +171,5 @@ public class GenomeCoverage extends AbstractQCModule {
 	public List<float[]> getCoverage() {
 		return coverage;
 	}
-	
+
 }
