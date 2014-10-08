@@ -85,7 +85,7 @@ public class GenomeCoverage extends AbstractQCModule {
 
 			readReferenceCoverage[index] += binCoverage;
 
-			log.info(String.format("Start %d - End %d, index %d, binCoverage %f, ", alignmentStart, alignmentEnd, index, binCoverage, readReferenceCoverage[index]));
+			log.debug(String.format("Start %d - End %d, index %d, binCoverage %f, ", alignmentStart, alignmentEnd, index, binCoverage, readReferenceCoverage[index]));
 
 			index++;
 		}
@@ -102,14 +102,13 @@ public class GenomeCoverage extends AbstractQCModule {
 		
 		recordCoverage(alignmentStart, alignmentEnd, readReferenceCoverage, referenceBinSize);
 
-		log.info("header = " + header);
-		log.info("referenceIndex = " + referenceIndex);
+		log.debug("header = " + header);
+		log.debug("referenceIndex = " + referenceIndex);
 	}
 
 	@Override
 	public void processFile(SequenceFile file) {
-		// TODO Auto-generated method stub
-
+		log.info("processFile called");
 	}
 
 	@Override
@@ -124,7 +123,8 @@ public class GenomeCoverage extends AbstractQCModule {
 
 	@Override
 	public void reset() {
-		// TODO Auto-generated method stub
+		coverage = new ArrayList<float[]>();
+		binSize = new ArrayList<int[]>();
 	}
 
 	@Override
