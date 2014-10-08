@@ -27,13 +27,13 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.log4j.Logger;
-
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMRecord;
 import net.sf.samtools.SAMSequenceRecord;
+
+import org.apache.log4j.Logger;
+
 import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
-import uk.ac.babraham.BamQC.Graphs.BarGraph;
 import uk.ac.babraham.BamQC.Graphs.LineGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
@@ -46,7 +46,7 @@ public class GenomeCoverage extends AbstractQCModule {
 
 	private List<float[]> coverage = new ArrayList<float[]>();
 	private List<int[]> binSize = new ArrayList<int[]>();
-	private double maxCount;
+	private double maxCoverage;
 
 	private float[] getNewReadReferenceCoverage(int referenceIndex, SAMFileHeader header) {
 		SAMSequenceRecord samSequenceRecord = header.getSequence(referenceIndex);
@@ -108,7 +108,7 @@ public class GenomeCoverage extends AbstractQCModule {
 
 			readReferenceCoverage[index] += binCoverage;
 
-			if (readReferenceCoverage[index] > maxCount) maxCount = readReferenceCoverage[index];
+			if (readReferenceCoverage[index] > maxCoverage) maxCoverage = readReferenceCoverage[index];
 			
 			log.debug(String.format("Start %d - End %d, index %d, binCoverage %f, ", alignmentStart, alignmentEnd, index, binCoverage, readReferenceCoverage[index]));
 
@@ -186,12 +186,20 @@ public class GenomeCoverage extends AbstractQCModule {
 	public JPanel getResultsPanel() {
 		double[][] coverageData = getCoverageData();
 		double minY =  0.0D;
-		double maxY = maxCount;
-		String xLabel = "Coverage";
-		String[] xTitles = new String[]{"xTitles"};
-		String[] xCategories = new String[]{"Coverage"};
+		double maxY = maxCoverage;
+		String xLabel = "Kilobases";
+		String[] xTitles = new String[]{""};
+		int[] xCategories = new int[coverageData.length];
 		String graphTitle = "Reference Kilobase Coverage";
 		
+		for (int i = 0; i < coverageData.length; i++) {
+			xCategories[i] = i;
+		}
+		log.info("maxCoverage = " + maxCoverage);
+		log.info("xCategories.length = " + xCategories.length);
+		
+		//LineGraph (double [] [] data, double minY, double maxY, String xLabel, String [] xTitles, int [] xCategories, String graphTitle) 
+		//LineGraph (double [] [] data, double minY, double maxY, String xLabel, String [] xTitles, String [] xCategories, String graphTitle)
 		return new LineGraph(coverageData, minY, maxY, xLabel, xTitles, xCategories, graphTitle);
 	}
 	
@@ -203,11 +211,11 @@ public class GenomeCoverage extends AbstractQCModule {
 				data.add(binCoverage);
 			}
 		}
-		double[][] coverageData = new double[1][data.size()];
+		double[][] coverageData = new double[data.size()][1];
 		int i = 0;
 		
 		for (float binCoverage : data) {
-			coverageData[0][i++] = binCoverage;
+			coverageData[i++][0] = binCoverage;
 		}
 		return coverageData;
 	}
