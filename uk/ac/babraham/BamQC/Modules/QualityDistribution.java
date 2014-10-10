@@ -41,6 +41,7 @@ public class QualityDistribution extends AbstractQCModule {
 	private final static int QUALITY_MAP_SIZE = 256;
 
 	private int maxCount = 0;
+
 	private int[] distribution = new int[QUALITY_MAP_SIZE];
 	private String[] label = new String[QUALITY_MAP_SIZE];
 
@@ -72,10 +73,23 @@ public class QualityDistribution extends AbstractQCModule {
 	@Override
 	public JPanel getResultsPanel() {
 		double[] distributionFloat = getDistributionFolat();
-		String[] xTitles = new String[] { "" };
+		String[] xTitles = new String[] { "Log of Reads" };
+		double maxCountLog = Math.log10(maxCount); //Math.log10(maxCount);
 
-		return new BarGraph(distributionFloat, 0.0D, maxCount, "Distribution", xTitles, label, "Quality Mapping Distribution");
+		return new BarGraph(distributionFloat, 0.0D, maxCountLog, "Distribution", xTitles, label, "Quality Mapping Distribution");
 	}
+	
+	public double[] getDistributionFolat() {
+		double[] distributionFloat = new double[QUALITY_MAP_SIZE];
+		
+		for (int i = 0; i < QUALITY_MAP_SIZE; i++) {
+			if (distribution[i] != 0) {
+				distributionFloat[i] =  Math.log10(distribution[i]); 
+			}
+		}
+		return distributionFloat;
+	}
+
 
 	@Override
 	public String name() {
@@ -126,15 +140,6 @@ public class QualityDistribution extends AbstractQCModule {
 
 	public int[] getDistribution() {
 		return distribution;
-	}
-
-	public double[] getDistributionFolat() {
-		double[] distributionFloat = new double[QUALITY_MAP_SIZE];
-
-		for (int i = 0; i < QUALITY_MAP_SIZE; i++) {
-			distributionFloat[i] = distribution[i];
-		}
-		return distributionFloat;
 	}
 
 	public int getMaxCount() {
