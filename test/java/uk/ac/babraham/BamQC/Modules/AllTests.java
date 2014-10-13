@@ -31,6 +31,4 @@ import org.junit.runners.Suite.SuiteClasses;
 	GenomeCoverageTest.class
 	})
 
-public class AllTests {
-
-}
+public class AllTests { }
