@@ -34,9 +34,9 @@ import uk.ac.babraham.BamQC.Graphs.BarGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
-public class QualityDistribution extends AbstractQCModule {
+public class MappingQualityDistribution extends AbstractQCModule {
 
-	private static Logger log = Logger.getLogger(QualityDistribution.class);
+	private static Logger log = Logger.getLogger(MappingQualityDistribution.class);
 
 	private final static int QUALITY_MAP_SIZE = 256;
 
@@ -45,7 +45,7 @@ public class QualityDistribution extends AbstractQCModule {
 	private int[] distribution = new int[QUALITY_MAP_SIZE];
 	private String[] label = new String[QUALITY_MAP_SIZE];
 
-	public QualityDistribution() {
+	public MappingQualityDistribution() {
 		for (int i = 0; i < QUALITY_MAP_SIZE; i++) {
 			label[i] = Integer.toString(i);
 		}
@@ -59,6 +59,8 @@ public class QualityDistribution extends AbstractQCModule {
 
 		distribution[quality]++;
 
+		log.debug("quality count = " + distribution[quality]);
+		
 		if (distribution[quality] > maxCount) maxCount = distribution[quality];
 	}
 
@@ -93,12 +95,12 @@ public class QualityDistribution extends AbstractQCModule {
 
 	@Override
 	public String name() {
-		return "Quality Mapping Distribution";
+		return "Mapping Quality Distribution";
 	}
 
 	@Override
 	public String description() {
-		return "Quality Mapping Distribution";
+		return "Mapping Quality Distribution";
 	}
 
 	@Override

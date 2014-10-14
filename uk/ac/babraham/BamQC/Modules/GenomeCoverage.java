@@ -29,6 +29,7 @@ import javax.xml.stream.XMLStreamException;
 
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMRecord;
+import net.sf.samtools.SAMSequenceDictionary;
 import net.sf.samtools.SAMSequenceRecord;
 
 import org.apache.log4j.Logger;
@@ -41,81 +42,69 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 public class GenomeCoverage extends AbstractQCModule {
 
 	private static Logger log = Logger.getLogger(GenomeCoverage.class);
-	private static int BIN_NUCLEOTIDES = 50000;
+	private static final int BIN_NUMBER = 1000;
 
-	private List<float[]> coverage = new ArrayList<float[]>();
-	private List<int[]> binSize = new ArrayList<int[]>();
-	private double maxCoverage;
-	private boolean isHeaderData = false;
+	private long binNucleotides = 50000;
+	private List<Long> sequenceStarts = new ArrayList<Long>();
+	private double[] coverage = new double[BIN_NUMBER];
+	private double maxCoverage = 0.0;
+	private boolean isBinNucleotidesSet = false;
+	private int errorReads = 0;
 
-	public static void setBinNucleotides(int binNucleotides) {
-		BIN_NUCLEOTIDES = binNucleotides;
-	}
-	
-	private float[] getNewReadReferenceCoverage(int referenceIndex, SAMFileHeader header) {
-		SAMSequenceRecord samSequenceRecord = header.getSequence(referenceIndex);
-		int referenceSequenceLength = samSequenceRecord.getSequenceLength();
-		int coverageLength = (referenceSequenceLength / BIN_NUCLEOTIDES);
-		int modulus = referenceSequenceLength % BIN_NUCLEOTIDES;
+	public void setBinNucleotides(long binNucleotides, long[] sequenceStarts) {
+		this.binNucleotides = binNucleotides;
 
-		if (modulus != 0) coverageLength++;
-
-		int[] referenceBinSize = new int[coverageLength];
-		for (int i = 0; i < coverageLength; i++) {
-			referenceBinSize[i] = BIN_NUCLEOTIDES;
+		for (long sequenceStart : sequenceStarts) {
+			this.sequenceStarts.add(sequenceStart);
 		}
-		if (modulus != 0) {
-			referenceBinSize[coverageLength - 1] = modulus;
-		}
-
-		if (binSize.size() <= referenceIndex) {
-			for (int i = binSize.size(); i <= referenceIndex; i++) {
-				binSize.add(null);
-			}
-		}
-		binSize.set(referenceIndex, referenceBinSize);
-
-		return new float[coverageLength];
+		isBinNucleotidesSet = true;
 	}
 
-	private float[] getReadReferenceCoverage(int referenceIndex, SAMFileHeader header) {
-		float[] readReferenceCoverage = null;
+	private void setBinNucleotides(SAMSequenceDictionary samSequenceDictionary) {
+		List<SAMSequenceRecord> samSequenceRecords = samSequenceDictionary.getSequences();
+		long totalNucleotideNumber = 0;
 
-		if (referenceIndex < coverage.size()) {
-			readReferenceCoverage = coverage.get(referenceIndex);
-		}
-		else {
-			readReferenceCoverage = getNewReadReferenceCoverage(referenceIndex, header);
+		for (SAMSequenceRecord samSequenceRecord : samSequenceRecords) {
+			sequenceStarts.add(totalNucleotideNumber);
 
-			if (referenceIndex >= coverage.size()) {
-				for (int i = coverage.size(); i <= referenceIndex; i++) {
-					coverage.add(null);
-				}
-			}
-			coverage.set(referenceIndex, readReferenceCoverage);
+			totalNucleotideNumber += samSequenceRecord.getSequenceLength();
+
+			log.info(String.format("%s sequence length = %d, total = %d", samSequenceRecord.getSequenceName(), samSequenceRecord.getSequenceLength(), totalNucleotideNumber));
 		}
-		return readReferenceCoverage;
+		binNucleotides = (int) (totalNucleotideNumber / BIN_NUMBER);
+
+		log.info(String.format("%d / %d = %d", totalNucleotideNumber, BIN_NUMBER, binNucleotides));
+
+		isBinNucleotidesSet = true;
 	}
 
-	private void recordCoverage(long alignmentStart, long alignmentEnd, float[] readReferenceCoverage, int[] referenceBinSize) {
-		int startIndex = (int) alignmentStart / BIN_NUCLEOTIDES;
-		int endIndex = (int) alignmentEnd / BIN_NUCLEOTIDES;
+	private void recordCoverage(long alignmentStartAbsolute, long alignmentEndAbsolute) {
+		int startIndex = (int) (alignmentStartAbsolute / binNucleotides);
+		int endIndex = (int) (alignmentEndAbsolute / binNucleotides);
 		int index = startIndex;
 
+		log.debug(String.format("startIndex %d endIndex %d", startIndex, endIndex));
+
 		while (index <= endIndex) {
-			long binStart = index * BIN_NUCLEOTIDES;
-			long binEnd = (index + 1) * BIN_NUCLEOTIDES;
-			long start = alignmentStart > binStart ? alignmentStart : binStart;
-			long end = alignmentEnd > binEnd ? binEnd : alignmentEnd;
-			float length = (float) (end - start);
-			float binCoverage = length / referenceBinSize[index];
+			long binStart = index * binNucleotides;
+			long binEnd = (index + 1) * binNucleotides;
+			long start = alignmentStartAbsolute > binStart ? alignmentStartAbsolute : binStart;
+			long end = alignmentEndAbsolute > binEnd ? binEnd : alignmentEndAbsolute;
+			double length = end - start;
 
-			readReferenceCoverage[index] += binCoverage;
+			log.debug(String.format("binStart %d binEnd %d, start = %d, end %d, length = %d", binStart, binEnd, start, end, (end - start)));
+			log.debug("index = " + index);
 
-			if (readReferenceCoverage[index] > maxCoverage) maxCoverage = readReferenceCoverage[index];
+			double binCoverage = length / (double) binNucleotides;
 
-			log.debug(String.format("Start %d - End %d, index %d, binCoverage %f, ", alignmentStart, alignmentEnd, index, binCoverage, readReferenceCoverage[index]));
+			coverage[index] += binCoverage;
 
+			if (coverage[index] > maxCoverage) maxCoverage = coverage[index];
+
+			log.debug(String.format("Start %d - End %d, length %d, index %d, binCoverage %f, ", alignmentStartAbsolute, alignmentEndAbsolute, (end - start), index, binCoverage, coverage[index]));
+
+			if (binCoverage < 0.0) throw new RuntimeException("negative binCoverage");
+			
 			index++;
 		}
 	}
@@ -123,14 +112,26 @@ public class GenomeCoverage extends AbstractQCModule {
 	@Override
 	public void processSequence(SAMRecord read) {
 		SAMFileHeader header = read.getHeader();
+		SAMSequenceDictionary samSequenceDictionary = header.getSequenceDictionary();
 		int referenceIndex = read.getReferenceIndex();
 		long alignmentStart = read.getAlignmentStart();
 		long alignmentEnd = read.getAlignmentEnd();
-		float[] readReferenceCoverage = getReadReferenceCoverage(referenceIndex, header);
-		int[] referenceBinSize = binSize.get(referenceIndex);
+		
+		if (referenceIndex > -1) {
+			if (!isBinNucleotidesSet) {
+				setBinNucleotides(samSequenceDictionary);
+			}
+			if (alignmentEnd > alignmentStart) {
+				long referenceStart = sequenceStarts.get(referenceIndex);
+				long alignmentStartAbsolute = alignmentStart + referenceStart;
+				long alignmentEndAbsolute = alignmentEnd + referenceStart;
 
-		recordCoverage(alignmentStart, alignmentEnd, readReferenceCoverage, referenceBinSize);
-
+				recordCoverage(alignmentStartAbsolute, alignmentEndAbsolute);
+			}
+			else {
+				errorReads++;
+			}
+		}
 		log.debug("header = " + header);
 		log.debug("referenceIndex = " + referenceIndex);
 	}
@@ -152,9 +153,8 @@ public class GenomeCoverage extends AbstractQCModule {
 
 	@Override
 	public void reset() {
-		coverage = new ArrayList<float[]>();
-		binSize = new ArrayList<int[]>();
-		isHeaderData = false;
+		isBinNucleotidesSet = false;
+		sequenceStarts = new ArrayList<Long>();
 	}
 
 	@Override
@@ -189,10 +189,12 @@ public class GenomeCoverage extends AbstractQCModule {
 
 	@Override
 	public JPanel getResultsPanel() {
+		if (errorReads > 0) log.error(String.format("Number of reads in error is %d, end > start", errorReads));
+		
 		double[][] coverageData = getCoverageData();
 		double minY = 0.0D;
 		double maxY = maxCoverage;
-		String xLabel = String.format("Bin size %6.1E nucleotides", (double) BIN_NUCLEOTIDES);
+		String xLabel = String.format("%d bins with a size of %7.3E nucleotides", BIN_NUMBER, (double) binNucleotides);
 		String[] xTitles = new String[] { "" };
 		int[] xCategories = new int[coverageData[0].length];
 		String graphTitle = "Reference Coverage";
@@ -207,24 +209,17 @@ public class GenomeCoverage extends AbstractQCModule {
 	}
 
 	private double[][] getCoverageData() {
-		List<Float> data = new ArrayList<Float>();
+		List<Double> data = new ArrayList<Double>();
 
-		log.info("coverage = " + coverage);
-		log.info("coverage.size = " + coverage.size());
+		for (double binCoverage : coverage) {
+			log.info("binCoverage = " + binCoverage);
 
-		for (float[] referenceCoverage : coverage) {
-			if (referenceCoverage != null) {
-				log.info("referenceCoverage = " + referenceCoverage);
-				
-				for (float binCoverage : referenceCoverage) {
-					data.add(binCoverage);
-				}
-			}
+			data.add(binCoverage);
 		}
 		double[][] coverageData = new double[1][data.size()];
 		int i = 0;
 
-		for (float binCoverage : data) {
+		for (double binCoverage : data) {
 			coverageData[0][i++] = binCoverage;
 		}
 		return coverageData;
@@ -235,7 +230,7 @@ public class GenomeCoverage extends AbstractQCModule {
 		// TODO Auto-generated method stub
 	}
 
-	public List<float[]> getCoverage() {
+	public double[] getCoverage() {
 		return coverage;
 	}
 
