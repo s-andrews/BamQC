@@ -44,9 +44,9 @@ public class GenomeCoverage extends AbstractQCModule {
 	private static final int BIN_NUMBER = 2000;
 
 	private static Logger log = Logger.getLogger(GenomeCoverage.class);
-	private static double binCoverageZeroWarningFraction = ModuleConfig.getParam("binCoverageZeroFraction", "warning");
+	private static double binCoverageZeroWarningFraction = ModuleConfig.getParam("binCoverageZeroFraction", "warn");
 	private static double binCoverageZeroErrorFraction = ModuleConfig.getParam("binCoverageZeroFraction", "error");
-	private static double binCoverageRsdWarningFraction = ModuleConfig.getParam("binCoverageRsdFraction", "warning");
+	private static double binCoverageRsdWarningFraction = ModuleConfig.getParam("binCoverageRsdFraction", "warn");
 	private static double binCoverageRsdErrorFraction = ModuleConfig.getParam("binCoverageRsdFraction", "error");
 
 	private boolean raiseError = false;
