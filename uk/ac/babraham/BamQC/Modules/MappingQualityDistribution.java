@@ -78,7 +78,7 @@ public class MappingQualityDistribution extends AbstractQCModule {
 		String[] xTitles = new String[] { "Log of Reads" };
 		double maxCountLog = Math.log10(maxCount); //Math.log10(maxCount);
 
-		return new BarGraph(distributionFloat, 0.0D, maxCountLog, "Distribution", xTitles, label, "Quality Mapping Distribution");
+		return new BarGraph(distributionFloat, 0.0D, maxCountLog, "Distribution", xTitles, label, "Mapping Quality Distribution");
 	}
 	
 	public double[] getDistributionFolat() {
