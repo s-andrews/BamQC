@@ -122,8 +122,8 @@ public class ReadFlagStatistics extends AbstractQCModule {
 		public ResultsTable() {
 			results[0] = String.format("%d", readNumber);
 			results[1] = getPercentage(mappedNumber, readNumber);
-			results[2] = getPercentage(mappedPairNumber, readNumber);
-			results[3] = getPercentage(pairNumber, readNumber);
+			results[2] = getPercentage(pairNumber, readNumber);
+			results[3] = getPercentage(mappedPairNumber, readNumber);
 			results[4] = getPercentage(failedQualityControlNumber, readNumber);
 			results[5] = getPercentage(duplicateNumber, readNumber);
 		}
