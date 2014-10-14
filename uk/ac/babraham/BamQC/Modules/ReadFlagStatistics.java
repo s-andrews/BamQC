@@ -89,7 +89,6 @@ public class ReadFlagStatistics extends AbstractQCModule {
 	}
 
 	private String getPercentage(int count, int total) {
-		//return Math.floor((100000 * (double) count / (double) total)) / 1000;
 		return String.format("%.3f", 100 * (double) count / (double) total);
 	}
 
