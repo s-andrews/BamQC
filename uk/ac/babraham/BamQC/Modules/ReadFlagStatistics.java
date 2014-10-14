@@ -58,7 +58,7 @@ public class ReadFlagStatistics extends AbstractQCModule {
 	private int failedQualityControlNumber = 0;
 
 	private String[] resultNames = new String[] { "Read Number", "Reads mapped %", "Mapped pair %", "Properly mapped Pair %","FailedQuality Control %" ,"Duplicate %"};
-
+	
 	@Override
 	public void reset() {
 		readNumber = 0;
@@ -76,7 +76,7 @@ public class ReadFlagStatistics extends AbstractQCModule {
 		boolean mappedPair = (flag & SECOND_BIT) == SECOND_BIT;
 		boolean failedQualityControl = (flag & TENTH_BIT) == TENTH_BIT;
 		boolean duplicate = (flag & ELEVENTH_BIT) == ELEVENTH_BIT;
-		
+
 		readNumber++;
 
 		if (pair) pairNumber++;
