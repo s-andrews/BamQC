@@ -41,9 +41,14 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
 public class GenomeCoverage extends AbstractQCModule {
 
-	private static Logger log = Logger.getLogger(GenomeCoverage.class);
 	private static final int BIN_NUMBER = 1000;
-
+	
+	private static Logger log = Logger.getLogger(GenomeCoverage.class);
+	private static double binCoverageWarningFraction = 0.1;
+	private static double binCoverageErrorFraction = 0.2;
+	
+	private boolean raiseError = false;
+	private boolean raiseWarning = false ;
 	private long binNucleotides = 50000;
 	private List<Long> sequenceStarts = new ArrayList<Long>();
 	private double[] coverage = new double[BIN_NUMBER];
@@ -155,16 +160,18 @@ public class GenomeCoverage extends AbstractQCModule {
 	public void reset() {
 		isBinNucleotidesSet = false;
 		sequenceStarts = new ArrayList<Long>();
+		raiseError = false;
+		raiseWarning = false ;
 	}
 
 	@Override
 	public boolean raisesError() {
-		return false;
+		return raiseError;
 	}
 
 	@Override
 	public boolean raisesWarning() {
-		return false;
+		return raiseWarning;
 	}
 
 	@Override
@@ -208,14 +215,50 @@ public class GenomeCoverage extends AbstractQCModule {
 		return new LineGraph(coverageData, minY, maxY, xLabel, xTitles, xCategories, graphTitle);
 	}
 
+	private void raiseWarningErrorsZeroCoverage(int zeroCoverageBins) {
+		double zeroCoverageBinFraction = (double) zeroCoverageBins / BIN_NUMBER;
+		
+		log.info(String.format("zeroCoverageBins %d, zeroCoverageBinFraction %f", zeroCoverageBins, zeroCoverageBinFraction));
+		
+		if (zeroCoverageBinFraction >= binCoverageErrorFraction) {
+			raiseError = true;
+		}
+		else if (zeroCoverageBinFraction >= binCoverageWarningFraction) {
+			raiseWarning = true;
+		}
+	}
+	
+	private void raiseWarningErrorsStandardDeviation() {
+		double total = 0.0;
+		
+		for (double binCoverage : coverage) {
+			total += binCoverage;
+		}
+		double mean = total / coverage.length;
+		double variance = 0.0;
+		
+		for (double binCoverage : coverage) {
+			variance += Math.pow((binCoverage - mean), 2.0);
+		}
+		double sd = Math.sqrt((variance / coverage.length));
+		
+		log.info("sd = " + sd);
+	}
+	
 	private double[][] getCoverageData() {
 		List<Double> data = new ArrayList<Double>();
-
+		int zeroCoverageBins = 0;
+		
 		for (double binCoverage : coverage) {
-			log.info("binCoverage = " + binCoverage);
+			log.debug("binCoverage = " + binCoverage);
 
+			if (binCoverage == 0) zeroCoverageBins++;
+			
 			data.add(binCoverage);
 		}
+		raiseWarningErrorsZeroCoverage(zeroCoverageBins);
+		raiseWarningErrorsStandardDeviation();
+		
 		double[][] coverageData = new double[1][data.size()];
 		int i = 0;
 
