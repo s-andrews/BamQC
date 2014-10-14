@@ -41,21 +41,25 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
 public class GenomeCoverage extends AbstractQCModule {
 
-	private static final int BIN_NUMBER = 1000;
-	
+	private static final int BIN_NUMBER = 2000;
+
 	private static Logger log = Logger.getLogger(GenomeCoverage.class);
-	private static double binCoverageWarningFraction = 0.1;
-	private static double binCoverageErrorFraction = 0.2;
-	
+	private static double binCoverageZeroWarningFraction = ModuleConfig.getParam("binCoverageZeroFraction", "warning");
+	private static double binCoverageZeroErrorFraction = ModuleConfig.getParam("binCoverageZeroFraction", "error");
+	private static double binCoverageRsdWarningFraction = ModuleConfig.getParam("binCoverageRsdFraction", "warning");
+	private static double binCoverageRsdErrorFraction = ModuleConfig.getParam("binCoverageRsdFraction", "error");
+
 	private boolean raiseError = false;
-	private boolean raiseWarning = false ;
+	private boolean raiseWarning = false;
 	private long binNucleotides = 50000;
 	private List<Long> sequenceStarts = new ArrayList<Long>();
 	private double[] coverage = new double[BIN_NUMBER];
 	private double maxCoverage = 0.0;
 	private boolean isBinNucleotidesSet = false;
 	private int errorReads = 0;
+	private int readNumber = 0;
 
+	
 	public void setBinNucleotides(long binNucleotides, long[] sequenceStarts) {
 		this.binNucleotides = binNucleotides;
 
@@ -74,7 +78,7 @@ public class GenomeCoverage extends AbstractQCModule {
 
 			totalNucleotideNumber += samSequenceRecord.getSequenceLength();
 
-			log.info(String.format("%s sequence length = %d, total = %d", samSequenceRecord.getSequenceName(), samSequenceRecord.getSequenceLength(), totalNucleotideNumber));
+			log.debug(String.format("%s sequence length = %d, total = %d", samSequenceRecord.getSequenceName(), samSequenceRecord.getSequenceLength(), totalNucleotideNumber));
 		}
 		binNucleotides = (int) (totalNucleotideNumber / BIN_NUMBER);
 
@@ -109,7 +113,7 @@ public class GenomeCoverage extends AbstractQCModule {
 			log.debug(String.format("Start %d - End %d, length %d, index %d, binCoverage %f, ", alignmentStartAbsolute, alignmentEndAbsolute, (end - start), index, binCoverage, coverage[index]));
 
 			if (binCoverage < 0.0) throw new RuntimeException("negative binCoverage");
-			
+
 			index++;
 		}
 	}
@@ -121,7 +125,9 @@ public class GenomeCoverage extends AbstractQCModule {
 		int referenceIndex = read.getReferenceIndex();
 		long alignmentStart = read.getAlignmentStart();
 		long alignmentEnd = read.getAlignmentEnd();
-		
+
+		readNumber++;
+
 		if (referenceIndex > -1) {
 			if (!isBinNucleotidesSet) {
 				setBinNucleotides(samSequenceDictionary);
@@ -161,7 +167,9 @@ public class GenomeCoverage extends AbstractQCModule {
 		isBinNucleotidesSet = false;
 		sequenceStarts = new ArrayList<Long>();
 		raiseError = false;
-		raiseWarning = false ;
+		raiseWarning = false;
+		errorReads = 0;
+		readNumber = 0;
 	}
 
 	@Override
@@ -196,8 +204,9 @@ public class GenomeCoverage extends AbstractQCModule {
 
 	@Override
 	public JPanel getResultsPanel() {
-		if (errorReads > 0) log.error(String.format("Number of reads in error is %d, end > start", errorReads));
-		
+
+		if (errorReads > 0) log.error(String.format("%d (%7.3f %%) reads in error is from %d reads , end > start", errorReads, (((double) errorReads / readNumber) * 100.0), readNumber));
+
 		double[][] coverageData = getCoverageData();
 		double minY = 0.0D;
 		double maxY = maxCoverage;
@@ -210,55 +219,61 @@ public class GenomeCoverage extends AbstractQCModule {
 			xCategories[i] = i;
 		}
 		log.info("maxCoverage = " + maxCoverage);
-		log.info("xCategories.length = " + xCategories.length);
+		// log.info("xCategories.length = " + xCategories.length);
 
 		return new LineGraph(coverageData, minY, maxY, xLabel, xTitles, xCategories, graphTitle);
 	}
 
 	private void raiseWarningErrorsZeroCoverage(int zeroCoverageBins) {
 		double zeroCoverageBinFraction = (double) zeroCoverageBins / BIN_NUMBER;
-		
+
 		log.info(String.format("zeroCoverageBins %d, zeroCoverageBinFraction %f", zeroCoverageBins, zeroCoverageBinFraction));
-		
-		if (zeroCoverageBinFraction >= binCoverageErrorFraction) {
+
+		if (zeroCoverageBinFraction >= binCoverageZeroErrorFraction) {
 			raiseError = true;
 		}
-		else if (zeroCoverageBinFraction >= binCoverageWarningFraction) {
+		else if (zeroCoverageBinFraction >= binCoverageZeroWarningFraction) {
 			raiseWarning = true;
 		}
 	}
-	
+
 	private void raiseWarningErrorsStandardDeviation() {
 		double total = 0.0;
-		
+
 		for (double binCoverage : coverage) {
 			total += binCoverage;
 		}
 		double mean = total / coverage.length;
 		double variance = 0.0;
-		
+
 		for (double binCoverage : coverage) {
 			variance += Math.pow((binCoverage - mean), 2.0);
 		}
-		double sd = Math.sqrt((variance / coverage.length));
-		
-		log.info("sd = " + sd);
+		double rsdFraction = Math.sqrt((variance / coverage.length)) / mean;
+		log.info("rsdFraction = " + rsdFraction);
+
+		if (rsdFraction >= binCoverageRsdErrorFraction) {
+			raiseError = true;
+		}
+		else if (rsdFraction >= binCoverageRsdWarningFraction) {
+			raiseWarning = true;
+		}
 	}
-	
+
 	private double[][] getCoverageData() {
 		List<Double> data = new ArrayList<Double>();
 		int zeroCoverageBins = 0;
-		
+
 		for (double binCoverage : coverage) {
 			log.debug("binCoverage = " + binCoverage);
 
 			if (binCoverage == 0) zeroCoverageBins++;
-			
+
 			data.add(binCoverage);
 		}
 		raiseWarningErrorsZeroCoverage(zeroCoverageBins);
 		raiseWarningErrorsStandardDeviation();
-		
+
 		double[][] coverageData = new double[1][data.size()];
 		int i = 0;
 
