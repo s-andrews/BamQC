@@ -43,19 +43,21 @@ public class ReadFlagStatistics extends AbstractQCModule {
 
 	private static final int FIRST_BIT = 0x01;
 	private static final int SECOND_BIT = 0x02;
+	private static final int THIRD_BIT = 0x04;
 	private static final int TENTH_BIT = 0x200;
 	private static final int ELEVENTH_BIT = 0x400;
-	private static final int ROWS = 5;
+	private static final int ROWS = 6;
 
 	private static Logger log = Logger.getLogger(ReadFlagStatistics.class);
 
 	private int readNumber = 0;
 	private int pairNumber = 0;
 	private int mappedPairNumber = 0;
+	private int mappedNumber = 0;
 	private int duplicateNumber = 0;
 	private int failedQualityControlNumber = 0;
 
-	private String[] resultNames = new String[] { "Read Number", "Pair %", "Mapped Pair %","FailedQuality Control %" ,"Duplicate %"};
+	private String[] resultNames = new String[] { "Read Number", "Reads mapped %", "Mapped pair %", "Properly mapped Pair %","FailedQuality Control %" ,"Duplicate %"};
 
 	@Override
 	public void reset() {
@@ -70,6 +72,7 @@ public class ReadFlagStatistics extends AbstractQCModule {
 	public void processSequence(SAMRecord read) {
 		int flag = read.getFlags();
 		boolean pair = (flag & FIRST_BIT) == FIRST_BIT;
+		boolean mapped = (flag & THIRD_BIT) != THIRD_BIT;
 		boolean mappedPair = (flag & SECOND_BIT) == SECOND_BIT;
 		boolean failedQualityControl = (flag & TENTH_BIT) == TENTH_BIT;
 		boolean duplicate = (flag & ELEVENTH_BIT) == ELEVENTH_BIT;
@@ -77,6 +80,7 @@ public class ReadFlagStatistics extends AbstractQCModule {
 		readNumber++;
 
 		if (pair) pairNumber++;
+		if (mapped) mappedNumber++;
 		if (mappedPair) mappedPairNumber++;
 		if (failedQualityControl) failedQualityControlNumber++;
 		if (duplicate) duplicateNumber++;
@@ -84,8 +88,9 @@ public class ReadFlagStatistics extends AbstractQCModule {
 		log.debug("flag = " + flag);
 	}
 
-	private double getPercentage(int count, int total) {
-		return ((double) count / (double) total) * 100.0;
+	private String getPercentage(int count, int total) {
+		//return Math.floor((100000 * (double) count / (double) total)) / 1000;
+		return String.format("%.3f", 100 * (double) count / (double) total);
 	}
 
 	@Override
@@ -113,14 +118,15 @@ public class ReadFlagStatistics extends AbstractQCModule {
 
 	private class ResultsTable extends AbstractTableModel {
 		private static final long serialVersionUID = 1L;
-		private double[] results = new double[ROWS];
+		private String[] results = new String[ROWS];
 
 		public ResultsTable() {
-			results[0] = readNumber;
-			results[1] = getPercentage(pairNumber, readNumber);
+			results[0] = String.format("%d", readNumber);
+			results[1] = getPercentage(mappedNumber, readNumber);
 			results[2] = getPercentage(mappedPairNumber, readNumber);
-			results[3] = getPercentage(failedQualityControlNumber, readNumber);
-			results[4] = getPercentage(duplicateNumber, readNumber);
+			results[3] = getPercentage(pairNumber, readNumber);
+			results[4] = getPercentage(failedQualityControlNumber, readNumber);
+			results[5] = getPercentage(duplicateNumber, readNumber);
 		}
 
 		@Override
