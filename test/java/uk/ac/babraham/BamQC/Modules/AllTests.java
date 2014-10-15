@@ -28,7 +28,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({ 
 	QualityDistributionTest.class, 
 	ReadFlagStatisticsTest.class,
-	GenomeCoverageTest.class
+	GenomeCoverageTest.class,
+	RpkmReferenceTest.class
 	})
 
 public class AllTests { }

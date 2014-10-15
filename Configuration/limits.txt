@@ -80,5 +80,16 @@ sequence_length	error	1
 adapter	warn	5
 adapter	error	10
 
+# The Genome coverage module
+# The variables define values for the 
+# faction values of bins with zero values and 
+# the fraction of realtive standard deviation
+
+binCoverageZeroFraction	warn	0.1
+binCoverageZeroFraction	error	0.2
+
+binCoverageRsdFraction	warn	0.25
+binCoverageRsdFraction	error	0.5
+
 
 	
