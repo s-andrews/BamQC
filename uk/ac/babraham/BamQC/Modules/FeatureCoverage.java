@@ -35,7 +35,7 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
 public class FeatureCoverage extends AbstractQCModule {
 
-	private String [] featureNames;
+	private String [] featureNames = null;
 	private float [] readCounts;
 	
 	public void processSequence(SAMRecord read) {}
@@ -111,6 +111,12 @@ public class FeatureCoverage extends AbstractQCModule {
 	}
 
 	public boolean ignoreInReport() {
+		if (featureNames != null) {
+			if (featureNames.length == 0) {
+				return true;
+			}
+			return false;
+		}
 		return false;
 	}
 
