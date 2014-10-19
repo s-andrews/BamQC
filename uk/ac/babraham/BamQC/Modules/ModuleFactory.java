@@ -29,7 +29,7 @@ public class ModuleFactory {
 				new FeatureCoverage(),
 				new SoftClipDistribution(),
 				//new SNPFrequencies(),
-				new QualityDistribution(),
+				new MappingQualityDistribution(),
 				new ReadFlagStatistics(),
 			};
 	

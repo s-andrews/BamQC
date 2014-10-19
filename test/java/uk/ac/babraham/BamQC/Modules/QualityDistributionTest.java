@@ -13,13 +13,13 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import uk.ac.babraham.BamQC.Modules.QualityDistribution;
+import uk.ac.babraham.BamQC.Modules.MappingQualityDistribution;
 
 public class QualityDistributionTest {
 
 	private static Logger log = Logger.getLogger(QualityDistributionTest.class);
 	
-	private QualityDistribution qualityDistribution;
+	private MappingQualityDistribution qualityDistribution;
 	private TestObjectFactory testObjectFactory;
 	private List<SAMRecord> samRecords;
 	
@@ -34,7 +34,7 @@ public class QualityDistributionTest {
 		testObjectFactory = new TestObjectFactory();
 		samRecords = testObjectFactory.getSamRecords();
 		
-		qualityDistribution = new QualityDistribution();
+		qualityDistribution = new MappingQualityDistribution();
 	}
 
 	@After
@@ -74,7 +74,7 @@ public class QualityDistributionTest {
 				assertEquals(0, distribution[i]);
 			}
 		}
-		double[] distributionFloat = qualityDistribution.getDistributionFolat();
+		double[] distributionFloat = qualityDistribution.getDistributionFloat();
 		
 		assertEquals(2.0, distributionFloat[0], 0.0000001);
 		assertEquals(2.0, distributionFloat[255], 0.0000001);
@@ -89,7 +89,7 @@ public class QualityDistributionTest {
 		for (int i = 0; i < 256; i++) {
 			assertEquals(0, distribution[i]);
 		}
-		distributionFloat = qualityDistribution.getDistributionFolat();
+		distributionFloat = qualityDistribution.getDistributionFloat();
 		for (int i = 0; i < 256; i++) {
 			assertEquals(0.0, distributionFloat[i], 0.0000001);
 		}

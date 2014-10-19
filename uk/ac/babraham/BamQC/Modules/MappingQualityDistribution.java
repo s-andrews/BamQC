@@ -14,9 +14,9 @@ import uk.ac.babraham.BamQC.Graphs.BarGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
-public class QualityDistribution extends AbstractQCModule {
+public class MappingQualityDistribution extends AbstractQCModule {
 
-	private static Logger log = Logger.getLogger(QualityDistribution.class);
+	private static Logger log = Logger.getLogger(MappingQualityDistribution.class);
 
 	private final static int QUALITY_MAP_SIZE = 256;
 
@@ -24,7 +24,7 @@ public class QualityDistribution extends AbstractQCModule {
 	private int[] distribution = new int[QUALITY_MAP_SIZE];
 	private String[] label = new String[QUALITY_MAP_SIZE];
 
-	public QualityDistribution() {
+	public MappingQualityDistribution() {
 		for (int i = 0; i < QUALITY_MAP_SIZE; i++) {
 			label[i] = Integer.toString(i);
 		}
@@ -51,7 +51,7 @@ public class QualityDistribution extends AbstractQCModule {
 
 	@Override
 	public JPanel getResultsPanel() {
-		double[] distributionFloat = getDistributionFolat();
+		double[] distributionFloat = getDistributionFloat();
 		String[] xTitles = new String[] { "" };
 
 		return new BarGraph(distributionFloat, 0.0D, maxCount, "Distribution", xTitles, label, "Quality Mapping Distribution");
@@ -108,10 +108,20 @@ public class QualityDistribution extends AbstractQCModule {
 		return distribution;
 	}
 
-	public double[] getDistributionFolat() {
-		double[] distributionFloat = new double[QUALITY_MAP_SIZE];
+	public double[] getDistributionFloat() {
 
-		for (int i = 0; i < QUALITY_MAP_SIZE; i++) {
+		// Find the maximum value with a count.
+		int maxIndex = distribution.length-1;
+		for (int i=maxIndex;i>=0;i--) {
+			if (distribution[i]>0) {
+				maxIndex = i;
+				break;
+			}
+		}
+		
+		double[] distributionFloat = new double[maxIndex+1];
+
+		for (int i = 0; i < distributionFloat.length; i++) {
 			distributionFloat[i] = distribution[i];
 		}
 		return distributionFloat;
