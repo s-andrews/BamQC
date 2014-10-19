@@ -52,9 +52,8 @@ public class MappingQualityDistribution extends AbstractQCModule {
 	@Override
 	public JPanel getResultsPanel() {
 		double[] distributionFloat = getDistributionFloat();
-		String[] xTitles = new String[] { "" };
 
-		return new BarGraph(distributionFloat, 0.0D, maxCount, "Distribution", xTitles, label, "Quality Mapping Distribution");
+		return new BarGraph(distributionFloat, 0.0D, maxCount, "MAPQ Value", label, "Quality Mapping Distribution");
 	}
 
 	@Override
