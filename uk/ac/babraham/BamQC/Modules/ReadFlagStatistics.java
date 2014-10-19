@@ -1,3 +1,23 @@
+/**
+ * Copyright Copyright 2014 Bart Ailey Eagle Genomics Ltd
+ *
+ *    This file is part of BamQC.
+ *
+ *    BamQC is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 3 of the License, or
+ *    (at your option) any later version.
+ *
+ *    BamQC is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with BamQC; if not, write to the Free Software
+ *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 package uk.ac.babraham.BamQC.Modules;
 
 import java.awt.BorderLayout;
@@ -23,20 +43,22 @@ public class ReadFlagStatistics extends AbstractQCModule {
 
 	private static final int FIRST_BIT = 0x01;
 	private static final int SECOND_BIT = 0x02;
+	private static final int THIRD_BIT = 0x04;
 	private static final int TENTH_BIT = 0x200;
 	private static final int ELEVENTH_BIT = 0x400;
-	private static final int ROWS = 5;
+	private static final int ROWS = 6;
 
 	private static Logger log = Logger.getLogger(ReadFlagStatistics.class);
 
 	private int readNumber = 0;
 	private int pairNumber = 0;
 	private int mappedPairNumber = 0;
+	private int mappedNumber = 0;
 	private int duplicateNumber = 0;
 	private int failedQualityControlNumber = 0;
 
-	private String[] resultNames = new String[] { "Read Number", "Pair %", "Mapped Pair %","FailedQuality Control %" ,"Duplicate %"};
-
+	private String[] resultNames = new String[] { "Read Number", "Reads mapped %", "Mapped pair %", "Properly mapped Pair %","FailedQuality Control %" ,"Duplicate %"};
+	
 	@Override
 	public void reset() {
 		readNumber = 0;
@@ -50,6 +72,7 @@ public class ReadFlagStatistics extends AbstractQCModule {
 	public void processSequence(SAMRecord read) {
 		int flag = read.getFlags();
 		boolean pair = (flag & FIRST_BIT) == FIRST_BIT;
+		boolean mapped = (flag & THIRD_BIT) != THIRD_BIT;
 		boolean mappedPair = (flag & SECOND_BIT) == SECOND_BIT;
 		boolean failedQualityControl = (flag & TENTH_BIT) == TENTH_BIT;
 		boolean duplicate = (flag & ELEVENTH_BIT) == ELEVENTH_BIT;
@@ -57,19 +80,22 @@ public class ReadFlagStatistics extends AbstractQCModule {
 		readNumber++;
 
 		if (pair) pairNumber++;
+		if (mapped) mappedNumber++;
 		if (mappedPair) mappedPairNumber++;
 		if (failedQualityControl) failedQualityControlNumber++;
 		if (duplicate) duplicateNumber++;
 
-		log.info("flag = " + flag);
+		log.debug("flag = " + flag);
 	}
 
-	private double getPercentage(int count, int total) {
-		return ((double) count / (double) total) * 100.0;
+	private String getPercentage(int count, int total) {
+		return String.format("%.3f", 100 * (double) count / (double) total);
 	}
 
 	@Override
-	public void processFile(SequenceFile file) {}
+	public void processFile(SequenceFile file) {
+		log.info("processFile called");
+	}
 
 	@Override
 	public void processAnnotationSet(AnnotationSet annotation) {
@@ -80,7 +106,7 @@ public class ReadFlagStatistics extends AbstractQCModule {
 	public JPanel getResultsPanel() {
 		JPanel returnPanel = new JPanel();
 		returnPanel.setLayout(new BorderLayout());
-		returnPanel.add(new JLabel("Basic sequence stats", JLabel.CENTER), BorderLayout.NORTH);
+		returnPanel.add(new JLabel("Read Flag Statistics", JLabel.CENTER), BorderLayout.NORTH);
 
 		TableModel model = new ResultsTable();
 
@@ -91,14 +117,15 @@ public class ReadFlagStatistics extends AbstractQCModule {
 
 	private class ResultsTable extends AbstractTableModel {
 		private static final long serialVersionUID = 1L;
-		private double[] results = new double[ROWS];
+		private String[] results = new String[ROWS];
 
 		public ResultsTable() {
-			results[0] = readNumber;
-			results[1] = getPercentage(pairNumber, readNumber);
-			results[2] = getPercentage(mappedPairNumber, readNumber);
-			results[3] = getPercentage(failedQualityControlNumber, readNumber);
-			results[4] = getPercentage(duplicateNumber, readNumber);
+			results[0] = String.format("%d", readNumber);
+			results[1] = getPercentage(mappedNumber, readNumber);
+			results[2] = getPercentage(pairNumber, readNumber);
+			results[3] = getPercentage(mappedPairNumber, readNumber);
+			results[4] = getPercentage(failedQualityControlNumber, readNumber);
+			results[5] = getPercentage(duplicateNumber, readNumber);
 		}
 
 		@Override

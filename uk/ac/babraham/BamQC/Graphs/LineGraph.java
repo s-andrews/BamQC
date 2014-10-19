@@ -49,7 +49,6 @@ public class LineGraph extends JPanel {
 		for (int i=0;i<xCategories.length;i++) {
 			this.xCategories[i] = ""+xCategories[i];
 		}
-		
 	}
 	
 	public LineGraph (double [] [] data, double minY, double maxY, String xLabel, String [] xTitles, String [] xCategories, String graphTitle) {
@@ -168,10 +167,8 @@ public class LineGraph extends JPanel {
 		int baseWidth = (getWidth()-(xOffset+10))/data[0].length;
 		if (baseWidth<1) baseWidth=1;
 		
-//		System.out.println("Base Width is "+baseWidth);
-		
+		// System.out.println("Base Width is "+baseWidth);
 		// First draw faint boxes over alternating bases so you can see which is which
-		
 		// Let's find the longest label, and then work out how often we can draw labels
 		
 		int lastXLabelEnd = 0;
@@ -182,6 +179,7 @@ public class LineGraph extends JPanel {
 				g.fillRect(xOffset+(baseWidth*i), 40, baseWidth, getHeight()-80);
 			}
 			g.setColor(Color.BLACK);
+			
 			String baseNumber = ""+xCategories[i];
 			int baseNumberWidth = g.getFontMetrics().stringWidth(baseNumber);
 			int baseNumberPosition =  (baseWidth/2)+xOffset+(baseWidth*i)-(baseNumberWidth/2);
@@ -213,6 +211,7 @@ public class LineGraph extends JPanel {
 			lastY = getY(data[d][0]);
 			for (int i=1;i<data[d].length;i++) {
 				int thisY = getY(data[d][i]);
+				
 				g.drawLine((baseWidth/2)+xOffset+(baseWidth*(i-1)), lastY, (baseWidth/2)+xOffset+(baseWidth*i), thisY);
 				lastY = thisY;
 			}

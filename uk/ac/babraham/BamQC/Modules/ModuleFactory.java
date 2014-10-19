@@ -31,6 +31,7 @@ public class ModuleFactory {
 				//new SNPFrequencies(),
 				new MappingQualityDistribution(),
 				new ReadFlagStatistics(),
+				new GenomeCoverage(),
 			};
 	
 		return (module_list);
