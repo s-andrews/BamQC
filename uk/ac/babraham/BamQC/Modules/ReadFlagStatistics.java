@@ -86,6 +86,9 @@ public class ReadFlagStatistics extends AbstractQCModule {
 		if (read.getProperPairFlag()) mappedPairNumber++;
 		if (read.getReadFailsVendorQualityCheckFlag()) failedQualityControlNumber++;
 		if (read.getDuplicateReadFlag()) duplicateNumber++;
+		/* report singletons - reads mapped but with mate unmapped?
+		 * if (read.getMateUnmappedFlag() && ! read.getReadUnmappedFlag()) {};
+		 */
 
 		log.debug("flag = " + flag);
 	}
