@@ -41,11 +41,6 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
 public class ReadFlagStatistics extends AbstractQCModule {
 
-	private static final int FIRST_BIT = 0x01;
-	private static final int SECOND_BIT = 0x02;
-	private static final int THIRD_BIT = 0x04;
-	private static final int TENTH_BIT = 0x200;
-	private static final int ELEVENTH_BIT = 0x400;
 	private static final int ROWS = 6;
 
 	private static Logger log = Logger.getLogger(ReadFlagStatistics.class);
@@ -71,19 +66,16 @@ public class ReadFlagStatistics extends AbstractQCModule {
 	@Override
 	public void processSequence(SAMRecord read) {
 		int flag = read.getFlags();
-		/*
-		boolean pair = (flag & FIRST_BIT) == FIRST_BIT;
-		boolean mapped = (flag & THIRD_BIT) != THIRD_BIT;
-		boolean mappedPair = (flag & SECOND_BIT) == SECOND_BIT;
-		boolean failedQualityControl = (flag & TENTH_BIT) == TENTH_BIT;
-		boolean duplicate = (flag & ELEVENTH_BIT) == ELEVENTH_BIT;
-		*/
 
 		readNumber++;
 
-		if (read.getReadPairedFlag()) pairNumber++;
+		if (read.getReadPairedFlag()) {
+			pairNumber++;
+			// This test needs to be done conditionally since it will throw an exception
+			// if called on a read where getReadPairedFlag is false
+			if (read.getProperPairFlag()) mappedPairNumber++;
+		}
 		if (! read.getReadUnmappedFlag()) mappedNumber++;
-		if (read.getProperPairFlag()) mappedPairNumber++;
 		if (read.getReadFailsVendorQualityCheckFlag()) failedQualityControlNumber++;
 		if (read.getDuplicateReadFlag()) duplicateNumber++;
 		/* report singletons - reads mapped but with mate unmapped?
