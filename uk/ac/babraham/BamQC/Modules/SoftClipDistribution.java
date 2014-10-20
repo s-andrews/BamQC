@@ -20,10 +20,15 @@
 
 package uk.ac.babraham.BamQC.Modules;
 
+import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.xml.stream.XMLStreamException;
 
@@ -161,8 +166,37 @@ public class SoftClipDistribution extends AbstractQCModule {
 	}
 
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
-		// TODO Auto-generated method stub
+		ZipOutputStream zip = report.zipFile();
+		zip.putNextEntry(new ZipEntry(report.folderName()+"/Images/soft_clip_distribution.png"));
+		BufferedImage b = new BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB);
+		Graphics g = b.createGraphics();
+		
+		JPanel resultsPanel = getResultsPanel();
+		resultsPanel.setDoubleBuffered(false);
+		resultsPanel.setSize(800,600);
+		resultsPanel.addNotify();
+		resultsPanel.validate();
+		
+		resultsPanel.print(g);
 
+		g.dispose();
+		
+		ImageIO.write(b, "PNG", zip);
+		zip.closeEntry();
+		
+		super.simpleXhtmlReport(report, b, "Soft clipping distribtion graph");
+		
+		StringBuffer sb = report.dataDocument();
+				
+		sb.append("Length\t5'_count\t3'_count\n");
+		for (int i=0;i<leftClipCounts.length;i++) {
+			sb.append(i);
+			sb.append("\t");
+			sb.append(leftClipCounts[i]);
+			sb.append("\t");
+			sb.append(rightClipCounts[i]);
+			sb.append("\n");
+		}
 	}
 
 }
