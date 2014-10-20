@@ -39,6 +39,8 @@ public class GTFParser implements AnnotationParser {
 
 		BufferedReader br  = new BufferedReader(new FileReader(file));
 		String line;
+		
+		BiotypeMapping bm = BiotypeMapping.getInstance();
 
 		int count = 0;
 		LINE: while ((line = br.readLine())!= null) {
@@ -91,6 +93,10 @@ public class GTFParser implements AnnotationParser {
 			if (sections.length < 9) {
 				throw new Exception("Not enough data from line '"+line+"'");
 			}
+			
+			// Check if we need to modify the biotype or maybe even discard the feature
+			sections[1] = bm.getEffectiveBiotype(sections[1]);
+			if (sections[1].equals("DELETE")) continue;
 
 			int strand;
 			int start;

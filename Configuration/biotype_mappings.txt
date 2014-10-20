@@ -1,0 +1,36 @@
+# This file provides a mechanism through which certain feature subtypes (biotypes)
+# can be merged together or discarded.  It is a 2 column list where the first column
+# is the observed biotype which would be read from a GTF file, and the second is 
+# the effective biotype which is to be used.
+#
+# The effective biotype can be any text string.  Blank stings are OK.  If you want
+# the biotype to be ignored during parsing then use the keyword DELETE as the effective
+# biotype
+
+IG_C_gene	IG
+IG_LV_gene	IG
+IG_V_gene	IG
+TR_V_gene	IG
+IG_D_gene	IG
+IG_J_gene	IG
+IG_V_pseudogene DELETE
+polymorphic_pseudogene	DELETE
+nonsense_mediated_decay	missplice
+misc_RNA	DELETE
+unitary_pseudogene	DELETE
+processed_transcript	missplice
+retained_intron	missplice
+non_stop_decay	missplice
+TR_V_pseudogene	DELETE
+translated_processed_pseudogene	DELETE
+transcribed_processed_pseudogene	DELETE
+translated_unprocessed_pseudogene	DELETE
+transcribed_unprocessed_pseudogene	DELETE
+Mt_tRNA	tRNA
+Mt_rRNA	rRNA
+transcript_sense_overlapping	missplice
+processed_pseudogene	DELETE
+unprocessed_pseudogene	DELETE
+pseudogene	DELETE
+sense_overlapping DELETE
+3prime_overlapping_ncrna	DELETE
