@@ -20,14 +20,20 @@
 
 package uk.ac.babraham.BamQC.Modules;
 
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Vector;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.xml.stream.XMLStreamException;
 
 import net.sf.samtools.SAMRecord;
+import sun.util.BuddhistCalendar;
 import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
 import uk.ac.babraham.BamQC.Annotation.Chromosome;
 import uk.ac.babraham.BamQC.Graphs.HorizontalBarGraph;
@@ -110,8 +116,29 @@ public class ChromosomeDensity extends AbstractQCModule {
 	}
 
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
-		// TODO Auto-generated method stub
-
+		ZipOutputStream zip = report.zipFile();
+		zip.putNextEntry(new ZipEntry(report.folderName()+"/Images/chromsome_density.png"));
+		BufferedImage b = new BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB);
+		Graphics g = b.getGraphics();
+		
+		HorizontalBarGraph graph = new HorizontalBarGraph(chromosomeNames, readDensities, "Per-chromosome read density");
+		graph.paint(g, b.getWidth(), b.getHeight());
+		
+		ImageIO.write(b, "PNG", zip);
+		zip.closeEntry();
+		
+		super.simpleXhtmlReport(report, b, "Chromosome Density Graph");
+		
+		StringBuffer sb = report.dataDocument();
+		
+		sb.append("Chromosome\tDensity\n");
+		for (int i=0;i<chromosomeNames.length;i++) {
+			sb.append(chromosomeNames[i]);
+			sb.append("\t");
+			sb.append(readDensities[i]);
+			sb.append("\n");
+		}
+		
 	}
 
 }
