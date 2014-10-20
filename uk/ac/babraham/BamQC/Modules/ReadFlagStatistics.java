@@ -71,19 +71,21 @@ public class ReadFlagStatistics extends AbstractQCModule {
 	@Override
 	public void processSequence(SAMRecord read) {
 		int flag = read.getFlags();
+		/*
 		boolean pair = (flag & FIRST_BIT) == FIRST_BIT;
 		boolean mapped = (flag & THIRD_BIT) != THIRD_BIT;
 		boolean mappedPair = (flag & SECOND_BIT) == SECOND_BIT;
 		boolean failedQualityControl = (flag & TENTH_BIT) == TENTH_BIT;
 		boolean duplicate = (flag & ELEVENTH_BIT) == ELEVENTH_BIT;
+		*/
 
 		readNumber++;
 
-		if (pair) pairNumber++;
-		if (mapped) mappedNumber++;
-		if (mappedPair) mappedPairNumber++;
-		if (failedQualityControl) failedQualityControlNumber++;
-		if (duplicate) duplicateNumber++;
+		if (read.getReadPairedFlag()) pairNumber++;
+		if (! read.getReadUnmappedFlag()) mappedNumber++;
+		if (read.getProperPairFlag()) mappedPairNumber++;
+		if (read.getReadFailsVendorQualityCheckFlag()) failedQualityControlNumber++;
+		if (read.getDuplicateReadFlag()) duplicateNumber++;
 
 		log.debug("flag = " + flag);
 	}
