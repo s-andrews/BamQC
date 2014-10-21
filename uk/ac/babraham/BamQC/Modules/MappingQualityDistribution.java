@@ -78,12 +78,10 @@ public class MappingQualityDistribution extends AbstractQCModule {
 
 	@Override
 	public JPanel getResultsPanel() {
-
 		double[] distributionFloat = getDistributionDouble();
-		String[] xTitles = new String[] { "percentage reads" };
-		//double maxCountPercent = (maxCount / (double) readNumber) * 100.0; //Math.log10(maxCount);
+		double maxCountPercent = (maxCount / (double) readNumber) * 100.0; //Math.log10(maxCount);
 		
-		return new BarGraph(distributionFloat, 0.0D, maxCount, "MAPQ Value", label, "Quality Mapping Distribution");
+		return new BarGraph(distributionFloat, 0.0D, maxCountPercent, "MAPQ Value", label, "Quality Mapping Distribution");
 	}
 
 

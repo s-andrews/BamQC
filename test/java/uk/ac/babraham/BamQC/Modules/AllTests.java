@@ -24,8 +24,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import uk.ac.babraham.BamQC.Modules.GenomeCoverage;
-
 @RunWith(Suite.class)
 @SuiteClasses({ 
 	MappingQualityDistributionTest.class, 
@@ -33,7 +31,6 @@ import uk.ac.babraham.BamQC.Modules.GenomeCoverage;
 	ReadFlagStatisticsTest.class,
 	GenomeCoverageTest.class,
 	//RpkmReferenceTest.class
-	GenomeCoverage.class
 	})
 
 public class AllTests { }

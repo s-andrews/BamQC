@@ -33,13 +33,13 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import uk.ac.babraham.BamQC.Modules.ReadFlagStatistics;
+import uk.ac.babraham.BamQC.Modules.GenomeCoverage;
 
-public class ReadFlagStatisticsTest {
+public class GenomeCoverageTest {
+
+	private static Logger log = Logger.getLogger(GenomeCoverageTest.class);
 	
-	private static Logger log = Logger.getLogger(ReadFlagStatisticsTest.class);
-	
-	private ReadFlagStatistics readFlagStatistics;
+	private GenomeCoverage genomeCoverage;
 	private TestObjectFactory testObjectFactory;
 	private List<SAMRecord> samRecords;
 	
@@ -51,7 +51,9 @@ public class ReadFlagStatisticsTest {
 
 	@Before
 	public void setUp() throws Exception {
-		readFlagStatistics = new ReadFlagStatistics();
+		genomeCoverage = new GenomeCoverage();
+	
+		genomeCoverage.setBinNucleotides(1000, new long[]{0});
 		
 		testObjectFactory = new TestObjectFactory();
 		samRecords = testObjectFactory.getSamRecords();
@@ -63,16 +65,41 @@ public class ReadFlagStatisticsTest {
 	@Test
 	public void testProcessSequence() {
 		log.info("testProcessSequence");
-		
+		int count = 0;
 		for (SAMRecord samRecord : samRecords) {
-			readFlagStatistics.processSequence(samRecord);
+			genomeCoverage.processSequence(samRecord);
+			
+			double[] coverageReference = genomeCoverage.getCoverage();
+			
+			if (count == 0) {
+				assertEquals(0.900, coverageReference[0], 0.0000001);
+			}
+			count++;
 		}
+		double[] coverageReference = genomeCoverage.getCoverage();
 		
-		assertEquals(3, readFlagStatistics.getReadNumber());
-		assertEquals(2, readFlagStatistics.getPairNumber());
-		assertEquals(1, readFlagStatistics.getMappedPairNumber());
-		assertEquals(1, readFlagStatistics.getFailedQualityControlNumber());
-		assertEquals(2, readFlagStatistics.getDuplicateNumber());
+		assertEquals(1.4, coverageReference[0], 0.000001);
+		assertEquals(1.5, coverageReference[1], 0.000001);
+		assertEquals(0.6, coverageReference[2], 0.000001);
+		
+		genomeCoverage.reset();
+		coverageReference = genomeCoverage.getCoverage();
+		
+		assertEquals(1.4, coverageReference[0], 0.000001);
+		assertEquals(1.5, coverageReference[1], 0.000001);
+		assertEquals(0.6, coverageReference[2], 0.000001);
+	}
+	
+	@Test
+	public void testBooleans() {
+		log.info("testBooleans");
+		
+		assertFalse(genomeCoverage.ignoreInReport());
+		assertFalse(genomeCoverage.needsToSeeAnnotation());
+		assertFalse(genomeCoverage.raisesError());
+		assertFalse(genomeCoverage.raisesWarning());
+		
+		assertTrue(genomeCoverage.needsToSeeSequences());
 	}
 
 }
