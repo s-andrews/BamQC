@@ -37,6 +37,7 @@ public class BamQCConfig {
 	public String lineSeparator = System.getProperty("line.separator");
 	public String sequence_format = null;
 	public File limits_file = null;
+	public File biotype_mapping_file = null;
 
 	private BamQCConfig () {
 		
@@ -63,6 +64,15 @@ public class BamQCConfig {
 				throw new IllegalArgumentException("Limits file "+limits_file+" doesn't exist or can't be read");
 			}
 		}
+
+		// Limits file
+		if (System.getProperty("bamqc.biotype_mapping_file") != null) {
+			biotype_mapping_file = new File(System.getProperty("bamqc.biotype_mapping_file"));
+			if (!(biotype_mapping_file.exists() && biotype_mapping_file.canRead())) {
+				throw new IllegalArgumentException("Biotype mapping file "+biotype_mapping_file+" doesn't exist or can't be read");
+			}
+		}
+
 		
 		// Threads
 		if (System.getProperty("bamqc.threads") != null) {

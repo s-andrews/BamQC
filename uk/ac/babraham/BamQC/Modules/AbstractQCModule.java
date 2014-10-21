@@ -20,11 +20,16 @@
 
 package uk.ac.babraham.BamQC.Modules;
 
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import javax.imageio.ImageIO;
+import javax.swing.JPanel;
 import javax.swing.table.TableModel;
 
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
@@ -51,6 +56,29 @@ public abstract class AbstractQCModule implements QCModule {
 	protected void writeTable(HTMLReportArchive report, TableModel table) throws IOException,XMLStreamException {
 		writeXhtmlTable(report,table);
 		writeTextTable(report,table);	
+	}
+	
+	protected void writeDefaultImage (HTMLReportArchive report, String fileName, String imageTitle, int width, int height) throws IOException, XMLStreamException {
+		ZipOutputStream zip = report.zipFile();
+		zip.putNextEntry(new ZipEntry(report.folderName()+"/Images/"+fileName));
+		BufferedImage b = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		Graphics g = b.createGraphics();
+		
+		JPanel resultsPanel = getResultsPanel();
+		resultsPanel.setDoubleBuffered(false);
+		resultsPanel.setSize(800,600);
+		resultsPanel.addNotify();
+		resultsPanel.validate();
+		
+		resultsPanel.print(g);
+
+		g.dispose();
+		
+		ImageIO.write(b, "PNG", zip);
+		zip.closeEntry();
+		
+		simpleXhtmlReport(report, b, imageTitle);
+
 	}
 
 	protected void writeXhtmlTable(HTMLReportArchive report, TableModel table) throws IOException,XMLStreamException {

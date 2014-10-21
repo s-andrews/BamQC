@@ -110,8 +110,19 @@ public class ChromosomeDensity extends AbstractQCModule {
 	}
 
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
-		// TODO Auto-generated method stub
-
+		
+		super.writeDefaultImage(report, "chromosome_density.png", "Chromsome Density Graph", 800, 600);
+				
+		StringBuffer sb = report.dataDocument();
+		
+		sb.append("Chromosome\tDensity\n");
+		for (int i=0;i<chromosomeNames.length;i++) {
+			sb.append(chromosomeNames[i]);
+			sb.append("\t");
+			sb.append(readDensities[i]);
+			sb.append("\n");
+		}
+		
 	}
 
 }

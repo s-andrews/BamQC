@@ -17,7 +17,6 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
 package uk.ac.babraham.BamQC.Modules;
 
 import java.io.IOException;
@@ -43,8 +42,9 @@ public class MappingQualityDistribution extends AbstractQCModule {
 	private final static int QUALITY_MAP_SIZE = 256;
 
 	private int maxCount = 0;
+
 	private int readNumber = 0; 
-	
+
 	private int[] distribution = new int[QUALITY_MAP_SIZE];
 	private String[] label = new String[QUALITY_MAP_SIZE];
 
@@ -61,11 +61,10 @@ public class MappingQualityDistribution extends AbstractQCModule {
 		log.debug("quality = " + quality);
 
 		distribution[quality]++;
-		
 		readNumber++;
 		
 		log.debug("quality count = " + distribution[quality]);
-		
+
 		if (distribution[quality] > maxCount) maxCount = distribution[quality];
 	}
 
@@ -79,13 +78,15 @@ public class MappingQualityDistribution extends AbstractQCModule {
 
 	@Override
 	public JPanel getResultsPanel() {
+
 		double[] distributionFloat = getDistributionDouble();
 		String[] xTitles = new String[] { "percentage reads" };
-		double maxCountPercent = (maxCount / (double) readNumber) * 100.0; //Math.log10(maxCount);
-
-		return new BarGraph(distributionFloat, 0.0D, maxCountPercent, "Mapping Quality (Score)", xTitles, label, "Mapping Quality Distribution");
+		//double maxCountPercent = (maxCount / (double) readNumber) * 100.0; //Math.log10(maxCount);
+		
+		return new BarGraph(distributionFloat, 0.0D, maxCount, "MAPQ Value", label, "Quality Mapping Distribution");
 	}
-	
+
+
 	public double[] getDistributionDouble() {
 		double total = (double) readNumber;
 		List<Integer> distributionList = new ArrayList<Integer>();
@@ -112,12 +113,12 @@ public class MappingQualityDistribution extends AbstractQCModule {
 
 	@Override
 	public String name() {
-		return "Mapping Quality Distribution";
+		return "Quality Mapping Distribution";
 	}
 
 	@Override
 	public String description() {
-		return "Mapping Quality Distribution";
+		return "Quality Mapping Distribution";
 	}
 
 	@Override
@@ -153,18 +154,47 @@ public class MappingQualityDistribution extends AbstractQCModule {
 
 	@Override
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
-		// TODO Auto-generated method stub
 
+		super.writeDefaultImage(report, "mapq_distribtion.png", "Mapping quality value distribtion", 800, 600);
+			
+		StringBuffer sb = report.dataDocument();
+		
+		sb.append("MAPQ\tCount\n");
+		
+		for (int i=0;i<distribution.length;i++) {
+			sb.append(i);
+			sb.append("\t");
+			sb.append(distribution[i]);
+			sb.append("\n");
+		}
+			
 	}
 
 	public int[] getDistribution() {
 		return distribution;
 	}
 
+	public double[] getDistributionFloat() {
+
+		// Find the maximum value with a count.
+		int maxIndex = distribution.length-1;
+		for (int i=maxIndex;i>=0;i--) {
+			if (distribution[i]>0) {
+				maxIndex = i;
+				break;
+			}
+		}
+		
+		double[] distributionFloat = new double[maxIndex+1];
+
+		for (int i = 0; i < distributionFloat.length; i++) {
+			distributionFloat[i] = distribution[i];
+		}
+		return distributionFloat;
+	}
+
 	public int getMaxCount() {
 		return maxCount;
 	}
 	
-	
-
 }

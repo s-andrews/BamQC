@@ -161,8 +161,20 @@ public class SoftClipDistribution extends AbstractQCModule {
 	}
 
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
-		// TODO Auto-generated method stub
 
+		super.writeDefaultImage(report, "soft_clip_distribution_graph.png","Soft clipping distribution graph", 800, 600);
+				
+		StringBuffer sb = report.dataDocument();
+				
+		sb.append("Length\t5'_count\t3'_count\n");
+		for (int i=0;i<leftClipCounts.length;i++) {
+			sb.append(i);
+			sb.append("\t");
+			sb.append(leftClipCounts[i]);
+			sb.append("\t");
+			sb.append(rightClipCounts[i]);
+			sb.append("\n");
+		}
 	}
 
 }
