@@ -68,6 +68,10 @@ public class TestObjectFactory {
 		samRecord2.setBaseQualities(convertToByte(new int[]{5, 0, 5})); // avg 3
 		samRecord3.setBaseQualities(convertToByte(new int[]{1,20,2,3,4,5}));// avg 6
 		
+		samRecord1.setInferredInsertSize(3);
+		samRecord2.setInferredInsertSize(-1);
+		samRecord3.setInferredInsertSize(3);
+		
 		samRecords.add(samRecord1);
 		samRecords.add(samRecord2);
 		samRecords.add(samRecord3);
