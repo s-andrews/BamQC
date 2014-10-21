@@ -35,9 +35,9 @@ import org.junit.Test;
 
 import uk.ac.babraham.BamQC.Modules.MappingQualityDistribution;
 
-public class QualityDistributionTest {
+public class MappingQualityDistributionTest {
 
-	private static Logger log = Logger.getLogger(QualityDistributionTest.class);
+	private static Logger log = Logger.getLogger(MappingQualityDistributionTest.class);
 	
 	private MappingQualityDistribution qualityDistribution;
 	private TestObjectFactory testObjectFactory;
@@ -91,11 +91,11 @@ public class QualityDistributionTest {
 				assertEquals(0, distribution[i]);
 			}
 		}
-		double[] distributionFloat = qualityDistribution.getDistributionFolat();
+		double[] distributionFloat = qualityDistribution.getDistributionDouble();
 		
-		assertEquals(Math.log10(2.0), distributionFloat[0], 0.0000001);
-		assertEquals(Math.log10(2.0), distributionFloat[255], 0.0000001);
-		assertEquals(Math.log10(2.0), distributionFloat[10], 0.0000001);
+		assertEquals(33.333333, distributionFloat[0], 0.001);
+		assertEquals(33.333333, distributionFloat[255], 0.001);
+		assertEquals(33.333333, distributionFloat[10], 0.001);
 		
 		// test reset
 		qualityDistribution.reset();
@@ -106,9 +106,8 @@ public class QualityDistributionTest {
 		for (int i = 0; i < 256; i++) {
 			assertEquals(0, distribution[i]);
 		}
-		distributionFloat = qualityDistribution.getDistributionFolat();
-		for (int i = 0; i < 256; i++) {
-			assertEquals(0.0, distributionFloat[i], 0.0000001);
-		}
+		distributionFloat = qualityDistribution.getDistributionDouble();
+		assertEquals(0, distributionFloat.length);
+		
 	}
 }

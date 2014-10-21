@@ -282,12 +282,12 @@ public class GenomeCoverage extends AbstractQCModule {
 		}
 		return coverageData;
 	}
-
+	
 	@Override
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
 		// TODO Auto-generated method stub
 	}
-
+	
 	public double[] getCoverage() {
 		return coverage;
 	}

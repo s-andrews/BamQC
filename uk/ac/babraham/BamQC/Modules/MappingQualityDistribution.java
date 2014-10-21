@@ -21,6 +21,8 @@
 package uk.ac.babraham.BamQC.Modules;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPanel;
 import javax.xml.stream.XMLStreamException;
@@ -41,7 +43,8 @@ public class MappingQualityDistribution extends AbstractQCModule {
 	private final static int QUALITY_MAP_SIZE = 256;
 
 	private int maxCount = 0;
-
+	private int readNumber = 0; 
+	
 	private int[] distribution = new int[QUALITY_MAP_SIZE];
 	private String[] label = new String[QUALITY_MAP_SIZE];
 
@@ -58,7 +61,9 @@ public class MappingQualityDistribution extends AbstractQCModule {
 		log.debug("quality = " + quality);
 
 		distribution[quality]++;
-
+		
+		readNumber++;
+		
 		log.debug("quality count = " + distribution[quality]);
 		
 		if (distribution[quality] > maxCount) maxCount = distribution[quality];
@@ -74,22 +79,34 @@ public class MappingQualityDistribution extends AbstractQCModule {
 
 	@Override
 	public JPanel getResultsPanel() {
-		double[] distributionFloat = getDistributionFolat();
-		String[] xTitles = new String[] { "Log of Reads" };
-		double maxCountLog = Math.log10(maxCount); //Math.log10(maxCount);
+		double[] distributionFloat = getDistributionDouble();
+		String[] xTitles = new String[] { "percentage reads" };
+		double maxCountPercent = (maxCount / (double) readNumber) * 100.0; //Math.log10(maxCount);
 
-		return new BarGraph(distributionFloat, 0.0D, maxCountLog, "Distribution", xTitles, label, "Mapping Quality Distribution");
+		return new BarGraph(distributionFloat, 0.0D, maxCountPercent, "Mapping Quality (Score)", xTitles, label, "Mapping Quality Distribution");
 	}
 	
-	public double[] getDistributionFolat() {
-		double[] distributionFloat = new double[QUALITY_MAP_SIZE];
+	public double[] getDistributionDouble() {
+		double total = (double) readNumber;
+		List<Integer> distributionList = new ArrayList<Integer>();
 		
-		for (int i = 0; i < QUALITY_MAP_SIZE; i++) {
-			if (distribution[i] != 0) {
-				distributionFloat[i] =  Math.log10(distribution[i]); 
-			}
+		for (int count : distribution) {
+			distributionList.add(count);
 		}
-		return distributionFloat;
+		for (int i = (distributionList.size() -1); i >= 0; i--) {
+			double value = distributionList.get(i);
+			
+			if (value != 0) break;
+			
+			distributionList.remove(i);
+		}
+		double[] distributionDouble = new double[distributionList.size()];
+		
+		int i = 0;
+		for (int value : distributionList) {
+			distributionDouble[i++] = (value / total) * 100.0;
+		}
+		return distributionDouble;
 	}
 
 

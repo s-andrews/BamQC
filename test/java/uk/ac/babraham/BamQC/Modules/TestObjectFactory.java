@@ -64,11 +64,26 @@ public class TestObjectFactory {
 		samRecord2.setCigar(buildCigar(1601));
 		samRecord3.setCigar(buildCigar(1001));
 		
+		samRecord1.setBaseQualities(convertToByte(new int[]{5, 1, 4})); // avg 3
+		samRecord2.setBaseQualities(convertToByte(new int[]{5, 0, 5})); // avg 3
+		samRecord3.setBaseQualities(convertToByte(new int[]{1,20,2,3,4,5}));// avg 6
+		
 		samRecords.add(samRecord1);
 		samRecords.add(samRecord2);
 		samRecords.add(samRecord3);
 	}
 
+	
+	private byte[] convertToByte(int[] numbers) {
+		byte[] converted = new byte[numbers.length];
+		int i = 0;
+		
+		for (int number : numbers) {
+			converted[i++] = (byte) number;
+		}
+		return converted;
+	}
+	
 	public List<SAMRecord> getSamRecords() {
 		return samRecords;
 	}

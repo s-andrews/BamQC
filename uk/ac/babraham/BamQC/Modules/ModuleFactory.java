@@ -25,14 +25,15 @@ public class ModuleFactory {
 
 		QCModule [] module_list = new QCModule [] {
 				new BasicStats(),
-//				new ChromosomeDensity(),
-//				new FeatureCoverage(),
-//				new SoftClipDistribution(),
-//				new SNPFrequencies(),
-//				new MappingQualityDistribution(),
-//				new ReadFlagStatistics(),
-//				new GenomeCoverage(),
-				new RpkmReference(),
+				new ChromosomeDensity(),
+				new FeatureCoverage(),
+				new SoftClipDistribution(),
+				new SNPFrequencies(),
+				new MappingQualityDistribution(),
+				new SequenceQualityDistribution(),
+				new ReadFlagStatistics(),
+				new GenomeCoverage(),
+				//new RpkmReference(),
 			};
 	
 		return (module_list);
