@@ -17,11 +17,13 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
 public class InsertDistribution extends AbstractQCModule {
 
+	public final static int MAX_INSERT_SIZE = 1000;
+
 	private static Logger log = Logger.getLogger(InsertDistribution.class);
 
 	private List<Integer> distribution = new ArrayList<Integer>();
 	private long negativeInsertSize = 0;
-	
+	private long aboveMaxInsertSize = 0;
 	
 	public InsertDistribution() {}
 
@@ -29,21 +31,27 @@ public class InsertDistribution extends AbstractQCModule {
 	public void processSequence(SAMRecord read) {
 		int inferredInsertSize = read.getInferredInsertSize();
 
-		if (inferredInsertSize >= 0) {
-			if (inferredInsertSize >= distribution.size()) {
-				for (int i = distribution.size(); i < inferredInsertSize; i++) {
-					distribution.add(0);
-				}
-				distribution.add(1);
-			}
-			else {
-				int existingValue = distribution.get(inferredInsertSize);
-
-				distribution.set(inferredInsertSize, ++existingValue);
-			}
+		if (inferredInsertSize > MAX_INSERT_SIZE) {
+			aboveMaxInsertSize++;
+			//log.info("inferredInsertSize " + inferredInsertSize + " is greater than max allowed " + MAX_INSERT_SIZE);
 		}
 		else {
-			negativeInsertSize++;
+			if (inferredInsertSize >= 0) {
+				if (inferredInsertSize >= distribution.size()) {
+					for (int i = distribution.size(); i < inferredInsertSize; i++) {
+						distribution.add(0);
+					}
+					distribution.add(1);
+				}
+				else {
+					int existingValue = distribution.get(inferredInsertSize);
+
+					distribution.set(inferredInsertSize, ++existingValue);
+				}
+			}
+			else {
+				negativeInsertSize++;
+			}
 		}
 	}
 
@@ -60,9 +68,10 @@ public class InsertDistribution extends AbstractQCModule {
 	@Override
 	public JPanel getResultsPanel() {
 		log.info("Number of inferred insert sizes with a negative value = " + negativeInsertSize);
+		log.info("Number of inferred insert sizes above the maximum allowed = " + aboveMaxInsertSize);
 		
 		String[] label = new String[distribution.size()];
-		
+
 		for (int i = 0; i < label.length; i++) {
 			label[i] = Integer.toString(i);
 		}
@@ -70,17 +79,17 @@ public class InsertDistribution extends AbstractQCModule {
 		int maxCount = 0;
 		int i = 0;
 		int total = 0;
-		
+
 		for (int count : distribution) {
 			if (count > maxCount) maxCount = count;
 			total += count;
 		}
 		for (int count : distribution) {
-			distributionDouble[i++] = ( (double) count / total) * 100.0;
+			distributionDouble[i++] = ((double) count / total) * 100.0;
 		}
-		double maxVaule = ( (double) maxCount / total) * 100.0;
-		
-		return new BarGraph(distributionDouble, 0.0D, maxVaule, "Infered Insert Size", label, "Insert Size Distribution");
+		double maxVaule = ((double) maxCount / total) * 100.0;
+
+		return new BarGraph(distributionDouble, 0.0D, maxVaule, "Infered Insert Size", label, "Insert Size Distribution (Max size "  + MAX_INSERT_SIZE + ")");
 	}
 
 	@Override
@@ -97,6 +106,7 @@ public class InsertDistribution extends AbstractQCModule {
 	public void reset() {
 		distribution = new ArrayList<Integer>();
 		negativeInsertSize = 0;
+		aboveMaxInsertSize = 0;
 	}
 
 	@Override
@@ -128,7 +138,7 @@ public class InsertDistribution extends AbstractQCModule {
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
 		// TODO Auto-generated method stub
 	}
-	
+
 	public List<Integer> getDistribution() {
 		return distribution;
 	}
