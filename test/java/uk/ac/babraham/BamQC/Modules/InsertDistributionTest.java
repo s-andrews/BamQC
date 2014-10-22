@@ -47,15 +47,18 @@ public class InsertDistributionTest {
 		for (SAMRecord samRecord : samRecords) {
 			insertDistribution.processSequence(samRecord);
 		}
-		List<Integer> distribution = insertDistribution.getDistribution();
+		List<Long> distribution = insertDistribution.getDistribution();
 		
-		assertEquals(0, (int) distribution.get(0));
-		assertEquals(0, (int) distribution.get(1));
-		assertEquals(0, (int) distribution.get(2));
-		assertEquals(2, (int) distribution.get(3));
+		//distribution now takes account of negative values
+		assertEquals(0, (long) distribution.get(0));
+		assertEquals(0, (long) distribution.get(1));
+		assertEquals(0, (long) distribution.get(2));
+		assertEquals(2, (long) distribution.get(3));
+		
+		assertEquals(1, insertDistribution.getNegativeInsertSizeCount());
 		
 		// throws exception
-		assertEquals(0, (int) distribution.get(4));
+		distribution.get(4);
 	}
 	
 }
