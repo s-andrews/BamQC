@@ -23,7 +23,6 @@ public class InsertDistribution extends AbstractQCModule {
 	private static Logger log = Logger.getLogger(InsertDistribution.class);
 
 	private List<Long> distribution = new ArrayList<Long>();
-	private long negativeInsertSizeCount = 0;
 	private long aboveMaxInsertSizeCount = 0;
 	private long unpairedReads = 0;
 
@@ -32,15 +31,10 @@ public class InsertDistribution extends AbstractQCModule {
 	@Override
 	public void processSequence(SAMRecord read) {
 		int inferredInsertSize = Math.abs(read.getInferredInsertSize());
-
+		
 		if (read.getReadPairedFlag() && read.getProperPairFlag()) {
-
-			// if (inferredInsertSize < 0) {
-			// negativeInsertSizeCount++;
-			// log.info("inferredInsertSize = " + inferredInsertSize);
-			// }
-			// else
 			if (inferredInsertSize > MAX_INSERT_SIZE) {
+				log.info("inferredInsertSize = " + inferredInsertSize);
 				aboveMaxInsertSizeCount++;
 			}
 			else {
@@ -75,11 +69,10 @@ public class InsertDistribution extends AbstractQCModule {
 	private String[] buildLabels(int binNumber) {
 		String[] label = new String[binNumber];
 
-		label[0] = "-ve";
 		label[binNumber - 1] = "N";
 
-		for (int i = 1; i < (label.length - 1); i++) {
-			label[i] = Integer.toString((i - 1) * 10);
+		for (int i = 0; i < (label.length - 1); i++) {
+			label[i] = Integer.toString(i * 10);
 		}
 		return label;
 	}
@@ -90,34 +83,28 @@ public class InsertDistribution extends AbstractQCModule {
 
 	@Override
 	public JPanel getResultsPanel() {
-		log.info("Number of inferred insert sizes with a negative value = " + negativeInsertSizeCount);
 		log.info("Number of inferred insert sizes above the maximum allowed = " + aboveMaxInsertSizeCount);
 		log.info("Number of unpaired reads = " + unpairedReads);
-		// +3 = fraction, negative and exceeding max values N
-		int binNumber = (distribution.size() / BIN_SIZE) + 3;
+		// +2 = fraction and exceeding max values N
+		int binNumber = (distribution.size() / BIN_SIZE) + 2;
 		String[] label = buildLabels(binNumber);
 		double[] distributionDouble = new double[binNumber];
-		long maxCount = negativeInsertSizeCount > aboveMaxInsertSizeCount ? negativeInsertSizeCount : aboveMaxInsertSizeCount;
-		long total = negativeInsertSizeCount + aboveMaxInsertSizeCount;
+		long total = aboveMaxInsertSizeCount;
 
-		for (long count : distribution) {
-			if (count > maxCount) maxCount = count;
-			total += count;
-		}
-		int lastIndexBin = binNumber - 1;
-
-		distributionDouble[0] = percent(negativeInsertSizeCount, total);
-		distributionDouble[lastIndexBin] = percent(aboveMaxInsertSizeCount, total);
+		for (long count : distribution) total += count;
+	
+		distributionDouble[binNumber - 1] = percent(aboveMaxInsertSizeCount, total);
 
 		for (int i = 0; i < distribution.size(); i++) {
-			// + 1 allow for negative value at zero.
-			int index = (i / BIN_SIZE) + 1; 
+			int index = (i / BIN_SIZE);
 
 			distributionDouble[index] += percent(distribution.get(i), total);
 		}
-		double maxVaule = percent(maxCount, total);
-
-		return new BarGraph(distributionDouble, 0.0D, maxVaule, "Infered Insert Size bp", label, "Insert Size Distribution (Max size " + MAX_INSERT_SIZE + " bp)");
+		double maxPercent = 0.0;
+		
+		for (double percent : distributionDouble) if (percent > maxPercent) maxPercent = percent;
+		
+		return new BarGraph(distributionDouble, 0.0D, maxPercent, "Infered Insert Size bp", label, "Insert Size Distribution (Max size " + MAX_INSERT_SIZE + " bp)");
 	}
 
 	@Override
@@ -133,7 +120,6 @@ public class InsertDistribution extends AbstractQCModule {
 	@Override
 	public void reset() {
 		distribution = new ArrayList<Long>();
-		negativeInsertSizeCount = 0;
 		aboveMaxInsertSizeCount = 0;
 	}
 
@@ -171,8 +157,10 @@ public class InsertDistribution extends AbstractQCModule {
 		return distribution;
 	}
 
-	public long getNegativeInsertSizeCount() {
-		return negativeInsertSizeCount;
+	public long getUnpairedReads() {
+		return unpairedReads;
 	}
+	
+	
 
 }

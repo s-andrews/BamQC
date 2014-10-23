@@ -53,9 +53,9 @@ public class InsertDistributionTest {
 		assertEquals(0, (long) distribution.get(0));
 		assertEquals(0, (long) distribution.get(1));
 		assertEquals(0, (long) distribution.get(2));
-		assertEquals(2, (long) distribution.get(3));
+		assertEquals(1, (long) distribution.get(3));
 		
-		assertEquals(1, insertDistribution.getNegativeInsertSizeCount());
+		assertEquals(2, insertDistribution.getUnpairedReads());
 		
 		// throws exception
 		distribution.get(4);
