@@ -87,7 +87,6 @@ public class InsertDistribution extends AbstractQCModule {
 		log.info("Number of unpaired reads = " + unpairedReads);
 		// +2 = fraction and exceeding max values N
 		int binNumber = (distribution.size() / BIN_SIZE) + 2;
-		String[] label = buildLabels(binNumber);
 		double[] distributionDouble = new double[binNumber];
 		long total = aboveMaxInsertSizeCount;
 
@@ -104,7 +103,10 @@ public class InsertDistribution extends AbstractQCModule {
 		
 		for (double percent : distributionDouble) if (percent > maxPercent) maxPercent = percent;
 		
-		return new BarGraph(distributionDouble, 0.0D, maxPercent, "Infered Insert Size bp", label, "Insert Size Distribution (Max size " + MAX_INSERT_SIZE + " bp)");
+		String title = String.format("Paired read insert size Distribution (Max %d bp), %d unpaired reads ", MAX_INSERT_SIZE, unpairedReads);
+		String[] label = buildLabels(binNumber);
+		
+		return new BarGraph(distributionDouble, 0.0D, maxPercent, "Infered Insert Size bp", label, title);
 	}
 
 	@Override

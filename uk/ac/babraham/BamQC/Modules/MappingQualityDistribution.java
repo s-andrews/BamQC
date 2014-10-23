@@ -111,12 +111,12 @@ public class MappingQualityDistribution extends AbstractQCModule {
 
 	@Override
 	public String name() {
-		return "Quality Mapping Distribution";
+		return "Mapping Quality Distribution";
 	}
 
 	@Override
 	public String description() {
-		return "Quality Mapping Distribution";
+		return "Mapping Quality Distribution";
 	}
 
 	@Override
