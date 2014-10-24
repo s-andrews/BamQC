@@ -41,4 +41,4 @@ http://www.bioinformatics.bbsrc.ac.uk/bugzilla/
 
 ..or send them directly to 
 
-simon.andrews@babraham.ac.uk
+simon.andrews at babraham.ac.uk
