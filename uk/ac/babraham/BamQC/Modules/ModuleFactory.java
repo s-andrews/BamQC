@@ -25,6 +25,7 @@ public class ModuleFactory {
 
 		QCModule [] module_list = new QCModule [] {
 				new BasicStats(),
+				new ReadStatistics(),
 				new ChromosomeDensity(),
 				new FeatureCoverage(),
 				new SoftClipDistribution(),
@@ -32,7 +33,6 @@ public class ModuleFactory {
 				new MappingQualityDistribution(),
 				new SequenceQualityDistribution(),
 				new InsertDistribution(),
-				new ReadFlagStatistics(),
 				new GenomeCoverage(),
 				//new RpkmReference(),
 			};

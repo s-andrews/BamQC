@@ -20,7 +20,6 @@
 package uk.ac.babraham.BamQC.Modules;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.io.IOException;
 
 import javax.swing.JLabel;
@@ -32,7 +31,6 @@ import javax.swing.table.TableModel;
 import javax.xml.stream.XMLStreamException;
 
 import net.sf.samtools.SAMRecord;
-
 import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;

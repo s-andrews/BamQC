@@ -39,11 +39,11 @@ import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
-public class ReadFlagStatistics extends AbstractQCModule {
+public class ReadStatistics extends AbstractQCModule {
 
 	private static final int ROWS = 6;
 
-	private static Logger log = Logger.getLogger(ReadFlagStatistics.class);
+	private static Logger log = Logger.getLogger(ReadStatistics.class);
 
 	private int readNumber = 0;
 	private int pairNumber = 0;
@@ -168,12 +168,12 @@ public class ReadFlagStatistics extends AbstractQCModule {
 
 	@Override
 	public String name() {
-		return "Read Flag Statistics";
+		return "Read Statistics";
 	}
 
 	@Override
 	public String description() {
-		return "Statistics of the Read's Flag field";
+		return "Statistics of the Reads field";
 	}
 
 	@Override

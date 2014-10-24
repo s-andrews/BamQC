@@ -33,13 +33,13 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import uk.ac.babraham.BamQC.Modules.ReadFlagStatistics;
+import uk.ac.babraham.BamQC.Modules.ReadStatistics;
 
-public class ReadFlagStatisticsTest {
+public class ReadStatisticsTest {
 	
-	private static Logger log = Logger.getLogger(ReadFlagStatisticsTest.class);
+	private static Logger log = Logger.getLogger(ReadStatisticsTest.class);
 	
-	private ReadFlagStatistics readFlagStatistics;
+	private ReadStatistics readFlagStatistics;
 	private TestObjectFactory testObjectFactory;
 	private List<SAMRecord> samRecords;
 	
@@ -51,7 +51,7 @@ public class ReadFlagStatisticsTest {
 
 	@Before
 	public void setUp() throws Exception {
-		readFlagStatistics = new ReadFlagStatistics();
+		readFlagStatistics = new ReadStatistics();
 		
 		testObjectFactory = new TestObjectFactory();
 		samRecords = testObjectFactory.getSamRecords();

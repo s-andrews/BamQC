@@ -28,7 +28,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({ 
 	MappingQualityDistributionTest.class, 
 	SequenceQualityDistributionTest.class,
-	ReadFlagStatisticsTest.class,
+	ReadStatisticsTest.class,
 	GenomeCoverageTest.class,
 	//RpkmReferenceTest.class
 	})
