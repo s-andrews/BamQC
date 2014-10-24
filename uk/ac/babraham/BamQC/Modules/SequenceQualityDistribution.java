@@ -76,7 +76,7 @@ public class SequenceQualityDistribution extends AbstractQCModule {
 		}
 		double maxVaule = ( (double) maxCount / total) * 100.0;
 		
-		return new BarGraph(distributionDouble, 0.0D, maxVaule, "Sequence Quality (Phred)", label, "Mapping Quality Distribution");
+		return new BarGraph(distributionDouble, 0.0D, maxVaule, "Sequence Quality (Phred)", label, "Sequence Quality Distribution");
 	}
 	
 	@Override
@@ -129,7 +129,9 @@ public class SequenceQualityDistribution extends AbstractQCModule {
 
 	@Override
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
-		// TODO Auto-generated method stub
+		String title = "Sequence Quality Distribution";
+		
+		super.writeDefaultImage(report, "SequenceQualityDistribution.png", title, 800, 600);  // TODO
 	}
 	
 	public List<Integer> getDistribution() {

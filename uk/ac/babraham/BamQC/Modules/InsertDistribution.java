@@ -25,12 +25,15 @@ public class InsertDistribution extends AbstractQCModule {
 	private List<Long> distribution = new ArrayList<Long>();
 	private long aboveMaxInsertSizeCount = 0;
 	private long unpairedReads = 0;
+	private long reads = 0;
 
 	public InsertDistribution() {}
 
 	@Override
 	public void processSequence(SAMRecord read) {
 		int inferredInsertSize = Math.abs(read.getInferredInsertSize());
+		
+		reads++;
 		
 		if (read.getReadPairedFlag() && read.getProperPairFlag()) {
 			if (inferredInsertSize > MAX_INSERT_SIZE) {
@@ -103,7 +106,7 @@ public class InsertDistribution extends AbstractQCModule {
 		
 		for (double percent : distributionDouble) if (percent > maxPercent) maxPercent = percent;
 		
-		String title = String.format("Paired read insert size Distribution (Max %d bp), %d unpaired reads ", MAX_INSERT_SIZE, unpairedReads);
+		String title = String.format("Paired read insert size Distribution, a %d bp max size and %.3f %% unpaired reads", MAX_INSERT_SIZE, (((double)unpairedReads/reads)*100.0));
 		String[] label = buildLabels(binNumber);
 		
 		return new BarGraph(distributionDouble, 0.0D, maxPercent, "Infered Insert Size bp", label, title);
@@ -152,7 +155,9 @@ public class InsertDistribution extends AbstractQCModule {
 
 	@Override
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
-		// TODO Auto-generated method stub
+		String title = String.format("Paired read insert size Distribution (Max %d bp), %d unpaired reads ", MAX_INSERT_SIZE, unpairedReads);
+		
+		super.writeDefaultImage(report, "InsertDistribution.png", title, 800, 600);  // TODO
 	}
 
 	public List<Long> getDistribution() {

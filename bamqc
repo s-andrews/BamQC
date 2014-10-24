@@ -29,7 +29,7 @@ use Getopt::Long;
 # since several people have made this mistake
 
 if (-e "$RealBin/uk/ac/babraham/BamQC/BamQCApplication.java") {
-	die "This is the source distribution of BamQC.  You need to get the compiled version if you want to run the program\n";
+	#die "This is the source distribution of BamQC.  You need to get the compiled version if you want to run the program\n";
 }
 
 my $delimiter = ':';
@@ -39,11 +39,15 @@ if ($^O =~ /Win/) {
 }
 
 if ($ENV{CLASSPATH}) {
-	$ENV{CLASSPATH} .= "$delimiter$RealBin$delimiter$RealBin/sam-1.103.jar$delimiter$RealBin/jbzip2-0.9.jar";
+	$ENV{CLASSPATH} .= "$delimiter$RealBin$delimiter$RealBin/sam-1.103.jar$delimiter$RealBin/jbzip2-0.9.jar$delimiter$RealBin/hamcrest-core-1.3.jar$delimiter$RealBin/junit-4.11.jar$delimiter$RealBin/log4j-1.2.16.jar";
 }
 else {
-	$ENV{CLASSPATH} = "$RealBin$delimiter$RealBin/sam-1.103.jar$delimiter$RealBin/jbzip2-0.9.jar";
+	$ENV{CLASSPATH} = "$RealBin$delimiter$RealBin/sam-1.103.jar$delimiter$RealBin/jbzip2-0.9.jar$delimiter$RealBin/hamcrest-core-1.3.jar$delimiter$RealBin/junit-4.11.jar$delimiter$RealBin/log4j-1.2.16.jar";
 }
+
+# $delimiter$RealBin/hamcrest-core-1.3.jar$delimiter$RealBin/junit-4.11.jar$delimiter$RealBin/log4j-1.2.16.jar
+
+
 
 my @java_args;
 my @files;
@@ -99,12 +103,16 @@ if ($outdir) {
 	push @java_args ,"-Dbamqc.output_dir=$outdir";
 }
 
+our $contaminant;
+
 if ($contaminant)  {
 	unless (-e $contaminant and -r $contaminant) {
 		die "Contaminant file '$contaminant' did not exist, or could not be read\n";
 	}
 	push @java_args ,"-Dbamqc.contaminant_file=$contaminant";
 }
+
+our $adapter;
 
 if ($adapter)  {
 	unless (-e $adapter and -r $adapter) {
@@ -148,6 +156,8 @@ if ($threads) {
 else {
 	unshift @java_args,'-Xmx250m';
 }
+
+our $kmer_size;
 
 if ($kmer_size) {
 	unless ($kmer_size =~ /^\d+$/) {

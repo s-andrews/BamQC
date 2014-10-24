@@ -213,7 +213,7 @@ public class GenomeCoverage extends AbstractQCModule {
 		String xLabel = String.format("%d bins with a size of %7.3E nucleotides", BIN_NUMBER, (double) binNucleotides);
 		String[] xTitles = new String[] { "" };
 		int[] xCategories = new int[coverageData[0].length];
-		String graphTitle = "Reference Coverage";
+		String graphTitle = "Reference Sequence(s) Coverage";
 
 		for (int i = 0; i < coverageData.length; i++) {
 			xCategories[i] = i;
@@ -285,7 +285,9 @@ public class GenomeCoverage extends AbstractQCModule {
 	
 	@Override
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
-		// TODO Auto-generated method stub
+		String title = "Reference Sequence(s) Coverage"; //String.format("");
+		
+		super.writeDefaultImage(report, "GenomeCoverage.png", title, 800, 600);  // TODO
 	}
 	
 	public double[] getCoverage() {
