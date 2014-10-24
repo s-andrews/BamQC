@@ -14,7 +14,7 @@ biological nature of your sample means that you would expect this
 particular bias in your results.
 
 Interactive Graphical or Command Line
-=====
+=
 
 BamQC can be run either as an interactive graphical application 
 which allows you to view results for multiple files in a single
@@ -23,7 +23,7 @@ interactive way (say as part of a pipeline) which will generate
 an HTML report for each file you process.
 
 Cross-platform Java 6 or 7
-=====
+=
 
 BamQC is a cross-platform application, written in java.  In theory it
 should run on any platform which has a suitable java runtime environment.
@@ -32,7 +32,7 @@ running the Sun v1.6 and 1.7 JREs.  Please let us know what happened if
 you try running it on other platforms / JREs.
 
 Comments
-=====
+=
 
 If you have any comments about BamQC we would like to hear them.  You
 can either enter them in our bug tracking system at:
