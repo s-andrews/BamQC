@@ -34,6 +34,7 @@ import uk.ac.babraham.BamQC.Annotation.Chromosome;
 import uk.ac.babraham.BamQC.Graphs.LineGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
+import uk.ac.babraham.BamQC.Statistics.SimpleStats;
 
 public class GenomeCoverage extends AbstractQCModule {
 
@@ -127,8 +128,8 @@ public class GenomeCoverage extends AbstractQCModule {
 		
 		int binsToUse = PLOT_BINS_PER_CHROMOSOME;
 		
-		double binRatio = maxBins/(double)(PLOT_BINS_PER_CHROMOSOME+1);
-		
+		double binRatio = maxBins/(double)PLOT_BINS_PER_CHROMOSOME;
+				
 		if (maxBins<PLOT_BINS_PER_CHROMOSOME) {
 			binRatio = 1;
 			binsToUse = maxBins;
@@ -136,6 +137,7 @@ public class GenomeCoverage extends AbstractQCModule {
 		
 		for (int c=0;c<chromosomes.length;c++) {
 			chromosomeNames[c] = chromosomes[c].name();
+			System.err.println("Chromosome is "+chromosomes[c].name());
 			long [] coverage = chromosomes[c].getBinCountData();
 			binCounts[c] = new double[binsToUse];
 			
@@ -144,30 +146,40 @@ public class GenomeCoverage extends AbstractQCModule {
 			for (int i=0;i<coverage.length;i++) {
 				
 				int thisIndex = (int)(i/binRatio);
-				
-//				System.err.println("Plot bin from "+i+" is "+thisIndex);
-				
-				if (thisIndex>=binsToUse) thisIndex = binsToUse-1;
-				
+												
 				++replicateCounts[thisIndex];
 				
-				if (coverage[i] == 0) {
-					binCounts[c][thisIndex] += 0;
-				}
-				else {
+				if (coverage[i] > 0) {
 					binCounts[c][thisIndex] += coverage[i];
 				}
 			}
 			
-			// Now average the replicates
+			int firstInvalidBin = 1 + (int)((coverage.length-1)/binRatio);
+			for (int i=firstInvalidBin;i<binsToUse;i++) {
+				binCounts[c][i] = Double.NaN;
+			}
 			
+			// Now average the replicates	
 			for (int i=0;i<replicateCounts.length;i++) {
 				if (replicateCounts[i]>0) {
 					binCounts[c][i] /= replicateCounts[i];
 				}
-			
-				if (binCounts[c][i] > maxCoverage) maxCoverage = binCounts[c][i];
 			}
+			
+			// Now convert to z-scores
+			double [] validValues = new double[firstInvalidBin];
+			for (int i=0;i<validValues.length;i++) {
+				validValues[i] = binCounts[c][i];				
+			}
+			double mean = SimpleStats.mean(validValues);
+			double sd = SimpleStats.stdev(validValues, mean);
+			for (int i=0;i<validValues.length;i++) {
+				binCounts[c][i] = (binCounts[c][i]-mean)/sd;
+				
+				if (binCounts[c][i] > maxCoverage) maxCoverage = binCounts[c][i];
+
+			}
+			
 		}
 	}
 
@@ -183,7 +195,7 @@ public class GenomeCoverage extends AbstractQCModule {
 			labels[i] = ""+(i*Chromosome.COVERAGE_BIN_SIZE);
 		}
 		
-		return new LineGraph(binCounts, 0, maxCoverage, "Genome Position", chromosomeNames, labels, "Genome Coverage");		
+		return new LineGraph(binCounts, 0-maxCoverage, maxCoverage, "Genome Position", chromosomeNames, labels, "Genome Coverage");		
 		
 	}
 
