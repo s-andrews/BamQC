@@ -133,18 +133,17 @@ public class SeparateLineGraph extends JPanel {
 		}
 		
 		int xOffset = 0;
-		
-		for (double i=yStart;i<=maxY;i+=yInterval) {
-			String label = ""+i;
-			label = label.replaceAll(".0$", ""); // Don't leave trailing .0s where we don't need them.
+
+		double midY = minY+((maxY-minY)/2);
+		for (int d=0;d<data.length;d++) {
+			String label = xTitles[d];
 			int width = g.getFontMetrics().stringWidth(label);
 			if (width > xOffset) {
 				xOffset = width;
 			}
 			
-			for (int d=0;d<data.length;d++) {
-				g.drawString(label, 2, getY(i,d)+(g.getFontMetrics().getAscent()/2));
-			}
+			g.drawString(label, 2, getY(midY,d)+(g.getFontMetrics().getAscent()/2));
+			
 		}
 	
 		// Give the x axis a bit of breathing space
@@ -193,8 +192,8 @@ public class SeparateLineGraph extends JPanel {
 		// Now draw horizontal lines across from the y axis
 
 		g.setColor(new Color(180,180,180));
-		for (double i=yStart;i<=maxY;i+=yInterval) {
-//			g.drawLine(xOffset, getY(i), getWidth()-10, getY(i));
+		for (int d=0;d<data.length;d++) {
+			g.drawLine(xOffset, getY(midY,d), getWidth()-10, getY(midY,d));
 		}
 		g.setColor(Color.BLACK);
 		
@@ -219,39 +218,7 @@ public class SeparateLineGraph extends JPanel {
 			}
 			
 		}
-		
-		// Now draw the data legend
-
-		if (g instanceof Graphics2D) {
-			((Graphics2D)g).setStroke(new BasicStroke(1));
-			((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-		}
-
-		
-		// First we need to find the widest label
-		int widestLabel = 0;
-		for (int t=0;t<xTitles.length;t++) {
-			int width = g.getFontMetrics().stringWidth(xTitles[t]);
-			if (width > widestLabel) widestLabel = width;
-		}
-		
-		// Add 3px either side for a bit of space;
-		widestLabel += 6;
-		
-		// First draw a box to put the legend in
-		g.setColor(Color.WHITE);
-		g.fillRect((getWidth()-10)-widestLabel, 40, widestLabel, 3+(20*xTitles.length));
-		g.setColor(Color.LIGHT_GRAY);
-		g.drawRect((getWidth()-10)-widestLabel, 40, widestLabel, 3+(20*xTitles.length));
-
-		// Now draw the actual labels
-		for (int t=0;t<xTitles.length;t++) {
-			g.setColor(COLOURS[t%COLOURS.length]);
-			g.drawString(xTitles[t], ((getWidth()-10)-widestLabel)+3, 40+(20*(t+1)));
-		}
-		
-
-		
+				
 		
 	}
 
