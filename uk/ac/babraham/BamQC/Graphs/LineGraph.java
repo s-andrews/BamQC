@@ -210,6 +210,8 @@ public class LineGraph extends JPanel {
 						
 			lastY = getY(data[d][0]);
 			for (int i=1;i<data[d].length;i++) {
+				if (Double.isNaN(data[d][i])) break;
+				
 				int thisY = getY(data[d][i]);
 				
 				g.drawLine((baseWidth/2)+xOffset+(baseWidth*(i-1)), lastY, (baseWidth/2)+xOffset+(baseWidth*i), thisY);
@@ -254,7 +256,7 @@ public class LineGraph extends JPanel {
 	}
 
 	private int getY(double y) {
-		return (getHeight()-40) - (int)(((getHeight()-80)/(maxY-minY))*y);
+		return (getHeight()-40) - (int)(((getHeight()-80)/(maxY-minY))*(y-minY));
 	}
 	
 }
