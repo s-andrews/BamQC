@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
 import uk.ac.babraham.BamQC.Annotation.Chromosome;
 import uk.ac.babraham.BamQC.Graphs.LineGraph;
+import uk.ac.babraham.BamQC.Graphs.SeparateLineGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 import uk.ac.babraham.BamQC.Statistics.SimpleStats;
@@ -197,7 +198,7 @@ public class GenomeCoverage extends AbstractQCModule {
 			labels[i] = ""+(i*Chromosome.COVERAGE_BIN_SIZE);
 		}
 		
-		return new LineGraph(binCounts, 0-maxCoverage, maxCoverage, "Genome Position", chromosomeNames, labels, "Genome Coverage");		
+		return new SeparateLineGraph(binCounts, 0-maxCoverage, maxCoverage, "Genome Position", chromosomeNames, labels, "Genome Coverage");		
 		
 	}
 
