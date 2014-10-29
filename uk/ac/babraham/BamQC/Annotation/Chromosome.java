@@ -24,7 +24,7 @@ import net.sf.samtools.SAMRecord;
 public class Chromosome implements Comparable<Chromosome> {
 
 	
-	public static int COVERAGE_BIN_SIZE = 10000;
+	public static int COVERAGE_BIN_SIZE = 1000000;
 	
 	private String name;
 	private int length = 1;

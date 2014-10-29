@@ -137,7 +137,7 @@ public class GenomeCoverage extends AbstractQCModule {
 		
 		for (int c=0;c<chromosomes.length;c++) {
 			chromosomeNames[c] = chromosomes[c].name();
-			System.err.println("Chromosome is "+chromosomes[c].name());
+//			System.err.println("Chromosome is "+chromosomes[c].name());
 			long [] coverage = chromosomes[c].getBinCountData();
 			binCounts[c] = new double[binsToUse];
 			
@@ -163,6 +163,7 @@ public class GenomeCoverage extends AbstractQCModule {
 			for (int i=0;i<replicateCounts.length;i++) {
 				if (replicateCounts[i]>0) {
 					binCounts[c][i] /= replicateCounts[i];
+//					if (binCounts[c][i] > 0) binCounts[c][i] = Math.log10(binCounts[c][i]);
 				}
 			}
 			
@@ -177,6 +178,7 @@ public class GenomeCoverage extends AbstractQCModule {
 				binCounts[c][i] = (binCounts[c][i]-mean)/sd;
 				
 				if (binCounts[c][i] > maxCoverage) maxCoverage = binCounts[c][i];
+				if (0-binCounts[c][i] > maxCoverage) maxCoverage = 0-binCounts[c][i];
 
 			}
 			
