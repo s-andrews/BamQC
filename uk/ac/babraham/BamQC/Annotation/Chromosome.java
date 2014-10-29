@@ -72,6 +72,10 @@ public class Chromosome implements Comparable<Chromosome> {
 	public void processSequence (SAMRecord record) {
 		seqCount++;
 		
+		if (record.getAlignmentEnd() > length) {
+			length = record.getAlignmentEnd();
+		}
+		
 		int bin = record.getAlignmentStart()/COVERAGE_BIN_SIZE;
 		
 		if (bin >= coverageBins.length) {
