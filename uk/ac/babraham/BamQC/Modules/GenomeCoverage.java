@@ -21,27 +21,23 @@
 package uk.ac.babraham.BamQC.Modules;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JPanel;
 import javax.xml.stream.XMLStreamException;
 
-import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMRecord;
-import net.sf.samtools.SAMSequenceDictionary;
-import net.sf.samtools.SAMSequenceRecord;
 
 import org.apache.log4j.Logger;
 
 import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
+import uk.ac.babraham.BamQC.Annotation.Chromosome;
 import uk.ac.babraham.BamQC.Graphs.LineGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
 public class GenomeCoverage extends AbstractQCModule {
 
-	private static final int BIN_NUMBER = 2000;
+	private static final int PLOT_BINS_PER_CHROMOSOME = 100;
 
 	private static Logger log = Logger.getLogger(GenomeCoverage.class);
 	private static double binCoverageZeroWarningFraction = ModuleConfig.getParam("binCoverageZeroFraction", "warn");
@@ -49,105 +45,21 @@ public class GenomeCoverage extends AbstractQCModule {
 	private static double binCoverageRsdWarningFraction = ModuleConfig.getParam("binCoverageRsdFraction", "warn");
 	private static double binCoverageRsdErrorFraction = ModuleConfig.getParam("binCoverageRsdFraction", "error");
 
+	
+	private String [] chromosomeNames;
+	private double [][] binCounts;
+	private String [] binNames;
+	
 	private boolean raiseError = false;
 	private boolean raiseWarning = false;
-	private long binNucleotides = 50000;
-	private List<Long> sequenceStarts = new ArrayList<Long>();
-	private double[] coverage = new double[BIN_NUMBER];
 	private double maxCoverage = 0.0;
-	private boolean isBinNucleotidesSet = false;
 	private int errorReads = 0;
 	private int readNumber = 0;
 
 	
-	public void setBinNucleotides(long binNucleotides, long[] sequenceStarts) {
-		this.binNucleotides = binNucleotides;
-
-		for (long sequenceStart : sequenceStarts) {
-			this.sequenceStarts.add(sequenceStart);
-		}
-		isBinNucleotidesSet = true;
-	}
-
-	private void setBinNucleotides(SAMSequenceDictionary samSequenceDictionary) {
-		List<SAMSequenceRecord> samSequenceRecords = samSequenceDictionary.getSequences();
-		long totalNucleotideNumber = 0;
-
-		for (SAMSequenceRecord samSequenceRecord : samSequenceRecords) {
-			sequenceStarts.add(totalNucleotideNumber);
-
-			totalNucleotideNumber += samSequenceRecord.getSequenceLength();
-
-			log.debug(String.format("%s sequence length = %d, total = %d", samSequenceRecord.getSequenceName(), samSequenceRecord.getSequenceLength(), totalNucleotideNumber));
-		}
-		binNucleotides = (int) (totalNucleotideNumber / BIN_NUMBER);
-
-		log.info(String.format("%d / %d = %d", totalNucleotideNumber, BIN_NUMBER, binNucleotides));
-
-		isBinNucleotidesSet = true;
-	}
-
-	private void recordCoverage(long alignmentStartAbsolute, long alignmentEndAbsolute) {
-		int startIndex = (int) (alignmentStartAbsolute / binNucleotides);
-		int endIndex = (int) (alignmentEndAbsolute / binNucleotides);
-		int index = startIndex;
-
-		log.debug(String.format("startIndex %d endIndex %d", startIndex, endIndex));
-
-		while (index <= endIndex) {
-			long binStart = index * binNucleotides;
-			long binEnd = (index + 1) * binNucleotides;
-			long start = alignmentStartAbsolute > binStart ? alignmentStartAbsolute : binStart;
-			long end = alignmentEndAbsolute > binEnd ? binEnd : alignmentEndAbsolute;
-			double length = end - start;
-
-			log.debug(String.format("binStart %d binEnd %d, start = %d, end %d, length = %d", binStart, binEnd, start, end, (end - start)));
-			log.debug("index = " + index);
-
-			double binCoverage = length / (double) binNucleotides;
-
-			coverage[index] += binCoverage;
-
-			if (coverage[index] > maxCoverage) maxCoverage = coverage[index];
-
-			log.debug(String.format("Start %d - End %d, length %d, index %d, binCoverage %f, ", alignmentStartAbsolute, alignmentEndAbsolute, (end - start), index, binCoverage, coverage[index]));
-
-			if (binCoverage < 0.0) throw new RuntimeException("negative binCoverage");
-
-			index++;
-		}
-	}
-
-	@Override
 	public void processSequence(SAMRecord read) {
-		SAMFileHeader header = read.getHeader();
-		SAMSequenceDictionary samSequenceDictionary = header.getSequenceDictionary();
-		int referenceIndex = read.getReferenceIndex();
-		long alignmentStart = read.getAlignmentStart();
-		long alignmentEnd = read.getAlignmentEnd();
-
-		readNumber++;
-
-		if (referenceIndex > -1) {
-			if (!isBinNucleotidesSet) {
-				setBinNucleotides(samSequenceDictionary);
-			}
-			if (alignmentEnd > alignmentStart) {
-				long referenceStart = sequenceStarts.get(referenceIndex);
-				long alignmentStartAbsolute = alignmentStart + referenceStart;
-				long alignmentEndAbsolute = alignmentEnd + referenceStart;
-
-				recordCoverage(alignmentStartAbsolute, alignmentEndAbsolute);
-			}
-			else {
-				errorReads++;
-			}
-		}
-		log.debug("header = " + header);
-		log.debug("referenceIndex = " + referenceIndex);
 	}
 
-	@Override
 	public void processFile(SequenceFile file) {
 		log.info("processFile called");
 	}
@@ -164,8 +76,6 @@ public class GenomeCoverage extends AbstractQCModule {
 
 	@Override
 	public void reset() {
-		isBinNucleotidesSet = false;
-		sequenceStarts = new ArrayList<Long>();
 		raiseError = false;
 		raiseWarning = false;
 		errorReads = 0;
@@ -184,12 +94,12 @@ public class GenomeCoverage extends AbstractQCModule {
 
 	@Override
 	public boolean needsToSeeSequences() {
-		return true;
+		return false;
 	}
 
 	@Override
 	public boolean needsToSeeAnnotation() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -199,89 +109,120 @@ public class GenomeCoverage extends AbstractQCModule {
 
 	@Override
 	public void processAnnotationSet(AnnotationSet annotation) {
-		throw new UnsupportedOperationException("processAnnotationSet called");
+
+		Chromosome [] chromosomes = annotation.chromosomeFactory().getAllChromosomes();
+	
+		chromosomeNames = new String [chromosomes.length];
+		binCounts = new double[chromosomes.length][];
+
+		// We'll plot everything on the same scale, which means we'll reduce everything to a 
+		// common scale.  Our limit is going to be that we'll put 200 points on the longest
+		// chromsome
+		
+		int maxBins = 0;
+		
+		for (int c=0;c<chromosomes.length;c++) {
+			if (chromosomes[c].getBinCountData().length>maxBins) maxBins = chromosomes[c].getBinCountData().length;
+		}
+		
+		int binsToUse = PLOT_BINS_PER_CHROMOSOME;
+		
+		double binRatio = maxBins/(double)(PLOT_BINS_PER_CHROMOSOME+1);
+		
+		if (maxBins<PLOT_BINS_PER_CHROMOSOME) {
+			binRatio = 1;
+			binsToUse = maxBins;
+		}
+		
+		for (int c=0;c<chromosomes.length;c++) {
+			chromosomeNames[c] = chromosomes[c].name();
+			long [] coverage = chromosomes[c].getBinCountData();
+			binCounts[c] = new double[binsToUse];
+			
+			int [] replicateCounts = new int[binsToUse];
+						
+			for (int i=0;i<coverage.length;i++) {
+				
+				int thisIndex = (int)(i/binRatio);
+				
+//				System.err.println("Plot bin from "+i+" is "+thisIndex);
+				
+				if (thisIndex>=binsToUse) thisIndex = binsToUse-1;
+				
+				++replicateCounts[thisIndex];
+				
+				if (coverage[i] == 0) {
+					binCounts[c][thisIndex] += 0;
+				}
+				else {
+					binCounts[c][thisIndex] += coverage[i];
+				}
+			}
+			
+			// Now average the replicates
+			
+			for (int i=0;i<replicateCounts.length;i++) {
+				if (replicateCounts[i]>0) {
+					binCounts[c][i] /= replicateCounts[i];
+				}
+			
+				if (binCounts[c][i] > maxCoverage) maxCoverage = binCounts[c][i];
+			}
+		}
 	}
 
-	@Override
 	public JPanel getResultsPanel() {
-
-		if (errorReads > 0) log.error(String.format("%d (%7.3f %%) reads in error is from %d reads , end > start", errorReads, (((double) errorReads / readNumber) * 100.0), readNumber));
-
-		double[][] coverageData = getCoverageData();
-		double minY = 0.0D;
-		double maxY = maxCoverage;
-		String xLabel = String.format("%d bins with a size of %7.3E nucleotides", BIN_NUMBER, (double) binNucleotides);
-		String[] xTitles = new String[] { "" };
-		int[] xCategories = new int[coverageData[0].length];
-		String graphTitle = "Reference Sequence(s) Coverage";
-
-		for (int i = 0; i < coverageData.length; i++) {
-			xCategories[i] = i;
+		
+		int maxBins = 0;
+		for (int i=0;i<binCounts.length;i++) {
+			if (binCounts[i].length > maxBins) maxBins = binCounts[i].length;
 		}
-		log.info("maxCoverage = " + maxCoverage);
-		// log.info("xCategories.length = " + xCategories.length);
-
-		return new LineGraph(coverageData, minY, maxY, xLabel, xTitles, xCategories, graphTitle);
+		
+		String [] labels = new String[maxBins];
+		for (int i=0;i<maxBins;i++) {
+			labels[i] = ""+(i*Chromosome.COVERAGE_BIN_SIZE);
+		}
+		
+		return new LineGraph(binCounts, 0, maxCoverage, "Genome Position", chromosomeNames, labels, "Genome Coverage");		
+		
 	}
 
 	private void raiseWarningErrorsZeroCoverage(int zeroCoverageBins) {
-		double zeroCoverageBinFraction = (double) zeroCoverageBins / BIN_NUMBER;
-
-		log.info(String.format("zeroCoverageBins %d, zeroCoverageBinFraction %f", zeroCoverageBins, zeroCoverageBinFraction));
-
-		if (zeroCoverageBinFraction >= binCoverageZeroErrorFraction) {
-			raiseError = true;
-		}
-		else if (zeroCoverageBinFraction >= binCoverageZeroWarningFraction) {
-			raiseWarning = true;
-		}
+//		double zeroCoverageBinFraction = (double) zeroCoverageBins / BIN_NUMBER;
+//
+//		log.info(String.format("zeroCoverageBins %d, zeroCoverageBinFraction %f", zeroCoverageBins, zeroCoverageBinFraction));
+//
+//		if (zeroCoverageBinFraction >= binCoverageZeroErrorFraction) {
+//			raiseError = true;
+//		}
+//		else if (zeroCoverageBinFraction >= binCoverageZeroWarningFraction) {
+//			raiseWarning = true;
+//		}
 	}
 
 	private void raiseWarningErrorsStandardDeviation() {
-		double total = 0.0;
-
-		for (double binCoverage : coverage) {
-			total += binCoverage;
-		}
-		double mean = total / coverage.length;
-		double variance = 0.0;
-
-		for (double binCoverage : coverage) {
-			variance += Math.pow((binCoverage - mean), 2.0);
-		}
-		double rsdFraction = Math.sqrt((variance / coverage.length)) / mean;
-		log.info("rsdFraction = " + rsdFraction);
-
-		if (rsdFraction >= binCoverageRsdErrorFraction) {
-			raiseError = true;
-		}
-		else if (rsdFraction >= binCoverageRsdWarningFraction) {
-			raiseWarning = true;
-		}
+//		double total = 0.0;
+//
+//		for (double binCoverage : coverage) {
+//			total += binCoverage;
+//		}
+//		double mean = total / coverage.length;
+//		double variance = 0.0;
+//
+//		for (double binCoverage : coverage) {
+//			variance += Math.pow((binCoverage - mean), 2.0);
+//		}
+//		double rsdFraction = Math.sqrt((variance / coverage.length)) / mean;
+//		log.info("rsdFraction = " + rsdFraction);
+//
+//		if (rsdFraction >= binCoverageRsdErrorFraction) {
+//			raiseError = true;
+//		}
+//		else if (rsdFraction >= binCoverageRsdWarningFraction) {
+//			raiseWarning = true;
+//		}
 	}
 
-	private double[][] getCoverageData() {
-		List<Double> data = new ArrayList<Double>();
-		int zeroCoverageBins = 0;
-
-		for (double binCoverage : coverage) {
-			log.debug("binCoverage = " + binCoverage);
-
-			if (binCoverage == 0) zeroCoverageBins++;
-
-			data.add(binCoverage);
-		}
-		raiseWarningErrorsZeroCoverage(zeroCoverageBins);
-		raiseWarningErrorsStandardDeviation();
-
-		double[][] coverageData = new double[1][data.size()];
-		int i = 0;
-
-		for (double binCoverage : data) {
-			coverageData[0][i++] = binCoverage;
-		}
-		return coverageData;
-	}
 	
 	@Override
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
@@ -290,8 +231,8 @@ public class GenomeCoverage extends AbstractQCModule {
 		super.writeDefaultImage(report, "GenomeCoverage.png", title, 800, 600);  // TODO
 	}
 	
-	public double[] getCoverage() {
-		return coverage;
-	}
+//	public double[] getCoverage() {
+//		return coverage;
+//	}
 
 }

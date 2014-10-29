@@ -244,7 +244,7 @@ public class LineGraph extends JPanel {
 
 		// Now draw the actual labels
 		for (int t=0;t<xTitles.length;t++) {
-			g.setColor(COLOURS[t]);
+			g.setColor(COLOURS[t%COLOURS.length]);
 			g.drawString(xTitles[t], ((getWidth()-10)-widestLabel)+3, 40+(20*(t+1)));
 		}
 		

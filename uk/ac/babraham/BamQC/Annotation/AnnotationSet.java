@@ -62,7 +62,7 @@ public class AnnotationSet {
 		
 		if (!r.getReferenceName().equals("*")) {
 			Chromosome c = factory.getChromosome(r.getReferenceName());
-			c.incrementSeqCount();
+			c.processSequence(r);
 		}
 		
 		if (featureArray == null) {
