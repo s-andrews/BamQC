@@ -17,8 +17,8 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
 public class InsertDistribution extends AbstractQCModule {
 
-	public final static int MAX_INSERT_SIZE = 1000;
-	public final static int BIN_SIZE = 10;
+	public final static int MAX_INSERT_SIZE = 5000;
+	public final static int BIN_SIZE = 25;
 
 	private static Logger log = Logger.getLogger(InsertDistribution.class);
 
@@ -150,7 +150,7 @@ public class InsertDistribution extends AbstractQCModule {
 
 	@Override
 	public boolean ignoreInReport() {
-		return false;
+		return distribution.size()==0;
 	}
 
 	@Override
