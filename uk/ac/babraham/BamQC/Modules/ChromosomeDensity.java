@@ -64,9 +64,7 @@ public class ChromosomeDensity extends AbstractQCModule {
 		
 		for (int c=0;c<chromosomes.length;c++) {
 			chromosomeNames[c] = chromosomes[c].name();
-			readDensities[c] = chromosomes[c].seqCount()/(chromosomes[c].length()/1000f);
-			
-//			System.err.println("Density of "+chromosomeNames[c]+" is "+readDensities[c]);
+			readDensities[c] = chromosomes[c].seqCount()/(chromosomes[c].length()/1000f);			
 		}
 	}
 

@@ -19,10 +19,17 @@
  */
 package uk.ac.babraham.BamQC.Annotation;
 
+import net.sf.samtools.SAMRecord;
+
 public class Chromosome implements Comparable<Chromosome> {
 
+	
+	public static int COVERAGE_BIN_SIZE = 1000000;
+	
 	private String name;
 	private int length = 1;
+	
+	private long [] coverageBins = new long[0];
 	
 	// These are values we're going to store for a specific analysis
 	private int seqCount = 0;
@@ -37,18 +44,50 @@ public class Chromosome implements Comparable<Chromosome> {
 	
 	public void setLength (int length) {
 		this.length = length;
+		
+		int maxBin = length/COVERAGE_BIN_SIZE;
+		
+		if (coverageBins.length<=maxBin) {
+			long [] elongatedBins = new long[maxBin+1];
+			for (int i=0;i<coverageBins.length;i++) {
+				elongatedBins[i] = coverageBins[i];
+			}
+			coverageBins = elongatedBins;
+		}
+		
+	}
+	
+	public long [] getBinCountData () {
+		return coverageBins;
 	}
 	
 	public int length () {
 		return length;
 	}
-	
-	public void incrementSeqCount () {
-		++seqCount;
-	}
-	
+		
 	public int seqCount() {
 		return seqCount;
+	}
+	
+	public void processSequence (SAMRecord record) {
+		seqCount++;
+		
+		if (record.getAlignmentEnd() > length) {
+			length = record.getAlignmentEnd();
+		}
+		
+		int bin = record.getAlignmentStart()/COVERAGE_BIN_SIZE;
+		
+		if (bin >= coverageBins.length) {
+			long [] elongatedBins = new long[bin+1];
+			for (int i=0;i<coverageBins.length;i++) {
+				elongatedBins[i] = coverageBins[i];
+			}
+			coverageBins = elongatedBins;
+		}
+		
+		coverageBins[bin]++;
+		
 	}
 	
 	public int compareTo(Chromosome o) {
