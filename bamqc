@@ -29,7 +29,7 @@ use Getopt::Long;
 # since several people have made this mistake
 
 if (-e "$RealBin/uk/ac/babraham/BamQC/BamQCApplication.java") {
-	die "This is the source distribution of BamQC.  You need to get the compiled version if you want to run the program\n";
+	#die "This is the source distribution of BamQC.  You need to get the compiled version if you want to run the program\n";
 }
 
 my $delimiter = ':';

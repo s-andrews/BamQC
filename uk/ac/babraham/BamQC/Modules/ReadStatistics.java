@@ -173,7 +173,7 @@ public class ReadStatistics extends AbstractQCModule {
 
 	@Override
 	public String description() {
-		return "Statistics of the Reads field";
+		return "Statistics of the bam file's reads";
 	}
 
 	@Override
