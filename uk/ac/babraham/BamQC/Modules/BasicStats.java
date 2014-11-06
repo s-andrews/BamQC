@@ -145,7 +145,7 @@ public class BasicStats extends AbstractQCModule {
 		}
 	
 		public int getRowCount() {
-			return pairedCount > 0 ? rowNames.length : 6; // Is there a nicer way to skip paired stats for single end?
+			return pairedCount > 0 ? rowNames.length : 7; // Is there a nicer way to skip paired stats for single end?
 		}
 	
 		public Object getValueAt(int rowIndex, int columnIndex) {
