@@ -97,6 +97,9 @@ public class MappingQualityDistributionTest {
 		assertEquals(33.333333, distributionFloat[255], 0.001);
 		assertEquals(33.333333, distributionFloat[10], 0.001);
 		
+		// test fraction 
+		assertEquals(.33333d, qualityDistribution.getFraction(), 0.0001);
+		
 		// test reset
 		qualityDistribution.reset();
 		
@@ -109,5 +112,6 @@ public class MappingQualityDistributionTest {
 		distributionFloat = qualityDistribution.getDistributionDouble();
 		assertEquals(0, distributionFloat.length);
 		
+		assertEquals(0.0d, qualityDistribution.getFraction(), 0.0001);
 	}
 }

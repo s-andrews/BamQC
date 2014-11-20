@@ -40,9 +40,10 @@ public class MappingQualityDistribution extends AbstractQCModule {
 	private static Logger log = Logger.getLogger(MappingQualityDistribution.class);
 
 	private final static int QUALITY_MAP_SIZE = 256;
-
+	private static final double ERROR_FRACTION = 0.5D;
+	private static final double WARNING_FRACTION = 0.5D;
+	
 	private int maxCount = 0;
-
 	private int readNumber = 0; 
 
 	private int[] distribution = new int[QUALITY_MAP_SIZE];
@@ -65,7 +66,9 @@ public class MappingQualityDistribution extends AbstractQCModule {
 		
 		log.debug("quality count = " + distribution[quality]);
 
-		if (distribution[quality] > maxCount) maxCount = distribution[quality];
+		if (distribution[quality] > maxCount) {
+			maxCount = distribution[quality];
+		}
 	}
 
 	@Override
@@ -124,15 +127,31 @@ public class MappingQualityDistribution extends AbstractQCModule {
 		distribution = new int[QUALITY_MAP_SIZE];
 		maxCount = 0;
 	}
+	
+	public double getFraction() {
+		double fraction = 0.0;
+		
+		for (int i = (distribution.length -1); i >= 0; i--) {
+			log.info("i = " + i);
+			
+			if (distribution[i] != 0) {
+				fraction =  (double) distribution[i] / (double) readNumber;
+				break;
+			}
+		}
+		log.info("fraction = " + fraction);
+		
+		return fraction;
+	}
 
 	@Override
 	public boolean raisesError() {
-		return false;
+		return getFraction() < ERROR_FRACTION;
 	}
 
 	@Override
 	public boolean raisesWarning() {
-		return false;
+		return getFraction() < WARNING_FRACTION;
 	}
 
 	@Override
@@ -170,25 +189,6 @@ public class MappingQualityDistribution extends AbstractQCModule {
 
 	public int[] getDistribution() {
 		return distribution;
-	}
-
-	public double[] getDistributionFloat() {
-
-		// Find the maximum value with a count.
-		int maxIndex = distribution.length-1;
-		for (int i=maxIndex;i>=0;i--) {
-			if (distribution[i]>0) {
-				maxIndex = i;
-				break;
-			}
-		}
-		
-		double[] distributionFloat = new double[maxIndex+1];
-
-		for (int i = 0; i < distributionFloat.length; i++) {
-			distributionFloat[i] = distribution[i];
-		}
-		return distributionFloat;
 	}
 
 	public int getMaxCount() {
