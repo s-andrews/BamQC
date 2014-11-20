@@ -40,6 +40,12 @@ public class BasicStats extends AbstractQCModule {
 	private String name = null;
 	private long actualCount = 0;
 	private long primaryCount = 0;
+	private long pairedCount = 0;
+	private long properPairCount = 0;
+	private long mappedCount = 0;
+	private long duplicateCount = 0;
+	private long qcFailCount = 0;
+	private long singletonCount = 0;
 	private boolean hasAnnotation = false;
 	
 	public String description() {
@@ -84,6 +90,16 @@ public class BasicStats extends AbstractQCModule {
 		if (!sequence.isSecondaryOrSupplementary()) {
 			++primaryCount;
 		}
+		
+		if (sequence.getReadPairedFlag()) {
+			pairedCount++;
+			if (sequence.getProperPairFlag()) properPairCount++;
+			if (sequence.getMateUnmappedFlag() && ! sequence.getReadUnmappedFlag()) singletonCount++;
+		}
+		
+		if (! sequence.getReadUnmappedFlag()) mappedCount++;
+		if (sequence.getReadFailsVendorQualityCheckFlag()) qcFailCount++;
+		if (sequence.getDuplicateReadFlag()) duplicateCount++;
 	}
 	
 	public void processFile (SequenceFile file) {
@@ -111,9 +127,16 @@ public class BasicStats extends AbstractQCModule {
 				
 		private String [] rowNames = new String [] {
 				"Filename",
-				"Total Sequences",
+				"Total sequences",
 				"Percent primary alignments",
-				"Has annotation"
+				"Has annotation",
+				"Percent sequences failed vendor QC",
+				"Percent marked duplicate",
+				"Percent sequences mapped",
+				"Percent sequences paired",
+				"Percent sequences properly paired",
+				"Percent singletons"
+				
 		};		
 		
 		// Sequence - Count - Percentage
@@ -122,7 +145,7 @@ public class BasicStats extends AbstractQCModule {
 		}
 	
 		public int getRowCount() {
-			return rowNames.length;
+			return pairedCount > 0 ? rowNames.length : 7; // Is there a nicer way to skip paired stats for single end?
 		}
 	
 		public Object getValueAt(int rowIndex, int columnIndex) {
@@ -132,8 +155,15 @@ public class BasicStats extends AbstractQCModule {
 					switch (rowIndex) {
 					case 0 : return name;
 					case 1 : return ""+actualCount;
-					case 2 : return (primaryCount*100)/(float)actualCount;
-					case 3 : return (hasAnnotation) ? "True" : "False";
+					case 2 : return formatPercentage(primaryCount, actualCount);
+					case 3 : return (hasAnnotation) ? "Yes" : "No"; // I prefer Y/N but feel free to change back
+					case 4 : return formatPercentage(qcFailCount, actualCount);
+					case 5 : return formatPercentage(duplicateCount, actualCount);
+					case 6 : return formatPercentage(mappedCount, actualCount);
+					case 7 : return formatPercentage(pairedCount, actualCount);
+					case 8 : return formatPercentage(properPairCount, actualCount);
+					case 9 : return formatPercentage(singletonCount, actualCount);
+					
 					}
 			}
 			return null;
@@ -146,6 +176,10 @@ public class BasicStats extends AbstractQCModule {
 			}
 			return null;
 		}
+		
+		private String formatPercentage(long a, long b) {
+	        return String.format("%6.3f", 100 * a / (double) b);
+	    }
 		
 		public Class<?> getColumnClass (int columnIndex) {
 			switch (columnIndex) {

@@ -25,7 +25,6 @@ public class ModuleFactory {
 
 		QCModule [] module_list = new QCModule [] {
 				new BasicStats(),
-				new ReadStatistics(),
 				new ChromosomeDensity(),
 				new FeatureCoverage(),
 				new SoftClipDistribution(),
