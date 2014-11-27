@@ -132,15 +132,11 @@ public class MappingQualityDistribution extends AbstractQCModule {
 		double fraction = 0.0;
 		
 		for (int i = (distribution.length -1); i >= 0; i--) {
-			log.info("i = " + i);
-			
 			if (distribution[i] != 0) {
 				fraction =  (double) distribution[i] / (double) readNumber;
 				break;
 			}
 		}
-		log.info("fraction = " + fraction);
-		
 		return fraction;
 	}
 

@@ -123,6 +123,9 @@ public class NormalDistribution extends AbstractRealDistribution {
     public double density(double x) {
         final double x0 = x - mean;
         final double x1 = x0 / standardDeviation;
+        
+        System.out.println(mean + " " + standardDeviation + " density x = " + x );
+        
         return FastMath.exp(-0.5 * x1 * x1) / (standardDeviation * SQRT2PI);
     }
 

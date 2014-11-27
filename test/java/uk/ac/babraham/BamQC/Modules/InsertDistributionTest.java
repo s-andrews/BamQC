@@ -49,6 +49,9 @@ public class InsertDistributionTest {
 		}
 		List<Long> distribution = insertDistribution.getDistribution();
 		
+		assertTrue(insertDistribution.raisesWarning());
+		assertFalse(insertDistribution.raisesError());
+	
 		//distribution now takes account of negative values
 		assertEquals(0, (long) distribution.get(0));
 		assertEquals(0, (long) distribution.get(1));
@@ -59,6 +62,23 @@ public class InsertDistributionTest {
 		
 		// throws exception
 		distribution.get(4);
+	}
+	
+	@Test
+	public void testProcessSequenceRaise() {
+		log.info("testProcessSequenceRaise");
+		
+		samRecords.get(0).setInferredInsertSize(7);
+		samRecords.get(1).setInferredInsertSize(3);
+		samRecords.get(2).setInferredInsertSize(1);
+		
+		for (SAMRecord samRecord : samRecords) {
+			insertDistribution.processSequence(samRecord);
+		}
+		assertTrue(insertDistribution.raisesError());
+		
+		assertTrue(insertDistribution.raisesWarning());
+		
 	}
 	
 }
