@@ -31,6 +31,15 @@ Having said that we've only tested in on Windows, MacOSX 10.6 and Linux
 running the Sun v1.6 and 1.7 JREs.  Please let us know what happened if
 you try running it on other platforms / JREs.
 
+
+Install
+=
+Check out of GitHug and using git:
+
+    git clone git@github.com:s-andrews/BamQC.gi
+
+and then follow the instructions in the INSTALL.txt file. 
+
 Comments
 =
 

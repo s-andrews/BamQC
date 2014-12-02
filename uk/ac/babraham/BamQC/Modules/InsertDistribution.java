@@ -197,8 +197,9 @@ public class InsertDistribution extends AbstractQCModule {
 				double difference = expected - count;
 				double divergeFraction = (difference * difference) / expected;
 
-				log.info(String.format("count %d, insertSize %d, expected = %f", count, insertSize, expected));
+				//log.info(String.format("count %d, insertSize %d, expected = %f", count, insertSize, expected));
 
+				log.info(String.format("%d\t%d", insertSize, count));
 				chiSquared += divergeFraction;
 				insertSize++;
 				// log.info(insertSize + " count = " + count +
