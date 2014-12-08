@@ -29,6 +29,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	MappingQualityDistributionTest.class, 
 	SequenceQualityDistributionTest.class,
 	ReadStatisticsTest.class,
+	NormalDistributionModelerTest.class,
 	//GenomeCoverageTest.class,
 	//RpkmReferenceTest.class
 	})

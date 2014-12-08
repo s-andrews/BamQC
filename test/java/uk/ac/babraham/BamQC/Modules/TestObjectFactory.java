@@ -92,7 +92,7 @@ public class TestObjectFactory {
 		return samRecords;
 	}
 
-	private SAMFileHeader getInstance() {
+	public static SAMFileHeader getInstance() {
 		String sequenceName = "sequence1";
 		SAMFileHeader samFileHeader = new SAMFileHeader();
 		SAMSequenceRecord samSequenceRecord = new SAMSequenceRecord(sequenceName, 3000);

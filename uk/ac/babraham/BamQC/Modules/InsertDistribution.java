@@ -7,10 +7,10 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.math3.distribution.NormalDistribution;
+import net.sf.samtools.SAMRecord;
+
 import org.apache.log4j.Logger;
 
-import net.sf.samtools.SAMRecord;
 import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
 import uk.ac.babraham.BamQC.Graphs.BarGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
@@ -20,12 +20,9 @@ public class InsertDistribution extends AbstractQCModule {
 
 	public final static int MAX_INSERT_SIZE = 5000;
 	public final static int BIN_SIZE = 25;
-	public final static double CHI_SQUARED_ERROR = 6.635; // 0.75 0.102, 0.455,
-															// 0.05 3.841
-	public final static double CHI_SQUARED_WARN = 0.455; // 0.95 0.00393, 0.9
-															// 0.0157, 0.01
-															// 6.635, 0.5 0.455
-
+	public final static double PERCENTAGE_DEVIATION_ERROR = 50.0; 
+	public final static double PERCENTAGE_DEVIATION_WARN = 25.0; 
+	
 	private static Logger log = Logger.getLogger(InsertDistribution.class);
 
 	private List<Long> distribution = new ArrayList<Long>();
@@ -33,8 +30,8 @@ public class InsertDistribution extends AbstractQCModule {
 	private long unpairedReads = 0;
 	private long reads = 0;
 	
-	private double chiSquared = 0.0;
-	private boolean chiSquaredCalculated = false;
+	private double percentageDeviation = 0.0;
+	private boolean percentageDeviationCalculated = false;
 
 	public InsertDistribution() {}
 
@@ -67,7 +64,7 @@ public class InsertDistribution extends AbstractQCModule {
 			unpairedReads++;
 		}
 	}
-
+	
 	@Override
 	public void processFile(SequenceFile file) {
 		// Method called but not needed
@@ -138,90 +135,41 @@ public class InsertDistribution extends AbstractQCModule {
 	public void reset() {
 		distribution = new ArrayList<Long>();
 		aboveMaxInsertSizeCount = 0;
-		chiSquaredCalculated = false;
+		percentageDeviationCalculated = false;
+		percentageDeviation = 0.0;
 	}
 
-//	private List<Long> removeLeadingZeroes(List<Long> list) {
-//		List<Long> processedList = new ArrayList<Long>();
-//		boolean process = false;
-//		
-//		for (long value : list) {
-//			if (process) {
-//				processedList.add(value);
-//			}
-//			else if (value > 0) {
-//				process = true;
-//			}
-//		}
-//		return processedList;
-//	}
-
-	private double calculateMean() {
-		double total = 0.0;
-		long i = 0;
-
-		for (long count : distribution) {
-			total += (double) count;
-			i++;
-		}
-		return total / i;
-	}
-
-	private double calculateStandardDeviation(double mean) {
-		double totalDeviation = 0.0;
-		long i = 0;
-
-		for (long count : distribution) {
-			double deviation = (double) count - mean;
-
-			totalDeviation += deviation * deviation;
-
-			i++;
-		}
-		return Math.sqrt(totalDeviation / i);
-	}
-
-	private double calculateChiSquared() {
-		if (!chiSquaredCalculated) {
-			double mean = calculateMean();
-			double standardDeviation = calculateStandardDeviation(mean);
-			long insertSize = 0;
-			double sqrt2pi = Math.sqrt( 2 * Math.PI);
+	private double calculatePercentageDeviation() {
+		if (!percentageDeviationCalculated) {
+			List<Double> distributionDouble = new ArrayList<Double>();
 			
-			chiSquared = 0.0;
-
+			int i = 0;
 			for (long count : distribution) {
-				//double expected = normalDistribution.density(insertSize);
-				double differenceOverSd = (insertSize - mean) / standardDeviation;
-				double expected = Math.exp( -0.5 * differenceOverSd * differenceOverSd ) /  (standardDeviation * sqrt2pi);
-				double difference = expected - count;
-				double divergeFraction = (difference * difference) / expected;
-
-				//log.info(String.format("count %d, insertSize %d, expected = %f", count, insertSize, expected));
-
-				log.info(String.format("%d\t%d", insertSize, count));
-				chiSquared += divergeFraction;
-				insertSize++;
-				// log.info(insertSize + " count = " + count +
-				// " divergeFraction = " + divergeFraction + " " + chiSquared);
+				distributionDouble.add((double) count);
 			}
-			chiSquaredCalculated = true;
-
-			log.info(String.format("mean = %f, sd = %f", mean, standardDeviation));
-
-			log.info("chiSquared = " + chiSquared);
+			NormalDistributionModeler normalDistributionModeler = new NormalDistributionModeler();
+			
+			normalDistributionModeler.setDistribution(distributionDouble);
+			normalDistributionModeler.calculateDistribution();
+			percentageDeviation = normalDistributionModeler.getDeviationPercent();
+			
+			if (Double.isNaN(percentageDeviation)) percentageDeviation = 100.0;
+			
+			log.info("percentageDeviation = " + percentageDeviation);
+			
+			percentageDeviationCalculated = true;
 		}
-		return chiSquared;
+		return percentageDeviation;
 	}
 
 	@Override
 	public boolean raisesError() {
-		return calculateChiSquared() > CHI_SQUARED_ERROR;
+		return calculatePercentageDeviation() > PERCENTAGE_DEVIATION_ERROR;
 	}
 
 	@Override
 	public boolean raisesWarning() {
-		return calculateChiSquared() > CHI_SQUARED_WARN;
+		return calculatePercentageDeviation() > PERCENTAGE_DEVIATION_WARN;
 	}
 
 	@Override
