@@ -46,7 +46,6 @@ public class GenomeCoverage extends AbstractQCModule {
 	private static double binCoverageRsdWarningFraction = ModuleConfig.getParam("binCoverageRsdFraction", "warn");
 	private static double binCoverageRsdErrorFraction = ModuleConfig.getParam("binCoverageRsdFraction", "error");
 
-	
 	private String [] chromosomeNames;
 	private double [][] binCounts;
 	private String [] binNames;

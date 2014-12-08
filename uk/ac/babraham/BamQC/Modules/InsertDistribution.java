@@ -20,8 +20,8 @@ public class InsertDistribution extends AbstractQCModule {
 
 	public final static int MAX_INSERT_SIZE = 5000;
 	public final static int BIN_SIZE = 25;
-	public final static double PERCENTAGE_DEVIATION_ERROR = 50.0; 
-	public final static double PERCENTAGE_DEVIATION_WARN = 25.0; 
+	public final static double PERCENTAGE_DEVIATION_ERROR = ModuleConfig.getParam("InsertDistribution", "error"); 
+	public final static double PERCENTAGE_DEVIATION_WARN = ModuleConfig.getParam("InsertDistribution", "warn"); 
 	
 	private static Logger log = Logger.getLogger(InsertDistribution.class);
 
