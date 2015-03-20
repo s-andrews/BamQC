@@ -145,36 +145,36 @@ public class SNPFrequenciesTest {
 //		assertEquals(91, distribution[10]);
 	}
 	
-//	@Test
-//	public void testCigarOperMI() {
-//		String filename = new String("example_MI.sam");
-//		if(!loadSAMFile(filename)) { return; }
-//		for (SAMRecord samRecord : samRecords) {
-//			printCigarAndMD(samRecord);
-//			snpFrequencies.processSequence(samRecord);
-//		}	
-//	}
+	@Test
+	public void testCigarOperMI() {
+		String filename = new String("example_MI.sam");
+		if(!loadSAMFile(filename)) { return; }
+		for (SAMRecord samRecord : samRecords) {
+			printCigarAndMD(samRecord);
+			snpFrequencies.processSequence(samRecord);
+		}	
+	}
 	
-//	@Test
-//	public void testCigarOperMD() {
-//		String filename = new String("example_MD.sam");
-//		if(!loadSAMFile(filename)) { return; }
-//		for (SAMRecord samRecord : samRecords) {
-//	        printCigarAndMD(samRecord);	
-//			snpFrequencies.processSequence(samRecord);
-//		}	
-//	}
-//	
-//	@Test
-//	public void testCigarOperMID() {
-//		String filename = new String("example_MID.sam");
-//		if(!loadSAMFile(filename)) { return; }
-//		for (SAMRecord samRecord : samRecords) {
-//          printCigarAndMD(samRecord);		
-//			snpFrequencies.processSequence(samRecord);
-//		}	
-//	}	
-//	
+	@Test
+	public void testCigarOperMD() {
+		String filename = new String("example_MD.sam");
+		if(!loadSAMFile(filename)) { return; }
+		for (SAMRecord samRecord : samRecords) {
+	        printCigarAndMD(samRecord);	
+			snpFrequencies.processSequence(samRecord);
+		}	
+	}
+	
+	@Test
+	public void testCigarOperMID() {
+		String filename = new String("example_MID.sam");
+		if(!loadSAMFile(filename)) { return; }
+		for (SAMRecord samRecord : samRecords) {
+          printCigarAndMD(samRecord);		
+			snpFrequencies.processSequence(samRecord);
+		}	
+	}	
+	
 //	@Test
 //	public void testComplete() {
 //		String filename = new String("example_full.sam");

@@ -100,6 +100,8 @@ public class SNPFrequencies extends AbstractQCModule {
 			if(temporaryMDElementLength == 0) {
 				// Parse and extract the currenMDElement. It is either a number or a char (A,C,G,T)
 				// Extract the first character for the MD element.
+				// Only parse the next element of MD Tag string if this current has been completed. 
+				// This is required as MD tag string does not record insertions, whilst Cigar string does.
 				currentMDElement = String.valueOf(mdString.charAt(temporaryMDElementPosition));
 				temporaryMDElementPosition++;
 				temporaryMDElementLength++;
@@ -131,6 +133,10 @@ public class SNPFrequencies extends AbstractQCModule {
 					temporaryMDElementLength = Integer.parseInt(currentMDElement);
 				}
 			}
+			
+			System.out.println("tempCigElem: " + String.valueOf(temporaryCigarElementLength) + "M ~ "
+					+ "parsedMDElem: " + currentMDElement + " ; length: " + String.valueOf(temporaryMDElementLength));
+			
 			// update the position of the currentBaseCall and the parser.
 			if(temporaryMDElementLength <= temporaryCigarElementLength) {
 				currentBaseCallPosition = currentBaseCallPosition + temporaryMDElementLength;
@@ -139,10 +145,9 @@ public class SNPFrequencies extends AbstractQCModule {
 			} else {
 				currentBaseCallPosition = currentBaseCallPosition + temporaryCigarElementLength;
 				temporaryMDElementLength = temporaryMDElementLength - temporaryCigarElementLength;
-				temporaryMDElementLength = 0;
+				temporaryCigarElementLength = 0;
 			}
 			
-			System.out.println("CigarOper M - corresponding MDElement: " + currentMDElement);
 		}
 	}
 
@@ -153,7 +158,8 @@ public class SNPFrequencies extends AbstractQCModule {
 		// Update SNIP freq/position for this insertion
 		currentBaseCallPosition = currentBaseCallPosition + currentCigarElementLength;
 		
-		System.out.println("CigarOper I - corresponding MDElement: " + currentMDElement);		
+		System.out.println("tempCigElem: " + String.valueOf(currentCigarElementLength) + "I ~ "
+				+ "parsedMDElem: " + currentMDElement + " ; length: " + String.valueOf(temporaryMDElementLength));	
 	}
 	
 	/* Process the MD string once found the CIGAR operator D. */	
@@ -194,7 +200,9 @@ public class SNPFrequencies extends AbstractQCModule {
 				} 
 			}
 		}
-		System.out.println("CigarOper D - corresponding MDElement: " + currentMDElement);
+
+		System.out.println("tempCigElem: " + String.valueOf(currentCigarElementLength) + "D ~ "
+				+ "parsedMDElem: " + currentMDElement + " ; length: " + String.valueOf(temporaryMDElementLength));		
 	}
 	
 	
@@ -265,7 +273,7 @@ public class SNPFrequencies extends AbstractQCModule {
 			currentCigarElementLength = currentCigarElement.getLength();
 			currentCigarElementOperator = currentCigarElement.getOperator().toString();
 			
-			System.out.println("Parsing CigarElement: " + currentCigarElement.toString());
+			System.out.println("Parsing CigarElement: " + String.valueOf(currentCigarElementLength) + currentCigarElementOperator.toString());
 			if(currentCigarElementOperator.equals("M")) {
 				processMDtagCigarOperatorM();		
 				
