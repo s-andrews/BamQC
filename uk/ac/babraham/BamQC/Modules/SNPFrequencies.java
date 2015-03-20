@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2014 Simon Andrews
+ * Copyright Copyright 2015 Piero Dalle Pezze
  *
  *    This file is part of BamQC.
  *
@@ -21,6 +21,7 @@
 package uk.ac.babraham.BamQC.Modules;
 
 import java.io.IOException;
+import java.lang.annotation.Inherited;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -67,7 +68,7 @@ public class SNPFrequencies extends AbstractQCModule {
 	// The Cigar's elements
 	private List<CigarElement> cigarList = null;
 	// The current Cigar element
-	private String mdString = "";
+	private String mdString = null;
 	// The length for the current Cigar element
 	private int currentCigarElementLength = 0;
 	// The operator for the current Cigar element (substring of CIGAR)
@@ -141,6 +142,7 @@ public class SNPFrequencies extends AbstractQCModule {
 				temporaryMDElementLength = 0;
 			}
 			
+			System.out.println("CigarOper M - corresponding MDElement: " + currentMDElement);
 		}
 	}
 
@@ -150,6 +152,8 @@ public class SNPFrequencies extends AbstractQCModule {
 		// The MD string does not contain information regarding an insertion.
 		// Update SNIP freq/position for this insertion
 		currentBaseCallPosition = currentBaseCallPosition + currentCigarElementLength;
+		
+		System.out.println("CigarOper I - corresponding MDElement: " + currentMDElement);		
 	}
 	
 	/* Process the MD string once found the CIGAR operator D. */	
@@ -190,6 +194,7 @@ public class SNPFrequencies extends AbstractQCModule {
 				} 
 			}
 		}
+		System.out.println("CigarOper D - corresponding MDElement: " + currentMDElement);
 	}
 	
 	
@@ -218,7 +223,7 @@ public class SNPFrequencies extends AbstractQCModule {
 	
 	
 	
-	
+
 	public void processSequence(SAMRecord read) {
 
 		// SAM format sucks for reading deletions/insertions.  To get this
@@ -239,6 +244,12 @@ public class SNPFrequencies extends AbstractQCModule {
 		// Get the CIGAR list and MD tag string.
 		cigarList = read.getCigar().getCigarElements();
 		mdString = read.getStringAttribute("MD");
+		
+		if(mdString == null || mdString.equals("")) {
+			System.out.println("SNPFrequencies: current SAM read does not have MD tag string");
+			// possibly throw an exception too.
+			return;
+		}
 
 		// The temporary processed position of the processed MD tag (for the parser)
 		temporaryMDElementPosition = 0;
@@ -254,6 +265,7 @@ public class SNPFrequencies extends AbstractQCModule {
 			currentCigarElementLength = currentCigarElement.getLength();
 			currentCigarElementOperator = currentCigarElement.getOperator().toString();
 			
+			System.out.println("Parsing CigarElement: " + currentCigarElement.toString());
 			if(currentCigarElementOperator.equals("M")) {
 				processMDtagCigarOperatorM();		
 				
@@ -294,7 +306,7 @@ public class SNPFrequencies extends AbstractQCModule {
 	}
 
 	public String name() {
-		return "SNP Frequency";
+		return "SNP Frequencies";
 	}
 
 	public String description() {
@@ -323,7 +335,7 @@ public class SNPFrequencies extends AbstractQCModule {
 		insertion = 0;
 		
 		cigarList = null;
-		String mdString = null;
+		mdString = null;
 		currentCigarElementLength = 0;
 		currentCigarElementOperator = null;
 		currentMDElement = "";
@@ -359,9 +371,7 @@ public class SNPFrequencies extends AbstractQCModule {
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
 		// TODO Auto-generated method stub
 
-	}
-	
-	
+	}	 
 
 	
 	
