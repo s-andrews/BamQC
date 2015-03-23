@@ -43,25 +43,36 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 public class SNPFrequencies extends AbstractQCModule {
 
 	// data fields for statistics
-	private long ga = 0;
-	private long gt = 0;
-	private long gc = 0;
-	private long gd = 0;
+	private long ac = 0;
 	private long ag = 0;
 	private long at = 0;
-	private long ac = 0;
-	private long ad = 0;
-	private long tg = 0;
+	private long ca = 0;
+	private long cg = 0;
+	private long ct = 0;
+	private long ga = 0;
+	private long gc = 0;
+	private long gt = 0;
 	private long ta = 0;
 	private long tc = 0;
-	private long td = 0;
-	private long cg = 0;
-	private long ca = 0;
-	private long ct = 0;
-	private long cd = 0;
-	private long insertion = 0;
-	private long nonMut = 0;
+	private long tg = 0;
+	private long totalMutations = 0;	
+	private long aInsertions = 0;
+	private long cInsertions = 0;
+	private long gInsertions = 0;
+	private long tInsertions = 0;	
+	private long totalInsertions = 0;
+	private long aDeletions = 0;
+	private long cDeletions = 0;
+	private long gDeletions = 0;
+	private long tDeletions = 0;
+	private long nDeletions = 0;	
+	private long totalDeletions = 0;	
+	private long totalMatches = 0;
 	private long total = 0;
+	
+	private long referenceSkippedRegion = 0;
+	private long unprocessedReads = 0;
+	
 	
 
 	// data fields for computation
@@ -84,15 +95,33 @@ public class SNPFrequencies extends AbstractQCModule {
     // The current base call position of the read
 	private int currentBaseCallPosition = 0;
 	
+	// Used for debugging or future uses.
+	private String combinedCigarMDtag = "";
 	
 	
 
+	
 	// Private methods here
+	
+	/*
+	 * Test if the current MDtag element is 0.
+	 * This 0 element is only useful if the MD tag is processed separately. 
+	 * When the MD tag is processed in combination with the CIGAR string, the 0 
+	 * is completely redundant.
+	 * @return true if the current MD element is 0.
+	 */
+	private boolean isCurrentMDelementZero() {
+		if(currentMDElement.equals("0")) {
+			return true;
+		}
+		return false;
+	}
+	
 	
 	// These methods process the MD string for each CIGAR operator.
 	
 	/* Process the MD string once found the CIGAR operator M. */
-	private void processMDtagCigarOperatorM() { 
+	private void processMDtagCigarOperatorM(SAMRecord read) { 
 		// The temporary length of the current Cigar element
 		int temporaryCigarElementLength = currentCigarElementLength;
 
@@ -104,16 +133,51 @@ public class SNPFrequencies extends AbstractQCModule {
 				// This is required as MD tag string does not record insertions, whilst Cigar string does.
 				currentMDElement = String.valueOf(mdString.charAt(temporaryMDElementPosition));
 				temporaryMDElementPosition++;
-				temporaryMDElementLength++;
-				
+						
+		     	// skip if the current MD element is zero. This is redundant information if the CIGAR string is read too..
+				if(isCurrentMDelementZero()) { 
+					continue;
+				}	
+
+				// currentMDElement is either a positive number or a base (A,C,G,T)
+				temporaryMDElementLength++;				
+
+				// update SNP statistics for mutations.				
+				char mutatedBase = read.getReadString().charAt(currentBaseCallPosition);
 				if(currentMDElement.equals("A")) {
-					// update SNP freq and position for A.
+					if(mutatedBase == 'C') { 
+						ac++; totalMutations++; 
+					} else if(mutatedBase == 'G') { 
+						ag++; totalMutations++; 
+					} else if(mutatedBase == 'T') { 
+						at++; totalMutations++; 
+					}
 				} else if (currentMDElement.equals("C")) {
-					// update SNP freq and position for C.
+					if(mutatedBase == 'A') { 
+						ca++; totalMutations++; 
+					} else if(mutatedBase == 'G') { 
+						cg++; totalMutations++; 
+					} else if(mutatedBase == 'T') { 
+						ct++; totalMutations++; 
+					}
 				} else if (currentMDElement.equals("G")) {
-					// update SNP freq and position for G.
+					if(mutatedBase == 'A') { 
+						ga++; totalMutations++; 
+					} else if(mutatedBase == 'C') { 
+						gc++; totalMutations++; 
+					} else if(mutatedBase == 'T') { 
+						gt++; totalMutations++; 
+					}
 				} else if (currentMDElement.equals("T")) {
-					// update SNP freq and position for T.
+					if(mutatedBase == 'A') { 
+						ta++; totalMutations++; 
+					} else if(mutatedBase == 'C') { 
+						tc++; totalMutations++; 
+					} else if(mutatedBase == 'G') { 
+						tg++; totalMutations++; 
+					}
+				} else if (currentMDElement.equals("N")) {
+					referenceSkippedRegion++;
 				} else {
 					// The first character is a number. Let's continue and see how many numbers 
 					// we find
@@ -134,15 +198,33 @@ public class SNPFrequencies extends AbstractQCModule {
 				}
 			}
 			
-			System.out.println("tempCigElem: " + String.valueOf(temporaryCigarElementLength) + "M ~ "
-					+ "parsedMDElem: " + currentMDElement + " ; length: " + String.valueOf(temporaryMDElementLength));
-			
+			// debugging
+			//System.out.println("tempCigElem: " + String.valueOf(temporaryCigarElementLength) + "M ~ " + "parsedMDElem: " + currentMDElement + " ; length: " + String.valueOf(temporaryMDElementLength));
+		
 			// update the position of the currentBaseCall and the parser.
 			if(temporaryMDElementLength <= temporaryCigarElementLength) {
+				// statistics: count the matches
+				totalMatches = totalMatches + temporaryMDElementLength;				
+				// Used for debugging or future uses
+				if(currentMDElement.charAt(0) >= '0' && currentMDElement.charAt(0) <= '9') {
+					combinedCigarMDtag = combinedCigarMDtag + temporaryMDElementLength + "m";						
+				} else {
+					combinedCigarMDtag = combinedCigarMDtag + "1u" + currentMDElement;
+				}
+				// normal code				
 				currentBaseCallPosition = currentBaseCallPosition + temporaryMDElementLength;
 				temporaryCigarElementLength = temporaryCigarElementLength - temporaryMDElementLength;
 				temporaryMDElementLength = 0;
 			} else {
+				// statistics: count the matches
+				totalMatches = totalMatches + temporaryCigarElementLength;								
+				// Used for debugging or future uses
+				if(currentMDElement.charAt(0) >= '0' && currentMDElement.charAt(0) <= '9') {
+					combinedCigarMDtag = combinedCigarMDtag + temporaryCigarElementLength + "m";						
+				} else {
+					combinedCigarMDtag = combinedCigarMDtag + "1u" + currentMDElement;
+				}
+				// normal code
 				currentBaseCallPosition = currentBaseCallPosition + temporaryCigarElementLength;
 				temporaryMDElementLength = temporaryMDElementLength - temporaryCigarElementLength;
 				temporaryCigarElementLength = 0;
@@ -152,57 +234,70 @@ public class SNPFrequencies extends AbstractQCModule {
 	}
 
 	
+	
 	/* Process the MD string once found the CIGAR operator I. */	
-	private void processMDtagCigarOperatorI() {
+	private void processMDtagCigarOperatorI(SAMRecord read) {
 		// The MD string does not contain information regarding an insertion.
-		// Update SNIP freq/position for this insertion
-		currentBaseCallPosition = currentBaseCallPosition + currentCigarElementLength;
+		String wronglyInsertedBases = read.getReadString().substring(currentBaseCallPosition, currentBaseCallPosition + currentCigarElementLength);
+		currentBaseCallPosition = currentBaseCallPosition + currentCigarElementLength;		
+
+		// Update statistics for this insertion
+		totalInsertions = totalInsertions + currentCigarElementLength;
+		for(int i = 0; i < wronglyInsertedBases.length(); i++) {
+			if(wronglyInsertedBases.charAt(i) == 'A') { aInsertions++; }
+			else if(wronglyInsertedBases.charAt(i) == 'C') { cInsertions++; }
+			else if(wronglyInsertedBases.charAt(i) == 'G') { gInsertions++; }
+			else if(wronglyInsertedBases.charAt(i) == 'T') { tInsertions++; }
+		}
 		
-		System.out.println("tempCigElem: " + String.valueOf(currentCigarElementLength) + "I ~ "
-				+ "parsedMDElem: " + currentMDElement + " ; length: " + String.valueOf(temporaryMDElementLength));	
+		// Used for debugging or future uses
+		//System.out.println("tempCigElem: " + String.valueOf(currentCigarElementLength) + "I ~ " + "parsedMDElem: " + currentMDElement + " ; length: " + String.valueOf(temporaryMDElementLength));		
+		combinedCigarMDtag = combinedCigarMDtag + String.valueOf(currentCigarElementLength) + "i" + wronglyInsertedBases;
+
 	}
 	
+	
+
 	/* Process the MD string once found the CIGAR operator D. */	
 	private void processMDtagCigarOperatorD() {
+		// Parse and extract the currenMDElement. It is a string starting with ^ and followed by a string of (A,C,G,T)
+		// Extract the first character for the MD element.
+		currentMDElement = String.valueOf(mdString.charAt(temporaryMDElementPosition));
+		temporaryMDElementPosition++;
 
-		if(temporaryMDElementLength == 0) {
-			// The previous MD element must have been processed
-			
-			// Parse and extract the currenMDElement. It is a string starting with ^ and followed by a string of (A,C,G,T)
-			// Extract the first character for the MD element.
+     	// skip if the current MD element is zero. This is redundant information if the CIGAR string is read too..
+		while(isCurrentMDelementZero()) { 		
 			currentMDElement = String.valueOf(mdString.charAt(temporaryMDElementPosition));
-			if(!currentMDElement.equals("^")) {
-				// this means an inconsistency between the CIGAR and MD string				
-				System.out.println("SNPFrequencies: Error, ^ not found in the MD string when processing Cigar Operator D");
-				return;
-			}
-			
-			temporaryMDElementPosition++;
-
-			// The first character is a ^. There are exactly temporaryCigarElementLength chars (A,C,G,T) to parse.
-			currentMDElement = 
-					mdString.substring(temporaryMDElementPosition, temporaryMDElementPosition+currentCigarElementLength);
-			temporaryMDElementPosition = temporaryMDElementPosition+currentCigarElementLength;
-			
-			// Is this correct? I don't think we should include it, as we have a deletion.. 
-			currentBaseCallPosition = currentBaseCallPosition + currentCigarElementLength;			
-			
-			// Parse the deletions encountered.
-			for(int i = 0; i < currentMDElement.length(); i++) {
-				if(currentMDElement.charAt(i) == 'A') {
-					// update SNP freq and position for A.
-				} else if (currentMDElement.charAt(i) == 'C') {
-					// update SNP freq and position for C.
-				} else if (currentMDElement.charAt(i) == 'G') {
-					// update SNP freq and position for G.
-				} else if (currentMDElement.charAt(i) == 'T') {
-					// update SNP freq and position for T.
-				} 
-			}
+			temporaryMDElementPosition++; 
 		}
+		
+		if(!currentMDElement.equals("^")) {
+			// this means an inconsistency between the CIGAR and MD string				
+			System.out.println("SNPFrequencies: Error, ^ not found in the MD string when processing Cigar Operator D");
+			return;
+		}
+		
+		// The first character is a ^. There are exactly temporaryCigarElementLength chars (A,C,G,T) to parse.
+		currentMDElement = 
+				mdString.substring(temporaryMDElementPosition, temporaryMDElementPosition+currentCigarElementLength);
+		temporaryMDElementPosition = temporaryMDElementPosition+currentCigarElementLength;
 
-		System.out.println("tempCigElem: " + String.valueOf(currentCigarElementLength) + "D ~ "
-				+ "parsedMDElem: " + currentMDElement + " ; length: " + String.valueOf(temporaryMDElementLength));		
+		// Is this correct? I don't think we should include it, as we have a deletion.. 
+		// currentBaseCallPosition = currentBaseCallPosition + currentCigarElementLength;			
+
+		// Used for debugging or future uses
+		// System.out.println("tempCigElem: " + String.valueOf(currentCigarElementLength) + "D ~ " + "parsedMDElem: " + currentMDElement + " ; length: " + String.valueOf(currentMDElement.length()));		
+		combinedCigarMDtag = combinedCigarMDtag + String.valueOf(currentCigarElementLength) + "d" + currentMDElement;		
+
+		// Parse the deletions encountered and update statistics
+		totalDeletions = totalDeletions + currentCigarElementLength;		
+		for(int i = 0; i < currentMDElement.length(); i++) {
+			if(currentMDElement.charAt(i) == 'A') { aDeletions++; }
+			else if (currentMDElement.charAt(i) == 'C') { cDeletions++; }
+			else if (currentMDElement.charAt(i) == 'G') { gDeletions++; }
+			else if (currentMDElement.charAt(i) == 'T') { tDeletions++; }
+			else if (currentMDElement.charAt(i) == 'N') { nDeletions++; } 
+		}
 	}
 	
 	
@@ -224,38 +319,21 @@ public class SNPFrequencies extends AbstractQCModule {
 	/* Process the MD string once found the CIGAR operator X. */	
 	private void processMDtagCigarOperatorNEQ() {}	
 	
-
-	// These methods process the MD string for each CIGAR operator.
-	private void parseMDtag() {}	
 	
 	
 	
+	// @Override methods
 	
-
+	@Override
 	public void processSequence(SAMRecord read) {
 
-		// SAM format sucks for reading deletions/insertions.  To get this
-		// information you need to use a combination of cigar operations
-		// which say what the pattern of matches, insertions and deletions
-		// is, and the MD tag which contains the bases from the reference which
-		// are different to the read.
-		// System.err.println("MD = "+md+" Cigar="+read.getCigarString());
-		
-		//String md = read.getStringAttribute("MD");
-		//Cigar cigar = read.getCigar();
-		
-		/* you will have to implement the pseudo code that you wrote here. 
-		 * You will need to define some extra private functions though! :)
-		 * WRITE THE PSEUDO CODE FOR THE MD PARSER FIRST. Possibly one parser per case.
-		 */
-		
 		// Get the CIGAR list and MD tag string.
 		cigarList = read.getCigar().getCigarElements();
 		mdString = read.getStringAttribute("MD");
 		
 		if(mdString == null || mdString.equals("")) {
-			System.out.println("SNPFrequencies: current SAM read does not have MD tag string");
-			// possibly throw an exception too.
+			//System.out.println("SNPFrequencies: current SAM read does not have MD tag string");
+			unprocessedReads++;
 			return;
 		}
 
@@ -268,79 +346,99 @@ public class SNPFrequencies extends AbstractQCModule {
 		Iterator<CigarElement> iterCigar = cigarList.iterator();
 		CigarElement currentCigarElement = null;
 		
+		// Used for debugging or future uses
+		combinedCigarMDtag = "";
+		
+		
 		while(iterCigar.hasNext()) {
 			currentCigarElement = iterCigar.next();
 			currentCigarElementLength = currentCigarElement.getLength();
 			currentCigarElementOperator = currentCigarElement.getOperator().toString();
 			
-			System.out.println("Parsing CigarElement: " + String.valueOf(currentCigarElementLength) + currentCigarElementOperator.toString());
+			// debugging
+			//System.out.println("Parsing CigarElement: " + String.valueOf(currentCigarElementLength) + currentCigarElementOperator.toString());
 			if(currentCigarElementOperator.equals("M")) {
-				processMDtagCigarOperatorM();		
-				
+				processMDtagCigarOperatorM(read);
 			} else if(currentCigarElementOperator.equals("I")) {
-				processMDtagCigarOperatorI();
-				
+				processMDtagCigarOperatorI(read);
 			} else if(currentCigarElementOperator.equals("D")) {
 				processMDtagCigarOperatorD();				
-				
 			} else if(currentCigarElementOperator.equals("N")) {
-				
+				//System.out.println("SNPFrequencies.java: extended CIGAR element N is currently unsupported.");
 			} else if(currentCigarElementOperator.equals("S")) {
-				
+				//System.out.println("SNPFrequencies.java: extended CIGAR element S is currently unsupported.");				
 			} else if(currentCigarElementOperator.equals("H")) {
-				
+				//System.out.println("SNPFrequencies.java: extended CIGAR element H is currently unsupported.");				
 			} else if(currentCigarElementOperator.equals("P")) {
-				
+				//System.out.println("SNPFrequencies.java: extended CIGAR element P is currently unsupported.");				
 			} else if(currentCigarElementOperator.equals("=")) {
-				
+				//System.out.println("SNPFrequencies.java: extended CIGAR element = is currently unsupported.");				
 			} else if(currentCigarElementOperator.equals("X")) {
-				
+				//System.out.println("SNPFrequencies.java: extended CIGAR element X is currently unsupported.");				
 			} else {
 				System.out.println("SNPFrequencies.java: Unknown operator in the CIGAR string.");
 				// throw an exception possibly.
-			} 
-			
+			}		
 		}
+		
+		total = totalMutations + totalInsertions + totalDeletions;
+		// debugging
+		// System.out.println("Combined Cigar MDtag: " + combinedCigarMDtag);
 	}
 	
 	
-	
+	@Override	
 	public void processFile(SequenceFile file) {}
 
+	@Override	
 	public void processAnnotationSet(AnnotationSet annotation) {}
 
+	@Override	
 	public JPanel getResultsPanel() {
 		return null;
 	}
 
+	@Override	
 	public String name() {
 		return "SNP Frequencies";
 	}
 
+	@Override	
 	public String description() {
 		return "Looks at the overall SNP frequencies in the data";
 	}
 
+	@Override	
 	public void reset() {
-		ga = 0;
-		gt = 0;
-		gc = 0;
-		gd = 0;
+		ac = 0;
 		ag = 0;
 		at = 0;
-		ac = 0;
-		ad = 0;
-		tg = 0;
+		ca = 0;
+		cg = 0;
+		ct = 0;
+		ga = 0;
+		gc = 0;
+		gt = 0;
 		ta = 0;
 		tc = 0;
-		td = 0;
-		cg = 0;
-		ca = 0;
-		ct = 0;
-		cd = 0;
-		nonMut = 0;
+		tg = 0;
+		totalMutations = 0;
+		aInsertions = 0;
+		cInsertions = 0;
+		gInsertions = 0;
+		tInsertions = 0;	
+		totalInsertions = 0;
+		aDeletions = 0;
+		cDeletions = 0;
+		gDeletions = 0;
+		tDeletions = 0;
+		nDeletions = 0;
+		totalDeletions = 0;
+		totalMatches = 0;
 		total = 0;
-		insertion = 0;
+		
+		referenceSkippedRegion = 0;
+		unprocessedReads = 0;
 		
 		cigarList = null;
 		mdString = null;
@@ -351,36 +449,226 @@ public class SNPFrequencies extends AbstractQCModule {
 		temporaryMDElementPosition = 0;
 		currentBaseCallPosition = 0;
 		
+		combinedCigarMDtag = "";
 		
 	}
 
+	@Override	
 	public boolean raisesError() {
 		//TODO: Set this
 		return false;
 	}
 
+	@Override	
 	public boolean raisesWarning() {
 		//TODO: Set this
 		return false;
 	}
 
+	@Override	
 	public boolean needsToSeeSequences() {
 		return true;
 	}
 
+	@Override	
 	public boolean needsToSeeAnnotation() {
 		return false;
 	}
 
+	@Override	
 	public boolean ignoreInReport() {
 		return total == 0;
 	}
 
+	@Override	
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
 		// TODO Auto-generated method stub
 
 	}	 
 
+	
+	
+	
+	
+	// getter methods
+	
+	/** 
+	 * It returns a string combining information from CIGAR and MD tag. The format is: 
+	 * # (number), snip (m=match, u=unmatch, i=insertion, d=deletion), bases if snip={u,i,d}. 
+	 * For instance: 
+	 * CIGAR: 32M2D5M1I52M
+	 * MDtag: 7G24^AA7C49
+	 * Combined CIGAR+MDTag: 7m1uG24m2dAA5m1iG2m1uC49m
+	 * 
+	 * Note: G in 1iG is SAM read- dependent. 
+	 * @return a string combining information from CIGAR and MD tag.
+	 */
+	public String getCombinedCigarMDtag() {
+		return combinedCigarMDtag;
+	}
+
+
+
+	public long getA2C() {
+		return ac;
+	}
+
+
+
+	public long getA2G() {
+		return ag;
+	}
+
+
+
+	public long getA2T() {
+		return at;
+	}
+
+
+
+	public long getC2A() {
+		return ca;
+	}
+
+
+
+	public long getC2G() {
+		return cg;
+	}
+
+
+
+	public long getC2T() {
+		return ct;
+	}
+
+
+
+	public long getG2A() {
+		return ga;
+	}
+
+
+
+	public long getG2C() {
+		return gc;
+	}
+
+
+
+	public long getG2T() {
+		return gt;
+	}
+
+
+
+	public long getT2A() {
+		return ta;
+	}
+
+
+
+	public long getT2C() {
+		return tc;
+	}
+
+
+
+	public long getT2G() {
+		return tg;
+	}
+
+
+
+	public long getTotalMutations() {
+		return totalMutations;
+	}
+
+
+
+	public long getAInsertions() {
+		return aInsertions;
+	}
+
+
+
+	public long getCInsertions() {
+		return cInsertions;
+	}
+
+
+
+	public long getGInsertions() {
+		return gInsertions;
+	}
+
+
+
+	public long getTInsertions() {
+		return tInsertions;
+	}
+
+
+
+	public long getTotalInsertions() {
+		return totalInsertions;
+	}
+
+
+
+	public long getADeletions() {
+		return aDeletions;
+	}
+
+
+
+	public long getCDeletions() {
+		return cDeletions;
+	}
+
+
+
+	public long getGDeletions() {
+		return gDeletions;
+	}
+
+
+
+	public long getTDeletions() {
+		return tDeletions;
+	}
+	
+	public long getNDeletions() {
+		return nDeletions;
+	}
+
+	public long getTotalDeletions() {
+		return totalDeletions;
+	}
+
+
+
+	public long getTotalMatches() {
+		return totalMatches;
+	}
+
+
+
+	public long getTotal() {
+		return total;
+	}
+
+
+
+	public long getUnprocessedReads() {
+		return unprocessedReads;
+	}
+
+
+	public long getReferenceSkippedRegion() {
+		return referenceSkippedRegion;
+	}	
 	
 	
 }

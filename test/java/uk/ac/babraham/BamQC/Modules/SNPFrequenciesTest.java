@@ -54,8 +54,7 @@ public class SNPFrequenciesTest {
 	// Load the whole SAM file, as this is very short. (3-10 lines).
 	// Clearly this is not a correct approach generally.
 	private boolean loadSAMFile(String filename) {
-		//System.out.println(new File("").getAbsolutePath() + "/test/resources/" + filename);
-		File file = new File(new File("").getAbsolutePath() + "/test/resources/" + filename);
+		File file = new File(filename);
 		FileInputStream fis;
 		try {
 			fis = new FileInputStream(file);
@@ -134,120 +133,134 @@ public class SNPFrequenciesTest {
 	
 	@Test
 	public void testCigarOperM() {
-		String filename = new String("example_M.sam");
+		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_M.sam");
 		if(!loadSAMFile(filename)) { return; }
+		List<String> combinedCigarMDtagList = new ArrayList<String>();
 		for (SAMRecord samRecord : samRecords) {
-			printCigarAndMD(samRecord);
+			//printCigarAndMD(samRecord);
 			snpFrequencies.processSequence(samRecord);
+			combinedCigarMDtagList.add(snpFrequencies.getCombinedCigarMDtag());
 		}
-//		assertEquals(89, distribution[0]);
-//		assertEquals(91, distribution[255]);
-//		assertEquals(91, distribution[10]);
+		assertEquals("89m", combinedCigarMDtagList.get(0));
+		assertEquals("91m", combinedCigarMDtagList.get(1));
+		assertEquals("8m1uC41m1uC38m", combinedCigarMDtagList.get(2));
+		assertEquals("48m1uT37m1uC4m", combinedCigarMDtagList.get(3));
+		assertEquals("9m1uT1uG24m1uA11m1uT43m", combinedCigarMDtagList.get(4));
+		assertEquals("3m1uG14m1uA9m1uT33m1uT1uG24m1uA1m", combinedCigarMDtagList.get(5));		
 	}
+
+	@Test
+	public void testCigarOperMD() {
+		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MD.sam");
+		if(!loadSAMFile(filename)) { return; }
+		List<String> combinedCigarMDtagList = new ArrayList<String>();			
+		for (SAMRecord samRecord : samRecords) {
+	        //printCigarAndMD(samRecord);	
+			snpFrequencies.processSequence(samRecord);
+			combinedCigarMDtagList.add(snpFrequencies.getCombinedCigarMDtag());	
+		}
+		assertEquals("14m1uC1m1uC8m1uT16m1dT20m1uC1uC27m", combinedCigarMDtagList.get(0));
+		assertEquals("36m1uC13m1uT34m1dT6m", combinedCigarMDtagList.get(1));
+		assertEquals("20m1dA62m1uC8m", combinedCigarMDtagList.get(2));		
+	}	
 	
 	@Test
 	public void testCigarOperMI() {
-		String filename = new String("example_MI.sam");
+		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MI.sam");
 		if(!loadSAMFile(filename)) { return; }
+		List<String> combinedCigarMDtagList = new ArrayList<String>();		
 		for (SAMRecord samRecord : samRecords) {
-			printCigarAndMD(samRecord);
+			//printCigarAndMD(samRecord);
 			snpFrequencies.processSequence(samRecord);
-		}	
-	}
-	
-	@Test
-	public void testCigarOperMD() {
-		String filename = new String("example_MD.sam");
-		if(!loadSAMFile(filename)) { return; }
-		for (SAMRecord samRecord : samRecords) {
-	        printCigarAndMD(samRecord);	
-			snpFrequencies.processSequence(samRecord);
-		}	
+			combinedCigarMDtagList.add(snpFrequencies.getCombinedCigarMDtag());			
+		}
+		assertEquals("22m3iAGC65m", combinedCigarMDtagList.get(0));
+		assertEquals("57m1iT31m", combinedCigarMDtagList.get(1));
+		assertEquals("70m1iT20m", combinedCigarMDtagList.get(2));
 	}
 	
 	@Test
 	public void testCigarOperMID() {
-		String filename = new String("example_MID.sam");
+		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MID.sam");
 		if(!loadSAMFile(filename)) { return; }
+		List<String> combinedCigarMDtagList = new ArrayList<String>();			
 		for (SAMRecord samRecord : samRecords) {
-          printCigarAndMD(samRecord);		
-			snpFrequencies.processSequence(samRecord);
-		}	
+          //printCigarAndMD(samRecord);		
+		  snpFrequencies.processSequence(samRecord);
+		  combinedCigarMDtagList.add(snpFrequencies.getCombinedCigarMDtag());		  
+		}
+		assertEquals("6m1iT2m1dT82m", combinedCigarMDtagList.get(0));
+		assertEquals("2m1dA56m2dGT10m1uC21m", combinedCigarMDtagList.get(1));
+		assertEquals("1uA17m1dT3m1iG14m1uA2m1uC29m", combinedCigarMDtagList.get(2));
+		assertEquals("7m1uG24m2dAA5m1iG2m1uC49m", combinedCigarMDtagList.get(3));		
 	}	
 	
-//	@Test
-//	public void testComplete() {
-//		String filename = new String("example_full.sam");
-//		if(!loadSAMFile(filename)) { return; }
-//		for (SAMRecord samRecord : samRecords) {
-//    		printCigarAndMD(samRecord);	
-//			snpFrequencies.processSequence(samRecord);
-//		}	
-//	}	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-//	public void testSNPFrequencies() {
-//		
-//		log.info("testSNPFrequencies");
-//		for (SAMRecord samRecord : samRecords) {
-//			snpFrequencies.processSequence(samRecord);
-//		}
+	@Test
+	public void testStatistics() {
+		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_M.sam");
+		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MI.sam");
+		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MD.sam");
+		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MID.sam");		
+		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_full.sam");
+		//String filename = new String(new File("").getAbsolutePath() + "/../../Documents/BamQC_Examples/example.sam");
+		String filename = new String(new File("").getAbsolutePath() + "/../../Documents/BamQC_Examples/large_example.bam");	
 		
-//		int[] distribution = snpFrequencies.getDistribution();
-//		assertEquals(1, distribution[0]);
-//		assertEquals(1, distribution[255]);
-//		assertEquals(1, distribution[10]);
-//		assertEquals(1, snpFrequencies.getMaxCount());
-//		
-//		for (int i = 1; i < 256; i++) {
-//			if (i != 10 && i != 255) {
-//				assertEquals(0, distribution[i]);
-//			}
-//		}
-//		for (SAMRecord samRecord : samRecords) {
-//			snpFrequencies.processSequence(samRecord);
-//		}
-//		assertEquals(2, distribution[0]);
-//		assertEquals(2, distribution[255]);
-//		assertEquals(2, distribution[10]);
-//		assertEquals(2, snpFrequencies.getMaxCount());
-//		
-//		for (int i = 1; i < 256; i++) {
-//			if (i != 10 && i != 255) {
-//				assertEquals(0, distribution[i]);
-//			}
-//		}
-//		double[] distributionFloat = snpFrequencies.getDistributionDouble();
-//		
-//		assertEquals(33.333333, distributionFloat[0], 0.001);
-//		assertEquals(33.333333, distributionFloat[255], 0.001);
-//		assertEquals(33.333333, distributionFloat[10], 0.001);
-//		
-//		// test fraction 
-//		assertEquals(.33333d, snpFrequencies.getFraction(), 0.0001);
-//		
-//		// test reset
-//		snpFrequencies.reset();
-//		
-//		distribution = snpFrequencies.getDistribution();
-//		
-//		assertEquals(0, snpFrequencies.getMaxCount());
-//		for (int i = 0; i < 256; i++) {
-//			assertEquals(0, distribution[i]);
-//		}
-//		distributionFloat = snpFrequencies.getDistributionDouble();
-//		assertEquals(0, distributionFloat.length);
-//		
-//		assertEquals(0.0d, snpFrequencies.getFraction(), 0.0001);
-
+		// Parse the file read by read as it happens normally
+		File file = new File(filename);
+		FileInputStream fis;
+		try {
+			fis = new FileInputStream(file);
+		} catch (FileNotFoundException ex) { 
+			System.err.println("File " + filename + " does not exist"); 
+			return;
+		}
+		SAMFileReader samReader = new SAMFileReader(fis);
+		Iterator<SAMRecord> it = samReader.iterator();
+		while(it.hasNext()) {
+			try { 
+	            //printCigarAndMD(samRecord);		
+				snpFrequencies.processSequence(it.next());				
+			} catch (SAMFormatException sfe) { 
+				System.out.println("SAMFormatException");
+			}
+		}
+		// close the file streams
+		try {
+			fis.close();
+			samReader.close();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+		System.out.println("A->C: " + snpFrequencies.getA2C());
+		System.out.println("A->G: " + snpFrequencies.getA2G());
+		System.out.println("A->T: " + snpFrequencies.getA2T());
+		System.out.println("C->A: " + snpFrequencies.getC2A());
+		System.out.println("C->G: " + snpFrequencies.getC2G());
+		System.out.println("C->T: " + snpFrequencies.getC2T());
+		System.out.println("G->A: " + snpFrequencies.getG2A());
+		System.out.println("G->C: " + snpFrequencies.getG2C());
+		System.out.println("G->T: " + snpFrequencies.getG2T());
+		System.out.println("T->A: " + snpFrequencies.getT2A());
+		System.out.println("T->C: " + snpFrequencies.getT2C());
+		System.out.println("T->G: " + snpFrequencies.getT2G());
+		System.out.println("Tot. Mut.: " + snpFrequencies.getTotalMutations());
+		System.out.println("A Ins: " + snpFrequencies.getAInsertions());
+		System.out.println("C Ins: " + snpFrequencies.getCInsertions());
+		System.out.println("G Ins: " + snpFrequencies.getGInsertions());
+		System.out.println("T Ins: " + snpFrequencies.getTInsertions());
+		System.out.println("Tot. Ins.: " + snpFrequencies.getTotalInsertions());
+		System.out.println("A Del: " + snpFrequencies.getADeletions());
+		System.out.println("C Del: " + snpFrequencies.getCDeletions());
+		System.out.println("G Del: " + snpFrequencies.getGDeletions());
+		System.out.println("T Del: " + snpFrequencies.getTDeletions());
+		System.out.println("N Del: " + snpFrequencies.getNDeletions());		
+		System.out.println("Tot. Del.: " + snpFrequencies.getTotalDeletions());
+		System.out.println("Total: " + snpFrequencies.getTotal());		
+		System.out.println("Tot. Matches: " + snpFrequencies.getTotalMatches());
+		System.out.println("Unprocessed reads (no MD tag): " + snpFrequencies.getUnprocessedReads());
+		System.out.println("Skipped regions from the reference: " + snpFrequencies.getReferenceSkippedRegion());
+	}	
 
 	
 }
