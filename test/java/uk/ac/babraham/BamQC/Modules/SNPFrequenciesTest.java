@@ -202,9 +202,9 @@ public class SNPFrequenciesTest {
 		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MI.sam");
 		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MD.sam");
 		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MID.sam");		
-		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_full.sam");
+		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_full.sam");
 		//String filename = new String(new File("").getAbsolutePath() + "/../../Documents/BamQC_Examples/example.sam");
-		String filename = new String(new File("").getAbsolutePath() + "/../../Documents/BamQC_Examples/large_example.bam");	
+		//String filename = new String(new File("").getAbsolutePath() + "/../../Documents/BamQC_Examples/large_example.bam");	
 		
 		// Parse the file read by read as it happens normally
 		File file = new File(filename);
@@ -219,8 +219,8 @@ public class SNPFrequenciesTest {
 		Iterator<SAMRecord> it = samReader.iterator();
 		while(it.hasNext()) {
 			try { 
-	            //printCigarAndMD(samRecord);		
-				snpFrequencies.processSequence(it.next());				
+				snpFrequencies.processSequence(it.next());
+				//System.out.println(snpFrequencies.getCombinedCigarMDtag());
 			} catch (SAMFormatException sfe) { 
 				System.out.println("SAMFormatException");
 			}
@@ -258,7 +258,8 @@ public class SNPFrequenciesTest {
 		System.out.println("Tot. Del.: " + snpFrequencies.getTotalDeletions());
 		System.out.println("Total: " + snpFrequencies.getTotal());		
 		System.out.println("Tot. Matches: " + snpFrequencies.getTotalMatches());
-		System.out.println("Unprocessed reads (no MD tag): " + snpFrequencies.getUnprocessedReads());
+		System.out.println("Processed reads: " + snpFrequencies.getProcessedReads());		
+		System.out.println("Unprocessed reads (no MD or CIGAR string): " + snpFrequencies.getUnprocessedReads());
 		System.out.println("Skipped regions from the reference: " + snpFrequencies.getReferenceSkippedRegion());
 	}	
 

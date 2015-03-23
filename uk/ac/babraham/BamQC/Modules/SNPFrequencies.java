@@ -71,6 +71,7 @@ public class SNPFrequencies extends AbstractQCModule {
 	private long total = 0;
 	
 	private long referenceSkippedRegion = 0;
+	private long processedReads = 0;	
 	private long unprocessedReads = 0;
 	
 	
@@ -274,6 +275,7 @@ public class SNPFrequencies extends AbstractQCModule {
 		if(!currentMDElement.equals("^")) {
 			// this means an inconsistency between the CIGAR and MD string				
 			System.out.println("SNPFrequencies: Error, ^ not found in the MD string when processing Cigar Operator D");
+			unprocessedReads++;
 			return;
 		}
 		
@@ -334,6 +336,7 @@ public class SNPFrequencies extends AbstractQCModule {
 		if(mdString == null || mdString.equals("")) {
 			//System.out.println("SNPFrequencies: current SAM read does not have MD tag string");
 			unprocessedReads++;
+			combinedCigarMDtag = "";
 			return;
 		}
 
@@ -359,24 +362,37 @@ public class SNPFrequencies extends AbstractQCModule {
 			//System.out.println("Parsing CigarElement: " + String.valueOf(currentCigarElementLength) + currentCigarElementOperator.toString());
 			if(currentCigarElementOperator.equals("M")) {
 				processMDtagCigarOperatorM(read);
+				// Increase the number of processed reads.
+				processedReads++;				
 			} else if(currentCigarElementOperator.equals("I")) {
 				processMDtagCigarOperatorI(read);
+				// Increase the number of processed reads.
+				processedReads++;
 			} else if(currentCigarElementOperator.equals("D")) {
 				processMDtagCigarOperatorD();				
+				// Increase the number of processed reads.
+				processedReads++;
 			} else if(currentCigarElementOperator.equals("N")) {
 				//System.out.println("SNPFrequencies.java: extended CIGAR element N is currently unsupported.");
+				unprocessedReads++;
 			} else if(currentCigarElementOperator.equals("S")) {
-				//System.out.println("SNPFrequencies.java: extended CIGAR element S is currently unsupported.");				
+				//System.out.println("SNPFrequencies.java: extended CIGAR element S is currently unsupported.");
+				unprocessedReads++;
 			} else if(currentCigarElementOperator.equals("H")) {
-				//System.out.println("SNPFrequencies.java: extended CIGAR element H is currently unsupported.");				
+				//System.out.println("SNPFrequencies.java: extended CIGAR element H is currently unsupported.");
+				unprocessedReads++;
 			} else if(currentCigarElementOperator.equals("P")) {
-				//System.out.println("SNPFrequencies.java: extended CIGAR element P is currently unsupported.");				
+				//System.out.println("SNPFrequencies.java: extended CIGAR element P is currently unsupported.");
+				unprocessedReads++;
 			} else if(currentCigarElementOperator.equals("=")) {
-				//System.out.println("SNPFrequencies.java: extended CIGAR element = is currently unsupported.");				
+				//System.out.println("SNPFrequencies.java: extended CIGAR element = is currently unsupported.");
+				unprocessedReads++;
 			} else if(currentCigarElementOperator.equals("X")) {
-				//System.out.println("SNPFrequencies.java: extended CIGAR element X is currently unsupported.");				
+				//System.out.println("SNPFrequencies.java: extended CIGAR element X is currently unsupported.");
+				unprocessedReads++;
 			} else {
 				System.out.println("SNPFrequencies.java: Unknown operator in the CIGAR string.");
+				unprocessedReads++;
 				// throw an exception possibly.
 			}		
 		}
@@ -660,7 +676,11 @@ public class SNPFrequencies extends AbstractQCModule {
 	}
 
 
-
+	public long getProcessedReads() {
+		return processedReads;
+	}
+	
+	
 	public long getUnprocessedReads() {
 		return unprocessedReads;
 	}
