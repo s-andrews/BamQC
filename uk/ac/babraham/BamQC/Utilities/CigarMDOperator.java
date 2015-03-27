@@ -71,6 +71,9 @@ public enum CigarMDOperator {
     public static final CigarMDOperator SOFT_CLIP = S;
     public static final CigarMDOperator HARD_CLIP = H;
     public static final CigarMDOperator PADDING = P;
+    // NOTE: 
+    // missing EQ and X from the original CigarOperator....is this a bug?
+    
 
     /** Default constructor. */
     CigarMDOperator(boolean consumesReadBases, boolean consumesReferenceBases, char character) {

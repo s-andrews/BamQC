@@ -139,14 +139,14 @@ public class SNPFrequenciesTest {
 		for (SAMRecord samRecord : samRecords) {
 			//printCigarAndMD(samRecord);
 			snpFrequencies.processSequence(samRecord);
-			combinedCigarMDtagList.add(snpFrequencies.getCombinedCigarMDtag());
+			combinedCigarMDtagList.add(snpFrequencies.getCigarMD().toString());
 		}
 		assertEquals("89m", combinedCigarMDtagList.get(0));
 		assertEquals("91m", combinedCigarMDtagList.get(1));
-		assertEquals("8m1uC41m1uC38m", combinedCigarMDtagList.get(2));
-		assertEquals("48m1uT37m1uC4m", combinedCigarMDtagList.get(3));
-		assertEquals("9m1uT1uG24m1uA11m1uT43m", combinedCigarMDtagList.get(4));
-		assertEquals("3m1uG14m1uA9m1uT33m1uT1uG24m1uA1m", combinedCigarMDtagList.get(5));		
+		assertEquals("8m1uCA41m1uCT38m", combinedCigarMDtagList.get(2));
+		assertEquals("48m1uTC37m1uCT4m", combinedCigarMDtagList.get(3));
+		assertEquals("9m1uTG1uGA24m1uAG11m1uTC43m", combinedCigarMDtagList.get(4));
+		assertEquals("3m1uGT14m1uAT9m1uTA33m1uTG1uGA24m1uAG1m", combinedCigarMDtagList.get(5));		
 	}
 
 	@Test
@@ -157,11 +157,11 @@ public class SNPFrequenciesTest {
 		for (SAMRecord samRecord : samRecords) {
 	        //printCigarAndMD(samRecord);	
 			snpFrequencies.processSequence(samRecord);
-			combinedCigarMDtagList.add(snpFrequencies.getCombinedCigarMDtag());	
+			combinedCigarMDtagList.add(snpFrequencies.getCigarMD().toString());	
 		}
-		assertEquals("14m1uC1m1uC8m1uT16m1dT20m1uC1uC27m", combinedCigarMDtagList.get(0));
-		assertEquals("36m1uC13m1uT34m1dT6m", combinedCigarMDtagList.get(1));
-		assertEquals("20m1dA62m1uC8m", combinedCigarMDtagList.get(2));		
+		assertEquals("14m1uCA1m1uCG8m1uTA16m1dT20m1uCT1uCT27m", combinedCigarMDtagList.get(0));
+		assertEquals("36m1uCA13m1uTC34m1dT6m", combinedCigarMDtagList.get(1));
+		assertEquals("20m1dA62m1uCT8m", combinedCigarMDtagList.get(2));		
 	}	
 	
 	@Test
@@ -172,7 +172,7 @@ public class SNPFrequenciesTest {
 		for (SAMRecord samRecord : samRecords) {
 			//printCigarAndMD(samRecord);
 			snpFrequencies.processSequence(samRecord);
-			combinedCigarMDtagList.add(snpFrequencies.getCombinedCigarMDtag());			
+			combinedCigarMDtagList.add(snpFrequencies.getCigarMD().toString());			
 		}
 		assertEquals("22m3iAGC65m", combinedCigarMDtagList.get(0));
 		assertEquals("57m1iT31m", combinedCigarMDtagList.get(1));
@@ -187,12 +187,12 @@ public class SNPFrequenciesTest {
 		for (SAMRecord samRecord : samRecords) {
           //printCigarAndMD(samRecord);		
 		  snpFrequencies.processSequence(samRecord);
-		  combinedCigarMDtagList.add(snpFrequencies.getCombinedCigarMDtag());		  
+		  combinedCigarMDtagList.add(snpFrequencies.getCigarMD().toString());		  
 		}
 		assertEquals("6m1iT2m1dT82m", combinedCigarMDtagList.get(0));
-		assertEquals("2m1dA56m2dGT10m1uC21m", combinedCigarMDtagList.get(1));
-		assertEquals("1uA17m1dT3m1iG14m1uA2m1uC29m", combinedCigarMDtagList.get(2));
-		assertEquals("7m1uG24m2dAA5m1iG2m1uC49m", combinedCigarMDtagList.get(3));		
+		assertEquals("2m1dA56m2dGT10m1uCT21m", combinedCigarMDtagList.get(1));
+		assertEquals("1uAC17m1dT3m1iG14m1uAT2m1uCT29m", combinedCigarMDtagList.get(2));
+		assertEquals("7m1uGA24m2dAA5m1iG2m1uCG49m", combinedCigarMDtagList.get(3));		
 	}	
 	
 	
@@ -202,8 +202,8 @@ public class SNPFrequenciesTest {
 		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MI.sam");
 		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MD.sam");
 		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MID.sam");		
-		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_full.sam");
-		//String filename = new String(new File("").getAbsolutePath() + "/../../Documents/BamQC_Examples/example.sam");
+		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_full.sam");
+		String filename = new String(new File("").getAbsolutePath() + "/../../Documents/BamQC_Examples/example.sam");
 		//String filename = new String(new File("").getAbsolutePath() + "/../../Documents/BamQC_Examples/large_example.bam");	
 		
 		// Parse the file read by read as it happens normally
@@ -220,7 +220,7 @@ public class SNPFrequenciesTest {
 		while(it.hasNext()) {
 			try { 
 				snpFrequencies.processSequence(it.next());
-				//System.out.println(snpFrequencies.getCombinedCigarMDtag());
+				System.out.println(snpFrequencies.getCigarMD().toString());
 			} catch (SAMFormatException sfe) { 
 				System.out.println("SAMFormatException");
 			}
@@ -258,9 +258,8 @@ public class SNPFrequenciesTest {
 		System.out.println("Tot. Del.: " + snpFrequencies.getTotalDeletions());
 		System.out.println("Total: " + snpFrequencies.getTotal());		
 		System.out.println("Tot. Matches: " + snpFrequencies.getTotalMatches());
-		System.out.println("Processed reads: " + snpFrequencies.getProcessedReads());		
-		System.out.println("Unprocessed reads (no MD or CIGAR string): " + snpFrequencies.getUnprocessedReads());
-		System.out.println("Skipped regions from the reference: " + snpFrequencies.getReferenceSkippedRegion());
+		System.out.println("Skipped regions on the reads: " + snpFrequencies.getReadSkippedRegions());
+		System.out.println("Skipped regions on the reference: " + snpFrequencies.getReferenceSkippedRegions());
 	}	
 
 	

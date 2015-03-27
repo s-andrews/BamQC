@@ -38,8 +38,7 @@ public class CigarMD {
 
 	private final List<CigarMDElement> cigarMDElements = new ArrayList<CigarMDElement>();
 
-	public CigarMD() {
-	}
+	public CigarMD() { }
 
 	public CigarMD(final List<CigarMDElement> cigarMDElements) {
 		this.cigarMDElements.addAll(cigarMDElements);
@@ -83,7 +82,8 @@ public class CigarMD {
 			case N:
 			case EQ:
 			case X:
-				length += element.getLength();
+				length += element.getLength(); break;
+			default:
 			}
 		}
 		return length;
@@ -107,7 +107,8 @@ public class CigarMD {
 			case N:
 			case EQ:
 			case X:
-				length += element.getLength();
+				length += element.getLength(); break;
+			default:
 			}
 		}
 		return length;

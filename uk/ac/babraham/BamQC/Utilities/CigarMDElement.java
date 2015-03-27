@@ -27,10 +27,12 @@ public class CigarMDElement {
 	
     private final int length;
     private final CigarMDOperator operator;
+    private final String bases;
 
-    public CigarMDElement(final int length, final CigarMDOperator operator) {
+    public CigarMDElement(final int length, final CigarMDOperator operator, final String bases) {
         this.length = length;
         this.operator = operator;
+        this.bases = bases;
     }
 
     public int getLength() {
@@ -39,6 +41,10 @@ public class CigarMDElement {
 
     public CigarMDOperator getOperator() {
         return operator;
+    }
+    
+    public String getBases() {
+        return bases;
     }
 
     @Override
@@ -50,7 +56,8 @@ public class CigarMDElement {
 
         if (length != that.length) return false;
         if (operator != that.operator) return false;
-
+        if (bases != that.bases) return false;
+        
         return true;
     }
 
@@ -60,4 +67,10 @@ public class CigarMDElement {
         result = 31 * result + (operator != null ? operator.hashCode() : 0);
         return result;
     }
+    
+    @Override
+    public String toString() {
+        return String.valueOf(length) + operator.toString() + bases;
+    }
+    
 }
