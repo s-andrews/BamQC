@@ -202,8 +202,8 @@ public class SNPFrequenciesTest {
 		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MI.sam");
 		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MD.sam");
 		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MID.sam");		
-		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_full.sam");
-		String filename = new String(new File("").getAbsolutePath() + "/../../Documents/BamQC_Examples/example.sam");
+		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_full.sam");
+		//String filename = new String(new File("").getAbsolutePath() + "/../../Documents/BamQC_Examples/example.sam");
 		//String filename = new String(new File("").getAbsolutePath() + "/../../Documents/BamQC_Examples/large_example.bam");	
 		
 		// Parse the file read by read as it happens normally
@@ -251,6 +251,7 @@ public class SNPFrequenciesTest {
 		System.out.println("C Ins: " + snpFrequencies.getCInsertions());
 		System.out.println("G Ins: " + snpFrequencies.getGInsertions());
 		System.out.println("T Ins: " + snpFrequencies.getTInsertions());
+		System.out.println("N Ins: " + snpFrequencies.getNInsertions());
 		System.out.println("Tot. Ins.: " + snpFrequencies.getTotalInsertions());
 		System.out.println("A Del: " + snpFrequencies.getADeletions());
 		System.out.println("C Del: " + snpFrequencies.getCDeletions());

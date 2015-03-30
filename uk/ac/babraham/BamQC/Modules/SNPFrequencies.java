@@ -63,7 +63,8 @@ public class SNPFrequencies extends AbstractQCModule {
 	private long aInsertions = 0;
 	private long cInsertions = 0;
 	private long gInsertions = 0;
-	private long tInsertions = 0;	
+	private long tInsertions = 0;
+	private long nInsertions = 0;		
 	private long totalInsertions = 0;
 	private long aDeletions = 0;
 	private long cDeletions = 0;
@@ -212,7 +213,8 @@ public class SNPFrequencies extends AbstractQCModule {
 		aInsertions = 0;
 		cInsertions = 0;
 		gInsertions = 0;
-		tInsertions = 0;	
+		tInsertions = 0;
+		nInsertions = 0;
 		totalInsertions = 0;
 		aDeletions = 0;
 		cDeletions = 0;
@@ -276,6 +278,7 @@ public class SNPFrequencies extends AbstractQCModule {
 						  ca+cg+ct+
 						  ga+gc+gt+
 						  ta+tc+tg;
+		// NOTE: nInsertions and nDeletions are not counted in the totals. 
 		totalInsertions = aInsertions + cInsertions + gInsertions + tInsertions;
 		totalDeletions = aDeletions + cDeletions + gDeletions + tDeletions;
 		total = totalMutations + totalInsertions + totalDeletions;
@@ -334,6 +337,7 @@ public class SNPFrequencies extends AbstractQCModule {
 			else if(insertedBases.charAt(i) == 'C') { cInsertions++; }
 			else if(insertedBases.charAt(i) == 'G') { gInsertions++; }
 			else if(insertedBases.charAt(i) == 'T') { tInsertions++; }
+			else if(insertedBases.charAt(i) == 'N') { nInsertions++; }			
 		}
 	}
 	
@@ -346,6 +350,7 @@ public class SNPFrequencies extends AbstractQCModule {
 			else if(deletedBases.charAt(i) == 'C') { cDeletions++; }
 			else if(deletedBases.charAt(i) == 'G') { gDeletions++; }
 			else if(deletedBases.charAt(i) == 'T') { tDeletions++; }
+			else if(deletedBases.charAt(i) == 'N') { nDeletions++; }			
 		}
 	}
 	
@@ -456,6 +461,10 @@ public class SNPFrequencies extends AbstractQCModule {
 		return tInsertions;
 	}
 
+	public long getNInsertions() {
+		return nInsertions;
+	}
+	
 	public long getTotalInsertions() {
 		return totalInsertions;
 	}
