@@ -218,9 +218,11 @@ public class SNPFrequenciesTest {
 		SAMFileReader samReader = new SAMFileReader(fis);
 		Iterator<SAMRecord> it = samReader.iterator();
 		while(it.hasNext()) {
-			try { 
-				snpFrequencies.processSequence(it.next());
-				System.out.println(snpFrequencies.getCigarMD().toString());
+			try {
+				SAMRecord samRecord = it.next();
+				//printCigarAndMD(samRecord);				
+				snpFrequencies.processSequence(samRecord);
+				//System.out.println(snpFrequencies.getCigarMD().toString());
 			} catch (SAMFormatException sfe) { 
 				System.out.println("SAMFormatException");
 			}
