@@ -41,15 +41,15 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import uk.ac.babraham.BamQC.Modules.SNPFrequencies;
+import uk.ac.babraham.BamQC.Modules.SNPFrequenciesBackup;
 import uk.ac.babraham.BamQC.Sequence.SequenceFormatException;
 
-public class SNPFrequenciesTest {
+public class SNPFrequenciesTestBackup {
 
-	private static Logger log = Logger.getLogger(SNPFrequenciesTest.class);
+	private static Logger log = Logger.getLogger(SNPFrequenciesTestBackup.class);
 	
 	private List<SAMRecord> samRecords = null;
-	private SNPFrequencies snpFrequencies = null;
+	private SNPFrequenciesBackup snpFrequencies = null;
 	
 	// Load the whole SAM file, as this is very short. (3-10 lines).
 	// Clearly this is not a correct approach generally.
@@ -107,7 +107,7 @@ public class SNPFrequenciesTest {
 	@Before
 	public void setUp() throws Exception {
 		samRecords = new ArrayList<SAMRecord>();		
-		snpFrequencies = new SNPFrequencies();		
+		snpFrequencies = new SNPFrequenciesBackup();		
 	}
 
 	@After
@@ -124,7 +124,7 @@ public class SNPFrequenciesTest {
 		
 		TestObjectFactory testObjectFactory = new TestObjectFactory();
 		samRecords = testObjectFactory.getSamRecords();	
-		snpFrequencies = new SNPFrequencies();
+		snpFrequencies = new SNPFrequenciesBackup();
 		
 		for (SAMRecord samRecord : samRecords) {
 			snpFrequencies.processSequence(samRecord);
@@ -139,14 +139,14 @@ public class SNPFrequenciesTest {
 		for (SAMRecord samRecord : samRecords) {
 			//printCigarAndMD(samRecord);
 			snpFrequencies.processSequence(samRecord);
-			combinedCigarMDtagList.add(snpFrequencies.getCigarMD().toString());
+			combinedCigarMDtagList.add(snpFrequencies.getCombinedCigarMDtag());
 		}
 		assertEquals("89m", combinedCigarMDtagList.get(0));
 		assertEquals("91m", combinedCigarMDtagList.get(1));
-		assertEquals("8m1uCA41m1uCT38m", combinedCigarMDtagList.get(2));
-		assertEquals("48m1uTC37m1uCT4m", combinedCigarMDtagList.get(3));
-		assertEquals("9m1uTG1uGA24m1uAG11m1uTC43m", combinedCigarMDtagList.get(4));
-		assertEquals("3m1uGT14m1uAT9m1uTA33m1uTG1uGA24m1uAG1m", combinedCigarMDtagList.get(5));		
+		assertEquals("8m1uC41m1uC38m", combinedCigarMDtagList.get(2));
+		assertEquals("48m1uT37m1uC4m", combinedCigarMDtagList.get(3));
+		assertEquals("9m1uT1uG24m1uA11m1uT43m", combinedCigarMDtagList.get(4));
+		assertEquals("3m1uG14m1uA9m1uT33m1uT1uG24m1uA1m", combinedCigarMDtagList.get(5));		
 	}
 
 	@Test
@@ -157,11 +157,11 @@ public class SNPFrequenciesTest {
 		for (SAMRecord samRecord : samRecords) {
 	        //printCigarAndMD(samRecord);	
 			snpFrequencies.processSequence(samRecord);
-			combinedCigarMDtagList.add(snpFrequencies.getCigarMD().toString());	
+			combinedCigarMDtagList.add(snpFrequencies.getCombinedCigarMDtag());	
 		}
-		assertEquals("14m1uCA1m1uCG8m1uTA16m1dT20m1uCT1uCT27m", combinedCigarMDtagList.get(0));
-		assertEquals("36m1uCA13m1uTC34m1dT6m", combinedCigarMDtagList.get(1));
-		assertEquals("20m1dA62m1uCT8m", combinedCigarMDtagList.get(2));		
+		assertEquals("14m1uC1m1uC8m1uT16m1dT20m1uC1uC27m", combinedCigarMDtagList.get(0));
+		assertEquals("36m1uC13m1uT34m1dT6m", combinedCigarMDtagList.get(1));
+		assertEquals("20m1dA62m1uC8m", combinedCigarMDtagList.get(2));		
 	}	
 	
 	@Test
@@ -172,7 +172,7 @@ public class SNPFrequenciesTest {
 		for (SAMRecord samRecord : samRecords) {
 			//printCigarAndMD(samRecord);
 			snpFrequencies.processSequence(samRecord);
-			combinedCigarMDtagList.add(snpFrequencies.getCigarMD().toString());			
+			combinedCigarMDtagList.add(snpFrequencies.getCombinedCigarMDtag());			
 		}
 		assertEquals("22m3iAGC65m", combinedCigarMDtagList.get(0));
 		assertEquals("57m1iT31m", combinedCigarMDtagList.get(1));
@@ -187,41 +187,14 @@ public class SNPFrequenciesTest {
 		for (SAMRecord samRecord : samRecords) {
           //printCigarAndMD(samRecord);		
 		  snpFrequencies.processSequence(samRecord);
-		  combinedCigarMDtagList.add(snpFrequencies.getCigarMD().toString());		  
+		  combinedCigarMDtagList.add(snpFrequencies.getCombinedCigarMDtag());		  
 		}
 		assertEquals("6m1iT2m1dT82m", combinedCigarMDtagList.get(0));
-		assertEquals("2m1dA56m2dGT10m1uCT21m", combinedCigarMDtagList.get(1));
-		assertEquals("1uAC17m1dT3m1iG14m1uAT2m1uCT29m", combinedCigarMDtagList.get(2));
-		assertEquals("7m1uGA24m2dAA5m1iG2m1uCG49m", combinedCigarMDtagList.get(3));		
+		assertEquals("2m1dA56m2dGT10m1uC21m", combinedCigarMDtagList.get(1));
+		assertEquals("1uA17m1dT3m1iG14m1uA2m1uC29m", combinedCigarMDtagList.get(2));
+		assertEquals("7m1uG24m2dAA5m1iG2m1uC49m", combinedCigarMDtagList.get(3));		
 	}	
 	
-	@Test
-	public void testCigarOperFull() {
-		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_full.sam");
-		if(!loadSAMFile(filename)) { return; }
-		List<String> combinedCigarMDtagList = new ArrayList<String>();			
-		for (SAMRecord samRecord : samRecords) {
-          //printCigarAndMD(samRecord);		
-		  snpFrequencies.processSequence(samRecord);
-		  combinedCigarMDtagList.add(snpFrequencies.getCigarMD().toString());		  
-		}
-		assertEquals("89m", combinedCigarMDtagList.get(0));
-		assertEquals("91m", combinedCigarMDtagList.get(1));
-		assertEquals("91m", combinedCigarMDtagList.get(2));
-		assertEquals("22m3iAGC65m", combinedCigarMDtagList.get(3));
-		assertEquals("57m1iT31m", combinedCigarMDtagList.get(4));
-		assertEquals("70m1iT20m", combinedCigarMDtagList.get(5));
-		assertEquals("14m1uCA1m1uCG8m1uTA16m1dT20m1uCT1uCT27m", combinedCigarMDtagList.get(6));
-		assertEquals("36m1uCA13m1uTC34m1dT6m", combinedCigarMDtagList.get(7));
-		assertEquals("20m1dA62m1uCT8m", combinedCigarMDtagList.get(8));		
-		assertEquals("6m1iT2m1dT82m", combinedCigarMDtagList.get(9));
-		assertEquals("2m1dA56m2dGT10m1uCT21m", combinedCigarMDtagList.get(10));
-		assertEquals("1uAC17m1dT3m1iG14m1uAT2m1uCT29m", combinedCigarMDtagList.get(11));
-		assertEquals("7m1uGA24m2dAA5m1iG2m1uCG49m", combinedCigarMDtagList.get(12));
-		assertEquals("7m3uGAATCA22m2dAA5m1iG2m1uCG49m", combinedCigarMDtagList.get(13));		
-		assertEquals("", combinedCigarMDtagList.get(14));			
-		assertEquals("", combinedCigarMDtagList.get(15));			
-	}		
 	
 	@Test
 	public void testStatistics() {
@@ -245,11 +218,9 @@ public class SNPFrequenciesTest {
 		SAMFileReader samReader = new SAMFileReader(fis);
 		Iterator<SAMRecord> it = samReader.iterator();
 		while(it.hasNext()) {
-			try {
-				SAMRecord samRecord = it.next();
-				//printCigarAndMD(samRecord);				
-				snpFrequencies.processSequence(samRecord);
-				//System.out.println("SNPFrequenciesTest.java: CigarMD: " + snpFrequencies.getCigarMD().toString());
+			try { 
+				snpFrequencies.processSequence(it.next());
+				//System.out.println(snpFrequencies.getCombinedCigarMDtag());
 			} catch (SAMFormatException sfe) { 
 				System.out.println("SAMFormatException");
 			}
@@ -278,7 +249,6 @@ public class SNPFrequenciesTest {
 		System.out.println("C Ins: " + snpFrequencies.getCInsertions());
 		System.out.println("G Ins: " + snpFrequencies.getGInsertions());
 		System.out.println("T Ins: " + snpFrequencies.getTInsertions());
-		System.out.println("N Ins: " + snpFrequencies.getNInsertions());
 		System.out.println("Tot. Ins.: " + snpFrequencies.getTotalInsertions());
 		System.out.println("A Del: " + snpFrequencies.getADeletions());
 		System.out.println("C Del: " + snpFrequencies.getCDeletions());
@@ -288,8 +258,9 @@ public class SNPFrequenciesTest {
 		System.out.println("Tot. Del.: " + snpFrequencies.getTotalDeletions());
 		System.out.println("Total: " + snpFrequencies.getTotal());		
 		System.out.println("Tot. Matches: " + snpFrequencies.getTotalMatches());
-		System.out.println("Skipped regions on the reads: " + snpFrequencies.getReadSkippedRegions());
-		System.out.println("Skipped regions on the reference: " + snpFrequencies.getReferenceSkippedRegions());
+		System.out.println("Processed reads: " + snpFrequencies.getProcessedReads());		
+		System.out.println("Unprocessed reads (no MD or CIGAR string): " + snpFrequencies.getUnprocessedReads());
+		System.out.println("Skipped regions from the reference: " + snpFrequencies.getReferenceSkippedRegion());
 	}	
 
 	
