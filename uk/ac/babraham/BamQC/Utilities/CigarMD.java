@@ -30,7 +30,7 @@ import net.sf.samtools.SAMRecord;
  * A list of CigarMDElement. The format is: # (number), operator (m=match,
  * u=unmatch, i=insertion, d=deletion), bases if oper={u,i,d}. For instance:
  * CIGAR: 32M2D5M1I52M MDtag: 7G24^AA7C49 Combined CIGAR+MDTag:
- * 7m1uG24m2dAA5m1iG2m1uC49m
+ * 7m1uGT24m2dAA5m1iG2m1uCA49m
  * 
  * Note: G in 1iG is SAM read- dependent.
  */
