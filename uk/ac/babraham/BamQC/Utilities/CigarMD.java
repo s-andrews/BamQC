@@ -72,16 +72,16 @@ public class CigarMD {
 		int length = 0;
 		for (final CigarMDElement element : cigarMDElements) {
 			switch (element.getOperator()) {
-			case M:
-			case U:
-				// case I:
-			case D:
-				// case S:
-				// case H:
-				// case P:
-			case N:
-			case EQ:
-			case X:
+			case m:
+			case u:
+				// case i:
+			case d:
+				// case s:
+				// case h:
+				// case p:
+			case n:
+			case eq:
+			case x:
 				length += element.getLength(); break;
 			default:
 			}
@@ -97,16 +97,16 @@ public class CigarMD {
 		int length = 0;
 		for (final CigarMDElement element : cigarMDElements) {
 			switch (element.getOperator()) {
-			case M:
-			case U:
-				// case I:
-			case D:
-				// case S:
-				// case H:
-				// case P:
-			case N:
-			case EQ:
-			case X:
+			case m:
+			case u:
+				// case i:
+			case d:
+				// case s:
+				// case h:
+				// case p:
+			case n:
+			case eq:
+			case x:
 				length += element.getLength(); break;
 			default:
 			}
@@ -248,22 +248,22 @@ public class CigarMD {
 	// }
 
 	private static boolean isRealOperator(final CigarMDOperator op) {
-		return op == CigarMDOperator.M || op == CigarMDOperator.U
-				|| op == CigarMDOperator.EQ || op == CigarMDOperator.X
-				|| op == CigarMDOperator.I || op == CigarMDOperator.D
-				|| op == CigarMDOperator.N;
+		return op == CigarMDOperator.m || op == CigarMDOperator.u
+				|| op == CigarMDOperator.eq || op == CigarMDOperator.x
+				|| op == CigarMDOperator.i || op == CigarMDOperator.d
+				|| op == CigarMDOperator.n;
 	}
 
 	private static boolean isInDelOperator(final CigarMDOperator op) {
-		return op == CigarMDOperator.I || op == CigarMDOperator.D;
+		return op == CigarMDOperator.i || op == CigarMDOperator.d;
 	}
 
 	private static boolean isClippingOperator(final CigarMDOperator op) {
-		return op == CigarMDOperator.S || op == CigarMDOperator.H;
+		return op == CigarMDOperator.s || op == CigarMDOperator.h;
 	}
 
 	private static boolean isPaddingOperator(final CigarMDOperator op) {
-		return op == CigarMDOperator.P;
+		return op == CigarMDOperator.p;
 	}
 
 	@Override

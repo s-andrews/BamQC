@@ -25,25 +25,25 @@ package uk.ac.babraham.BamQC.Utilities;
  */
 public enum CigarMDOperator {
     /** Match */
-    M(true, true,   'm'),
+    m(true, true,   'm'),
     /** Mismatch */
-    U(true, true,   'u'),    
+    u(true, true,   'u'),    
     /** Insertion vs. the reference. */
-    I(true, false,  'i'),
+    i(true, false,  'i'),
     /** Deletion vs. the reference. */
-    D(false, true,  'd'),
+    d(false, true,  'd'),
     /** Skipped region from the reference. */
-    N(false, true,  'n'),
+    n(false, true,  'n'),
     /** Soft clip. */
-    S(true, false,  's'),
+    s(true, false,  's'),
     /** Hard clip. */
-    H(false, false, 'h'),
+    h(false, false, 'h'),
     /** Padding. */
-    P(false, false, 'p'),
+    p(false, false, 'p'),
     /** Matches the reference. */
-    EQ(true, true,  '='),
+    eq(true, true,  '='),
     /** Mismatches the reference. */
-    X(true, true,   'x')
+    x(true, true,   'x')
     ;
 
     // There is no internal representation of CigarMDOperator in BAM file
@@ -63,14 +63,14 @@ public enum CigarMDOperator {
     private final String string;
 
     // Readable synonyms of the above enums
-    public static final CigarMDOperator MATCH = M;
-    public static final CigarMDOperator MISMATCH = U;    
-    public static final CigarMDOperator INSERTION = I;
-    public static final CigarMDOperator DELETION = D;
-    public static final CigarMDOperator SKIPPED_REGION = N;
-    public static final CigarMDOperator SOFT_CLIP = S;
-    public static final CigarMDOperator HARD_CLIP = H;
-    public static final CigarMDOperator PADDING = P;
+    public static final CigarMDOperator MATCH = m;
+    public static final CigarMDOperator MISMATCH = u;    
+    public static final CigarMDOperator INSERTION = i;
+    public static final CigarMDOperator DELETION = d;
+    public static final CigarMDOperator SKIPPED_REGION = n;
+    public static final CigarMDOperator SOFT_CLIP = s;
+    public static final CigarMDOperator HARD_CLIP = h;
+    public static final CigarMDOperator PADDING = p;
     // NOTE: 
     // missing EQ and X from the original CigarOperator....is this a bug?
     
@@ -96,25 +96,25 @@ public enum CigarMDOperator {
     public static CigarMDOperator characterToEnum(final int b) {
         switch (b) {
         case 'm':
-            return M;
+            return m;
         case 'u':
-            return U;            
+            return u;            
         case 'i':
-            return I;
+            return i;
         case 'd':
-            return D;
+            return d;
         case 'n':
-            return N;
+            return n;
         case 's':
-            return S;
+            return s;
         case 'h':
-            return H;
+            return h;
         case 'p':
-            return P;
+            return p;
         case '=':
-            return EQ;
+            return eq;
         case 'x':
-            return X;
+            return x;
         default:
             throw new IllegalArgumentException("Unrecognized CigarMDOperator: " + b);
         }
