@@ -85,9 +85,9 @@ public class SNPFrequenciesTest {
 	
 	private void printCigarAndMD(SAMRecord samRecord) { 
 		// Get the CIGAR list and MD tag string.
-		System.out.println("--------------");			
 		System.out.println("CIGAR: " + samRecord.getCigarString());
-		System.out.println("MDtag: " + samRecord.getStringAttribute("MD"));	
+		System.out.println("MDtag: " + samRecord.getStringAttribute("MD"));
+		System.out.println("--------------");				
 	}
 	
 	
@@ -222,6 +222,30 @@ public class SNPFrequenciesTest {
 		assertEquals("", combinedCigarMDtagList.get(14));			
 		assertEquals("", combinedCigarMDtagList.get(15));			
 	}		
+	
+	
+	@Test
+	public void testReversedReads() {
+		String filename = new String(new File("").getAbsolutePath() + "/test/resources/snp_examples.fastq_bowtie2.sam");
+		if(!loadSAMFile(filename)) { return; }
+		List<String> combinedCigarMDtagList = new ArrayList<String>();
+		for (SAMRecord samRecord : samRecords) {
+		  snpFrequencies.processSequence(samRecord);
+		  System.out.println("Name: " + samRecord.getReadName());
+		  System.out.println("String: " + samRecord.getReadString());
+		  System.out.println("Flags: " + samRecord.getFlags());		  
+		  System.out.println("CigarMD: " + snpFrequencies.getCigarMD().toString());	  		  
+          printCigarAndMD(samRecord);
+          combinedCigarMDtagList.add(snpFrequencies.getCigarMD().toString());		  
+		}
+		//assertEquals("6m1iT2m1dT82m", combinedCigarMDtagList.get(0));
+		//assertEquals("2m1dA56m2dGT10m1uCT21m", combinedCigarMDtagList.get(1));
+		//assertEquals("1uAC17m1dT3m1iG14m1uAT2m1uCT29m", combinedCigarMDtagList.get(2));
+		//assertEquals("7m1uGA24m2dAA5m1iG2m1uCG49m", combinedCigarMDtagList.get(3));		
+	}		
+	
+	
+	
 	
 	@Test
 	public void testStatistics() {
