@@ -112,15 +112,45 @@ public class CigarMDGenerator {
 	 */
 	private void computeCigarMDTag(SAMRecord read) {
 
+		/*
+		 * IMPORTANT NOTE:
+		 * The second column of a SAM file contains important hex FLAGS. From the SAM/BAM format specifications: 
+		 * (a) "Bit 0x4 is the only reliable place to tell whether the read is unmapped. If 0x4 is set, no assumptions
+		 * can be made about RNAME, POS, CIGAR, MAPQ"
+		 * (b) "Bit 0x10 indicates whether SEQ has been reverse complemented and QUAL reversed. When bit 0x4 is unset, this 
+		 * correspond to the strand to which the segment has been mapped. When 0x4 is set, this indicates whether the unmapped 
+		 * read is stored in its original orientation as it came off the sequencing machine. 
+		 * 
+		 * Since this class strongly depend on the CIGAR string, the bit 0x4 must be unset. 
+		 * The bit 0x10 must be evaluated in order to parse and collect statistics correctly. If 0x10 is set, a new read shall 
+		 * be computed reversing and complementing SEQ, CIGAR (?) and MD tag (?).
+		 * 
+		 * Check Simon's test files
+		 * Then add these tests.
+		 */		
+
+		// if Flag 0x4 is set, then the read is unmapped. Therefore, skip it for the reasons above.
+		int mask = read.getFlags();
+		// To check the state of a flag bit. Unmapped Flag 0x4 in decimal is: hex2dec(0x4) => 4 
+		if ((4 | mask) == mask) {
+			// flag 0x4 is set. The read is unmapped. Skip it. 
+			// System.out.println("CigarMDGenerator: current SAM read does has flag 0x4 set on.");
+			return;			
+		}
+		
+		
+		
+		
 		// Get the MD tag string.
 		mdString = read.getStringAttribute("MD");
 
 		if (mdString == null || mdString.equals("")) {
-			// System.out.println("CigarMDGenerator: current SAM read does not have MD tag string");
+			// System.out.println("CigarMDGenerator: current SAM read does not have MD tag string.");
 			return;
 		}
+
 		// Get the CIGAR list
-		cigarList = read.getCigar().getCigarElements();
+		cigarList = read.getCigar().getCigarElements();				
 		// Iterate the CigarList
 		Iterator<CigarElement> iterCigar = cigarList.iterator();
 
