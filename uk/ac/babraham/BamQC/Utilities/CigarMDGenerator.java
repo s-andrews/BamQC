@@ -20,15 +20,17 @@
 
 package uk.ac.babraham.BamQC.Utilities;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import net.sf.samtools.CigarElement;
 import net.sf.samtools.SAMRecord;
 
 
 /**
  * It calculates a string combining information from CIGAR and MD tag. The
- * format is: # (number), operator (m=match, u=unmatch, i=insertion,
+ * format is: # (number), operator (m=match, u=mismatch, i=insertion,
  * d=deletion), bases if oper={u,i,d}. For instance: CIGAR: 32M2D5M1I52M MDtag:
  * 7G24^AA7C49 Combined CIGAR+MDTag: 7m1uGT24m2dAA5m1iG2m1uCA49m
  * 
@@ -122,35 +124,33 @@ public class CigarMDGenerator {
 		 * read is stored in its original orientation as it came off the sequencing machine. 
 		 * 
 		 * Since this class strongly depend on the CIGAR string, the bit 0x4 must be unset. 
-		 * The bit 0x10 must be evaluated in order to parse and collect statistics correctly. If 0x10 is set, a new read shall 
-		 * be computed reversing and complementing SEQ, CIGAR (?) and MD tag (?).
-		 * 
-		 * Check Simon's test files
-		 * Then add these tests.
+		 * The bit 0x10 must be evaluated in order to parse and collect statistics correctly. If so, 
+		 * the correct positions for SNP/Indels must be calculated. 
 		 */		
 
 		// if Flag 0x4 is set, then the read is unmapped. Therefore, skip it for the reasons above.
 		int mask = read.getFlags();
-		// To check the state of a flag bit. Unmapped Flag 0x4 in decimal is: hex2dec(0x4) => 4 
+		// Check the state of a flag bit 'unmapped'. Unmapped Flag 0x4 in decimal is: hex2dec(0x4) => 4 
 		if ((4 | mask) == mask) {
-			// flag 0x4 is set. The read is unmapped. Skip it. 
+			// flag 0x4 is set on. The read is unmapped. Skip it. 
 			// System.out.println("CigarMDGenerator: current SAM read does has flag 0x4 set on.");
 			return;			
 		}
 		
 		
 		
-		
 		// Get the MD tag string.
 		mdString = read.getStringAttribute("MD");
-
 		if (mdString == null || mdString.equals("")) {
 			// System.out.println("CigarMDGenerator: current SAM read does not have MD tag string.");
 			return;
 		}
-
 		// Get the CIGAR list
-		cigarList = read.getCigar().getCigarElements();				
+		cigarList = read.getCigar().getCigarElements();
+		
+
+		
+		
 		// Iterate the CigarList
 		Iterator<CigarElement> iterCigar = cigarList.iterator();
 
@@ -193,10 +193,29 @@ public class CigarMDGenerator {
 				// Possibly, throw an exception.
 			}
 		}
-
+		
+		// If Flag 0x10 is set on, it means the other strand in the read was parsed. 
+		// The positions need to be inverted. To do this, we need to reverse the CigarMD string. 
+		// Check the state of a flag bit 'reversed and complemented'. Reversed and complemented Flag 0x10 in decimal is: hex2dec(0x10) => 16 
+		if ((16 | mask) == mask) {
+			// flag 0x10 is set on. The read is complemented and reversed.
+			// debugging		
+			//System.out.println("CigarMD string (pre 0x10 flag transformation): " + cigarMD.toString());	
+			//System.out.println("CigarMDGenerator: current SAM read does has flag 0x10 set on.");
+			List<CigarMDElement> oldCigarMDElements = cigarMD.getCigarMDElements();
+			int listLength = oldCigarMDElements.size();
+			List<CigarMDElement> newCigarMDElements = new ArrayList<CigarMDElement>(listLength);
+			for(int i = listLength - 1; i >= 0; i--) {
+				newCigarMDElements.add(oldCigarMDElements.get(i));
+			}
+			cigarMD = new CigarMD(newCigarMDElements);
+		}
+		
 		// debugging
-		// System.out.println("CigarMD string: " + cigarMD.toString());
+		//System.out.println("CigarMD string: " + cigarMD.toString());
 	}
+
+	
 
 	/**
 	 * It resets the class data fields.
@@ -288,7 +307,7 @@ public class CigarMDGenerator {
 					// debugging
 					// System.out.println("currentBaseCallPosition: " + currentBaseCallPosition);
 					if("ACGTN".indexOf("" + currentMDChar) > -1) {
-						bases = bases + currentMDChar + currentBaseCall;
+						bases = bases + currentMDChar + currentBaseCall;			
 					} else {
 						// this is an error case
 						System.out.println("CigarMDGenerator.java: Found unrecognised mutation " + 
@@ -301,17 +320,20 @@ public class CigarMDGenerator {
 					// The number of mismatches will be the temporaryMDElementLength, whereas the variable 
 					// bases will store the mismatched couples (ReferenceBase,ReadBaseMutation).
 					boolean allContiguousMutationsFound = false;
-					while(currentMDElementPosition < mdString.length() && !allContiguousMutationsFound) {
-						// debugging
-						//System.out.println("currentMDElement: " + currentMDElement + " currentBaseCall: " + currentBaseCall);						
+					while(currentMDElementPosition < mdString.length() && !allContiguousMutationsFound) {		
 						currentMDChar = mdString.charAt(currentMDElementPosition);
 						if("ACGTN".indexOf("" + currentMDChar) > -1) {
 							// debugging
-							// System.out.println("currentBaseCallPosition: " + (currentBaseCallPosition+temporaryMDElementLength));
+							//System.out.println("currentMDElement: " + currentMDElement + " currentBaseCall: " + currentBaseCall);								
+							//System.out.println("currentBaseCallPosition: " + (currentBaseCallPosition+temporaryMDElementLength));
 							currentBaseCall = read.getReadString().charAt(currentBaseCallPosition+temporaryMDElementLength);
 							bases = bases + currentMDChar + currentBaseCall;
 							temporaryMDElementLength++;
-							currentMDElementPosition++;	
+							currentMDElementPosition++;
+						} else if(currentMDChar == '0' && temporaryMDElementLength < temporaryCigarElementLength) {
+							// temporaryMDElementLength < temporaryCigarElementLength is needed to assess that we 
+							// are still parsing the Cigar operator M, and not something else. 
+							currentMDElementPosition++;
 						} else {
 							allContiguousMutationsFound = true;
 						}			
@@ -345,116 +367,11 @@ public class CigarMDGenerator {
 			}
 			
 			// debugging
-		    //System.out.println(cigarMD.toString());			
+		    //System.out.println(cigarMD.toString());	
 		}
 	}
 	
 	
-	
-	/** Process the MD string once found the CIGAR operator M. 
-	 * This method computed the mutations one per time (1uCA1uAT1uCG)
-	 * instead of the method above which computes: 3uCAATCG */
-	private void processMDtagCigarOperatorMBACKUP(SAMRecord read) { 
-		// The temporary length of the current Cigar element
-		int temporaryCigarElementLength = currentCigarElementLength;
-		String bases;
-		while(temporaryCigarElementLength > 0) {
-			bases = "";
-			if(temporaryMDElementLength == 0) {
-				// Parse and extract the currenMDElement. It is either a number or a char (A,C,G,T)
-				// Extract the first character for the MD element.
-				// Only parse the next element of MD Tag string if this current has been completed. 
-				// This is required as MD tag string does not record insertions, whilst Cigar string does.
-				currentMDElement = String.valueOf(mdString.charAt(currentMDElementPosition));
-				currentMDElementPosition++;
-						
-		     	// skip if the current MD element is zero. This is redundant information if the CIGAR string is read too..
-				if(isCurrentMDelementZero()) { 
-					continue;
-				}	
-
-				temporaryMDElementLength = 1;				
-				// currentMDElement is either a positive number or a base (A,C,G,T)
-					
-				// If there is a mutation on the read bases with respect to the reference, we indicate this as:
-				// RefBaseMutBase (base on the reference -> mutated base on the read). 
-				// For instance: an element of CigarMD with operator 'u' is 1uCA IF the base C on the reference 
-				// is mutated into the base A on the aligned read base.
-				// We report the bases only if there is a mismatch
-				char currentBaseCall = read.getReadString().charAt(currentBaseCallPosition);
-				// debugging
-				//System.out.println("currentMDElement: " + currentMDElement + " currentBaseCall: " + currentBaseCall);				
-				if(currentMDElement.equals("A")) {
-					if(currentBaseCall == 'C' || currentBaseCall == 'G' || 
-					   currentBaseCall == 'T' || currentBaseCall == 'N') { 
-						bases = "A" + currentBaseCall;
-					}
-				} else if (currentMDElement.equals("C")) {
-					if(currentBaseCall == 'A' || currentBaseCall == 'G' || 
-					   currentBaseCall == 'T' || currentBaseCall == 'N') { 
-						bases = "C" + currentBaseCall;
-					}
-				} else if (currentMDElement.equals("G")) {
-					if(currentBaseCall == 'A' || currentBaseCall == 'C' || 
-					   currentBaseCall == 'T' || currentBaseCall == 'N') { 
-						bases = "G" + currentBaseCall;
-					}
-				} else if (currentMDElement.equals("T")) {
-					if(currentBaseCall == 'A' || currentBaseCall == 'C' || 
-					   currentBaseCall == 'G' || currentBaseCall == 'N') { 
-						bases = "T" + currentBaseCall;
-					}
-				} else if (currentMDElement.equals("N")) {
-					bases = "N" + currentBaseCall;
-				} else {
-					// The first character is a number. Let's continue and see how many numbers 
-					// we find
-					boolean parsedMDElement = false;
-					char c;
-					while(currentMDElementPosition < mdString.length() && !parsedMDElement) {
-						c = mdString.charAt(currentMDElementPosition);
-						if(c >= '0' && c <= '9') {
-							currentMDElement = currentMDElement + c;
-							currentMDElementPosition++;
-						} else {
-							// c is something else. The MD Element has been parsed.
-							parsedMDElement = true;
-						}
-					}
-					// currentMDElement is a number.
-					temporaryMDElementLength = Integer.parseInt(currentMDElement);
-				}
-			}
-			
-			// debugging
-			//System.out.println("tempCigElem: " + String.valueOf(temporaryCigarElementLength) + "M ~ " + "parsedMDElem: " + currentMDElement + " ; length: " + String.valueOf(temporaryMDElementLength));
-			
-			// update the position of the currentBaseCall and the parser.
-			if(temporaryMDElementLength <= temporaryCigarElementLength) {
-				if(currentMDElement.charAt(0) >= '0' && currentMDElement.charAt(0) <= '9') {
-					cigarMD.add(new CigarMDElement(temporaryMDElementLength, CigarMDOperator.MATCH, bases));					
-				} else {
-					cigarMD.add(new CigarMDElement(1, CigarMDOperator.MISMATCH, bases));
-				}			
-				currentBaseCallPosition = currentBaseCallPosition + temporaryMDElementLength;
-				temporaryCigarElementLength = temporaryCigarElementLength - temporaryMDElementLength;
-				temporaryMDElementLength = 0;
-			} else {
-				if(currentMDElement.charAt(0) >= '0' && currentMDElement.charAt(0) <= '9') {
-					cigarMD.add(new CigarMDElement(temporaryCigarElementLength, CigarMDOperator.MATCH, bases));
-				} else {
-					cigarMD.add(new CigarMDElement(1, CigarMDOperator.MISMATCH, bases));
-				}
-				currentBaseCallPosition = currentBaseCallPosition + temporaryCigarElementLength;
-				temporaryMDElementLength = temporaryMDElementLength - temporaryCigarElementLength;
-				temporaryCigarElementLength = 0;
-			}
-			
-			// debugging
-		    //System.out.println(cigarMD.toString());			
-		}
-	}
-
 	/** Process the MD string once found the CIGAR operator I. */
 	private void processMDtagCigarOperatorI(SAMRecord read) {
 		// The MD string does not contain information regarding an insertion.

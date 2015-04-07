@@ -153,11 +153,11 @@ public class SNPFrequencies extends AbstractQCModule {
 				//System.out.println("SNPFrequencies.java: extended CIGAR element P is currently unsupported.");
 				skippedReads++;
 				break;
-			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.EQ)) {
+			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.eq)) {
 				//System.out.println("SNPFrequencies.java: extended CIGAR element = is currently unsupported.");
 				skippedReads++;
 				break;
-			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.X)) {
+			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.x)) {
 				//System.out.println("SNPFrequencies.java: extended CIGAR element X is currently unsupported.");
 				skippedReads++;
 				break;

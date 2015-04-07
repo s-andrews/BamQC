@@ -28,7 +28,7 @@ import net.sf.samtools.SAMRecord;
 
 /**
  * A list of CigarMDElement. The format is: # (number), operator (m=match,
- * u=unmatch, i=insertion, d=deletion), bases if oper={u,i,d}. For instance:
+ * u=mismatch, i=insertion, d=deletion), bases if oper={u,i,d}. For instance:
  * CIGAR: 32M2D5M1I52M MDtag: 7G24^AA7C49 Combined CIGAR+MDTag:
  * 7m1uGT24m2dAA5m1iG2m1uCA49m
  * 
@@ -56,6 +56,12 @@ public class CigarMD {
 		cigarMDElements.add(cigarMDElement);
 	}
 
+	// not efficient. 
+	public void addInFront(final CigarMDElement cigarMDElement) {
+		cigarMDElements.add(0, cigarMDElement);
+	}	
+	
+	
 	public int numCigarMDElements() {
 		return cigarMDElements.size();
 	}
