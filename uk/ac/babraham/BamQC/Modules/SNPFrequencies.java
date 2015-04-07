@@ -79,9 +79,17 @@ public class SNPFrequencies extends AbstractQCModule {
 	private long referenceSkippedRegions = 0;
 	
     private long skippedReads = 0;
-    private long totalReads = 0;	
+    private long totalReads = 0;
     
+    // These arrays are used to store the density of SNP and Indels at each read position.
+    // Is 100 the right size? 
+    private long[] snpPos = new long[100];
+    private long[] insertionPos = new long[100];
+    private long[] deletionPos = new long[100];
+    private int currentPosition = 0;
 	
+    
+    
 	// Used for computing the statistics 
 	private CigarMDGenerator cigarMDGenerator = new CigarMDGenerator();
 
@@ -125,6 +133,7 @@ public class SNPFrequencies extends AbstractQCModule {
 			currentCigarMDElement = cigarMDIter.next();
 
 			currentCigarMDElementOperator = currentCigarMDElement.getOperator();
+			currentPosition = 0;
 			
 			// debugging
 			//System.out.println("Parsing CigarElement: " + String.valueOf(currentCigarElementLength) + currentCigarElementOperator.toString());
@@ -229,6 +238,11 @@ public class SNPFrequencies extends AbstractQCModule {
 
 		readSkippedRegions = 0;
 		referenceSkippedRegions = 0;
+		
+	    snpPos = new long[100];
+	    insertionPos = new long[100];
+	    deletionPos = new long[100];
+	    currentPosition = 0;
 
 		cigarMD = new CigarMD();
 	}
@@ -290,7 +304,9 @@ public class SNPFrequencies extends AbstractQCModule {
 	
 	/* Process the MD string once found the CigarMD operator m (match). */
 	private void processMDtagCigarOperatorM() {
-		totalMatches = totalMatches + currentCigarMDElement.getLength();
+		int numMatches = currentCigarMDElement.getLength();
+		totalMatches = totalMatches + numMatches;
+		currentPosition = currentPosition + numMatches; 
 	}
 	
 	/* Process the MD string once found the CigarMD operator u (mismatch). 
@@ -312,19 +328,19 @@ public class SNPFrequencies extends AbstractQCModule {
 		for(int i = 0; i < numMutations; i++) {
 			basePair = mutatedBases.substring(i*2, i*2+2);
 			if(basePair.equals("AC")) { ac++; }
-			else if(basePair.equals("AG")) { ag++; }
-			else if(basePair.equals("AT")) { at++; }
-			else if(basePair.equals("CA")) { ca++; }
-			else if(basePair.equals("CG")) { cg++; }
-			else if(basePair.equals("CT")) { ct++; }
-			else if(basePair.equals("GA")) { ga++; }
-			else if(basePair.equals("GC")) { gc++; }
-			else if(basePair.equals("GT")) { gt++; }
-			else if(basePair.equals("TA")) { ta++; }
-			else if(basePair.equals("TC")) { tc++; }
-			else if(basePair.equals("TG")) { tg++; }	
-			else if(basePair.charAt(0) == 'N') { referenceSkippedRegions++; }
-			else if(basePair.charAt(1) == 'N') { readSkippedRegions++; }			
+			else if(basePair.equals("AG")) { ag++; snpPos[currentPosition]++; currentPosition++;}
+			else if(basePair.equals("AT")) { at++; snpPos[currentPosition]++; currentPosition++; }
+			else if(basePair.equals("CA")) { ca++; snpPos[currentPosition]++; currentPosition++; }
+			else if(basePair.equals("CG")) { cg++; snpPos[currentPosition]++; currentPosition++; }
+			else if(basePair.equals("CT")) { ct++; snpPos[currentPosition]++; currentPosition++; }
+			else if(basePair.equals("GA")) { ga++; snpPos[currentPosition]++; currentPosition++; }
+			else if(basePair.equals("GC")) { gc++; snpPos[currentPosition]++; currentPosition++; }
+			else if(basePair.equals("GT")) { gt++; snpPos[currentPosition]++; currentPosition++; }
+			else if(basePair.equals("TA")) { ta++; snpPos[currentPosition]++; currentPosition++; }
+			else if(basePair.equals("TC")) { tc++; snpPos[currentPosition]++; currentPosition++; }
+			else if(basePair.equals("TG")) { tg++; snpPos[currentPosition]++; currentPosition++; }	
+			else if(basePair.charAt(0) == 'N') { referenceSkippedRegions++; currentPosition++; }
+			else if(basePair.charAt(1) == 'N') { readSkippedRegions++; currentPosition++; }			
 		}
 	}	
 	
@@ -333,11 +349,11 @@ public class SNPFrequencies extends AbstractQCModule {
 		int numInsertions = currentCigarMDElement.getLength();
 		String insertedBases = currentCigarMDElement.getBases();
 		for(int i = 0; i < numInsertions; i++) {
-			if(insertedBases.charAt(i) == 'A') { aInsertions++; }
-			else if(insertedBases.charAt(i) == 'C') { cInsertions++; }
-			else if(insertedBases.charAt(i) == 'G') { gInsertions++; }
-			else if(insertedBases.charAt(i) == 'T') { tInsertions++; }
-			else if(insertedBases.charAt(i) == 'N') { nInsertions++; }			
+			if(insertedBases.charAt(i) == 'A') { aInsertions++; insertionPos[currentPosition]++; currentPosition++; }
+			else if(insertedBases.charAt(i) == 'C') { cInsertions++; insertionPos[currentPosition]++; currentPosition++; }
+			else if(insertedBases.charAt(i) == 'G') { gInsertions++; insertionPos[currentPosition]++; currentPosition++; }
+			else if(insertedBases.charAt(i) == 'T') { tInsertions++; insertionPos[currentPosition]++; currentPosition++; }
+			else if(insertedBases.charAt(i) == 'N') { nInsertions++; currentPosition++; }			
 		}
 	}
 	
@@ -346,11 +362,11 @@ public class SNPFrequencies extends AbstractQCModule {
 		int numDeletions = currentCigarMDElement.getLength();
 		String deletedBases = currentCigarMDElement.getBases();
 		for(int i = 0; i < numDeletions; i++) {
-			if(deletedBases.charAt(i) == 'A') { aDeletions++; }
-			else if(deletedBases.charAt(i) == 'C') { cDeletions++; }
-			else if(deletedBases.charAt(i) == 'G') { gDeletions++; }
-			else if(deletedBases.charAt(i) == 'T') { tDeletions++; }
-			else if(deletedBases.charAt(i) == 'N') { nDeletions++; }			
+			if(deletedBases.charAt(i) == 'A') { aDeletions++; deletionPos[currentPosition]++; currentPosition++; }
+			else if(deletedBases.charAt(i) == 'C') { cDeletions++; deletionPos[currentPosition]++; currentPosition++; }
+			else if(deletedBases.charAt(i) == 'G') { gDeletions++; deletionPos[currentPosition]++; currentPosition++; }
+			else if(deletedBases.charAt(i) == 'T') { tDeletions++; deletionPos[currentPosition]++; currentPosition++; }
+			else if(deletedBases.charAt(i) == 'N') { nDeletions++; currentPosition++; }			
 		}
 	}
 	
@@ -359,7 +375,9 @@ public class SNPFrequencies extends AbstractQCModule {
 	
 	/* Process the MD string once found the CigarMD operator n. */	
 	private void processMDtagCigarOperatorN() {
-		readSkippedRegions = readSkippedRegions + currentCigarMDElement.getLength();
+		int numSkipped = currentCigarMDElement.getLength();		
+		readSkippedRegions = readSkippedRegions + numSkipped;
+		currentPosition = currentPosition + numSkipped;
 	}
 	
 	/* Process the MD string once found the CigarMD operator s. */	
@@ -515,14 +533,20 @@ public class SNPFrequencies extends AbstractQCModule {
 	
 	public long getTotalReads() {
 		return totalReads;
+	}
+
+	public long[] getSNPPos() {
+		return snpPos;
+	}
+
+	public long[] getInsertionPos() {
+		return insertionPos;
+	}
+
+	public long[] getDeletionPos() {
+		return deletionPos;
 	}	
 		
-	
-	
-	
-	
-	
-	
 	
 	
 	
