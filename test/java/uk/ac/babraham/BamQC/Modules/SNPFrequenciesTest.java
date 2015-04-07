@@ -231,17 +231,21 @@ public class SNPFrequenciesTest {
 		List<String> combinedCigarMDtagList = new ArrayList<String>();
 		for (SAMRecord samRecord : samRecords) {
 		  snpFrequencies.processSequence(samRecord);
-		  System.out.println("Name: " + samRecord.getReadName());
-		  System.out.println("String: " + samRecord.getReadString());
-		  System.out.println("Flags: " + samRecord.getFlags());		  
-		  System.out.println("CigarMD: " + snpFrequencies.getCigarMD().toString());	  		  
-          printCigarAndMD(samRecord);
+//		  System.out.println("Name: " + samRecord.getReadName());
+//		  System.out.println("String: " + samRecord.getReadString());
+//		  System.out.println("Flags: " + samRecord.getFlags());		  
+//		  System.out.println("CigarMD: " + snpFrequencies.getCigarMD().toString());	  		  
+//        printCigarAndMD(samRecord);
           combinedCigarMDtagList.add(snpFrequencies.getCigarMD().toString());		  
 		}
-		//assertEquals("6m1iT2m1dT82m", combinedCigarMDtagList.get(0));
-		//assertEquals("2m1dA56m2dGT10m1uCT21m", combinedCigarMDtagList.get(1));
-		//assertEquals("1uAC17m1dT3m1iG14m1uAT2m1uCT29m", combinedCigarMDtagList.get(2));
-		//assertEquals("7m1uGA24m2dAA5m1iG2m1uCG49m", combinedCigarMDtagList.get(3));		
+		assertEquals("86m", combinedCigarMDtagList.get(0));
+		assertEquals("68m1uTA17m", combinedCigarMDtagList.get(1));
+		assertEquals("86m", combinedCigarMDtagList.get(2));
+		assertEquals("58m1uCT27m", combinedCigarMDtagList.get(3));
+		assertEquals("21m2dTT63m", combinedCigarMDtagList.get(4));
+		assertEquals("57m2dAA27m", combinedCigarMDtagList.get(5));
+		assertEquals("36m2iCC50m", combinedCigarMDtagList.get(6));
+		assertEquals("53m2iGG33m", combinedCigarMDtagList.get(7));			
 	}		
 	
 	
