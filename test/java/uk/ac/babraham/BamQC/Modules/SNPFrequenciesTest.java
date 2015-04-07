@@ -137,7 +137,7 @@ public class SNPFrequenciesTest {
 		if(!loadSAMFile(filename)) { return; }
 		List<String> combinedCigarMDtagList = new ArrayList<String>();
 		for (SAMRecord samRecord : samRecords) {
-			printCigarAndMD(samRecord);
+			//printCigarAndMD(samRecord);
 			snpFrequencies.processSequence(samRecord);
 			combinedCigarMDtagList.add(snpFrequencies.getCigarMD().toString());
 		}
@@ -256,8 +256,9 @@ public class SNPFrequenciesTest {
 		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_M.sam");
 		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MI.sam");
 		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MD.sam");
-		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MID.sam");		
+		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MID.sam");
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_full.sam");
+		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/snp_examples.fastq_bowtie2.sam");		
 		//String filename = new String(new File("").getAbsolutePath() + "/../../Documents/BamQC_Examples/example.sam");
 		//String filename = new String(new File("").getAbsolutePath() + "/../../Documents/BamQC_Examples/large_example.bam");	
 		
@@ -318,6 +319,16 @@ public class SNPFrequenciesTest {
 		System.out.println("Tot. Matches: " + snpFrequencies.getTotalMatches());
 		System.out.println("Skipped regions on the reads: " + snpFrequencies.getReadSkippedRegions());
 		System.out.println("Skipped regions on the reference: " + snpFrequencies.getReferenceSkippedRegions());
+
+		System.out.println("SNP/Indels density for each read position:");
+		long[] snpPos = snpFrequencies.getSNPPos();
+		long[] insertionPos = snpFrequencies.getInsertionPos();
+		long[] deletionPos = snpFrequencies.getDeletionPos();
+		System.out.println("Position\tSNP   \t\tIns   \t\tDel   ");
+		for(int i=0; i<snpPos.length; i++) {
+			// the above arrays have all the same length (see SNPFrequencies.java for details)
+			System.out.println(i + "\t\t" + snpPos[i] + "\t\t" + insertionPos[i] + "\t\t" + deletionPos[i]);
+		}
 	}	
 
 	
