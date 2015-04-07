@@ -83,9 +83,9 @@ public class SNPFrequencies extends AbstractQCModule {
     
     // These arrays are used to store the density of SNP and Indels at each read position.
     // Is 100 the right size? 
-    private long[] snpPos = new long[100];
-    private long[] insertionPos = new long[100];
-    private long[] deletionPos = new long[100];
+    private long[] snpPos = new long[150];
+    private long[] insertionPos = new long[150];
+    private long[] deletionPos = new long[150];
     private int currentPosition = 0;
 	
     
@@ -127,13 +127,15 @@ public class SNPFrequencies extends AbstractQCModule {
 		List<CigarMDElement> cigarMDElements = cigarMD.getCigarMDElements();
 		Iterator<CigarMDElement> cigarMDIter = cigarMDElements.iterator();
 		CigarMDOperator currentCigarMDElementOperator;
+		
+		// restart the counter for computing SNP/Indels per read position.
+		currentPosition = 0;
 
 		
 		while(cigarMDIter.hasNext()) {
 			currentCigarMDElement = cigarMDIter.next();
 
 			currentCigarMDElementOperator = currentCigarMDElement.getOperator();
-			currentPosition = 0;
 			
 			// debugging
 			//System.out.println("Parsing CigarElement: " + String.valueOf(currentCigarElementLength) + currentCigarElementOperator.toString());
@@ -327,8 +329,8 @@ public class SNPFrequencies extends AbstractQCModule {
 		
 		for(int i = 0; i < numMutations; i++) {
 			basePair = mutatedBases.substring(i*2, i*2+2);
-			if(basePair.equals("AC")) { ac++; }
-			else if(basePair.equals("AG")) { ag++; snpPos[currentPosition]++; currentPosition++;}
+			if(basePair.equals("AC"))      { ac++; snpPos[currentPosition]++; currentPosition++; }
+			else if(basePair.equals("AG")) { ag++; snpPos[currentPosition]++; currentPosition++; }
 			else if(basePair.equals("AT")) { at++; snpPos[currentPosition]++; currentPosition++; }
 			else if(basePair.equals("CA")) { ca++; snpPos[currentPosition]++; currentPosition++; }
 			else if(basePair.equals("CG")) { cg++; snpPos[currentPosition]++; currentPosition++; }
@@ -349,7 +351,7 @@ public class SNPFrequencies extends AbstractQCModule {
 		int numInsertions = currentCigarMDElement.getLength();
 		String insertedBases = currentCigarMDElement.getBases();
 		for(int i = 0; i < numInsertions; i++) {
-			if(insertedBases.charAt(i) == 'A') { aInsertions++; insertionPos[currentPosition]++; currentPosition++; }
+			if(insertedBases.charAt(i) == 'A')      { aInsertions++; insertionPos[currentPosition]++; currentPosition++; }
 			else if(insertedBases.charAt(i) == 'C') { cInsertions++; insertionPos[currentPosition]++; currentPosition++; }
 			else if(insertedBases.charAt(i) == 'G') { gInsertions++; insertionPos[currentPosition]++; currentPosition++; }
 			else if(insertedBases.charAt(i) == 'T') { tInsertions++; insertionPos[currentPosition]++; currentPosition++; }
@@ -362,7 +364,7 @@ public class SNPFrequencies extends AbstractQCModule {
 		int numDeletions = currentCigarMDElement.getLength();
 		String deletedBases = currentCigarMDElement.getBases();
 		for(int i = 0; i < numDeletions; i++) {
-			if(deletedBases.charAt(i) == 'A') { aDeletions++; deletionPos[currentPosition]++; currentPosition++; }
+			if(deletedBases.charAt(i) == 'A')      { aDeletions++; deletionPos[currentPosition]++; currentPosition++; }
 			else if(deletedBases.charAt(i) == 'C') { cDeletions++; deletionPos[currentPosition]++; currentPosition++; }
 			else if(deletedBases.charAt(i) == 'G') { gDeletions++; deletionPos[currentPosition]++; currentPosition++; }
 			else if(deletedBases.charAt(i) == 'T') { tDeletions++; deletionPos[currentPosition]++; currentPosition++; }
