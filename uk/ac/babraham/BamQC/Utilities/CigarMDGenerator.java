@@ -202,19 +202,77 @@ public class CigarMDGenerator {
 			// debugging		
 			//System.out.println("CigarMD string (pre 0x10 flag transformation): " + cigarMD.toString());	
 			//System.out.println("CigarMDGenerator: current SAM read does has flag 0x10 set on.");
-			List<CigarMDElement> oldCigarMDElements = cigarMD.getCigarMDElements();
-			int listLength = oldCigarMDElements.size();
-			List<CigarMDElement> newCigarMDElements = new ArrayList<CigarMDElement>(listLength);
-			for(int i = listLength - 1; i >= 0; i--) {
-				newCigarMDElements.add(oldCigarMDElements.get(i));
-			}
-			cigarMD = new CigarMD(newCigarMDElements);
+			reverseCigarMD();
 		}
 		
 		// debugging
 		//System.out.println("CigarMD string: " + cigarMD.toString());
 	}
 
+	
+	/**
+	 * It reverse the CigarMD string if the Flag 0x10 is set on.
+	 */
+	private void reverseCigarMD() {
+		List<CigarMDElement> oldCigarMDElements = cigarMD.getCigarMDElements();
+		int listLength = oldCigarMDElements.size();
+		List<CigarMDElement> newCigarMDElements = new ArrayList<CigarMDElement>(listLength);
+		CigarMDElement oldElement;
+		for(int i = listLength - 1; i >= 0; i--) {
+			oldElement = oldCigarMDElements.get(i);
+			if(oldElement.getOperator() == CigarMDOperator.MATCH) {
+				// don't do anything
+				newCigarMDElements.add(oldElement);
+			} else if(oldElement.getOperator() == CigarMDOperator.MISMATCH) {
+				// reverse the bases couples
+				String oldBases = oldElement.getBases(), newBases = "";
+				int mutations = oldElement.getLength();
+				for(int j = 0; j < mutations; j++) {
+					newBases = oldBases.substring(j*2, j*2+2) + newBases;
+				}
+				newCigarMDElements.add(new CigarMDElement(mutations, CigarMDOperator.MISMATCH, newBases));
+			} else if(oldElement.getOperator() == CigarMDOperator.INSERTION) {
+				// reverse the bases
+				String newBases = new StringBuffer(oldElement.getBases()).reverse().toString();
+				newCigarMDElements.add(new CigarMDElement(oldElement.getLength(), CigarMDOperator.INSERTION, newBases));
+			} else if(oldElement.getOperator() == CigarMDOperator.DELETION) {
+				// reverse the bases
+				String newBases = new StringBuffer(oldElement.getBases()).reverse().toString();
+				newCigarMDElements.add(new CigarMDElement(oldElement.getLength(), CigarMDOperator.DELETION, newBases));
+			} else if(oldElement.getOperator() == CigarMDOperator.SKIPPED_REGION) {
+				// don't do anything				
+				newCigarMDElements.add(oldElement);
+			} else if(oldElement.getOperator() == CigarMDOperator.SOFT_CLIP) {
+				// TODO: THIS CASE DOES NOT EVER HAPPEN AS IT IS NOT IMPLEMENTED. IN THE FUTURE IT NEEDS REVISION 				
+				// reverse the bases
+				String newBases = new StringBuffer(oldElement.getBases()).reverse().toString();
+				newCigarMDElements.add(new CigarMDElement(oldElement.getLength(), CigarMDOperator.SOFT_CLIP, newBases));
+			} else if(oldElement.getOperator() == CigarMDOperator.HARD_CLIP) {
+				// TODO: THIS CASE DOES NOT EVER HAPPEN AS IT IS NOT IMPLEMENTED. IN THE FUTURE IT NEEDS REVISION 				
+				// reverse the bases
+				String newBases = new StringBuffer(oldElement.getBases()).reverse().toString();
+				newCigarMDElements.add(new CigarMDElement(oldElement.getLength(), CigarMDOperator.HARD_CLIP, newBases));
+			} else if(oldElement.getOperator() == CigarMDOperator.PADDING) {
+				// TODO: THIS CASE DOES NOT EVER HAPPEN AS IT IS NOT IMPLEMENTED. IN THE FUTURE IT NEEDS REVISION 				
+				// reverse the bases
+				String newBases = new StringBuffer(oldElement.getBases()).reverse().toString();
+				newCigarMDElements.add(new CigarMDElement(oldElement.getLength(), CigarMDOperator.PADDING, newBases));
+			} else if(oldElement.getOperator() == CigarMDOperator.eq) {
+				// TODO: THIS CASE DOES NOT EVER HAPPEN AS IT IS NOT IMPLEMENTED. IN THE FUTURE IT NEEDS REVISION 				
+				// reverse the bases
+				String newBases = new StringBuffer(oldElement.getBases()).reverse().toString();
+				newCigarMDElements.add(new CigarMDElement(oldElement.getLength(), CigarMDOperator.eq, newBases));
+			} else if(oldElement.getOperator() == CigarMDOperator.x) {
+				// TODO: THIS CASE DOES NOT EVER HAPPEN AS IT IS NOT IMPLEMENTED. IN THE FUTURE IT NEEDS REVISION 
+				// reverse the bases
+				String newBases = new StringBuffer(oldElement.getBases()).reverse().toString();
+				newCigarMDElements.add(new CigarMDElement(oldElement.getLength(), CigarMDOperator.x, newBases));
+			} 
+			//newCigarMDElements.add(oldElement);
+		}
+		cigarMD = new CigarMD(newCigarMDElements);		
+	}
+	
 	
 
 	/**
