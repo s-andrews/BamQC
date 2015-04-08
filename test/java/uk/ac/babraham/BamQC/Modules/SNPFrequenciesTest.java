@@ -145,7 +145,7 @@ public class SNPFrequenciesTest {
 		assertEquals("91m", combinedCigarMDtagList.get(1));
 		assertEquals("8m1uCA41m1uCT38m", combinedCigarMDtagList.get(2));
 		assertEquals("48m1uTC37m1uCT4m", combinedCigarMDtagList.get(3));
-		assertEquals("43m1uTC11m1uAG24m2uTGGA9m", combinedCigarMDtagList.get(4));  // reversed and complemented
+		assertEquals("43m1uTC11m1uAG24m2uGATG9m", combinedCigarMDtagList.get(4));  // reversed and complemented
 		assertEquals("3m1uGT14m1uAT9m1uTA33m2uTGGA24m1uAG1m", combinedCigarMDtagList.get(5));		
 	}
 
@@ -174,7 +174,7 @@ public class SNPFrequenciesTest {
 			snpFrequencies.processSequence(samRecord);
 			combinedCigarMDtagList.add(snpFrequencies.getCigarMD().toString());			
 		}
-		assertEquals("65m3iAGC22m", combinedCigarMDtagList.get(0));  // reversed and complemented
+		assertEquals("65m3iCGA22m", combinedCigarMDtagList.get(0));  // reversed and complemented
 		assertEquals("57m1iT31m", combinedCigarMDtagList.get(1));
 		assertEquals("20m1iT70m", combinedCigarMDtagList.get(2)); // reversed and complemented
 	}
@@ -190,7 +190,7 @@ public class SNPFrequenciesTest {
 		  combinedCigarMDtagList.add(snpFrequencies.getCigarMD().toString());		  
 		}
 		assertEquals("6m1iT2m1dT82m", combinedCigarMDtagList.get(0));
-		assertEquals("21m1uCT10m2dGT56m1dA2m", combinedCigarMDtagList.get(1)); // reversed and complemented
+		assertEquals("21m1uCT10m2dTG56m1dA2m", combinedCigarMDtagList.get(1)); // reversed and complemented
 		assertEquals("1uAC17m1dT3m1iG14m1uAT2m1uCT29m", combinedCigarMDtagList.get(2));
 		assertEquals("49m1uCG2m1iG5m2dAA24m1uGA7m", combinedCigarMDtagList.get(3));	 // reversed and complemented	
 	}	
@@ -208,17 +208,17 @@ public class SNPFrequenciesTest {
 		assertEquals("89m", combinedCigarMDtagList.get(0));
 		assertEquals("91m", combinedCigarMDtagList.get(1));
 		assertEquals("91m", combinedCigarMDtagList.get(2));
-		assertEquals("65m3iAGC22m", combinedCigarMDtagList.get(3));
+		assertEquals("65m3iCGA22m", combinedCigarMDtagList.get(3));
 		assertEquals("57m1iT31m", combinedCigarMDtagList.get(4));
 		assertEquals("20m1iT70m", combinedCigarMDtagList.get(5));
 		assertEquals("14m1uCA1m1uCG8m1uTA16m1dT20m2uCTCT27m", combinedCigarMDtagList.get(6));
 		assertEquals("6m1dT34m1uTC13m1uCA36m", combinedCigarMDtagList.get(7));
 		assertEquals("20m1dA62m1uCT8m", combinedCigarMDtagList.get(8));		
 		assertEquals("6m1iT2m1dT82m", combinedCigarMDtagList.get(9));
-		assertEquals("21m1uCT10m2dGT56m1dA2m", combinedCigarMDtagList.get(10));
+		assertEquals("21m1uCT10m2dTG56m1dA2m", combinedCigarMDtagList.get(10));
 		assertEquals("1uAC17m1dT3m1iG14m1uAT2m1uCT29m", combinedCigarMDtagList.get(11));
 		assertEquals("49m1uCG2m1iG5m2dAA24m1uGA7m", combinedCigarMDtagList.get(12));
-		assertEquals("49m1uCG2m1iG5m2dAA22m3uGAATCA7m", combinedCigarMDtagList.get(13));		
+		assertEquals("49m1uCG2m1iG5m2dAA22m3uCAATGA7m", combinedCigarMDtagList.get(13));		
 		assertEquals("", combinedCigarMDtagList.get(14));			
 		assertEquals("", combinedCigarMDtagList.get(15));			
 	}		
