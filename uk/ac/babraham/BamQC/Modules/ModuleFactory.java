@@ -28,7 +28,7 @@ public class ModuleFactory {
 				new ChromosomeDensity(),
 				new FeatureCoverage(),
 				new SoftClipDistribution(),
-				//new SNPFrequencies(),
+				new SNPFrequencies(),
 				new MappingQualityDistribution(),
 				new SequenceQualityDistribution(),
 				new InsertDistribution(),

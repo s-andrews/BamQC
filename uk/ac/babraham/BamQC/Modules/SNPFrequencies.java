@@ -21,8 +21,10 @@
 package uk.ac.babraham.BamQC.Modules;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JPanel;
 import javax.xml.stream.XMLStreamException;
@@ -46,6 +48,17 @@ import uk.ac.babraham.BamQC.Utilities.CigarMD;
 
 public class SNPFrequencies extends AbstractQCModule {
 
+	// data fields for plotting
+	private String name = null;
+	private static String[] snpNames = {
+		"A->C", "A->G", "A->T",
+		"C->A", "C->G", "C->T", 
+		"G->A", "G->C", "G->T", 
+		"T->A", "T->C", "T->G"};
+	private float[] snpFrequencies = new float[12];
+	
+	
+	
 	// data fields for statistics
 	private long ac = 0;
 	private long ag = 0;
@@ -131,7 +144,7 @@ public class SNPFrequencies extends AbstractQCModule {
 		// restart the counter for computing SNP/Indels per read position.
 		currentPosition = 0;
 
-		
+	
 		while(cigarMDIter.hasNext()) {
 			currentCigarMDElement = cigarMDIter.next();
 
@@ -178,22 +191,57 @@ public class SNPFrequencies extends AbstractQCModule {
 				break;
 			}		
 		}
-				
-		computeTotals();
+		
+		computeTotals();	
 //		debugging
 //		System.out.println("Combined Cigar MDtag: " + cigarMD.toString());
 	}
 	
 	
 	@Override	
-	public void processFile(SequenceFile file) {}
+	public void processFile(SequenceFile file) {
+		this.name = file.name();
+	}
 
 	@Override	
-	public void processAnnotationSet(AnnotationSet annotation) {}
+	public void processAnnotationSet(AnnotationSet annotation) {
+
+
+	}		
 
 	@Override	
 	public JPanel getResultsPanel() {
-		return null;
+		
+		snpFrequencies = new float[12];
+		// scaled by what? processed reads? maximum snp? ..?
+		snpFrequencies[0] = ac / 1.0f;
+		snpFrequencies[1] = ag / 1.0f;
+		snpFrequencies[2] = at / 1.0f;
+		snpFrequencies[3] = ca / 1.0f;
+		snpFrequencies[4] = cg / 1.0f;
+		snpFrequencies[5] = ct / 1.0f;
+		snpFrequencies[6] = ga / 1.0f;
+		snpFrequencies[7] = gc / 1.0f;
+		snpFrequencies[8] = gt / 1.0f;
+		snpFrequencies[9] = ta / 1.0f;
+		snpFrequencies[10] = tc / 1.0f;
+		snpFrequencies[11] = tg / 1.0f;
+		return new HorizontalBarGraph(snpNames, snpFrequencies, "SNP frequencies", totalMutations);
+		
+//		snpFrequencies[0] = ac / (totalMutations * 1.0f);
+//		snpFrequencies[1] = ag / (totalMutations * 1.0f);
+//		snpFrequencies[2] = at / (totalMutations * 1.0f);
+//		snpFrequencies[3] = ca / (totalMutations * 1.0f);
+//		snpFrequencies[4] = cg / (totalMutations * 1.0f);
+//		snpFrequencies[5] = ct / (totalMutations * 1.0f);
+//		snpFrequencies[6] = ga / (totalMutations * 1.0f);
+//		snpFrequencies[7] = gc / (totalMutations * 1.0f);
+//		snpFrequencies[8] = gt / (totalMutations * 1.0f);
+//		snpFrequencies[9] = ta / (totalMutations * 1.0f);
+//		snpFrequencies[10] = tc / (totalMutations * 1.0f);
+//		snpFrequencies[11] = tg / (totalMutations * 1.0f);		
+//		return new HorizontalBarGraph(snpNames, snpFrequencies, "SNP frequencies");
+		
 	}
 
 	@Override	
@@ -241,9 +289,9 @@ public class SNPFrequencies extends AbstractQCModule {
 		readSkippedRegions = 0;
 		referenceSkippedRegions = 0;
 		
-	    snpPos = new long[100];
-	    insertionPos = new long[100];
-	    deletionPos = new long[100];
+	    snpPos = new long[150];
+	    insertionPos = new long[150];
+	    deletionPos = new long[150];
 	    currentPosition = 0;
 
 		cigarMD = new CigarMD();
@@ -278,8 +326,7 @@ public class SNPFrequencies extends AbstractQCModule {
 
 	@Override	
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
-		// TODO Auto-generated method stub
-
+		super.writeDefaultImage(report, "snp_types_counting.png", "Counting for SNP types", 800, 600);
 	}	 
 
 	
@@ -536,6 +583,10 @@ public class SNPFrequencies extends AbstractQCModule {
 	public long getTotalReads() {
 		return totalReads;
 	}
+
+	public long getTotalBP() {
+		return totalReads;
+	}	
 
 	public long[] getSNPPos() {
 		return snpPos;
