@@ -21,18 +21,14 @@
 package uk.ac.babraham.BamQC.Modules;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import javax.swing.JPanel;
 import javax.xml.stream.XMLStreamException;
 
-import net.sf.samtools.AlignmentBlock;
 import net.sf.samtools.SAMRecord;
 import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
-import uk.ac.babraham.BamQC.Annotation.Chromosome;
 import uk.ac.babraham.BamQC.Graphs.HorizontalBarGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
@@ -191,7 +187,6 @@ public class SNPFrequencies extends AbstractQCModule {
 				break;
 			}		
 		}
-		
 		computeTotals();	
 //		debugging
 //		System.out.println("Combined Cigar MDtag: " + cigarMD.toString());
@@ -211,37 +206,21 @@ public class SNPFrequencies extends AbstractQCModule {
 
 	@Override	
 	public JPanel getResultsPanel() {
-		
 		snpFrequencies = new float[12];
-		// scaled by what? processed reads? maximum snp? ..?
-		snpFrequencies[0] = ac / 1.0f;
-		snpFrequencies[1] = ag / 1.0f;
-		snpFrequencies[2] = at / 1.0f;
-		snpFrequencies[3] = ca / 1.0f;
-		snpFrequencies[4] = cg / 1.0f;
-		snpFrequencies[5] = ct / 1.0f;
-		snpFrequencies[6] = ga / 1.0f;
-		snpFrequencies[7] = gc / 1.0f;
-		snpFrequencies[8] = gt / 1.0f;
-		snpFrequencies[9] = ta / 1.0f;
-		snpFrequencies[10] = tc / 1.0f;
-		snpFrequencies[11] = tg / 1.0f;
-		return new HorizontalBarGraph(snpNames, snpFrequencies, "SNP frequencies", totalMutations);
-		
-//		snpFrequencies[0] = ac / (totalMutations * 1.0f);
-//		snpFrequencies[1] = ag / (totalMutations * 1.0f);
-//		snpFrequencies[2] = at / (totalMutations * 1.0f);
-//		snpFrequencies[3] = ca / (totalMutations * 1.0f);
-//		snpFrequencies[4] = cg / (totalMutations * 1.0f);
-//		snpFrequencies[5] = ct / (totalMutations * 1.0f);
-//		snpFrequencies[6] = ga / (totalMutations * 1.0f);
-//		snpFrequencies[7] = gc / (totalMutations * 1.0f);
-//		snpFrequencies[8] = gt / (totalMutations * 1.0f);
-//		snpFrequencies[9] = ta / (totalMutations * 1.0f);
-//		snpFrequencies[10] = tc / (totalMutations * 1.0f);
-//		snpFrequencies[11] = tg / (totalMutations * 1.0f);		
-//		return new HorizontalBarGraph(snpNames, snpFrequencies, "SNP frequencies");
-		
+		snpFrequencies[0] = ac * 1.0f;
+		snpFrequencies[1] = ag * 1.0f;
+		snpFrequencies[2] = at * 1.0f;
+		snpFrequencies[3] = ca * 1.0f;
+		snpFrequencies[4] = cg * 1.0f;
+		snpFrequencies[5] = ct * 1.0f;
+		snpFrequencies[6] = ga * 1.0f;
+		snpFrequencies[7] = gc * 1.0f;
+		snpFrequencies[8] = gt * 1.0f;
+		snpFrequencies[9] = ta * 1.0f;
+		snpFrequencies[10] = tc * 1.0f;
+		snpFrequencies[11] = tg * 1.0f;
+		String title = String.format("SNP frequencies (Total SNPs: %d Bp; SNP percentage: %.3f %%)", totalMutations, (((double) totalMutations / (totalMutations+totalMatches)) * 100.0));		
+		return new HorizontalBarGraph(snpNames, snpFrequencies, title, totalMutations);
 	}
 
 	@Override	
@@ -583,10 +562,6 @@ public class SNPFrequencies extends AbstractQCModule {
 	public long getTotalReads() {
 		return totalReads;
 	}
-
-	public long getTotalBP() {
-		return totalReads;
-	}	
 
 	public long[] getSNPPos() {
 		return snpPos;
