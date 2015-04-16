@@ -90,32 +90,62 @@ public class IndelFrequencies extends AbstractQCModule {
 					new double[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()]},
 					0d, 100d, "Position in read (bp)", indelNames, 
 					new String[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()], 
-					"Indel Frequencies (Total insertions: 0; Total deletions: 0");
+					"Indel Frequencies ( Insertions: 0, Deletions: 0 )");
 		}		
 		
 		// We do not need a BaseGroup here
 		// These two arrays have same length.
 		long[] insertionPos = variantCallDetection.getInsertionPos();
 		long[] deletionPos = variantCallDetection.getDeletionPos();
-		long totalInsertions = variantCallDetection.getTotalInsertions();
-		long totalDeletions = variantCallDetection.getTotalDeletions();
 		
 		// initialise and configure the LineGraph
-		String[] xCategories = new String[insertionPos.length];		
-		double[] dInsertionPos = new double[insertionPos.length];
-		double[] dDeletionPos = new double[insertionPos.length];
+		// compute the maximum value for the X axis
+		int maxX = insertionPos.length;
+		boolean found = false;
+		for(int i=insertionPos.length-1; i>=0 && !found; i--) {
+			if(insertionPos[i] > 0 || deletionPos[i] > 0) { 
+				maxX = i+1;
+				found = true;
+			}
+		}
+		String[] xCategories = new String[maxX];		
+		double[] dInsertionPos = new double[maxX];
+		double[] dDeletionPos = new double[maxX];
 		double maxY = 0.0d;
-		for(int i=0; i<insertionPos.length; i++) {
+		for(int i=0; i<maxX; i++) {
 			dInsertionPos[i]= (double)insertionPos[i];
 			dDeletionPos[i]= (double)deletionPos[i];
 			if(dInsertionPos[i] > maxY) { maxY = dInsertionPos[i]; }
 			if(dDeletionPos[i] > maxY) { maxY = dDeletionPos[i]; }
 			xCategories[i] = String.valueOf(i);
 		}
+//		String[] xCategories = new String[insertionPos.length];		
+//		double[] dInsertionPos = new double[insertionPos.length];
+//		double[] dDeletionPos = new double[insertionPos.length];
+//		double maxY = 0.0d;
+//		for(int i=0; i<insertionPos.length; i++) {
+//			dInsertionPos[i]= (double)insertionPos[i];
+//			dDeletionPos[i]= (double)deletionPos[i];
+//			if(dInsertionPos[i] > maxY) { maxY = dInsertionPos[i]; }
+//			if(dDeletionPos[i] > maxY) { maxY = dDeletionPos[i]; }
+//			xCategories[i] = String.valueOf(i);
+//		}
 		// add 10% to the maximum for improving the plot rendering
 		maxY = maxY + maxY*0.05; 
 		double[][] indelData = new double [][] {dInsertionPos,dDeletionPos};
-		String title = String.format("Indel Frequencies (Total insertions: %d; Total deletions: %d)", totalInsertions, totalDeletions);
+//		String title = String.format("Indel Frequencies \n(Insertions: %d (A:%d,C:%d,G:%d,T:%d); Deletions: %d (A:%d,C:%d,G:%d,T:%d))", 
+//				variantCallDetection.getTotalInsertions(), 
+//				variantCallDetection.getAInsertions(),
+//				variantCallDetection.getCInsertions(),
+//				variantCallDetection.getGInsertions(),
+//				variantCallDetection.getTInsertions(),
+//				variantCallDetection.getTotalDeletions(), 
+//				variantCallDetection.getADeletions(),
+//				variantCallDetection.getCDeletions(),
+//				variantCallDetection.getGDeletions(),
+//				variantCallDetection.getTDeletions());
+		String title = String.format("Indel Frequencies ( Insertions: %d, Deletions: %d )", 
+				variantCallDetection.getTotalInsertions(),variantCallDetection.getTotalDeletions());		
 	
 		return new LineGraph(indelData, 0d, maxY, "Position in read (bp)", indelNames, xCategories, title);
 	}

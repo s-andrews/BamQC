@@ -88,7 +88,7 @@ public class SNPFrequencies extends AbstractQCModule {
 					new double[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()]},
 					0d, 100d, "Position in read (bp)", snpName, 
 					new String[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()], 
-					"Indel Frequencies (Total insertions: 0; Total deletions: 0");
+					"SNP Frequencies ( SNPs: 0 (0.000 %) )");
 		}		
 		
 		// We do not need a BaseGroup here
@@ -97,18 +97,36 @@ public class SNPFrequencies extends AbstractQCModule {
 			 totalMatches = variantCallDetection.getTotalMatches();
 		
 		// initialise and configure the LineGraph
-		String[] xCategories = new String[snpPos.length];		
-		double[] dSNPPos = new double[snpPos.length];
+		// compute the maximum value for the X axis
+		int maxX = snpPos.length;
+		boolean found = false;
+		for(int i=snpPos.length-1; i>=0 && !found; i--) {
+			if(snpPos[i] > 0) { 
+				maxX = i+1;
+				found = true;
+			}
+		}
+		String[] xCategories = new String[maxX];		
+		double[] dSNPPos = new double[maxX];
 		double maxY = 0.0d;
-		for(int i=0; i<snpPos.length; i++) {
+		for(int i=0; i<maxX; i++) {
 			dSNPPos[i]= (double)snpPos[i];
 			if(dSNPPos[i] > maxY) { maxY = dSNPPos[i]; }
 			xCategories[i] = String.valueOf(i);
 		}
+		
+//		String[] xCategories = new String[snpPos.length];		
+//		double[] dSNPPos = new double[snpPos.length];
+//		double maxY = 0.0d;
+//		for(int i=0; i<snpPos.length; i++) {
+//			dSNPPos[i]= (double)snpPos[i];
+//			if(dSNPPos[i] > maxY) { maxY = dSNPPos[i]; }
+//			xCategories[i] = String.valueOf(i);
+//		}
 		// add 10% to the maximum for improving the plot rendering
 		maxY = maxY + maxY*0.05; 
 		double[][] snpData = new double [][] {dSNPPos};
-		String title = String.format("SNP frequencies (Total SNPs: %d Bp; SNP percentage: %.3f %%)", totalMutations, (((double) totalMutations / (totalMutations+totalMatches)) * 100.0));
+		String title = String.format("SNP frequencies ( SNPs: %d (%.3f %%) )", totalMutations, (((double) totalMutations / (totalMutations+totalMatches)) * 100.0));
 		return new LineGraph(snpData, 0d, maxY, "Position in read (bp)", snpName, xCategories, title);
 	}
 
