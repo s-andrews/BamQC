@@ -23,12 +23,16 @@ public class ModuleFactory {
 
 	public static QCModule [] getStandardModuleList () {
 
+		VariantCallDetection variantCallDetection = new VariantCallDetection();
 		QCModule [] module_list = new QCModule [] {
 				new BasicStats(),
 				new ChromosomeDensity(),
 				new FeatureCoverage(),
 				new SoftClipDistribution(),
-				new SNPFrequencies(),
+				variantCallDetection,
+				new IndelFrequencies(variantCallDetection),
+				new SNPFrequencies(variantCallDetection),
+				new SNPFrequenciesByType(variantCallDetection),
 				new MappingQualityDistribution(),
 				new SequenceQualityDistribution(),
 				new InsertDistribution(),

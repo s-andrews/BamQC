@@ -73,6 +73,8 @@ public class ModuleConfig {
 		params.put("tile:ignore", 0d);
 		params.put("sequence_length:ignore", 0d);
 		params.put("adapter:ignore", 0d);
+		params.put("variant_call_position_length:ignore", 150d);
+		
 		// EAGLE
 		params.put("binCoverageZeroFraction:warn", 0.1d);
 		params.put("binCoverageZeroFraction:error", 0.2d);

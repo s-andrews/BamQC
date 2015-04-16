@@ -28,38 +28,40 @@ import javax.xml.stream.XMLStreamException;
 import net.sf.samtools.SAMRecord;
 import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
 import uk.ac.babraham.BamQC.Graphs.HorizontalBarGraph;
-import uk.ac.babraham.BamQC.Graphs.LineGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
+import uk.ac.babraham.BamQC.Graphs.BaseGroup;
+import uk.ac.babraham.BamQC.Graphs.LineGraph;
 
 
 
 /** 
  * This class re-uses the computation collected by the class VariantCallDetection
- * and plots the SNP Frequencies.
+ * and plots the Indel Frequencies.
  * @author Piero Dalle Pezze
  */
-public class SNPFrequencies extends AbstractQCModule {
+public class IndelFrequencies extends AbstractQCModule {
 
 	// The analysis collecting all the results.
 	VariantCallDetection variantCallDetection = null;	
 	
 	// data fields for plotting
 	private String name = null;
-	private static String[] snpName = {"SNPs"};
-	
+	private static String[] indelNames = {
+		"Insertions",
+		"Deletions"};
 	
 	// Constructors
 	/**
 	 * Default constructor
 	 */
-	public SNPFrequencies() {	}
+	public IndelFrequencies() {	}
 
 	
 	/**
 	 * Constructor. Reuse of the computation provided by VariantCallDetection analysis.
 	 */
-	public SNPFrequencies(VariantCallDetection vcd) {	
+	public IndelFrequencies(VariantCallDetection vcd) {	
 		variantCallDetection = vcd;
 	}
 	
@@ -86,40 +88,46 @@ public class SNPFrequencies extends AbstractQCModule {
 			return new LineGraph(new double [][]{
 					new double[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()],
 					new double[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()]},
-					0d, 100d, "Position in read (bp)", snpName, 
+					0d, 100d, "Position in read (bp)", indelNames, 
 					new String[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()], 
 					"Indel Frequencies (Total insertions: 0; Total deletions: 0");
 		}		
 		
 		// We do not need a BaseGroup here
-		long[] snpPos = variantCallDetection.getSNPPos();
-		long totalMutations = variantCallDetection.getTotalMutations(),
-			 totalMatches = variantCallDetection.getTotalMatches();
+		// These two arrays have same length.
+		long[] insertionPos = variantCallDetection.getInsertionPos();
+		long[] deletionPos = variantCallDetection.getDeletionPos();
+		long totalInsertions = variantCallDetection.getTotalInsertions();
+		long totalDeletions = variantCallDetection.getTotalDeletions();
 		
 		// initialise and configure the LineGraph
-		String[] xCategories = new String[snpPos.length];		
-		double[] dSNPPos = new double[snpPos.length];
+		String[] xCategories = new String[insertionPos.length];		
+		double[] dInsertionPos = new double[insertionPos.length];
+		double[] dDeletionPos = new double[insertionPos.length];
 		double maxY = 0.0d;
-		for(int i=0; i<snpPos.length; i++) {
-			dSNPPos[i]= (double)snpPos[i];
-			if(dSNPPos[i] > maxY) { maxY = dSNPPos[i]; }
+		for(int i=0; i<insertionPos.length; i++) {
+			dInsertionPos[i]= (double)insertionPos[i];
+			dDeletionPos[i]= (double)deletionPos[i];
+			if(dInsertionPos[i] > maxY) { maxY = dInsertionPos[i]; }
+			if(dDeletionPos[i] > maxY) { maxY = dDeletionPos[i]; }
 			xCategories[i] = String.valueOf(i);
 		}
 		// add 10% to the maximum for improving the plot rendering
 		maxY = maxY + maxY*0.05; 
-		double[][] snpData = new double [][] {dSNPPos};
-		String title = String.format("SNP frequencies (Total SNPs: %d Bp; SNP percentage: %.3f %%)", totalMutations, (((double) totalMutations / (totalMutations+totalMatches)) * 100.0));
-		return new LineGraph(snpData, 0d, maxY, "Position in read (bp)", snpName, xCategories, title);
+		double[][] indelData = new double [][] {dInsertionPos,dDeletionPos};
+		String title = String.format("Indel Frequencies (Total insertions: %d; Total deletions: %d)", totalInsertions, totalDeletions);
+	
+		return new LineGraph(indelData, 0d, maxY, "Position in read (bp)", indelNames, xCategories, title);
 	}
 
 	@Override	
 	public String name() {
-		return "SNP Frequencies";
+		return "Indel Frequencies";
 	}
 
 	@Override	
 	public String description() {
-		return "Looks at the SNP frequencies in the data";
+		return "Looks at the Indel frequencies in the data";
 	}
 
 	@Override	
@@ -155,7 +163,31 @@ public class SNPFrequencies extends AbstractQCModule {
 
 	@Override	
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
-		super.writeDefaultImage(report, "snp_frequencies.png", "SNP Frequencies", 800, 600);
+		super.writeDefaultImage(report, "indel_frequencies.png", "Indel Frequencies", 800, 600);
+		
+	
+//		StringBuffer sb = report.dataDocument();
+//		
+//		sb.append("#Total Deduplicated Percentage\t");
+//		sb.append(percentDifferentSeqs);
+//		sb.append("\n");
+//		
+//		sb.append("#Duplication Level\tPercentage of deduplicated\tPercentage of total\n");
+//		for (int i=0;i<labels.length;i++) {
+//			sb.append(labels[i]);
+//			if (i == labels.length-1) {
+//				sb.append("+");
+//			}
+//			sb.append("\t");
+//			sb.append(deduplicatedPercentages[i]);
+//			sb.append("\t");
+//			sb.append(totalPercentages[i]);
+//			sb.append("\n");
+//		}
+				
+		
+		
+		
 	}
 	
 }
