@@ -84,10 +84,9 @@ public class VariantCallDetection extends AbstractQCModule {
     private long totalReads = 0;
     
     // These arrays are used to store the density of SNP and Indels at each read position.
-    // Is 100 the right size? 
-    private long[] snpPos = new long[150];
-    private long[] insertionPos = new long[150];
-    private long[] deletionPos = new long[150];
+    private long[] snpPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
+    private long[] insertionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
+    private long[] deletionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
     private int currentPosition = 0;
 	
     
@@ -289,10 +288,31 @@ public class VariantCallDetection extends AbstractQCModule {
 	}	 
 
 	
-
 	
 	
 	// Private methods here
+	
+	
+	private void extendDensityArrays(int newBound) {
+		long[] oldSNPPos = snpPos;
+		long[] oldInsertionPos = insertionPos;
+		long[] oldDeletionPos = deletionPos;
+		// We do not want to call this method often, that's why it is better to extend it 
+		// 2 times the current length. However, if the newBound is larger than this, it is 
+		// better to be conservative and just increase for that new size.
+		if(snpPos.length*2 < newBound) {
+			snpPos = new long[newBound+1];
+			insertionPos = new long[newBound+1];
+			deletionPos = new long[newBound+1];
+		} else {
+			snpPos = new long[snpPos.length*2];
+			insertionPos = new long[snpPos.length*2];
+			deletionPos = new long[snpPos.length*2];			
+		}
+		System.arraycopy(oldSNPPos, 0, snpPos, 0, oldSNPPos.length);
+		System.arraycopy(oldInsertionPos, 0, insertionPos, 0, oldInsertionPos.length);
+		System.arraycopy(oldDeletionPos, 0, deletionPos, 0, oldDeletionPos.length);		
+	}
 	
 	/* Compute the totals */
 	private void computeTotals() {
@@ -333,6 +353,10 @@ public class VariantCallDetection extends AbstractQCModule {
 		//System.out.println("VariantCallDetection.java - " + currentCigarMDElement + " : " + cigarMD.toString());
 		//System.out.println(mutatedBases);
 		
+		// if the read.length is longer than what we supposed to be, here we increase the length of our *Pos arrays.
+		if(currentPosition+numMutations >= snpPos.length) {
+			extendDensityArrays(currentPosition+numMutations);			
+	    }
 		for(int i = 0; i < numMutations; i++) {
 			basePair = mutatedBases.substring(i*2, i*2+2);
 			if(basePair.equals("AC"))      { ac++; snpPos[currentPosition]++; currentPosition++; }
@@ -356,6 +380,10 @@ public class VariantCallDetection extends AbstractQCModule {
 	private void processMDtagCigarOperatorI() {
 		int numInsertions = currentCigarMDElement.getLength();
 		String insertedBases = currentCigarMDElement.getBases();
+		// if the read.length is longer than what we supposed to be, here we increase the length of our *Pos arrays..
+		if(currentPosition+numInsertions >= insertionPos.length) {
+			extendDensityArrays(currentPosition+numInsertions);
+	    }
 		for(int i = 0; i < numInsertions; i++) {
 			if(insertedBases.charAt(i) == 'A')      { aInsertions++; insertionPos[currentPosition]++; currentPosition++; }
 			else if(insertedBases.charAt(i) == 'C') { cInsertions++; insertionPos[currentPosition]++; currentPosition++; }
@@ -369,6 +397,10 @@ public class VariantCallDetection extends AbstractQCModule {
 	private void processMDtagCigarOperatorD() {
 		int numDeletions = currentCigarMDElement.getLength();
 		String deletedBases = currentCigarMDElement.getBases();
+		// if the read.length is longer than what we supposed to be, here we increase the length of our *Pos arrays..
+		if(currentPosition+numDeletions >= deletionPos.length) {
+			extendDensityArrays(currentPosition+numDeletions);		
+	    }		
 		for(int i = 0; i < numDeletions; i++) {
 			if(deletedBases.charAt(i) == 'A')      { aDeletions++; deletionPos[currentPosition]++; currentPosition++; }
 			else if(deletedBases.charAt(i) == 'C') { cDeletions++; deletionPos[currentPosition]++; currentPosition++; }
