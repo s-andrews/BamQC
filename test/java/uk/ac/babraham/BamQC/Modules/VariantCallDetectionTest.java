@@ -42,7 +42,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import uk.ac.babraham.BamQC.Modules.VariantCallDetection;
-import uk.ac.babraham.BamQC.Sequence.SequenceFormatException;
 
 public class VariantCallDetectionTest {
 
@@ -50,6 +49,12 @@ public class VariantCallDetectionTest {
 	
 	private List<SAMRecord> samRecords = null;
 	private VariantCallDetection variantCallDetection = null;
+
+	
+//	public VariantCallDetectionTest() {
+//		log.setLevel(Level.DEBUG);
+//		//Logger.getRootLogger().setLevel(Level.DEBUG);
+//	}
 	
 	// Load the whole SAM file, as this is very short. (3-10 lines).
 	// Clearly this is not a correct approach generally.
@@ -83,11 +88,11 @@ public class VariantCallDetectionTest {
 		return true;
 	}
 	
-	private void printCigarAndMD(SAMRecord samRecord) { 
+	private void debugCigarAndMD(SAMRecord samRecord) { 
 		// Get the CIGAR list and MD tag string.
-		System.out.println("CIGAR: " + samRecord.getCigarString());
-		System.out.println("MDtag: " + samRecord.getStringAttribute("MD"));
-		System.out.println("--------------");				
+		log.debug("CIGAR: " + samRecord.getCigarString());
+		log.debug("MDtag: " + samRecord.getStringAttribute("MD"));
+		log.debug("--------------");				
 	}
 	
 	
@@ -133,6 +138,7 @@ public class VariantCallDetectionTest {
 	
 	@Test
 	public void testCigarOperM() {
+		log.info("testCigarOperM");
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_M.sam");
 		if(!loadSAMFile(filename)) { return; }
 		List<String> combinedCigarMDtagList = new ArrayList<String>();
@@ -151,6 +157,7 @@ public class VariantCallDetectionTest {
 
 	@Test
 	public void testCigarOperMD() {
+		log.info("testCigarOperMD");
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MD.sam");
 		if(!loadSAMFile(filename)) { return; }
 		List<String> combinedCigarMDtagList = new ArrayList<String>();			
@@ -166,6 +173,7 @@ public class VariantCallDetectionTest {
 	
 	@Test
 	public void testCigarOperMI() {
+		log.info("testCigarOperMI");
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MI.sam");
 		if(!loadSAMFile(filename)) { return; }
 		List<String> combinedCigarMDtagList = new ArrayList<String>();		
@@ -181,6 +189,7 @@ public class VariantCallDetectionTest {
 	
 	@Test
 	public void testCigarOperMID() {
+		log.info("testCigarOperMID");
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MID.sam");
 		if(!loadSAMFile(filename)) { return; }
 		List<String> combinedCigarMDtagList = new ArrayList<String>();			
@@ -197,6 +206,7 @@ public class VariantCallDetectionTest {
 	
 	@Test
 	public void testCigarOperFull() {
+		log.info("testCigarOperFull");
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_full.sam");
 		if(!loadSAMFile(filename)) { return; }
 		List<String> combinedCigarMDtagList = new ArrayList<String>();			
@@ -226,16 +236,17 @@ public class VariantCallDetectionTest {
 	
 	@Test
 	public void testReversedReads() {
+		log.info("testReversedReads");
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/snp_examples.fastq_bowtie2.sam");
 		if(!loadSAMFile(filename)) { return; }
 		List<String> combinedCigarMDtagList = new ArrayList<String>();
 		for (SAMRecord samRecord : samRecords) {
 		  variantCallDetection.processSequence(samRecord);
-//		  System.out.println("Name: " + samRecord.getReadName());
-//		  System.out.println("String: " + samRecord.getReadString());
-//		  System.out.println("Flags: " + samRecord.getFlags());		  
-//		  System.out.println("CigarMD: " + variantCallDetection.getCigarMD().toString());	  		  
-//        printCigarAndMD(samRecord);
+		  log.debug("Name: " + samRecord.getReadName());
+		  log.debug("String: " + samRecord.getReadString());
+		  log.debug("Flags: " + samRecord.getFlags());		  
+		  log.debug("CigarMD: " + variantCallDetection.getCigarMD().toString());	  		  
+		  debugCigarAndMD(samRecord);
           combinedCigarMDtagList.add(variantCallDetection.getCigarMD().toString());		  
 		}
 		assertEquals("86m", combinedCigarMDtagList.get(0));
@@ -253,6 +264,7 @@ public class VariantCallDetectionTest {
 	
 	@Test
 	public void testStatistics() {
+		log.info("testStatistics");
 		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_M.sam");
 		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MI.sam");
 		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MD.sam");
@@ -278,7 +290,7 @@ public class VariantCallDetectionTest {
 				SAMRecord samRecord = it.next();
 				//printCigarAndMD(samRecord);				
 				variantCallDetection.processSequence(samRecord);
-				//System.out.println("VariantCallDetectionTest.java: CigarMD: " + variantCallDetection.getCigarMD().toString());
+				log.debug("VariantCallDetectionTest.java: CigarMD: " + variantCallDetection.getCigarMD().toString());
 			} catch (SAMFormatException sfe) { 
 				System.out.println("SAMFormatException");
 			}
@@ -290,44 +302,44 @@ public class VariantCallDetectionTest {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
-		System.out.println("A->C: " + variantCallDetection.getA2C());
-		System.out.println("A->G: " + variantCallDetection.getA2G());
-		System.out.println("A->T: " + variantCallDetection.getA2T());
-		System.out.println("C->A: " + variantCallDetection.getC2A());
-		System.out.println("C->G: " + variantCallDetection.getC2G());
-		System.out.println("C->T: " + variantCallDetection.getC2T());
-		System.out.println("G->A: " + variantCallDetection.getG2A());
-		System.out.println("G->C: " + variantCallDetection.getG2C());
-		System.out.println("G->T: " + variantCallDetection.getG2T());
-		System.out.println("T->A: " + variantCallDetection.getT2A());
-		System.out.println("T->C: " + variantCallDetection.getT2C());
-		System.out.println("T->G: " + variantCallDetection.getT2G());
-		System.out.println("Tot. Mut.: " + variantCallDetection.getTotalMutations());
-		System.out.println("A Ins: " + variantCallDetection.getAInsertions());
-		System.out.println("C Ins: " + variantCallDetection.getCInsertions());
-		System.out.println("G Ins: " + variantCallDetection.getGInsertions());
-		System.out.println("T Ins: " + variantCallDetection.getTInsertions());
-		System.out.println("N Ins: " + variantCallDetection.getNInsertions());
-		System.out.println("Tot. Ins.: " + variantCallDetection.getTotalInsertions());
-		System.out.println("A Del: " + variantCallDetection.getADeletions());
-		System.out.println("C Del: " + variantCallDetection.getCDeletions());
-		System.out.println("G Del: " + variantCallDetection.getGDeletions());
-		System.out.println("T Del: " + variantCallDetection.getTDeletions());
-		System.out.println("N Del: " + variantCallDetection.getNDeletions());		
-		System.out.println("Tot. Del.: " + variantCallDetection.getTotalDeletions());
-		System.out.println("Total: " + variantCallDetection.getTotal());		
-		System.out.println("Tot. Matches: " + variantCallDetection.getTotalMatches());
-		System.out.println("Skipped regions on the reads: " + variantCallDetection.getReadSkippedRegions());
-		System.out.println("Skipped regions on the reference: " + variantCallDetection.getReferenceSkippedRegions());
+		log.info("A->C: " + variantCallDetection.getA2C());
+		log.info("A->G: " + variantCallDetection.getA2G());
+		log.info("A->T: " + variantCallDetection.getA2T());
+		log.info("C->A: " + variantCallDetection.getC2A());
+		log.info("C->G: " + variantCallDetection.getC2G());
+		log.info("C->T: " + variantCallDetection.getC2T());
+		log.info("G->A: " + variantCallDetection.getG2A());
+		log.info("G->C: " + variantCallDetection.getG2C());
+		log.info("G->T: " + variantCallDetection.getG2T());
+		log.info("T->A: " + variantCallDetection.getT2A());
+		log.info("T->C: " + variantCallDetection.getT2C());
+		log.info("T->G: " + variantCallDetection.getT2G());
+		log.info("Tot. Mut.: " + variantCallDetection.getTotalMutations());
+		log.info("A Ins: " + variantCallDetection.getAInsertions());
+		log.info("C Ins: " + variantCallDetection.getCInsertions());
+		log.info("G Ins: " + variantCallDetection.getGInsertions());
+		log.info("T Ins: " + variantCallDetection.getTInsertions());
+		log.info("N Ins: " + variantCallDetection.getNInsertions());
+		log.info("Tot. Ins.: " + variantCallDetection.getTotalInsertions());
+		log.info("A Del: " + variantCallDetection.getADeletions());
+		log.info("C Del: " + variantCallDetection.getCDeletions());
+		log.info("G Del: " + variantCallDetection.getGDeletions());
+		log.info("T Del: " + variantCallDetection.getTDeletions());
+		log.info("N Del: " + variantCallDetection.getNDeletions());		
+		log.info("Tot. Del.: " + variantCallDetection.getTotalDeletions());
+		log.info("Total: " + variantCallDetection.getTotal());		
+		log.info("Tot. Matches: " + variantCallDetection.getTotalMatches());
+		log.info("Skipped regions on the reads: " + variantCallDetection.getReadSkippedRegions());
+		log.info("Skipped regions on the reference: " + variantCallDetection.getReferenceSkippedRegions());
 
-		System.out.println("SNP/Indels density for each read position:");
+		log.info("SNP/Indels density for each read position:");
 		long[] snpPos = variantCallDetection.getSNPPos();
 		long[] insertionPos = variantCallDetection.getInsertionPos();
 		long[] deletionPos = variantCallDetection.getDeletionPos();
-		System.out.println("Position\tSNP   \t\tIns   \t\tDel   ");
+		log.info("Position\tSNP   \t\tIns   \t\tDel   ");
 		for(int i=0; i<snpPos.length; i++) {
 			// the above arrays have all the same length (see VariantCallDetection.java for details)
-			System.out.println(i + "\t\t" + snpPos[i] + "\t\t" + insertionPos[i] + "\t\t" + deletionPos[i]);
+			log.info(i + "\t\t" + snpPos[i] + "\t\t" + insertionPos[i] + "\t\t" + deletionPos[i]);
 		}
 	}	
 

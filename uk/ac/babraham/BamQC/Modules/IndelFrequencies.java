@@ -40,11 +40,12 @@ import uk.ac.babraham.BamQC.Graphs.LineGraph;
  */
 public class IndelFrequencies extends AbstractQCModule {
 
+	
+	
 	// The analysis collecting all the results.
 	VariantCallDetection variantCallDetection = null;	
 	
 	// data fields for plotting
-	private String name = null;
 	private static String[] indelNames = {
 		"Insertions",
 		"Deletions"};
@@ -71,9 +72,7 @@ public class IndelFrequencies extends AbstractQCModule {
 	
 	
 	@Override	
-	public void processFile(SequenceFile file) {
-		this.name = file.name();
-	}
+	public void processFile(SequenceFile file) { }
 
 	@Override	
 	public void processAnnotationSet(AnnotationSet annotation) {
@@ -163,13 +162,11 @@ public class IndelFrequencies extends AbstractQCModule {
 
 	@Override	
 	public boolean raisesError() {
-		//TODO: Set this
 		return false;
 	}
 
 	@Override	
 	public boolean raisesWarning() {
-		//TODO: Set this
 		return false;
 	}
 

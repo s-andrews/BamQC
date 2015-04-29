@@ -27,6 +27,8 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.log4j.Logger;
+
 import net.sf.samtools.SAMRecord;
 import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
 import uk.ac.babraham.BamQC.Graphs.HorizontalBarGraph;
@@ -44,8 +46,8 @@ import uk.ac.babraham.BamQC.Utilities.CigarMD;
 
 public class VariantCallDetection extends AbstractQCModule {
 
-	// data fields for plotting
-	private String name = null;
+	// logger
+	private static Logger log = Logger.getLogger(VariantCallDetection.class);
 	
 	
 	// data fields for statistics
@@ -138,8 +140,8 @@ public class VariantCallDetection extends AbstractQCModule {
 
 			currentCigarMDElementOperator = currentCigarMDElement.getOperator();
 			
-			// debugging
-			//System.out.println("Parsing CigarElement: " + String.valueOf(currentCigarElementLength) + currentCigarElementOperator.toString());
+			log.debug("Parsing CigarMDElement: " + currentCigarMDElement.toString());
+
 			if(currentCigarMDElementOperator.equals(CigarMDOperator.MATCH)) {
 				processMDtagCigarOperatorM();
 			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.MISMATCH)) {
@@ -150,45 +152,45 @@ public class VariantCallDetection extends AbstractQCModule {
 				processMDtagCigarOperatorD();				
 			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.SKIPPED_REGION)) {
 				//processMDtagCigarOperatorN();
-				//System.out.println("VariantCallDetection.java: extended CIGAR element N is currently unsupported.");
+				log.debug("VariantCallDetection.java: extended CIGAR element N is currently unsupported.");
 				skippedReads++;
 				break;
 			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.SOFT_CLIP)) {
-				//System.out.println("VariantCallDetection.java: extended CIGAR element S is currently unsupported.");
+				log.debug("VariantCallDetection.java: extended CIGAR element S is currently unsupported.");
 				skippedReads++;
 				break;
 			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.HARD_CLIP)) {
-				//System.out.println("VariantCallDetection.java: extended CIGAR element H is currently unsupported.");
+				log.debug("VariantCallDetection.java: extended CIGAR element H is currently unsupported.");
 				skippedReads++;
 				break;
 			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.PADDING)) {
-				//System.out.println("VariantCallDetection.java: extended CIGAR element P is currently unsupported.");
+				log.debug("VariantCallDetection.java: extended CIGAR element P is currently unsupported.");
 				skippedReads++;
 				break;
 			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.eq)) {
-				//System.out.println("VariantCallDetection.java: extended CIGAR element = is currently unsupported.");
+				log.debug("VariantCallDetection.java: extended CIGAR element = is currently unsupported.");
 				skippedReads++;
 				break;
 			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.x)) {
-				//System.out.println("VariantCallDetection.java: extended CIGAR element X is currently unsupported.");
+				log.debug("VariantCallDetection.java: extended CIGAR element X is currently unsupported.");
 				skippedReads++;
 				break;
 			} else {
-				//System.out.println("VariantCallDetection.java: Unknown operator in the CIGAR string.");
+				log.debug("VariantCallDetection.java: Unknown operator in the CIGAR string.");
 				skippedReads++;
 				break;
 			}		
 		}
 		computeTotals();	
-//		debugging
-//		System.out.println("Combined Cigar MDtag: " + cigarMD.toString());
+		
+		log.debug("Combined Cigar MDtag: " + cigarMD.toString());
 	}
 	
 	
 	@Override	
-	public void processFile(SequenceFile file) {
-		this.name = file.name();
-	}
+	public void processFile(SequenceFile file) {}
+	
+	
 
 	@Override	
 	public void processAnnotationSet(AnnotationSet annotation) { }	
@@ -257,13 +259,11 @@ public class VariantCallDetection extends AbstractQCModule {
 
 	@Override	
 	public boolean raisesError() {
-		//TODO: Set this
 		return false;
 	}
 
 	@Override	
 	public boolean raisesWarning() {
-		//TODO: Set this
 		return false;
 	}
 

@@ -44,7 +44,6 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 	VariantCallDetection variantCallDetection = null;	
 	
 	// data fields for plotting
-	private String name = null;
 	private static String[] snpTypeNames = {
 		"A->C", "A->G", "A->T",
 		"C->A", "C->G", "C->T", 
@@ -73,11 +72,8 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 	@Override
 	public void processSequence(SAMRecord read) { }
 	
-	
 	@Override	
-	public void processFile(SequenceFile file) {
-		this.name = file.name();
-	}
+	public void processFile(SequenceFile file) { }
 
 	@Override	
 	public void processAnnotationSet(AnnotationSet annotation) {
@@ -124,13 +120,11 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 
 	@Override	
 	public boolean raisesError() {
-		//TODO: Set this
 		return false;
 	}
 
 	@Override	
 	public boolean raisesWarning() {
-		//TODO: Set this
 		return false;
 	}
 
