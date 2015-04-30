@@ -21,6 +21,7 @@
 package uk.ac.babraham.BamQC.Modules;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import javax.swing.JPanel;
 import javax.xml.stream.XMLStreamException;
@@ -67,6 +68,32 @@ public class IndelFrequencies extends AbstractQCModule {
 	}
 	
 	
+	// Private methods
+	
+	/**
+	 * Computes the maximum value for the x axis.
+	 * @return xMaxValue
+	 */
+	private int computeXMaxValue() {
+		HashMap<Integer, Long> hm = variantCallDetection.getContributingReadsPerPos();
+		Integer[] readLengths = hm.keySet().toArray(new Integer[hm.size()]);
+		Long[] readCounts = hm.values().toArray(new Long[hm.size()]);
+		long parsedReads = variantCallDetection.getTotalReads() - variantCallDetection.getSkippedReads();
+		double threshold = ModuleConfig.getParam("variant_call_position_indel_threshold", "ignore").intValue();
+		int xMaxValue = 0;
+		for(int i=0; i<readLengths.length; i++) {
+			if((readCounts[i]*100d/parsedReads) >= threshold 
+			 && xMaxValue < readLengths[i]) {
+				xMaxValue = readLengths[i];
+			}
+			log.debug("key, value, threshold: " + readLengths[i] + " " + (readCounts[i]*100d/parsedReads) + " " + threshold);
+		}
+		return xMaxValue;
+	}
+	
+	
+	
+	
 	// @Override methods
 	
 	@Override
@@ -109,6 +136,8 @@ public class IndelFrequencies extends AbstractQCModule {
 					"Indel Frequencies ( Insertions: 0, Deletions: 0 )");
 		}		
 		
+
+		
 		// We do not need a BaseGroup here
 		// These two arrays have same length.
 		long[] insertionPos = variantCallDetection.getInsertionPos();
@@ -116,12 +145,17 @@ public class IndelFrequencies extends AbstractQCModule {
 		
 		// initialise and configure the LineGraph
 		// compute the maximum value for the X axis
-		int maxX = insertionPos.length;
-		boolean found = false;
-		for(int i=insertionPos.length-1; i>=0 && !found; i--) {
-			if(insertionPos[i] > 0 || deletionPos[i] > 0) { 
-				maxX = i+1;
-				found = true;
+		int maxX = 0;
+		if(ModuleConfig.getParam("variant_call_position_apply_threshold", "ignore").intValue() == 1) {
+			maxX = computeXMaxValue();
+		} else {
+			maxX = insertionPos.length;
+			boolean found = false;
+			for(int i=insertionPos.length-1; i>=0 && !found; i--) {
+				if(insertionPos[i] > 0 || deletionPos[i] > 0) { 
+					maxX = i+1;
+					found = true;
+				}
 			}
 		}
 		String[] xCategories = new String[maxX];		

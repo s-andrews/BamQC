@@ -21,9 +21,12 @@
 package uk.ac.babraham.BamQC.Modules;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import javax.swing.JPanel;
 import javax.xml.stream.XMLStreamException;
+
+import org.apache.log4j.Logger;
 
 import net.sf.samtools.SAMRecord;
 import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
@@ -40,6 +43,8 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFile;
  */
 public class SNPFrequencies extends AbstractQCModule {
 
+	private static Logger log = Logger.getLogger(SNPFrequencies.class);	
+	
 	// The analysis collecting all the results.
 	VariantCallDetection variantCallDetection = null;	
 	
@@ -59,6 +64,29 @@ public class SNPFrequencies extends AbstractQCModule {
 	 */
 	public SNPFrequencies(VariantCallDetection vcd) {	
 		variantCallDetection = vcd;
+	}
+	
+	// Private methods
+	
+	/**
+	 * Computes the maximum value for the x axis.
+	 * @return xMaxValue
+	 */
+	private int computeXMaxValue() {
+		HashMap<Integer, Long> hm = variantCallDetection.getContributingReadsPerPos();
+		Integer[] readLengths = hm.keySet().toArray(new Integer[hm.size()]);
+		Long[] readCounts = hm.values().toArray(new Long[hm.size()]);
+		long parsedReads = variantCallDetection.getTotalReads() - variantCallDetection.getSkippedReads();
+		double threshold = ModuleConfig.getParam("variant_call_position_snp_threshold", "ignore").intValue();
+		int xMaxValue = 0;
+		for(int i=0; i<readLengths.length; i++) {
+			if((readCounts[i]*100d/parsedReads) >= threshold 
+			 && xMaxValue < readLengths[i]) {
+				xMaxValue = readLengths[i];
+			}
+			log.debug("key, value, threshold: " + readLengths[i] + " " + (readCounts[i]*100d/parsedReads) + " " + threshold);
+		}
+		return xMaxValue;
 	}
 	
 	
@@ -94,14 +122,21 @@ public class SNPFrequencies extends AbstractQCModule {
 		
 		// initialise and configure the LineGraph
 		// compute the maximum value for the X axis
-		int maxX = snpPos.length;
-		boolean found = false;
-		for(int i=snpPos.length-1; i>=0 && !found; i--) {
-			if(snpPos[i] > 0) { 
-				maxX = i+1;
-				found = true;
+		int maxX = 0;
+		if(ModuleConfig.getParam("variant_call_position_apply_threshold", "ignore").intValue() == 1) {
+			maxX = computeXMaxValue();
+		} else {
+			maxX = snpPos.length;
+			boolean found = false;
+			for(int i=snpPos.length-1; i>=0 && !found; i--) {
+				if(snpPos[i] > 0) { 
+					maxX = i+1;
+					found = true;
+				}
 			}
-		}
+		}		
+		
+		
 		String[] xCategories = new String[maxX];		
 		double[] dSNPPos = new double[maxX];
 		double maxY = 0.0d;

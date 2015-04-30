@@ -21,6 +21,7 @@
 package uk.ac.babraham.BamQC.Modules;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -89,8 +90,15 @@ public class VariantCallDetection extends AbstractQCModule {
     private long[] snpPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
     private long[] insertionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
     private long[] deletionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
-    private int currentPosition = 0;
-	
+    public HashMap<Integer, Long> getContributingReadsPerPos() {
+		return contributingReadsPerPos;
+	}
+
+	private int currentPosition = 0;
+    // This array reports how many reads are included for computing the statistics for each position. It is used for filtering 
+    // statistics for positions having less then a defined percentage of reads.
+    // key: the read lengths, value: the number of reads with that length.
+    private HashMap<Integer, Long> contributingReadsPerPos = new HashMap<Integer, Long>();	
     
     
 	// Used for computing the statistics 
@@ -181,8 +189,13 @@ public class VariantCallDetection extends AbstractQCModule {
 				break;
 			}		
 		}
-		computeTotals();	
-		
+		computeTotals();
+		if(contributingReadsPerPos.containsKey(read.getReadLength())) {
+			contributingReadsPerPos.put(read.getReadLength(), contributingReadsPerPos.get(read.getReadLength()) + 1L);
+		} else {
+			contributingReadsPerPos.put(read.getReadLength(), 1L);
+		}
+		//System.out.println("key, value:" + read.getReadLength() + ", " + contributingReadsPerPos.get(read.getReadLength()));
 		log.debug("Combined Cigar MDtag: " + cigarMD.toString());
 	}
 	
@@ -253,6 +266,7 @@ public class VariantCallDetection extends AbstractQCModule {
 	    insertionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
 	    deletionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
 	    currentPosition = 0;
+	    contributingReadsPerPos = new HashMap<Integer, Long>();
 
 		cigarMD = new CigarMD();
 	}
@@ -307,11 +321,11 @@ public class VariantCallDetection extends AbstractQCModule {
 		} else {
 			snpPos = new long[snpPos.length*2];
 			insertionPos = new long[snpPos.length*2];
-			deletionPos = new long[snpPos.length*2];			
+			deletionPos = new long[snpPos.length*2];
 		}
 		System.arraycopy(oldSNPPos, 0, snpPos, 0, oldSNPPos.length);
 		System.arraycopy(oldInsertionPos, 0, insertionPos, 0, oldInsertionPos.length);
-		System.arraycopy(oldDeletionPos, 0, deletionPos, 0, oldDeletionPos.length);		
+		System.arraycopy(oldDeletionPos, 0, deletionPos, 0, oldDeletionPos.length);	
 	}
 	
 	/* Compute the totals */
