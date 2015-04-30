@@ -50,12 +50,7 @@ public class VariantCallDetectionTest {
 	private List<SAMRecord> samRecords = null;
 	private VariantCallDetection variantCallDetection = null;
 
-	
-//	public VariantCallDetectionTest() {
-//		log.setLevel(Level.DEBUG);
-//		//Logger.getRootLogger().setLevel(Level.DEBUG);
-//	}
-	
+
 	// Load the whole SAM file, as this is very short. (3-10 lines).
 	// Clearly this is not a correct approach generally.
 	private boolean loadSAMFile(String filename) {

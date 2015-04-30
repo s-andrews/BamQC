@@ -25,6 +25,8 @@ import java.io.IOException;
 import javax.swing.JPanel;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.log4j.Logger;
+
 import net.sf.samtools.SAMRecord;
 import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
@@ -40,7 +42,7 @@ import uk.ac.babraham.BamQC.Graphs.LineGraph;
  */
 public class IndelFrequencies extends AbstractQCModule {
 
-	
+	private static Logger log = Logger.getLogger(IndelFrequencies.class);	
 	
 	// The analysis collecting all the results.
 	VariantCallDetection variantCallDetection = null;	
@@ -81,6 +83,23 @@ public class IndelFrequencies extends AbstractQCModule {
 
 	@Override	
 	public JPanel getResultsPanel() {
+		log.info("A insertions: " + variantCallDetection.getAInsertions());
+		log.info("C insertions: " + variantCallDetection.getCInsertions());
+		log.info("G insertions: " + variantCallDetection.getGInsertions());
+		log.info("T insertions: " + variantCallDetection.getTInsertions());
+		log.info("N insertions: " + variantCallDetection.getNInsertions());
+		log.info("Total insertions: " + variantCallDetection.getTotalInsertions());
+		log.info("A deletions: " + variantCallDetection.getADeletions());
+		log.info("C deletions: " + variantCallDetection.getCDeletions());
+		log.info("G deletions: " + variantCallDetection.getGDeletions());
+		log.info("T deletions: " + variantCallDetection.getTDeletions());
+		log.info("N deletions: " + variantCallDetection.getNDeletions());		
+		log.info("Total deletions: " + variantCallDetection.getTotalDeletions());
+		log.info("Skipped regions on the reads: " + variantCallDetection.getReadSkippedRegions());
+		log.info("Skipped regions on the reference: " + variantCallDetection.getReferenceSkippedRegions());
+		log.info("Skipped reads: " + variantCallDetection.getSkippedReads() + " ( "+ (variantCallDetection.getSkippedReads()*100.0f)/variantCallDetection.getTotalReads() + "% )");
+		
+		
 		if(variantCallDetection == null) { 
 			return new LineGraph(new double [][]{
 					new double[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()],
@@ -114,7 +133,7 @@ public class IndelFrequencies extends AbstractQCModule {
 			dDeletionPos[i]= (double)deletionPos[i];
 			if(dInsertionPos[i] > maxY) { maxY = dInsertionPos[i]; }
 			if(dDeletionPos[i] > maxY) { maxY = dDeletionPos[i]; }
-			xCategories[i] = String.valueOf(i);
+			xCategories[i] = String.valueOf(i+1);
 		}
 //		String[] xCategories = new String[insertionPos.length];		
 //		double[] dInsertionPos = new double[insertionPos.length];

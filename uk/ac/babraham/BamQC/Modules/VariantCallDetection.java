@@ -349,9 +349,13 @@ public class VariantCallDetection extends AbstractQCModule {
 		String mutatedBases = currentCigarMDElement.getBases();
 		String basePair = "";
 		
-		// debugging
-		//System.out.println("VariantCallDetection.java - " + currentCigarMDElement + " : " + cigarMD.toString());
-		//System.out.println(mutatedBases);
+		if(mutatedBases.equals("")) {
+			log.error("Mutated bases not reported. currentCigarMDElement: " + currentCigarMDElement + ", cigarMD: " + cigarMD.toString() + 
+					 ", mutatedBases: " + mutatedBases);
+			// if we are in this case, the following for loop will cause a java.lang.StringIndexOutOfBoundsException . 
+			// This would be a bug in the computation of the CigarMD string. mutatedBases should never be empty.
+			// For now, leave this test as it is useful.
+		}
 		
 		// if the read.length is longer than what we supposed to be, here we increase the length of our *Pos arrays.
 		if(currentPosition+numMutations >= snpPos.length) {

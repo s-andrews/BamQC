@@ -108,7 +108,7 @@ public class SNPFrequencies extends AbstractQCModule {
 		for(int i=0; i<maxX; i++) {
 			dSNPPos[i]= (double)snpPos[i];
 			if(dSNPPos[i] > maxY) { maxY = dSNPPos[i]; }
-			xCategories[i] = String.valueOf(i);
+			xCategories[i] = String.valueOf(i+1);
 		}
 		
 //		String[] xCategories = new String[snpPos.length];		
