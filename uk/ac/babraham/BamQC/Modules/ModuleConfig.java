@@ -74,8 +74,7 @@ public class ModuleConfig {
 		params.put("sequence_length:ignore", 0d);
 		params.put("adapter:ignore", 0d);
 		params.put("variant_call_position_length:ignore", 150d);
-		params.put("variant_call_position_apply_threshold:ignore", 1d); // 1d is true, everything else is false
-		params.put("variant_call_position_indel_threshold:ignore", 0d); // 5%
+		params.put("variant_call_position_indel_threshold:ignore", 5d); // 5%
 		params.put("variant_call_position_snp_threshold:ignore", 5d); // 5%		
 		
 		// EAGLE

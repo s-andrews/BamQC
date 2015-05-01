@@ -101,7 +101,7 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 		snpFrequenciesByType[9] = variantCallDetection.getT2A() * 1.0f;
 		snpFrequenciesByType[10] = variantCallDetection.getT2C() * 1.0f;
 		snpFrequenciesByType[11] = variantCallDetection.getT2G() * 1.0f;
-		String title = String.format("SNP frequencies by Type ( SNPs: %d (%.3f %%) )", totalMutations, (((double) totalMutations / (totalMutations+totalMatches)) * 100.0));		
+		String title = String.format("SNP frequencies by Type ( SNPs: %d , %.3f %% )", totalMutations, (((double) totalMutations / (totalMutations+totalMatches)) * 100.0));		
 		return new HorizontalBarGraph(snpTypeNames, snpFrequenciesByType, title, totalMutations);
 	}
 

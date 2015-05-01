@@ -80,19 +80,19 @@ public class SNPFrequencies extends AbstractQCModule {
 		long moreFrequentReadLength = 0;
 		// Computes a variable threshold depending on the read length distribution of read library
 		for(int i=0; i<readCounts.length; i++) {
-			if(readCounts[i] > moreFrequentReadLength)	{
+			if(readCounts[i] > moreFrequentReadLength) {
 				moreFrequentReadLength = readCounts[i];
 			}
 		}
 		double threshold = moreFrequentReadLength * ModuleConfig.getParam("variant_call_position_snp_threshold", "ignore").intValue() / 100d;
 		// Filters the reads to show based on a the threshold computed previously.
 		for(int i=0; i<readCounts.length; i++) {
-			if(readCounts[i] > threshold && xMaxValue < readLengths[i]) {
+			if(readCounts[i] >= threshold && xMaxValue < readLengths[i]) {
 				xMaxValue = readLengths[i];
 			}
 			log.debug("Read Length: " + readLengths[i] + ", Num Reads: " + readCounts[i] + ", Min Accepted Length: " + threshold);
 		}
-		return xMaxValue;		
+		return xMaxValue+1;	//this will be used for array sizes (so +1).	
 	}
 	
 	
@@ -128,42 +128,21 @@ public class SNPFrequencies extends AbstractQCModule {
 		
 		// initialise and configure the LineGraph
 		// compute the maximum value for the X axis
-		int maxX = 0;
-		if(ModuleConfig.getParam("variant_call_position_apply_threshold", "ignore").intValue() == 1) {
-			maxX = computeXMaxValue();
-		} else {
-			maxX = snpPos.length;
-			boolean found = false;
-			for(int i=snpPos.length-1; i>=0 && !found; i--) {
-				if(snpPos[i] > 0) { 
-					maxX = i+1;
-					found = true;
-				}
-			}
-		}		
-		
-		
+		int maxX = computeXMaxValue();
+				
 		String[] xCategories = new String[maxX];		
 		double[] dSNPPos = new double[maxX];
 		double maxY = 0.0d;
-		for(int i=0; i<maxX; i++) {
+		for(int i=0; i<maxX && i<snpPos.length; i++) {		
 			dSNPPos[i]= (double)snpPos[i];
 			if(dSNPPos[i] > maxY) { maxY = dSNPPos[i]; }
 			xCategories[i] = String.valueOf(i+1);
 		}
 		
-//		String[] xCategories = new String[snpPos.length];		
-//		double[] dSNPPos = new double[snpPos.length];
-//		double maxY = 0.0d;
-//		for(int i=0; i<snpPos.length; i++) {
-//			dSNPPos[i]= (double)snpPos[i];
-//			if(dSNPPos[i] > maxY) { maxY = dSNPPos[i]; }
-//			xCategories[i] = String.valueOf(i);
-//		}
 		// add 10% to the maximum for improving the plot rendering
 		maxY = maxY + maxY*0.05; 
 		double[][] snpData = new double [][] {dSNPPos};
-		String title = String.format("SNP frequencies ( SNPs: %d (%.3f %%) )", totalMutations, (((double) totalMutations / (totalMutations+totalMatches)) * 100.0));
+		String title = String.format("SNP frequencies ( SNPs: %d , %.3f %% )", totalMutations, (((double) totalMutations / (totalMutations+totalMatches)) * 100.0));
 		return new LineGraph(snpData, 0d, maxY, "Position in read (bp)", snpName, xCategories, title);
 	}
 

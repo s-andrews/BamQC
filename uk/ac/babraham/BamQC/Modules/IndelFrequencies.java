@@ -82,7 +82,7 @@ public class IndelFrequencies extends AbstractQCModule {
 		long moreFrequentReadLength = 0;
 		// Computes a variable threshold depending on the read length distribution of read library
 		for(int i=0; i<readCounts.length; i++) {
-			if(readCounts[i] > moreFrequentReadLength)	{
+			if(readCounts[i] > moreFrequentReadLength) {
 				moreFrequentReadLength = readCounts[i];
 			}
 		}
@@ -94,7 +94,7 @@ public class IndelFrequencies extends AbstractQCModule {
 			}
 			log.debug("Read Length: " + readLengths[i] + ", Num Reads: " + readCounts[i] + ", Min Accepted Length: " + threshold);
 		}
-		return xMaxValue;
+		return xMaxValue+1;	//this will be used for array sizes (so +1).
 	}
 	
 	
@@ -151,41 +151,20 @@ public class IndelFrequencies extends AbstractQCModule {
 		
 		// initialise and configure the LineGraph
 		// compute the maximum value for the X axis
-		int maxX = 0;
-		if(ModuleConfig.getParam("variant_call_position_apply_threshold", "ignore").intValue() == 1) {
-			maxX = computeXMaxValue();
-		} else {
-			maxX = insertionPos.length;
-			boolean found = false;
-			for(int i=insertionPos.length-1; i>=0 && !found; i--) {
-				if(insertionPos[i] > 0 || deletionPos[i] > 0) { 
-					maxX = i+1;
-					found = true;
-				}
-			}
-		}
+		int maxX = computeXMaxValue();
+
 		String[] xCategories = new String[maxX];		
 		double[] dInsertionPos = new double[maxX];
 		double[] dDeletionPos = new double[maxX];
 		double maxY = 0.0d;
-		for(int i=0; i<maxX; i++) {
+		for(int i=0; i<maxX && i<insertionPos.length; i++) {
 			dInsertionPos[i]= (double)insertionPos[i];
 			dDeletionPos[i]= (double)deletionPos[i];
 			if(dInsertionPos[i] > maxY) { maxY = dInsertionPos[i]; }
 			if(dDeletionPos[i] > maxY) { maxY = dDeletionPos[i]; }
 			xCategories[i] = String.valueOf(i+1);
 		}
-//		String[] xCategories = new String[insertionPos.length];		
-//		double[] dInsertionPos = new double[insertionPos.length];
-//		double[] dDeletionPos = new double[insertionPos.length];
-//		double maxY = 0.0d;
-//		for(int i=0; i<insertionPos.length; i++) {
-//			dInsertionPos[i]= (double)insertionPos[i];
-//			dDeletionPos[i]= (double)deletionPos[i];
-//			if(dInsertionPos[i] > maxY) { maxY = dInsertionPos[i]; }
-//			if(dDeletionPos[i] > maxY) { maxY = dDeletionPos[i]; }
-//			xCategories[i] = String.valueOf(i);
-//		}
+
 		// add 10% to the maximum for improving the plot rendering
 		maxY = maxY + maxY*0.05; 
 		double[][] indelData = new double [][] {dInsertionPos,dDeletionPos};
