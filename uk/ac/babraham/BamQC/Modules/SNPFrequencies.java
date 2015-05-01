@@ -126,9 +126,9 @@ public class SNPFrequencies extends AbstractQCModule {
 		}		
 		
 
-		long totSNP = variantCallDetection.getTotalMutations(),
+		long totSNPs = variantCallDetection.getTotalMutations(),
 			 totBases = variantCallDetection.getTotal();		
-		log.info("Total SNPs: " + totSNP + " ( " + totSNP*100f/totBases + " )");
+		log.info("Total SNPs: " + totSNPs + " ( " + totSNPs*100f/totBases + " )");
 		
 		
 		// We do not need a BaseGroup here
@@ -168,7 +168,7 @@ public class SNPFrequencies extends AbstractQCModule {
 		
 		
 		double[][] snpData = new double [][] {dSNPPos};
-		String title = String.format("SNP frequencies ( SNPs: %.3f %% )", totSNP*100.0f/totBases);
+		String title = String.format("SNP frequencies ( SNPs: %.3f %% )", totSNPs*100.0f/totBases);
 		return new LineGraph(snpData, 0d, maxY, "Position in read (bp)", snpName, xCategories, title);
 	}
 

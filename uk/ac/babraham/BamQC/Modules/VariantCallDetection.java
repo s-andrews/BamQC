@@ -363,6 +363,10 @@ public class VariantCallDetection extends AbstractQCModule {
 	private void processMDtagCigarOperatorM() {
 		int numMatches = currentCigarMDElement.getLength();
 		totalMatches = totalMatches + numMatches;
+		// if the read.length is longer than what we supposed to be, here we increase the length of our *Pos arrays.
+		if(currentPosition+numMatches >= matchPos.length) {
+			extendDensityArrays(currentPosition+numMatches);			
+	    }
 		for(int i=0; i<numMatches; i++) {
 			matchPos[currentPosition+i]++;
 		}

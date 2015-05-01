@@ -42,7 +42,10 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFile;
  */
 public class SNPFrequenciesByType extends AbstractQCModule {
 
-	private static Logger log = Logger.getLogger(SNPFrequenciesByType.class);	
+	private static Logger log = Logger.getLogger(SNPFrequenciesByType.class);
+	
+	// original threshold for the plot x axis.
+	private float maxX=0.0f; 
 	
 	// The analysis collecting all the results.
 	VariantCallDetection variantCallDetection = null;	
@@ -106,23 +109,29 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 		log.info("SNP T->G: " + variantCallDetection.getT2G());
 		
 		
-		long totalMutations = variantCallDetection.getTotalMutations(), 
-			 totalMatches = variantCallDetection.getTotalMatches();
+		long totSNPs = variantCallDetection.getTotalMutations(), 
+			 totBases = variantCallDetection.getTotal();
 		snpFrequenciesByType = new float[12];
-		snpFrequenciesByType[0] = variantCallDetection.getA2C() * 1.0f;
-		snpFrequenciesByType[1] = variantCallDetection.getA2G() * 1.0f;
-		snpFrequenciesByType[2] = variantCallDetection.getA2T() * 1.0f;
-		snpFrequenciesByType[3] = variantCallDetection.getC2A() * 1.0f;
-		snpFrequenciesByType[4] = variantCallDetection.getC2G() * 1.0f;
-		snpFrequenciesByType[5] = variantCallDetection.getC2T() * 1.0f;
-		snpFrequenciesByType[6] = variantCallDetection.getG2A() * 1.0f;
-		snpFrequenciesByType[7] = variantCallDetection.getG2C() * 1.0f;
-		snpFrequenciesByType[8] = variantCallDetection.getG2T() * 1.0f;
-		snpFrequenciesByType[9] = variantCallDetection.getT2A() * 1.0f;
-		snpFrequenciesByType[10] = variantCallDetection.getT2C() * 1.0f;
-		snpFrequenciesByType[11] = variantCallDetection.getT2G() * 1.0f;
-		String title = String.format("SNP frequencies by Type ( SNPs: %d , %.3f %% )", totalMutations, (((double) totalMutations / (totalMutations+totalMatches)) * 100.0));		
-		return new HorizontalBarGraph(snpTypeNames, snpFrequenciesByType, title, totalMutations);
+		snpFrequenciesByType[0] = variantCallDetection.getA2C() * 100f / totSNPs;
+		snpFrequenciesByType[1] = variantCallDetection.getA2G() * 100f / totSNPs;
+		snpFrequenciesByType[2] = variantCallDetection.getA2T() * 100f / totSNPs;
+		snpFrequenciesByType[3] = variantCallDetection.getC2A() * 100f / totSNPs;
+		snpFrequenciesByType[4] = variantCallDetection.getC2G() * 100f / totSNPs;
+		snpFrequenciesByType[5] = variantCallDetection.getC2T() * 100f / totSNPs;
+		snpFrequenciesByType[6] = variantCallDetection.getG2A() * 100f / totSNPs;
+		snpFrequenciesByType[7] = variantCallDetection.getG2C() * 100f / totSNPs;
+		snpFrequenciesByType[8] = variantCallDetection.getG2T() * 100f / totSNPs;
+		snpFrequenciesByType[9] = variantCallDetection.getT2A() * 100f / totSNPs;
+		snpFrequenciesByType[10] = variantCallDetection.getT2C() * 100f / totSNPs;
+		snpFrequenciesByType[11] = variantCallDetection.getT2G() * 100f / totSNPs;
+		
+		for(int i=0; i< snpFrequenciesByType.length; i++) {
+			if(maxX < snpFrequenciesByType[i]) 
+				maxX = snpFrequenciesByType[i];
+		}
+		
+		String title = String.format("SNP frequencies by Type ( SNPs: %.3f %% )", totSNPs*100.0f/totBases);
+		return new HorizontalBarGraph(snpTypeNames, snpFrequenciesByType, title, maxX+1);
 	}
 
 	@Override	
@@ -140,11 +149,16 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 
 	@Override	
 	public boolean raisesError() {
+		// 8=100/12=uniform distribution of snps.
+		if(maxX-8 > ModuleConfig.getParam("variant_call_position_snp_by_type_threshold", "error").floatValue())
+			return true;		
 		return false;
 	}
 
 	@Override	
 	public boolean raisesWarning() {
+		if(maxX-8 > ModuleConfig.getParam("variant_call_position_snp_by_type_threshold", "warn").floatValue())
+			return true;		
 		return false;
 	}
 
