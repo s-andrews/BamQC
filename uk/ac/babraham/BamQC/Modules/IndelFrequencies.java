@@ -45,6 +45,9 @@ public class IndelFrequencies extends AbstractQCModule {
 
 	private static Logger log = Logger.getLogger(IndelFrequencies.class);	
 	
+	// original threshold for the plot y axis.
+	private double maxY=1.0d; 
+	
 	// The analysis collecting all the results.
 	VariantCallDetection variantCallDetection = null;	
 	
@@ -86,7 +89,7 @@ public class IndelFrequencies extends AbstractQCModule {
 				moreFrequentReadLength = readCounts[i];
 			}
 		}
-		double threshold = moreFrequentReadLength * ModuleConfig.getParam("variant_call_position_indel_threshold", "ignore").intValue() / 100d;
+		double threshold = moreFrequentReadLength * ModuleConfig.getParam("variant_call_position_indel_xaxis_threshold", "ignore").intValue() / 100d;
 		// Filters the reads to show based on a the threshold computed previously.
 		for(int i=0; i<readCounts.length; i++) {
 			if(readCounts[i] >= threshold && xMaxValue < readLengths[i]) {
@@ -126,22 +129,26 @@ public class IndelFrequencies extends AbstractQCModule {
 					"Indel Frequencies ( Insertions: 0, Deletions: 0 )");
 		}		
 		
+		long totIns = variantCallDetection.getTotalInsertions(),
+				 totDel = variantCallDetection.getTotalDeletions(), 
+				 totBases = variantCallDetection.getTotal();
 		
 		log.info("A insertions: " + variantCallDetection.getAInsertions());
 		log.info("C insertions: " + variantCallDetection.getCInsertions());
 		log.info("G insertions: " + variantCallDetection.getGInsertions());
 		log.info("T insertions: " + variantCallDetection.getTInsertions());
 		log.info("N insertions: " + variantCallDetection.getNInsertions());
-		log.info("Total insertions: " + variantCallDetection.getTotalInsertions());
+		log.info("Total insertions: " + totIns + " ( " + totIns*100f/totBases + " )");
 		log.info("A deletions: " + variantCallDetection.getADeletions());
 		log.info("C deletions: " + variantCallDetection.getCDeletions());
 		log.info("G deletions: " + variantCallDetection.getGDeletions());
 		log.info("T deletions: " + variantCallDetection.getTDeletions());
 		log.info("N deletions: " + variantCallDetection.getNDeletions());		
-		log.info("Total deletions: " + variantCallDetection.getTotalDeletions());
+		log.info("Total deletions: " + totDel + " ( " + totDel*100f/totBases + " )");
 		log.info("Skipped regions on the reads: " + variantCallDetection.getReadSkippedRegions());
 		log.info("Skipped regions on the reference: " + variantCallDetection.getReferenceSkippedRegions());
 		log.info("Skipped reads: " + variantCallDetection.getSkippedReads() + " ( "+ (variantCallDetection.getSkippedReads()*100.0f)/variantCallDetection.getTotalReads() + "% )");
+		
 		
 		
 		// We do not need a BaseGroup here
@@ -149,40 +156,48 @@ public class IndelFrequencies extends AbstractQCModule {
 		long[] insertionPos = variantCallDetection.getInsertionPos();
 		long[] deletionPos = variantCallDetection.getDeletionPos();
 		
-		// initialise and configure the LineGraph
+//		//////////////////////
+//		// OLD PLOT 
+//		//////////////////////
+//		// initialise and configure the LineGraph
+//		// compute the maximum value for the X axis
+//		int maxX = computeXMaxValue();
+//		String[] xCategories = new String[maxX];		
+//		double[] dInsertionPos = new double[maxX];
+//		double[] dDeletionPos = new double[maxX];
+//		maxY = 0.0d;
+//		for(int i=0; i<maxX && i<insertionPos.length; i++) {
+//			dInsertionPos[i]= (double)insertionPos[i];
+//			dDeletionPos[i]= (double)deletionPos[i];
+//			if(dInsertionPos[i] > maxY) { maxY = dInsertionPos[i]; }
+//			if(dDeletionPos[i] > maxY) { maxY = dDeletionPos[i]; }
+//			xCategories[i] = String.valueOf(i+1);
+//		}
+//		// add 10% to the maximum for improving the plot rendering
+//		maxY = maxY + maxY*0.05; 
+		
+		long[] totalPos = variantCallDetection.getTotalPos();
+     	// initialise and configure the LineGraph
 		// compute the maximum value for the X axis
 		int maxX = computeXMaxValue();
-
+		//maxX = insertionPos.length;
 		String[] xCategories = new String[maxX];		
 		double[] dInsertionPos = new double[maxX];
 		double[] dDeletionPos = new double[maxX];
-		double maxY = 0.0d;
 		for(int i=0; i<maxX && i<insertionPos.length; i++) {
-			dInsertionPos[i]= (double)insertionPos[i];
-			dDeletionPos[i]= (double)deletionPos[i];
+			dInsertionPos[i]= (insertionPos[i] * 100d) / totalPos[i];
+			dDeletionPos[i]= (deletionPos[i] * 100d) / totalPos[i];
 			if(dInsertionPos[i] > maxY) { maxY = dInsertionPos[i]; }
 			if(dDeletionPos[i] > maxY) { maxY = dDeletionPos[i]; }
 			xCategories[i] = String.valueOf(i+1);
 		}
+		
 
-		// add 10% to the maximum for improving the plot rendering
-		maxY = maxY + maxY*0.05; 
 		double[][] indelData = new double [][] {dInsertionPos,dDeletionPos};
-//		String title = String.format("Indel Frequencies \n(Insertions: %d (A:%d,C:%d,G:%d,T:%d); Deletions: %d (A:%d,C:%d,G:%d,T:%d))", 
-//				variantCallDetection.getTotalInsertions(), 
-//				variantCallDetection.getAInsertions(),
-//				variantCallDetection.getCInsertions(),
-//				variantCallDetection.getGInsertions(),
-//				variantCallDetection.getTInsertions(),
-//				variantCallDetection.getTotalDeletions(), 
-//				variantCallDetection.getADeletions(),
-//				variantCallDetection.getCDeletions(),
-//				variantCallDetection.getGDeletions(),
-//				variantCallDetection.getTDeletions());
-		String title = String.format("Indel Frequencies ( Insertions: %d, Deletions: %d )", 
-				variantCallDetection.getTotalInsertions(),variantCallDetection.getTotalDeletions());		
+		String title = String.format("Indel Frequencies ( Insertions: %.3f %%, Deletions: %.3f %% )", 
+				totIns*100.0f/totBases,totDel*100.0f/totBases);		
 	
-		return new LineGraph(indelData, 0d, maxY, "Position in read (bp)", indelNames, xCategories, title);
+		return new LineGraph(indelData, 0d, maxY+1, "Position in read (bp)", indelNames, xCategories, title);
 	}
 
 	@Override	
@@ -200,11 +215,15 @@ public class IndelFrequencies extends AbstractQCModule {
 
 	@Override	
 	public boolean raisesError() {
+		if(maxY > ModuleConfig.getParam("variant_call_position_indel_threshold", "error"))
+			return true;		
 		return false;
 	}
 
 	@Override	
 	public boolean raisesWarning() {
+		if(maxY > ModuleConfig.getParam("variant_call_position_indel_threshold", "warn"))
+			return true;		
 		return false;
 	}
 

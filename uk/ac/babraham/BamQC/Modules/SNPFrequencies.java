@@ -45,6 +45,9 @@ public class SNPFrequencies extends AbstractQCModule {
 
 	private static Logger log = Logger.getLogger(SNPFrequencies.class);	
 	
+	// original threshold for the plot y axis.
+	private double maxY=1.0d; 
+	
 	// The analysis collecting all the results.
 	VariantCallDetection variantCallDetection = null;	
 	
@@ -84,7 +87,7 @@ public class SNPFrequencies extends AbstractQCModule {
 				moreFrequentReadLength = readCounts[i];
 			}
 		}
-		double threshold = moreFrequentReadLength * ModuleConfig.getParam("variant_call_position_snp_threshold", "ignore").intValue() / 100d;
+		double threshold = moreFrequentReadLength * ModuleConfig.getParam("variant_call_position_snp_xaxis_threshold", "ignore").intValue() / 100d;
 		// Filters the reads to show based on a the threshold computed previously.
 		for(int i=0; i<readCounts.length; i++) {
 			if(readCounts[i] >= threshold && xMaxValue < readLengths[i]) {
@@ -112,6 +115,7 @@ public class SNPFrequencies extends AbstractQCModule {
 
 	@Override	
 	public JPanel getResultsPanel() {
+		
 		if(variantCallDetection == null) { 
 			return new LineGraph(new double [][]{
 					new double[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()],
@@ -122,31 +126,49 @@ public class SNPFrequencies extends AbstractQCModule {
 		}		
 		
 
-		long totalMutations = variantCallDetection.getTotalMutations(),
-				 totalMatches = variantCallDetection.getTotalMatches();
-		log.info("Total SNPs: " + totalMutations + " ( "+ (totalMutations*100.0f)/(totalMatches+totalMutations) + "% )");		
+		long totSNP = variantCallDetection.getTotalMutations(),
+			 totBases = variantCallDetection.getTotal();		
+		log.info("Total SNPs: " + totSNP + " ( " + totSNP*100f/totBases + " )");
 		
 		
 		// We do not need a BaseGroup here
 		long[] snpPos = variantCallDetection.getSNPPos();
 		
-		// initialise and configure the LineGraph
+//		//////////////////////
+//		// OLD PLOT 
+//		//////////////////////
+//		// initialise and configure the LineGraph
+//		// compute the maximum value for the X axis
+//		int maxX = computeXMaxValue();
+//				
+//		String[] xCategories = new String[maxX];		
+//		double[] dSNPPos = new double[maxX];
+//		maxY = 0.0d;
+//		for(int i=0; i<maxX && i<snpPos.length; i++) {		
+//			dSNPPos[i]= (double)snpPos[i];
+//			if(dSNPPos[i] > maxY) { maxY = dSNPPos[i]; }
+//			xCategories[i] = String.valueOf(i+1);
+//		}
+//		// add 10% to the maximum for improving the plot rendering
+//		maxY = maxY + maxY*0.1; 		
+
+		long[] totalPos = variantCallDetection.getTotalPos();
+     	// initialise and configure the LineGraph
 		// compute the maximum value for the X axis
 		int maxX = computeXMaxValue();
-				
+		//maxX = insertionPos.length;
 		String[] xCategories = new String[maxX];		
 		double[] dSNPPos = new double[maxX];
-		double maxY = 0.0d;
-		for(int i=0; i<maxX && i<snpPos.length; i++) {		
-			dSNPPos[i]= (double)snpPos[i];
+		for(int i=0; i<maxX && i<snpPos.length; i++) {
+			dSNPPos[i]= (snpPos[i] * 100d) / totalPos[i];
 			if(dSNPPos[i] > maxY) { maxY = dSNPPos[i]; }
 			xCategories[i] = String.valueOf(i+1);
 		}
 		
-		// add 10% to the maximum for improving the plot rendering
-		maxY = maxY + maxY*0.05; 
+		
+		
 		double[][] snpData = new double [][] {dSNPPos};
-		String title = String.format("SNP frequencies ( SNPs: %d , %.3f %% )", totalMutations, (((double) totalMutations / (totalMutations+totalMatches)) * 100.0));
+		String title = String.format("SNP frequencies ( SNPs: %.3f %% )", totSNP*100.0f/totBases);
 		return new LineGraph(snpData, 0d, maxY, "Position in read (bp)", snpName, xCategories, title);
 	}
 
@@ -165,11 +187,15 @@ public class SNPFrequencies extends AbstractQCModule {
 
 	@Override	
 	public boolean raisesError() {
+		if(maxY > ModuleConfig.getParam("variant_call_position_snp_threshold", "error"))
+			return true;		
 		return false;
 	}
 
 	@Override	
 	public boolean raisesWarning() {
+		if(maxY > ModuleConfig.getParam("variant_call_position_snp_threshold", "warn"))
+			return true;		
 		return false;
 	}
 

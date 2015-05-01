@@ -90,6 +90,8 @@ public class VariantCallDetection extends AbstractQCModule {
     private long[] snpPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
     private long[] insertionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
     private long[] deletionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
+    private long[] matchPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
+    private long[] totalPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
     public HashMap<Integer, Long> getContributingReadsPerPos() {
 		return contributingReadsPerPos;
 	}
@@ -265,6 +267,8 @@ public class VariantCallDetection extends AbstractQCModule {
 	    snpPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
 	    insertionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
 	    deletionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
+	    matchPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
+	    totalPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];	  	    
 	    currentPosition = 0;
 	    contributingReadsPerPos = new HashMap<Integer, Long>();
 
@@ -311,6 +315,8 @@ public class VariantCallDetection extends AbstractQCModule {
 		long[] oldSNPPos = snpPos;
 		long[] oldInsertionPos = insertionPos;
 		long[] oldDeletionPos = deletionPos;
+		long[] oldMatchPos = matchPos;
+		long[] oldTotalPos = totalPos;		
 		// We do not want to call this method often, that's why it is better to extend it 
 		// 2 times the current length. However, if the newBound is larger than this, it is 
 		// better to be conservative and just increase for that new size.
@@ -318,14 +324,20 @@ public class VariantCallDetection extends AbstractQCModule {
 			snpPos = new long[newBound+1];
 			insertionPos = new long[newBound+1];
 			deletionPos = new long[newBound+1];
+			matchPos = new long[newBound+1];
+			totalPos = new long[newBound+1];			
 		} else {
 			snpPos = new long[snpPos.length*2];
 			insertionPos = new long[snpPos.length*2];
 			deletionPos = new long[snpPos.length*2];
+			matchPos = new long[snpPos.length*2];
+			totalPos = new long[snpPos.length*2];				
 		}
 		System.arraycopy(oldSNPPos, 0, snpPos, 0, oldSNPPos.length);
 		System.arraycopy(oldInsertionPos, 0, insertionPos, 0, oldInsertionPos.length);
 		System.arraycopy(oldDeletionPos, 0, deletionPos, 0, oldDeletionPos.length);	
+		System.arraycopy(oldMatchPos, 0, matchPos, 0, oldMatchPos.length);
+		System.arraycopy(oldTotalPos, 0, totalPos, 0, oldTotalPos.length);		
 	}
 	
 	/* Compute the totals */
@@ -337,7 +349,10 @@ public class VariantCallDetection extends AbstractQCModule {
 		// NOTE: nInsertions and nDeletions are not counted in the totals. 
 		totalInsertions = aInsertions + cInsertions + gInsertions + tInsertions;
 		totalDeletions = aDeletions + cDeletions + gDeletions + tDeletions;
-		total = totalMutations + totalInsertions + totalDeletions;
+		total = totalMutations + totalInsertions + totalDeletions + totalMatches;
+		for(int i=0; i< snpPos.length; i++) {
+			totalPos[i] = snpPos[i] + insertionPos[i] + deletionPos[i] + matchPos[i];
+		}
 	}
 	
 	
@@ -348,7 +363,10 @@ public class VariantCallDetection extends AbstractQCModule {
 	private void processMDtagCigarOperatorM() {
 		int numMatches = currentCigarMDElement.getLength();
 		totalMatches = totalMatches + numMatches;
-		currentPosition = currentPosition + numMatches; 
+		for(int i=0; i<numMatches; i++) {
+			matchPos[currentPosition+i]++;
+		}
+		currentPosition = currentPosition + numMatches;
 	}
 	
 	/* Process the MD string once found the CigarMD operator u (mismatch). 
@@ -604,5 +622,13 @@ public class VariantCallDetection extends AbstractQCModule {
 	public long[] getDeletionPos() {
 		return deletionPos;
 	}	
-			
+	
+	public long[] getMatchPos() {
+		return matchPos;
+	}	
+	
+	public long[] getTotalPos() {
+		return totalPos;
+	}		
+	
 }
