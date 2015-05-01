@@ -78,15 +78,21 @@ public class IndelFrequencies extends AbstractQCModule {
 		HashMap<Integer, Long> hm = variantCallDetection.getContributingReadsPerPos();
 		Integer[] readLengths = hm.keySet().toArray(new Integer[hm.size()]);
 		Long[] readCounts = hm.values().toArray(new Long[hm.size()]);
-		long parsedReads = variantCallDetection.getTotalReads() - variantCallDetection.getSkippedReads();
-		double threshold = ModuleConfig.getParam("variant_call_position_indel_threshold", "ignore").intValue();
-		int xMaxValue = 0;
-		for(int i=0; i<readLengths.length; i++) {
-			if((readCounts[i]*100d/parsedReads) >= threshold 
-			 && xMaxValue < readLengths[i]) {
+		int xMaxValue = 5; // sequences long at least 5.
+		long moreFrequentReadLength = 0;
+		// Computes a variable threshold depending on the read length distribution of read library
+		for(int i=0; i<readCounts.length; i++) {
+			if(readCounts[i] > moreFrequentReadLength)	{
+				moreFrequentReadLength = readCounts[i];
+			}
+		}
+		double threshold = moreFrequentReadLength * ModuleConfig.getParam("variant_call_position_indel_threshold", "ignore").intValue() / 100d;
+		// Filters the reads to show based on a the threshold computed previously.
+		for(int i=0; i<readCounts.length; i++) {
+			if(readCounts[i] >= threshold && xMaxValue < readLengths[i]) {
 				xMaxValue = readLengths[i];
 			}
-			log.debug("key, value, threshold: " + readLengths[i] + " " + (readCounts[i]*100d/parsedReads) + " " + threshold);
+			log.debug("Read Length: " + readLengths[i] + ", Num Reads: " + readCounts[i] + ", Min Accepted Length: " + threshold);
 		}
 		return xMaxValue;
 	}
