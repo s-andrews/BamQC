@@ -116,6 +116,17 @@ public class IndelFrequencies extends AbstractQCModule {
 
 	@Override	
 	public JPanel getResultsPanel() {
+		
+		if(variantCallDetection == null) { 
+			return new LineGraph(new double [][]{
+					new double[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()],
+					new double[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()]},
+					0d, 100d, "Position in read (bp)", indelNames, 
+					new String[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()], 
+					"Indel Frequencies ( Insertions: 0, Deletions: 0 )");
+		}		
+		
+		
 		log.info("A insertions: " + variantCallDetection.getAInsertions());
 		log.info("C insertions: " + variantCallDetection.getCInsertions());
 		log.info("G insertions: " + variantCallDetection.getGInsertions());
@@ -132,17 +143,6 @@ public class IndelFrequencies extends AbstractQCModule {
 		log.info("Skipped regions on the reference: " + variantCallDetection.getReferenceSkippedRegions());
 		log.info("Skipped reads: " + variantCallDetection.getSkippedReads() + " ( "+ (variantCallDetection.getSkippedReads()*100.0f)/variantCallDetection.getTotalReads() + "% )");
 		
-		
-		if(variantCallDetection == null) { 
-			return new LineGraph(new double [][]{
-					new double[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()],
-					new double[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()]},
-					0d, 100d, "Position in read (bp)", indelNames, 
-					new String[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()], 
-					"Indel Frequencies ( Insertions: 0, Deletions: 0 )");
-		}		
-		
-
 		
 		// We do not need a BaseGroup here
 		// These two arrays have same length.

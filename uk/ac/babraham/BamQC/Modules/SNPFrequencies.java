@@ -121,10 +121,26 @@ public class SNPFrequencies extends AbstractQCModule {
 					"SNP Frequencies ( SNPs: 0 (0.000 %) )");
 		}		
 		
+
+		long totalMutations = variantCallDetection.getTotalMutations(),
+				 totalMatches = variantCallDetection.getTotalMatches();
+		log.info("SNP A->C: " + variantCallDetection.getA2C());
+		log.info("SNP A->G: " + variantCallDetection.getA2G());
+		log.info("SNP A->T: " + variantCallDetection.getA2T());
+		log.info("SNP C->A: " + variantCallDetection.getC2A());
+		log.info("SNP C->G: " + variantCallDetection.getC2G());
+		log.info("SNP C->T: " + variantCallDetection.getC2T());
+		log.info("SNP G->A: " + variantCallDetection.getG2A());
+		log.info("SNP G->C: " + variantCallDetection.getG2C());
+		log.info("SNP G->T: " + variantCallDetection.getG2T());
+		log.info("SNP T->A: " + variantCallDetection.getT2A());
+		log.info("SNP T->C: " + variantCallDetection.getT2C());
+		log.info("SNP T->G: " + variantCallDetection.getT2G());
+		log.info("Total SNPs: " + totalMutations + " ( "+ (totalMutations*100.0f)/(totalMatches+totalMutations) + "% )");		
+		
+		
 		// We do not need a BaseGroup here
 		long[] snpPos = variantCallDetection.getSNPPos();
-		long totalMutations = variantCallDetection.getTotalMutations(),
-			 totalMatches = variantCallDetection.getTotalMatches();
 		
 		// initialise and configure the LineGraph
 		// compute the maximum value for the X axis

@@ -86,6 +86,8 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 			String title = String.format("SNP frequencies by Type ( SNPs: 0 (0.000 %) )");
 			return new HorizontalBarGraph(snpTypeNames, new float[12], title, 0);
 		}		
+		
+		
 		long totalMutations = variantCallDetection.getTotalMutations(), 
 			 totalMatches = variantCallDetection.getTotalMatches();
 		snpFrequenciesByType = new float[12];
