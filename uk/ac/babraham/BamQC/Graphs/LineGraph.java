@@ -25,8 +25,12 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import javax.swing.JPanel;
+
+import uk.ac.babraham.BamQC.Utilities.AxisScale;
 
 public class LineGraph extends JPanel {
 
@@ -63,25 +67,20 @@ public class LineGraph extends JPanel {
 	}
 	
 	private double findOptimalYInterval(double max) {
-		
-		int base = 1;
-		double [] divisions = new double [] {1,2,2.5,5};
-		
-		while (true) {
-			
-			for (int d=0;d<divisions.length;d++) {
-				double tester = base * divisions[d];
-				if (max / tester <= 10) {
-					return tester;
-				}
-			}
-		
-			base *=10;
-			
-		}
-		
-		
-		
+		AxisScale as = new AxisScale (minY, max);
+		return as.getInterval();
+		// OLD CODE
+//		int base = 1;
+//		double [] divisions = new double [] {1,2,2.5,5};
+//		while (true) {	
+//			for (int d=0;d<divisions.length;d++) {
+//				double tester = base * divisions[d];
+//				if (max / tester <= 10) {
+//					return tester;
+//				}
+//			}
+//			base *=10;
+//		}
 	}
 	
 	public Dimension getPreferredSize () {
@@ -136,8 +135,20 @@ public class LineGraph extends JPanel {
 		
 		int xOffset = 0;
 		
+		// computes the number of decimals for yInterval
+		int decimals = 0; 
+		if(String.valueOf(yInterval).indexOf(".") != -1) {
+			String[] s = String.valueOf(yInterval).split("\\.");
+			decimals = s[s.length - 1].length();			
+		}
+		
 		for (double i=yStart;i<=maxY;i+=yInterval) {
-			String label = ""+i;
+			String label;
+			if(decimals > 0) {
+				label = "" + new BigDecimal(i).setScale(decimals, RoundingMode.HALF_UP).doubleValue();	
+			} else {
+				label = "" + i;
+			}
 			label = label.replaceAll(".0$", ""); // Don't leave trailing .0s where we don't need them.
 			int width = g.getFontMetrics().stringWidth(label);
 			if (width > xOffset) {
