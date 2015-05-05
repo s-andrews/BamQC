@@ -90,7 +90,7 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 	@Override	
 	public JPanel getResultsPanel() {
 		if(variantCallDetection == null) { 
-			String title = String.format("SNP frequencies by Type ( SNPs: 0 (0.000 %) )");
+			String title = String.format("SNP frequencies by Type ( total SNPs: 0 (0.000 %) )");
 			return new HorizontalBarGraph(snpTypeNames, new float[12], title, 0);
 		}		
 		
@@ -143,7 +143,7 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 				maxX = snpFrequenciesByType[i];
 		}
 		
-		String title = String.format("SNP frequencies by Type ( SNPs: %.3f %% )", totSNPs*100.0f/totBases);
+		String title = String.format("SNP frequencies by Type ( total SNPs: %.3f %% )", totSNPs*100.0f/totBases);
 		return new HorizontalBarGraph(snpTypeNames, snpFrequenciesByType, title, (float) Math.ceil(maxX));
 	}
 

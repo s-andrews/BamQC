@@ -126,7 +126,7 @@ public class IndelFrequencies extends AbstractQCModule {
 					new double[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()]},
 					0d, 100d, "Position in read (bp)", indelNames, 
 					new String[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()], 
-					"Indel Frequencies ( Insertions: 0, Deletions: 0 )");
+					"Indel Frequencies ( total insertions: 0.000 %, total deletions: 0.000 % )");
 		}		
 		
 		long totIns = variantCallDetection.getTotalInsertions(),
@@ -194,10 +194,11 @@ public class IndelFrequencies extends AbstractQCModule {
 		
 
 		double[][] indelData = new double [][] {dInsertionPos,dDeletionPos};
-		String title = String.format("Indel Frequencies ( Insertions: %.3f %%, Deletions: %.3f %% )", 
+		String title = String.format("Indel Frequencies ( total insertions: %.3f %%, total deletions: %.3f %% )", 
 				totIns*100.0f/totBases,totDel*100.0f/totBases);		
 	
 		return new LineGraph(indelData, 0d, Math.ceil(maxY), "Position in read (bp)", indelNames, xCategories, title);
+
 	}
 
 	@Override	

@@ -122,7 +122,7 @@ public class SNPFrequencies extends AbstractQCModule {
 					new double[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()]},
 					0d, 100d, "Position in read (bp)", snpName, 
 					new String[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()], 
-					"SNP Frequencies ( SNPs: 0 (0.000 %) )");
+					"SNP Frequencies ( total SNPs: 0.000 % )");
 		}		
 		
 
@@ -165,10 +165,8 @@ public class SNPFrequencies extends AbstractQCModule {
 			xCategories[i] = String.valueOf(i+1);
 		}
 		
-		
-		
 		double[][] snpData = new double [][] {dSNPPos};
-		String title = String.format("SNP frequencies ( SNPs: %.3f %% )", totSNPs*100.0f/totBases);
+		String title = String.format("SNP frequencies ( total SNPs: %.3f %% )", totSNPs*100.0f/totBases);
 		return new LineGraph(snpData, 0d, Math.ceil(maxY), "Position in read (bp)", snpName, xCategories, title);
 	}
 
