@@ -197,7 +197,7 @@ public class IndelFrequencies extends AbstractQCModule {
 		String title = String.format("Indel Frequencies ( Insertions: %.3f %%, Deletions: %.3f %% )", 
 				totIns*100.0f/totBases,totDel*100.0f/totBases);		
 	
-		return new LineGraph(indelData, 0d, maxY+1, "Position in read (bp)", indelNames, xCategories, title);
+		return new LineGraph(indelData, 0d, Math.ceil(maxY), "Position in read (bp)", indelNames, xCategories, title);
 	}
 
 	@Override	

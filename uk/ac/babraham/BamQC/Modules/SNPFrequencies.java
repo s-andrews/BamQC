@@ -169,7 +169,7 @@ public class SNPFrequencies extends AbstractQCModule {
 		
 		double[][] snpData = new double [][] {dSNPPos};
 		String title = String.format("SNP frequencies ( SNPs: %.3f %% )", totSNPs*100.0f/totBases);
-		return new LineGraph(snpData, 0d, maxY, "Position in read (bp)", snpName, xCategories, title);
+		return new LineGraph(snpData, 0d, Math.ceil(maxY), "Position in read (bp)", snpName, xCategories, title);
 	}
 
 	@Override	

@@ -95,35 +95,48 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 		}		
 		
 		
-		log.info("SNP A->C: " + variantCallDetection.getA2C());
-		log.info("SNP A->G: " + variantCallDetection.getA2G());
-		log.info("SNP A->T: " + variantCallDetection.getA2T());
-		log.info("SNP C->A: " + variantCallDetection.getC2A());
-		log.info("SNP C->G: " + variantCallDetection.getC2G());
-		log.info("SNP C->T: " + variantCallDetection.getC2T());
-		log.info("SNP G->A: " + variantCallDetection.getG2A());
-		log.info("SNP G->C: " + variantCallDetection.getG2C());
-		log.info("SNP G->T: " + variantCallDetection.getG2T());
-		log.info("SNP T->A: " + variantCallDetection.getT2A());
-		log.info("SNP T->C: " + variantCallDetection.getT2C());
-		log.info("SNP T->G: " + variantCallDetection.getT2G());
+		long ac = variantCallDetection.getA2C(),
+			 ag = variantCallDetection.getA2G(),
+			 at = variantCallDetection.getA2T(),
+			 ca = variantCallDetection.getC2A(),
+			 cg = variantCallDetection.getC2G(),
+			 ct = variantCallDetection.getC2T(),
+			 ga = variantCallDetection.getG2A(),
+			 gc = variantCallDetection.getG2C(),
+			 gt = variantCallDetection.getG2T(),
+			 ta = variantCallDetection.getT2A(),
+			 tc = variantCallDetection.getT2C(),
+			 tg = variantCallDetection.getT2G();
+		
+		log.info("SNP A->C: " + ac);
+		log.info("SNP A->G: " + ag);
+		log.info("SNP A->T: " + at);
+		log.info("SNP C->A: " + ca);
+		log.info("SNP C->G: " + cg);
+		log.info("SNP C->T: " + ct);
+		log.info("SNP G->A: " + ga);
+		log.info("SNP G->C: " + gc);
+		log.info("SNP G->T: " + gt);
+		log.info("SNP T->A: " + ta);
+		log.info("SNP T->C: " + tc);
+		log.info("SNP T->G: " + tg);
 		
 		
 		long totSNPs = variantCallDetection.getTotalMutations(), 
 			 totBases = variantCallDetection.getTotal();
 		snpFrequenciesByType = new float[12];
-		snpFrequenciesByType[0] = variantCallDetection.getA2C() * 100f / totSNPs;
-		snpFrequenciesByType[1] = variantCallDetection.getA2G() * 100f / totSNPs;
-		snpFrequenciesByType[2] = variantCallDetection.getA2T() * 100f / totSNPs;
-		snpFrequenciesByType[3] = variantCallDetection.getC2A() * 100f / totSNPs;
-		snpFrequenciesByType[4] = variantCallDetection.getC2G() * 100f / totSNPs;
-		snpFrequenciesByType[5] = variantCallDetection.getC2T() * 100f / totSNPs;
-		snpFrequenciesByType[6] = variantCallDetection.getG2A() * 100f / totSNPs;
-		snpFrequenciesByType[7] = variantCallDetection.getG2C() * 100f / totSNPs;
-		snpFrequenciesByType[8] = variantCallDetection.getG2T() * 100f / totSNPs;
-		snpFrequenciesByType[9] = variantCallDetection.getT2A() * 100f / totSNPs;
-		snpFrequenciesByType[10] = variantCallDetection.getT2C() * 100f / totSNPs;
-		snpFrequenciesByType[11] = variantCallDetection.getT2G() * 100f / totSNPs;
+		snpFrequenciesByType[0] = ac * 100f / totBases;
+		snpFrequenciesByType[1] = ag * 100f / totBases;
+		snpFrequenciesByType[2] = at * 100f / totBases;
+		snpFrequenciesByType[3] = ca * 100f / totBases;
+		snpFrequenciesByType[4] = cg * 100f / totBases;
+		snpFrequenciesByType[5] = ct * 100f / totBases;
+		snpFrequenciesByType[6] = ga * 100f / totBases;
+		snpFrequenciesByType[7] = gc * 100f / totBases;
+		snpFrequenciesByType[8] = gt * 100f / totBases;
+		snpFrequenciesByType[9] = ta * 100f / totBases;
+		snpFrequenciesByType[10] = tc * 100f / totBases;
+		snpFrequenciesByType[11] = tg * 100f / totBases;
 		
 		for(int i=0; i< snpFrequenciesByType.length; i++) {
 			if(maxX < snpFrequenciesByType[i]) 
@@ -131,7 +144,7 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 		}
 		
 		String title = String.format("SNP frequencies by Type ( SNPs: %.3f %% )", totSNPs*100.0f/totBases);
-		return new HorizontalBarGraph(snpTypeNames, snpFrequenciesByType, title, maxX+1);
+		return new HorizontalBarGraph(snpTypeNames, snpFrequenciesByType, title, (float) Math.ceil(maxX));
 	}
 
 	@Override	
@@ -149,15 +162,14 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 
 	@Override	
 	public boolean raisesError() {
-		// 8=100/12=uniform distribution of snps.
-		if(maxX-8 > ModuleConfig.getParam("variant_call_position_snp_by_type_threshold", "error").floatValue())
+		if(maxX > ModuleConfig.getParam("variant_call_position_snp_by_type_threshold", "error").floatValue())
 			return true;		
 		return false;
 	}
 
 	@Override	
 	public boolean raisesWarning() {
-		if(maxX-8 > ModuleConfig.getParam("variant_call_position_snp_by_type_threshold", "warn").floatValue())
+		if(maxX > ModuleConfig.getParam("variant_call_position_snp_by_type_threshold", "warn").floatValue())
 			return true;		
 		return false;
 	}

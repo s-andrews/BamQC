@@ -80,8 +80,8 @@ public class ModuleConfig {
 		params.put("variant_call_position_snp_xaxis_threshold:ignore", 5d); 		
 		params.put("variant_call_position_snp_threshold:warn", 2d);	
 		params.put("variant_call_position_snp_threshold:error", 5d);
-		params.put("variant_call_position_snp_by_type_threshold:warn", 2d);	
-		params.put("variant_call_position_snp_by_type_threshold:error", 5d);		
+		params.put("variant_call_position_snp_by_type_threshold:warn", 0.15d);	
+		params.put("variant_call_position_snp_by_type_threshold:error", 0.4d);		
 		
 		// EAGLE
 		params.put("binCoverageZeroFraction:warn", 0.1d);
