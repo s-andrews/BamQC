@@ -37,7 +37,7 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 public class ChromosomeDensity extends AbstractQCModule {
 
 	private String [] chromosomeNames;
-	private float [] readDensities;
+	private double [] readDensities;
 	
 	public void processSequence(SAMRecord read) {}
 
@@ -60,7 +60,7 @@ public class ChromosomeDensity extends AbstractQCModule {
 		Arrays.sort(chromosomes);
 		
 		chromosomeNames = new String [chromosomes.length];
-		readDensities = new float[chromosomes.length];
+		readDensities = new double[chromosomes.length];
 		
 		for (int c=0;c<chromosomes.length;c++) {
 			chromosomeNames[c] = chromosomes[c].name();

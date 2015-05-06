@@ -36,7 +36,7 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 public class FeatureCoverage extends AbstractQCModule {
 
 	private String [] featureNames = null;
-	private float [] readCounts;
+	private double [] readCounts;
 	
 	public void processSequence(SAMRecord read) {}
 
@@ -67,7 +67,7 @@ public class FeatureCoverage extends AbstractQCModule {
 		}
 		
 		featureNames = names.toArray(new String[0]);
-		readCounts = new float[featureNames.length];
+		readCounts = new double[featureNames.length];
 		for (int i=0;i<readCounts.length;i++) {
 			readCounts[i] = values.elementAt(i);
 		}
