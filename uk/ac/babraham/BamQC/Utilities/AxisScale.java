@@ -99,6 +99,29 @@ public class AxisScale {
 		return df.format(number);
 	}
 	
+	
+	/** Computes the position of the first non-zero decimal digit. 
+	 * 
+	 * @param number
+	 * @return the first non-zero decimal digit for the parameter number.
+	 */
+	public static int getFirstSignificantDecimalPosition(double number) {
+		int significantDecimalPosition = 0; 
+		if(String.valueOf(number).indexOf(".") != -1) {
+			String[] parts = String.valueOf(number).split("\\.");		
+			if(parts[parts.length - 1].length() > 0) {
+				int zeros = 0;
+				String decimalPart = parts[parts.length - 1];
+				while(zeros < decimalPart.length() && decimalPart.charAt(zeros) == '0') { 
+					zeros++; 
+				}
+				significantDecimalPosition = zeros + 1;
+			}
+		}
+		return significantDecimalPosition;
+	}
+	
+	
 	public double getStartingValue () {
 		return starting;
 	}
