@@ -138,13 +138,13 @@ public class IndelFrequencies extends AbstractQCModule {
 		log.info("G insertions: " + variantCallDetection.getGInsertions());
 		log.info("T insertions: " + variantCallDetection.getTInsertions());
 		log.info("N insertions: " + variantCallDetection.getNInsertions());
-		log.info("Total insertions: " + totIns + " ( " + totIns*100f/totBases + " )");
+		log.info("Total insertions: " + totIns + " ( " + totIns*100f/totBases + "% )");
 		log.info("A deletions: " + variantCallDetection.getADeletions());
 		log.info("C deletions: " + variantCallDetection.getCDeletions());
 		log.info("G deletions: " + variantCallDetection.getGDeletions());
 		log.info("T deletions: " + variantCallDetection.getTDeletions());
 		log.info("N deletions: " + variantCallDetection.getNDeletions());		
-		log.info("Total deletions: " + totDel + " ( " + totDel*100f/totBases + " )");
+		log.info("Total deletions: " + totDel + " ( " + totDel*100f/totBases + "% )");
 		log.info("Skipped regions on the reads: " + variantCallDetection.getReadSkippedRegions());
 		log.info("Skipped regions on the reference: " + variantCallDetection.getReferenceSkippedRegions());
 		log.info("Skipped reads: " + variantCallDetection.getSkippedReads() + " ( "+ (variantCallDetection.getSkippedReads()*100.0f)/variantCallDetection.getTotalReads() + "% )");
@@ -247,31 +247,7 @@ public class IndelFrequencies extends AbstractQCModule {
 
 	@Override	
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
-		super.writeDefaultImage(report, "indel_frequencies.png", "Indel Frequencies", 800, 600);
-		
-	
-//		StringBuffer sb = report.dataDocument();
-//		
-//		sb.append("#Total Deduplicated Percentage\t");
-//		sb.append(percentDifferentSeqs);
-//		sb.append("\n");
-//		
-//		sb.append("#Duplication Level\tPercentage of deduplicated\tPercentage of total\n");
-//		for (int i=0;i<labels.length;i++) {
-//			sb.append(labels[i]);
-//			if (i == labels.length-1) {
-//				sb.append("+");
-//			}
-//			sb.append("\t");
-//			sb.append(deduplicatedPercentages[i]);
-//			sb.append("\t");
-//			sb.append(totalPercentages[i]);
-//			sb.append("\n");
-//		}
-				
-		
-		
-		
+		super.writeDefaultImage(report, "indel_frequencies.png", "Indel Frequencies", 800, 600);	
 	}
 	
 }

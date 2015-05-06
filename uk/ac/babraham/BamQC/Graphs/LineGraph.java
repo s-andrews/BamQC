@@ -123,7 +123,7 @@ public class LineGraph extends JPanel {
 			//String label = scale.format(currentValue);
 			String label = "" + new BigDecimal(i).setScale(
 					AxisScale.getFirstSignificantDecimalPosition(yInterval), RoundingMode.HALF_UP).doubleValue();	
-			//label = label.replaceAll(".0$", ""); // Don't leave trailing .0s where we don't need them.			
+			label = label.replaceAll(".0$", ""); // Don't leave trailing .0s where we don't need them.			
 			
 			int width = g.getFontMetrics().stringWidth(label);
 			if (width > xOffset) {

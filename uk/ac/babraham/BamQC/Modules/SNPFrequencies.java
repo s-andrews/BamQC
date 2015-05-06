@@ -128,7 +128,7 @@ public class SNPFrequencies extends AbstractQCModule {
 
 		long totSNPs = variantCallDetection.getTotalMutations(),
 			 totBases = variantCallDetection.getTotal();		
-		log.info("Total SNPs: " + totSNPs + " ( " + totSNPs*100f/totBases + " )");
+		log.info("Total SNPs: " + totSNPs + " ( " + totSNPs*100f/totBases + "% )");
 		
 		
 		// We do not need a BaseGroup here
