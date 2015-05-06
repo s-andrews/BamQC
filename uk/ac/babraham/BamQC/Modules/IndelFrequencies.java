@@ -46,7 +46,7 @@ public class IndelFrequencies extends AbstractQCModule {
 	private static Logger log = Logger.getLogger(IndelFrequencies.class);	
 	
 	// original threshold for the plot y axis.
-	private double maxY=1.0d; 
+	private double maxY=0.0d; 
 	
 	// The analysis collecting all the results.
 	VariantCallDetection variantCallDetection = null;	
@@ -191,13 +191,14 @@ public class IndelFrequencies extends AbstractQCModule {
 			if(dDeletionPos[i] > maxY) { maxY = dDeletionPos[i]; }
 			xCategories[i] = String.valueOf(i+1);
 		}
-		
+		// add 10% to the top for improving the visualisation of the plot.
+		maxY = maxY + maxY*0.1;
 
 		double[][] indelData = new double [][] {dInsertionPos,dDeletionPos};
 		String title = String.format("Indel Frequencies ( total insertions: %.3f %%, total deletions: %.3f %% )", 
 				totIns*100.0f/totBases,totDel*100.0f/totBases);		
 	
-		return new LineGraph(indelData, 0d, Math.ceil(maxY), "Position in read (bp)", indelNames, xCategories, title);
+		return new LineGraph(indelData, 0d, maxY, "Position in read (bp)", indelNames, xCategories, title);
 
 	}
 

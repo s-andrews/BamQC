@@ -213,9 +213,9 @@ public class VariantCallDetection extends AbstractQCModule {
 	@Override	
 	public JPanel getResultsPanel() {
 		String[] names = new String[0];
-		float[] vcd = new float[0];
+		double[] vcd = new double[0];
 		String title = String.format("Variant call detection");		
-		return new HorizontalBarGraph(names, vcd, title, 1);
+		return new HorizontalBarGraph(names, vcd, title, 0d,1d);
 	}
 
 	@Override	

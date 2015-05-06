@@ -46,7 +46,7 @@ public class SNPFrequencies extends AbstractQCModule {
 	private static Logger log = Logger.getLogger(SNPFrequencies.class);	
 	
 	// original threshold for the plot y axis.
-	private double maxY=1.0d; 
+	private double maxY=0.0d; 
 	
 	// The analysis collecting all the results.
 	VariantCallDetection variantCallDetection = null;	
@@ -164,10 +164,12 @@ public class SNPFrequencies extends AbstractQCModule {
 			if(dSNPPos[i] > maxY) { maxY = dSNPPos[i]; }
 			xCategories[i] = String.valueOf(i+1);
 		}
+		// add 10% to the top for improving the visualisation of the plot.
+		maxY = maxY + maxY*0.1;
 		
 		double[][] snpData = new double [][] {dSNPPos};
 		String title = String.format("SNP frequencies ( total SNPs: %.3f %% )", totSNPs*100.0f/totBases);
-		return new LineGraph(snpData, 0d, Math.ceil(maxY), "Position in read (bp)", snpName, xCategories, title);
+		return new LineGraph(snpData, 0d, maxY, "Position in read (bp)", snpName, xCategories, title);
 	}
 
 	@Override	

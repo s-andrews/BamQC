@@ -45,7 +45,7 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 	private static Logger log = Logger.getLogger(SNPFrequenciesByType.class);
 	
 	// original threshold for the plot x axis.
-	private float maxX=0.0f; 
+	private double maxX=0.0d; 
 	
 	// The analysis collecting all the results.
 	VariantCallDetection variantCallDetection = null;	
@@ -56,7 +56,7 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 		"C->A", "C->G", "C->T", 
 		"G->A", "G->C", "G->T", 
 		"T->A", "T->C", "T->G"};
-	private float[] snpFrequenciesByType = new float[12];
+	private double[] snpFrequenciesByType = new double[12];
 	
 	
 	// Constructors
@@ -91,7 +91,7 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 	public JPanel getResultsPanel() {
 		if(variantCallDetection == null) { 
 			String title = String.format("SNP frequencies by Type ( total SNPs: 0 (0.000 %) )");
-			return new HorizontalBarGraph(snpTypeNames, new float[12], title, 0);
+			return new HorizontalBarGraph(snpTypeNames, new double[12], title, 0, 1);
 		}		
 		
 		
@@ -124,7 +124,7 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 		
 		long totSNPs = variantCallDetection.getTotalMutations(), 
 			 totBases = variantCallDetection.getTotal();
-		snpFrequenciesByType = new float[12];
+		snpFrequenciesByType = new double[12];
 		snpFrequenciesByType[0] = ac * 100f / totBases;
 		snpFrequenciesByType[1] = ag * 100f / totBases;
 		snpFrequenciesByType[2] = at * 100f / totBases;
@@ -142,9 +142,12 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 			if(maxX < snpFrequenciesByType[i]) 
 				maxX = snpFrequenciesByType[i];
 		}
+
+		// add 10% to the top for improving the visualisation of the plot.
+		maxX = maxX + maxX*0.1f;		
 		
 		String title = String.format("SNP frequencies by Type ( total SNPs: %.3f %% )", totSNPs*100.0f/totBases);
-		return new HorizontalBarGraph(snpTypeNames, snpFrequenciesByType, title, (float) Math.ceil(maxX));
+		return new HorizontalBarGraph(snpTypeNames, snpFrequenciesByType, title, 0d, maxX);
 	}
 
 	@Override	

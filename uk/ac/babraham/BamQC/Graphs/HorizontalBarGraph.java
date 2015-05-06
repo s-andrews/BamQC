@@ -22,6 +22,8 @@ package uk.ac.babraham.BamQC.Graphs;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import javax.swing.JPanel;
 
@@ -30,31 +32,37 @@ import uk.ac.babraham.BamQC.Utilities.AxisScale;
 public class HorizontalBarGraph extends JPanel {
 
 	private String [] labels;
-	private float [] values;
+	private double [] values;
 	private String title;
-	private float maxValue = 1;
+	private double maxX = 0f;
+	private double minX = 0f;
+	private double xInterval;
 	private int height = -1;
 	private int width = -1;
 		
 
-	public HorizontalBarGraph (String [] labels, float [] values, String title, float maxValue) {
+	public HorizontalBarGraph (String [] labels, double [] values, String title, double minX, double maxX) {
 		this.labels = labels;
 		this.values = values;
 		this.title = title;
-		this.maxValue = maxValue;
+		this.minX = minX;		
+		this.maxX = maxX;
+		this.xInterval = new AxisScale (minX, maxX).getInterval();
 	}
 	
-	public HorizontalBarGraph (String [] labels, float [] values, String title) {
+	public HorizontalBarGraph (String [] labels, double [] values, String title) {
 
 		this.labels = labels;
 		this.values = values;
 		this.title = title;
 		
 		for (int v=0;v<values.length;v++) {
-			if (values[v] > maxValue) maxValue = values[v];
+			if (values[v] > maxX) maxX = values[v];
+			else if (values[v] < minX) minX = values[v];
 		}
+//		System.err.println("maxX is "+maxX);
 		
-//		System.err.println("Max value is "+maxValue);
+		this.xInterval = new AxisScale (minX, maxX).getInterval();
 	}
 	
 	
@@ -124,21 +132,29 @@ public class HorizontalBarGraph extends JPanel {
 		// X-axis
 		g.drawLine(widestLabel,getHeight()-(yLineHeight*2),getWidth()-20,getHeight()-(yLineHeight*2));
 
+		
+		
+		
+		// remove
 		// Add the scale to the x-axis
-		AxisScale scale = new AxisScale(0, maxValue);
+		//AxisScale scale = new AxisScale(0, maxValue);
+		double currentValue = minX;
+		//double currentValue = scale.getStartingValue();
 		
-		double currentValue = scale.getStartingValue();
-		
-		while (currentValue < maxValue) {
+		while (currentValue < maxX) {
 			int xPos = getX((float)currentValue, widestLabel);
 			g.drawLine(xPos, getHeight()-(yLineHeight*2), xPos, getHeight()-(yLineHeight*2)+3);
 			
-			String label = scale.format(currentValue);
+			//String label = scale.format(currentValue);
+			String label = "" + new BigDecimal(currentValue).setScale(
+					AxisScale.getFirstSignificantDecimalPosition(xInterval), RoundingMode.HALF_UP).doubleValue();	
+			//label = label.replaceAll(".0$", ""); // Don't leave trailing .0s where we don't need them.
+						
 			int labelWidth = g.getFontMetrics().stringWidth(label);
-			
+				
 			g.drawString(label, xPos-(labelWidth/2), getHeight()-(yLineHeight*2)+(g.getFontMetrics().getHeight()+3));
 			
-			currentValue += scale.getInterval();
+			currentValue += xInterval;
 		}
 		
 		// Now draw the data
@@ -147,10 +163,10 @@ public class HorizontalBarGraph extends JPanel {
 			String label = labels[s];
 			
 			int labelWidth = g.getFontMetrics().stringWidth(label);
-			
+				
 			g.drawString(label, widestLabel-(3+labelWidth), yLineHeight*(s+2)-(yLineHeight/2)+(g.getFontMetrics().getAscent()/2));
 			
-			int xValue = getX(Math.min(values[s], maxValue), widestLabel);
+			int xValue = getX(Math.min(values[s], maxX), widestLabel);
 			
 			g.setColor(new Color(200,0,0));
 			g.fillRect(widestLabel, (yLineHeight*(s+1))+3,xValue-widestLabel,yLineHeight-6);
@@ -161,10 +177,10 @@ public class HorizontalBarGraph extends JPanel {
 		
 	}
 	
-	private int getX (float value, int longestLabel) {
+	private int getX (double value, int longestLabel) {
 		int lengthToUse = getWidth()-(longestLabel+20);
 		
-		float proportion = value/maxValue;
+		double proportion = value/maxX;
 		
 		return longestLabel+(int)(lengthToUse*proportion);
 		

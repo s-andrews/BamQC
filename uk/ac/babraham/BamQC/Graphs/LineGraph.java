@@ -34,6 +34,7 @@ import uk.ac.babraham.BamQC.Utilities.AxisScale;
 
 public class LineGraph extends JPanel {
 
+	private static final long serialVersionUID = -7893883434501058128L;
 	private String [] xTitles;
 	private String xLabel;
 	private String [] xCategories;
@@ -63,24 +64,7 @@ public class LineGraph extends JPanel {
 		this.xLabel = xLabel;
 		this.xCategories = xCategories;
 		this.graphTitle = graphTitle;
-		this.yInterval = findOptimalYInterval(maxY);
-	}
-	
-	private double findOptimalYInterval(double max) {
-		AxisScale as = new AxisScale (minY, max);
-		return as.getInterval();
-		// OLD CODE
-//		int base = 1;
-//		double [] divisions = new double [] {1,2,2.5,5};
-//		while (true) {	
-//			for (int d=0;d<divisions.length;d++) {
-//				double tester = base * divisions[d];
-//				if (max / tester <= 10) {
-//					return tester;
-//				}
-//			}
-//			base *=10;
-//		}
+		this.yInterval = new AxisScale (minY, maxY).getInterval();
 	}
 	
 	public Dimension getPreferredSize () {
@@ -135,21 +119,12 @@ public class LineGraph extends JPanel {
 		
 		int xOffset = 0;
 		
-		// computes the number of decimals for yInterval
-		int decimals = 0; 
-		if(String.valueOf(yInterval).indexOf(".") != -1) {
-			String[] s = String.valueOf(yInterval).split("\\.");
-			decimals = s[s.length - 1].length();			
-		}
-		
 		for (double i=yStart;i<=maxY;i+=yInterval) {
-			String label;
-			if(decimals > 0) {
-				label = "" + new BigDecimal(i).setScale(decimals, RoundingMode.HALF_UP).doubleValue();	
-			} else {
-				label = "" + i;
-			}
-			label = label.replaceAll(".0$", ""); // Don't leave trailing .0s where we don't need them.
+			//String label = scale.format(currentValue);
+			String label = "" + new BigDecimal(i).setScale(
+					AxisScale.getFirstSignificantDecimalPosition(yInterval), RoundingMode.HALF_UP).doubleValue();	
+			//label = label.replaceAll(".0$", ""); // Don't leave trailing .0s where we don't need them.			
+			
 			int width = g.getFontMetrics().stringWidth(label);
 			if (width > xOffset) {
 				xOffset = width;
