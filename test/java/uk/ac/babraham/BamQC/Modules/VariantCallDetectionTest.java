@@ -145,9 +145,9 @@ public class VariantCallDetectionTest {
 		assertEquals("89m", combinedCigarMDtagList.get(0));
 		assertEquals("91m", combinedCigarMDtagList.get(1));
 		assertEquals("8m1uCA41m1uCT38m", combinedCigarMDtagList.get(2));
-		assertEquals("48m1uTC37m1uCT4m", combinedCigarMDtagList.get(3));
-		assertEquals("43m1uTC11m1uAG24m2uGATG9m", combinedCigarMDtagList.get(4));  // reversed and complemented
-		assertEquals("3m1uGT14m1uAT9m1uTA33m2uTGGA24m1uAG1m", combinedCigarMDtagList.get(5));		
+		assertEquals("4m1uGA37m1uAG48m", combinedCigarMDtagList.get(3));  // reversed and complemented (second+forward)
+		assertEquals("43m1uAG11m1uTC24m2uCTAC9m", combinedCigarMDtagList.get(4));  // reversed and complemented (first+backward)
+		assertEquals("1m1uTC24m2uCTAC33m1uAT9m1uTA14m1uCA3m", combinedCigarMDtagList.get(5));  // reversed and complemented (second+forward)		
 	}
 
 	@Test
@@ -162,7 +162,7 @@ public class VariantCallDetectionTest {
 			combinedCigarMDtagList.add(variantCallDetection.getCigarMD().toString());	
 		}
 		assertEquals("14m1uCA1m1uCG8m1uTA16m1dT20m2uCTCT27m", combinedCigarMDtagList.get(0));
-		assertEquals("6m1dT34m1uTC13m1uCA36m", combinedCigarMDtagList.get(1));  // reversed and complemented
+		assertEquals("6m1dA34m1uAG13m1uGT36m", combinedCigarMDtagList.get(1));  // reversed and complemented (first+backward)
 		assertEquals("20m1dA62m1uCT8m", combinedCigarMDtagList.get(2));		
 	}	
 	
@@ -177,9 +177,9 @@ public class VariantCallDetectionTest {
 			variantCallDetection.processSequence(samRecord);
 			combinedCigarMDtagList.add(variantCallDetection.getCigarMD().toString());			
 		}
-		assertEquals("65m3iCGA22m", combinedCigarMDtagList.get(0));  // reversed and complemented
+		assertEquals("65m3iGCT22m", combinedCigarMDtagList.get(0));  // reversed and complemented (first+backward)
 		assertEquals("57m1iT31m", combinedCigarMDtagList.get(1));
-		assertEquals("20m1iT70m", combinedCigarMDtagList.get(2)); // reversed and complemented
+		assertEquals("20m1iA70m", combinedCigarMDtagList.get(2)); // reversed and complemented (first+backward)
 	}
 	
 	@Test
@@ -194,9 +194,9 @@ public class VariantCallDetectionTest {
 		  combinedCigarMDtagList.add(variantCallDetection.getCigarMD().toString());		  
 		}
 		assertEquals("6m1iT2m1dT82m", combinedCigarMDtagList.get(0));
-		assertEquals("21m1uCT10m2dTG56m1dA2m", combinedCigarMDtagList.get(1)); // reversed and complemented
-		assertEquals("1uAC17m1dT3m1iG14m1uAT2m1uCT29m", combinedCigarMDtagList.get(2));
-		assertEquals("49m1uCG2m1iG5m2dAA24m1uGA7m", combinedCigarMDtagList.get(3));	 // reversed and complemented	
+		assertEquals("2m1dA56m2dGT10m1uCT21m", combinedCigarMDtagList.get(1)); // (second+backward)	
+		assertEquals("29m1uGA2m1uTA14m1iC3m1dA17m1uTG", combinedCigarMDtagList.get(2));  // reversed and complemented (second+forward)
+		assertEquals("49m1uGC2m1iC5m2dTT24m1uCT7m", combinedCigarMDtagList.get(3));	 // reversed and complemented (first+backward)	
 	}	
 	
 	@Test
@@ -213,17 +213,17 @@ public class VariantCallDetectionTest {
 		assertEquals("89m", combinedCigarMDtagList.get(0));
 		assertEquals("91m", combinedCigarMDtagList.get(1));
 		assertEquals("91m", combinedCigarMDtagList.get(2));
-		assertEquals("65m3iCGA22m", combinedCigarMDtagList.get(3));
+		assertEquals("65m3iGCT22m", combinedCigarMDtagList.get(3));
 		assertEquals("57m1iT31m", combinedCigarMDtagList.get(4));
-		assertEquals("20m1iT70m", combinedCigarMDtagList.get(5));
+		assertEquals("20m1iA70m", combinedCigarMDtagList.get(5));
 		assertEquals("14m1uCA1m1uCG8m1uTA16m1dT20m2uCTCT27m", combinedCigarMDtagList.get(6));
-		assertEquals("6m1dT34m1uTC13m1uCA36m", combinedCigarMDtagList.get(7));
+		assertEquals("6m1dA34m1uAG13m1uGT36m", combinedCigarMDtagList.get(7));
 		assertEquals("20m1dA62m1uCT8m", combinedCigarMDtagList.get(8));		
 		assertEquals("6m1iT2m1dT82m", combinedCigarMDtagList.get(9));
-		assertEquals("21m1uCT10m2dTG56m1dA2m", combinedCigarMDtagList.get(10));
-		assertEquals("1uAC17m1dT3m1iG14m1uAT2m1uCT29m", combinedCigarMDtagList.get(11));
-		assertEquals("49m1uCG2m1iG5m2dAA24m1uGA7m", combinedCigarMDtagList.get(12));
-		assertEquals("49m1uCG2m1iG5m2dAA22m3uCAATGA7m", combinedCigarMDtagList.get(13));		
+		assertEquals("2m1dA56m2dGT10m1uCT21m", combinedCigarMDtagList.get(10));
+		assertEquals("29m1uGA2m1uTA14m1iC3m1dA17m1uTG", combinedCigarMDtagList.get(11));
+		assertEquals("49m1uGC2m1iC5m2dTT24m1uCT7m", combinedCigarMDtagList.get(12));
+		assertEquals("49m1uGC2m1iC5m2dTT22m3uGTTACT7m", combinedCigarMDtagList.get(13));		
 		assertEquals("", combinedCigarMDtagList.get(14));			
 		assertEquals("", combinedCigarMDtagList.get(15));			
 	}		
@@ -245,13 +245,13 @@ public class VariantCallDetectionTest {
           combinedCigarMDtagList.add(variantCallDetection.getCigarMD().toString());		  
 		}
 		assertEquals("86m", combinedCigarMDtagList.get(0));
-		assertEquals("68m1uTA17m", combinedCigarMDtagList.get(1));
-		assertEquals("86m", combinedCigarMDtagList.get(2));
+		assertEquals("68m1uAT17m", combinedCigarMDtagList.get(1));	 // reversed and complemented (unpaired)
+		assertEquals("86m", combinedCigarMDtagList.get(2)); 	 // reversed and complemented (unpaired)
 		assertEquals("58m1uCT27m", combinedCigarMDtagList.get(3));
 		assertEquals("21m2dTT63m", combinedCigarMDtagList.get(4));
-		assertEquals("57m2dAA27m", combinedCigarMDtagList.get(5));
+		assertEquals("57m2dTT27m", combinedCigarMDtagList.get(5));	 // reversed and complemented (unpaired)
 		assertEquals("36m2iCC50m", combinedCigarMDtagList.get(6));
-		assertEquals("53m2iGG33m", combinedCigarMDtagList.get(7));			
+		assertEquals("53m2iCC33m", combinedCigarMDtagList.get(7));	 // reversed and complemented (unpaired)			
 	}		
 	
 	
