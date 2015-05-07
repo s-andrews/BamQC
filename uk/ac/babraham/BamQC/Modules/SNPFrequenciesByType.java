@@ -143,11 +143,9 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 				maxX = snpFrequenciesByType[i];
 		}
 
-		// add 10% to the top for improving the visualisation of the plot.
-		maxX = maxX + maxX*0.1f;		
-		
 		String title = String.format("SNP frequencies by Type ( total SNPs: %.3f %% )", totSNPs*100.0f/totBases);
-		return new HorizontalBarGraph(snpTypeNames, snpFrequenciesByType, title, 0d, maxX);
+		// add 10% to the top for improving the visualisation of the plot.
+		return new HorizontalBarGraph(snpTypeNames, snpFrequenciesByType, title, 0d, maxX+maxX*0.1f);
 	}
 
 	@Override	

@@ -89,7 +89,7 @@ public class IndelFrequencies extends AbstractQCModule {
 				moreFrequentReadLength = readCounts[i];
 			}
 		}
-		double threshold = moreFrequentReadLength * ModuleConfig.getParam("variant_call_position_indel_xaxis_threshold", "ignore").intValue() / 100d;
+		double threshold = moreFrequentReadLength * ModuleConfig.getParam("variant_call_position_indel_seqpercent_xaxis_threshold", "ignore").intValue() / 100d;
 		// Filters the reads to show based on a the threshold computed previously.
 		for(int i=0; i<readCounts.length; i++) {
 			if(readCounts[i] >= threshold && xMaxValue < readLengths[i]) {
@@ -175,12 +175,11 @@ public class IndelFrequencies extends AbstractQCModule {
 			if(dFirstDeletionPos[i] > firstMaxY) { firstMaxY = dFirstDeletionPos[i]; }
 			xCategories[i] = String.valueOf(i+1);
 		}
-		// add 10% to the top for improving the visualisation of the plot.
-		firstMaxY = firstMaxY + firstMaxY*0.1;
 		double[][] firstIndelData = new double [][] {dFirstInsertionPos,dFirstDeletionPos};
 		String title = String.format("First Segment Indel Frequencies ( total insertions: %.3f %%, total deletions: %.3f %% )", 
 				totIns*100.0f/totBases,totDel*100.0f/totBases);	
-		resultsPanel.add(new LineGraph(firstIndelData, 0d, firstMaxY, "Position in read (bp)", indelNames, xCategories, title));		
+		// add 10% to the top for improving the visualisation of the plot.
+		resultsPanel.add(new LineGraph(firstIndelData, 0d, firstMaxY+firstMaxY*0.1, "Position in read (bp)", indelNames, xCategories, title));		
 
 		// compute statistics from the SECOND segment data if there are paired reads.
 		if(variantCallDetection.existPairedReads()) {
@@ -195,11 +194,10 @@ public class IndelFrequencies extends AbstractQCModule {
 				if(dSecondInsertionPos[i] > secondMaxY) { secondMaxY = dSecondInsertionPos[i]; }			
 				if(dSecondDeletionPos[i] > secondMaxY) { secondMaxY = dSecondDeletionPos[i]; }			
 			}
-			// add 10% to the top for improving the visualisation of the plot.
-			secondMaxY = secondMaxY + secondMaxY*0.1;
 			double[][] secondIndelData = new double [][] {dSecondInsertionPos,dSecondDeletionPos};
 			String title2 = "Second Segment Indel Frequencies";	
-			resultsPanel.add(new LineGraph(secondIndelData, 0d, secondMaxY, "Position in read (bp)", indelNames, xCategories, title2));
+			// add 10% to the top for improving the visualisation of the plot.
+			resultsPanel.add(new LineGraph(secondIndelData, 0d, secondMaxY+secondMaxY*0.1, "Position in read (bp)", indelNames, xCategories, title2));
 		} else {
 			resultsPanel.setLayout(new GridLayout(1,1));			
 		}
@@ -222,16 +220,14 @@ public class IndelFrequencies extends AbstractQCModule {
 
 	@Override	
 	public boolean raisesError() {
-		if(firstMaxY > ModuleConfig.getParam("variant_call_position_indel_threshold", "error") ||
-		   secondMaxY > ModuleConfig.getParam("variant_call_position_indel_threshold", "error"))
+		if(firstMaxY+secondMaxY > ModuleConfig.getParam("variant_call_position_indel_threshold", "error"))
 			return true;		
 		return false;
 	}
 
 	@Override	
 	public boolean raisesWarning() {
-		if(firstMaxY > ModuleConfig.getParam("variant_call_position_indel_threshold", "warn") || 
-		   secondMaxY > ModuleConfig.getParam("variant_call_position_indel_threshold", "warn"))
+		if(firstMaxY+secondMaxY > ModuleConfig.getParam("variant_call_position_indel_threshold", "warn"))
 			return true;		
 		return false;
 	}

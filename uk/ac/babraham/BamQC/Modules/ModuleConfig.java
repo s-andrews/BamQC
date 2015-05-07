@@ -74,10 +74,10 @@ public class ModuleConfig {
 		params.put("sequence_length:ignore", 0d);
 		params.put("adapter:ignore", 0d);
 		params.put("variant_call_position_length:ignore", 150d);
-		params.put("variant_call_position_indel_xaxis_threshold:ignore", 5d);
+		params.put("variant_call_position_indel_seqpercent_xaxis_threshold:ignore", 5d);
 		params.put("variant_call_position_indel_threshold:warn", 1d);	
 		params.put("variant_call_position_indel_threshold:error", 4d);
-		params.put("variant_call_position_snp_xaxis_threshold:ignore", 5d); 		
+		params.put("variant_call_position_snp_seqpercent_xaxis_threshold:ignore", 5d); 		
 		params.put("variant_call_position_snp_threshold:warn", 2d);	
 		params.put("variant_call_position_snp_threshold:error", 5d);
 		params.put("variant_call_position_snp_by_type_threshold:warn", 0.15d);	
