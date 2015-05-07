@@ -337,7 +337,7 @@ public class VariantCallDetectionTest {
 		log.info("Position\tSNP   \t\tIns   \t\tDel   ");
 		for(int i=0; i<firstSNPPos.length; i++) {
 			// the above arrays have all the same length (see VariantCallDetection.java for details)
-			log.info(i + "\t\t" + firstSNPPos[i] + "\t\t" + firstInsertionPos[i] + "\t\t" + firstDeletionPos[i] + secondSNPPos[i] + "\t\t" + secondInsertionPos[i] + "\t\t" + secondDeletionPos[i]);
+			log.info(i + "\t\t" + firstSNPPos[i] + "\t\t" + firstInsertionPos[i] + "\t\t" + firstDeletionPos[i] + "\t\t" + secondSNPPos[i] + "\t\t" + secondInsertionPos[i] + "\t\t" + secondDeletionPos[i]);
 		}
 	}	
 
