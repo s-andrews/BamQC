@@ -125,18 +125,18 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 		long totSNPs = variantCallDetection.getTotalMutations(), 
 			 totBases = variantCallDetection.getTotal();
 		snpFrequenciesByType = new double[12];
-		snpFrequenciesByType[0] = ac * 100f / totBases;
-		snpFrequenciesByType[1] = ag * 100f / totBases;
-		snpFrequenciesByType[2] = at * 100f / totBases;
-		snpFrequenciesByType[3] = ca * 100f / totBases;
-		snpFrequenciesByType[4] = cg * 100f / totBases;
-		snpFrequenciesByType[5] = ct * 100f / totBases;
-		snpFrequenciesByType[6] = ga * 100f / totBases;
-		snpFrequenciesByType[7] = gc * 100f / totBases;
-		snpFrequenciesByType[8] = gt * 100f / totBases;
-		snpFrequenciesByType[9] = ta * 100f / totBases;
-		snpFrequenciesByType[10] = tc * 100f / totBases;
-		snpFrequenciesByType[11] = tg * 100f / totBases;
+		snpFrequenciesByType[0] = ac * 100d / totBases;
+		snpFrequenciesByType[1] = ag * 100d / totBases;
+		snpFrequenciesByType[2] = at * 100d / totBases;
+		snpFrequenciesByType[3] = ca * 100d / totBases;
+		snpFrequenciesByType[4] = cg * 100d / totBases;
+		snpFrequenciesByType[5] = ct * 100d / totBases;
+		snpFrequenciesByType[6] = ga * 100d / totBases;
+		snpFrequenciesByType[7] = gc * 100d / totBases;
+		snpFrequenciesByType[8] = gt * 100d / totBases;
+		snpFrequenciesByType[9] = ta * 100d / totBases;
+		snpFrequenciesByType[10] = tc * 100d / totBases;
+		snpFrequenciesByType[11] = tg * 100d / totBases;
 		
 		for(int i=0; i< snpFrequenciesByType.length; i++) {
 			if(maxX < snpFrequenciesByType[i]) 
@@ -163,14 +163,14 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 
 	@Override	
 	public boolean raisesError() {
-		if(maxX > ModuleConfig.getParam("variant_call_position_snp_by_type_threshold", "error").floatValue())
+		if(maxX > ModuleConfig.getParam("variant_call_position_snp_by_type_threshold", "error").doubleValue())
 			return true;		
 		return false;
 	}
 
 	@Override	
 	public boolean raisesWarning() {
-		if(maxX > ModuleConfig.getParam("variant_call_position_snp_by_type_threshold", "warn").floatValue())
+		if(maxX > ModuleConfig.getParam("variant_call_position_snp_by_type_threshold", "warn").doubleValue())
 			return true;		
 		return false;
 	}

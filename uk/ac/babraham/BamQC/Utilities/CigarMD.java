@@ -23,8 +23,6 @@ package uk.ac.babraham.BamQC.Utilities;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
-import net.sf.samtools.CigarElement;
-import net.sf.samtools.SAMRecord;
 
 /**
  * A list of CigarMDElement. The format is: # (number), operator (m=match,
@@ -55,12 +53,6 @@ public class CigarMD {
 	public void add(final CigarMDElement cigarMDElement) {
 		cigarMDElements.add(cigarMDElement);
 	}
-
-	// not efficient. 
-	public void addInFront(final CigarMDElement cigarMDElement) {
-		cigarMDElements.add(0, cigarMDElement);
-	}	
-	
 	
 	public int numCigarMDElements() {
 		return cigarMDElements.size();

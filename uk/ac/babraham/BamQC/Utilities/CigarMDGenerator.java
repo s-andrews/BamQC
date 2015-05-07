@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import test.java.uk.ac.babraham.BamQC.Modules.VariantCallDetectionTest;
 import net.sf.samtools.CigarElement;
 import net.sf.samtools.SAMRecord;
 
@@ -285,7 +284,7 @@ public class CigarMDGenerator {
 	
 	
 	/**
-	 * It reverse and complement the CigarMD string if the Flag 0x10 is set on.
+	 * It reverse and complement the CigarMD string if the Flag 0x10 or 0x80 are set on. 
 	 */
 	private void reverseComplementCigarMD() {
 		List<CigarMDElement> oldCigarMDElements = cigarMD.getCigarMDElements();
@@ -305,7 +304,6 @@ public class CigarMDGenerator {
 				StringBuilder newBases = new StringBuilder();
 				int mutations = oldElement.getLength();
 				for(int j = 0; j < mutations; j++) {
-					//newBases = baseComplement(oldBases.substring(j*2, j*2+2)) + newBases;
 					newBases.insert(0, oldBases.substring(j*2, j*2+2));					
 				}
 				baseComplement(newBases);			
@@ -313,14 +311,14 @@ public class CigarMDGenerator {
 				
 			} else if(oldElement.getOperator() == CigarMDOperator.INSERTION) {
 				// reverse and complement the bases
-				StringBuilder newBases = new StringBuilder(new StringBuffer(oldElement.getBases()).reverse().toString());
-				baseComplement(newBases);
+				StringBuilder newBases = new StringBuilder(oldElement.getBases());
+				baseComplement(newBases.reverse());
 				newCigarMDElements.add(new CigarMDElement(oldElement.getLength(), CigarMDOperator.INSERTION, newBases.toString()));
 
 			} else if(oldElement.getOperator() == CigarMDOperator.DELETION) {
 				// reverse and complement the bases
-				StringBuilder newBases = new StringBuilder(new StringBuffer(oldElement.getBases()).reverse().toString());
-				baseComplement(newBases);
+				StringBuilder newBases = new StringBuilder(oldElement.getBases());
+				baseComplement(newBases.reverse());
 				newCigarMDElements.add(new CigarMDElement(oldElement.getLength(), CigarMDOperator.DELETION, newBases.toString()));
 
 			} else if(oldElement.getOperator() == CigarMDOperator.SKIPPED_REGION) {
@@ -599,12 +597,6 @@ public class CigarMDGenerator {
 				currentMDElementPosition + currentCigarElementLength);
 		currentMDElementPosition = currentMDElementPosition
 				+ currentCigarElementLength;
-
-		// TODO
-		// Is this correct? I don't think we should include it, as we have a
-		// deletion..
-		// currentBaseCallPosition = currentBaseCallPosition +
-		// currentCigarElementLength;
 
 		log.debug("tempCigElem: " + String.valueOf(currentCigarElementLength) + "D ~ " + "parsedMDElem: "
 		+ currentMDElement + " ; length: " +
