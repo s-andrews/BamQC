@@ -328,13 +328,16 @@ public class VariantCallDetectionTest {
 		log.info("Skipped regions on the reference: " + variantCallDetection.getReferenceSkippedRegions());
 
 		log.info("SNP/Indels density for each read position:");
-		long[] snpPos = variantCallDetection.getSNPPos();
-		long[] insertionPos = variantCallDetection.getInsertionPos();
-		long[] deletionPos = variantCallDetection.getDeletionPos();
+		long[] firstSNPPos = variantCallDetection.getFirstDeletionPos();
+		long[] firstInsertionPos = variantCallDetection.getFirstInsertionPos();
+		long[] firstDeletionPos = variantCallDetection.getFirstDeletionPos();
+		long[] secondSNPPos = variantCallDetection.getSecondDeletionPos();
+		long[] secondInsertionPos = variantCallDetection.getSecondInsertionPos();
+		long[] secondDeletionPos = variantCallDetection.getSecondDeletionPos();		
 		log.info("Position\tSNP   \t\tIns   \t\tDel   ");
-		for(int i=0; i<snpPos.length; i++) {
+		for(int i=0; i<firstSNPPos.length; i++) {
 			// the above arrays have all the same length (see VariantCallDetection.java for details)
-			log.info(i + "\t\t" + snpPos[i] + "\t\t" + insertionPos[i] + "\t\t" + deletionPos[i]);
+			log.info(i + "\t\t" + firstSNPPos[i] + "\t\t" + firstInsertionPos[i] + "\t\t" + firstDeletionPos[i] + secondSNPPos[i] + "\t\t" + secondInsertionPos[i] + "\t\t" + secondDeletionPos[i]);
 		}
 	}	
 
