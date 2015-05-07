@@ -123,15 +123,18 @@ public class CigarMDGenerator {
 	 */
 	public void generateCigarMD(SAMRecord read) {
 		reset();
-		computeCigarMDTag(read);
+		if(!computeCigarMDTag(read)) {
+			cigarMD = new CigarMD();
+		}
 	}
 
 	// Private methods here
 	/**
 	 * It generates a string combining information from CIGAR and MD tag.
+	 * @ return true if the CigarMD string has been computed, false otherwise.
 	 */
-	private void computeCigarMDTag(SAMRecord read) {
-
+	private boolean computeCigarMDTag(SAMRecord read) {
+	
 		/*
 		 * IMPORTANT NOTE:
 		 * The second column of a SAM file contains important hex FLAGS. From the SAM/BAM format specifications: 
@@ -150,7 +153,7 @@ public class CigarMDGenerator {
 		// Check the state of a flag bit 'READ_UNMAPPED_FLAG'. 
 		if(read.getReadUnmappedFlag()) {
 			log.debug("Current SAM read does is unmapped and therefore skipped.");
-			return;	
+			return false;	
 		}
 		
 		
@@ -160,12 +163,10 @@ public class CigarMDGenerator {
 		mdString = read.getStringAttribute("MD");
 		if (mdString == null || mdString.equals("")) {
 			log.debug("Current SAM read " + read.getReadName() + " does not have MD tag string.");
-			return;
+			return false;
 		}
 		// Get the CIGAR list
 		cigarList = read.getCigar().getCigarElements();
-		
-
 		
 		
 		// Iterate the CigarList
@@ -181,37 +182,40 @@ public class CigarMDGenerator {
 			log.debug("Parsing CigarElement: " + String.valueOf(currentCigarElementLength) + currentCigarElementOperator.toString());
 			if (currentCigarElementOperator.equals("M")) {
 				if(!processMDtagCigarOperatorM(read)){
-					cigarMD = new CigarMD();
-					break;
+					return false;
 				}
 			} else if (currentCigarElementOperator.equals("I")) {
 				processMDtagCigarOperatorI(read);
 			} else if (currentCigarElementOperator.equals("D")) {
 				if(!processMDtagCigarOperatorD(read)) {
-					cigarMD = new CigarMD();
-					break;
+					return false;
 				}
 			} else if (currentCigarElementOperator.equals("N")) {
 				log.debug("Extended CIGAR element N is currently unsupported.");
+				return false;
 			} else if (currentCigarElementOperator.equals("S")) {
 				log.debug("Extended CIGAR element S is currently unsupported.");
+				return false;
 			} else if (currentCigarElementOperator.equals("H")) {
 				log.debug("Extended CIGAR element H is currently unsupported.");
+				return false;
 			} else if (currentCigarElementOperator.equals("P")) {
 				log.debug("Extended CIGAR element P is currently unsupported.");
+				return false;
 			} else if (currentCigarElementOperator.equals("=")) {
 				log.debug("Extended CIGAR element = is currently unsupported.");
+				return false;
 			} else if (currentCigarElementOperator.equals("X")) {
 				log.debug("Extended CIGAR element X is currently unsupported.");
+				return false;
 			} else {
 				log.warn("Found unknown operator in the CIGAR string.\n"
 								+ "Unknown CigarOperator: "
 								+ currentCigarElementOperator
 								+ "\n"
 								+ "found on read:" + read.toString() + "\n");
-				cigarMD = new CigarMD();
-				break;
-				// Possibly, throw an exception.
+				return false;
+				// Possibly, throw an exception here instead.
 			}
 		}
 		
@@ -223,6 +227,7 @@ public class CigarMDGenerator {
 			// If the read is first/backward(0x40+0x10) or second/forward(0x80), the CigarMD string must be reversed and complemented.
 			// Check the state of a flag bits 'FIRST_OF_PAIR_FLAG' and 'READ_STRAND_FLAG'.
 			if(read.getFirstOfPairFlag()) {
+				isFirst = true;
 				// it is a first segment.
 				if(read.getSecondOfPairFlag()) {
 					// .. but it is also a second segment
@@ -237,6 +242,7 @@ public class CigarMDGenerator {
 			else  // it is NOT a first segment
 				if(!read.getSecondOfPairFlag()) {
 					// .. but it is NOT a second segment either
+					isFirst = true; // let's leave it as first.
 					log.warn("The index of the read in the template is unknown. Non-linear template or index lost in data processing. Read: " + read.getReadString());
 				} else {
 					// it is a second segment.
@@ -252,6 +258,7 @@ public class CigarMDGenerator {
 			// the read is FIRST AND FORWARD or SECOND AND BACKWARD. In these two cases, no reverse complement is needed.			
 		} else {
 			// the read is unpaired. Treat as a first segment because it is the only one.
+			isFirst = true;			
 			if(read.getReadNegativeStrandFlag()) {
 				// it is reversed and complemented
 				log.debug("CigarMDGenerator: current SAM read is parsed BACKWARD(0x10).");
@@ -259,6 +266,7 @@ public class CigarMDGenerator {
 			}
 		}	
 		log.debug("CigarMD string: " + cigarMD.toString());
+		return true;
 	}
 
 	/**

@@ -87,9 +87,14 @@ public class VariantCallDetection extends AbstractQCModule {
     private long totalReads = 0;
     
     // These arrays are used to store the density of SNP and Indels at each read position.
-    private long[] snpPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
-    private long[] insertionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
-    private long[] deletionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
+    // first or second indicate whether the read is the first or second segment. If the read is not paired, 
+    // it is treated as a first.
+    private long[] firstSNPPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
+    private long[] firstInsertionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
+    private long[] firstDeletionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
+    private long[] secondSNPPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];    
+    private long[] secondInsertionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
+    private long[] secondDeletionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];    
     private long[] matchPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
     private long[] totalPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
     public HashMap<Integer, Long> getContributingReadsPerPos() {
@@ -110,7 +115,10 @@ public class VariantCallDetection extends AbstractQCModule {
 	private CigarMDElement currentCigarMDElement = null;
 	
 	
+	private boolean existPairedReads = false;
 	
+	
+
 	// Constructors
 	/**
 	 * Default constructor
@@ -162,33 +170,33 @@ public class VariantCallDetection extends AbstractQCModule {
 				processMDtagCigarOperatorD();				
 			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.SKIPPED_REGION)) {
 				//processMDtagCigarOperatorN();
-				log.debug("VariantCallDetection.java: extended CIGAR element N is currently unsupported.");
+				log.debug("Extended CIGAR element N is currently unsupported.");
 				skippedReads++;
-				break;
+				return;	
 			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.SOFT_CLIP)) {
-				log.debug("VariantCallDetection.java: extended CIGAR element S is currently unsupported.");
+				log.debug("Extended CIGAR element S is currently unsupported.");
 				skippedReads++;
-				break;
+				return;	
 			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.HARD_CLIP)) {
-				log.debug("VariantCallDetection.java: extended CIGAR element H is currently unsupported.");
+				log.debug("Extended CIGAR element H is currently unsupported.");
 				skippedReads++;
-				break;
+				return;	
 			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.PADDING)) {
-				log.debug("VariantCallDetection.java: extended CIGAR element P is currently unsupported.");
+				log.debug("Extended CIGAR element P is currently unsupported.");
 				skippedReads++;
-				break;
+				return;	
 			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.eq)) {
-				log.debug("VariantCallDetection.java: extended CIGAR element = is currently unsupported.");
+				log.debug("Extended CIGAR element = is currently unsupported.");
 				skippedReads++;
-				break;
+				return;	
 			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.x)) {
-				log.debug("VariantCallDetection.java: extended CIGAR element X is currently unsupported.");
+				log.debug("Extended CIGAR element X is currently unsupported.");
 				skippedReads++;
-				break;
+				return;	
 			} else {
-				log.debug("VariantCallDetection.java: Unknown operator in the CIGAR string.");
+				log.debug("Unknown operator in the CIGAR string.");
 				skippedReads++;
-				break;
+				return;	
 			}		
 		}
 		computeTotals();
@@ -197,8 +205,13 @@ public class VariantCallDetection extends AbstractQCModule {
 		} else {
 			contributingReadsPerPos.put(read.getReadLength(), 1L);
 		}
-		//System.out.println("key, value:" + read.getReadLength() + ", " + contributingReadsPerPos.get(read.getReadLength()));
+		log.debug("key, value:" + read.getReadLength() + ", " + contributingReadsPerPos.get(read.getReadLength()));
 		log.debug("Combined Cigar MDtag: " + cigarMD.toString());
+		
+		// Are there better way to skip this test?
+		if(!cigarMDGenerator.isFirst()) { 
+			existPairedReads=true;
+		}
 	}
 	
 	
@@ -264,9 +277,12 @@ public class VariantCallDetection extends AbstractQCModule {
 		referenceSkippedRegions = 0;
 		
 		
-	    snpPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
-	    insertionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
-	    deletionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
+	    firstSNPPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
+	    firstInsertionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
+	    firstDeletionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
+	    secondSNPPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
+	    secondInsertionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
+	    secondDeletionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];	    
 	    matchPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
 	    totalPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];	  	    
 	    currentPosition = 0;
@@ -312,30 +328,42 @@ public class VariantCallDetection extends AbstractQCModule {
 	
 	
 	private void extendDensityArrays(int newBound) {
-		long[] oldSNPPos = snpPos;
-		long[] oldInsertionPos = insertionPos;
-		long[] oldDeletionPos = deletionPos;
+		long[] oldFirstSNPPos = firstSNPPos;
+		long[] oldFirstInsertionPos = firstInsertionPos;
+		long[] oldFirstDeletionPos = firstDeletionPos;
+		long[] oldSecondSNPPos = secondSNPPos;
+		long[] oldSecondInsertionPos = secondInsertionPos;
+		long[] oldSecondDeletionPos = secondDeletionPos;		
 		long[] oldMatchPos = matchPos;
 		long[] oldTotalPos = totalPos;		
-		// We do not want to call this method often, that's why it is better to extend it 
+		// We do not want to call this method too often, that's why it is better to extend it 
 		// 2 times the current length. However, if the newBound is larger than this, it is 
 		// better to be conservative and just increase for that new size.
-		if(snpPos.length*2 < newBound) {
-			snpPos = new long[newBound+1];
-			insertionPos = new long[newBound+1];
-			deletionPos = new long[newBound+1];
+		if(firstSNPPos.length*2 < newBound) {
+			firstSNPPos = new long[newBound+1];
+			firstInsertionPos = new long[newBound+1];
+			firstDeletionPos = new long[newBound+1];
+			secondSNPPos = new long[newBound+1];			
+			secondInsertionPos = new long[newBound+1];
+			secondDeletionPos = new long[newBound+1];
 			matchPos = new long[newBound+1];
 			totalPos = new long[newBound+1];			
 		} else {
-			snpPos = new long[snpPos.length*2];
-			insertionPos = new long[snpPos.length*2];
-			deletionPos = new long[snpPos.length*2];
-			matchPos = new long[snpPos.length*2];
-			totalPos = new long[snpPos.length*2];				
+			firstSNPPos = new long[firstSNPPos.length*2];
+			firstInsertionPos = new long[firstSNPPos.length*2];
+			firstDeletionPos = new long[firstSNPPos.length*2];
+			secondSNPPos = new long[firstSNPPos.length*2];			
+			secondInsertionPos = new long[firstSNPPos.length*2];
+			secondDeletionPos = new long[firstSNPPos.length*2];
+			matchPos = new long[firstSNPPos.length*2];
+			totalPos = new long[firstSNPPos.length*2];				
 		}
-		System.arraycopy(oldSNPPos, 0, snpPos, 0, oldSNPPos.length);
-		System.arraycopy(oldInsertionPos, 0, insertionPos, 0, oldInsertionPos.length);
-		System.arraycopy(oldDeletionPos, 0, deletionPos, 0, oldDeletionPos.length);	
+		System.arraycopy(oldFirstSNPPos, 0, firstSNPPos, 0, oldFirstSNPPos.length);
+		System.arraycopy(oldFirstInsertionPos, 0, firstInsertionPos, 0, oldFirstInsertionPos.length);
+		System.arraycopy(oldFirstDeletionPos, 0, firstDeletionPos, 0, oldFirstDeletionPos.length);	
+		System.arraycopy(oldSecondSNPPos, 0, secondSNPPos, 0, oldSecondSNPPos.length);
+		System.arraycopy(oldSecondInsertionPos, 0, secondInsertionPos, 0, oldSecondInsertionPos.length);
+		System.arraycopy(oldSecondDeletionPos, 0, secondDeletionPos, 0, oldSecondDeletionPos.length);			
 		System.arraycopy(oldMatchPos, 0, matchPos, 0, oldMatchPos.length);
 		System.arraycopy(oldTotalPos, 0, totalPos, 0, oldTotalPos.length);		
 	}
@@ -350,8 +378,10 @@ public class VariantCallDetection extends AbstractQCModule {
 		totalInsertions = aInsertions + cInsertions + gInsertions + tInsertions;
 		totalDeletions = aDeletions + cDeletions + gDeletions + tDeletions;
 		total = totalMutations + totalInsertions + totalDeletions + totalMatches;
-		for(int i=0; i< snpPos.length; i++) {
-			totalPos[i] = snpPos[i] + insertionPos[i] + deletionPos[i] + matchPos[i];
+		for(int i=0; i< firstSNPPos.length; i++) {
+			totalPos[i] = firstSNPPos[i] + firstInsertionPos[i] + firstDeletionPos[i] + 
+					      secondSNPPos[i] + secondInsertionPos[i] + secondDeletionPos[i] + 
+					      matchPos[i];
 		}
 	}
 	
@@ -394,25 +424,45 @@ public class VariantCallDetection extends AbstractQCModule {
 		}
 		
 		// if the read.length is longer than what we supposed to be, here we increase the length of our *Pos arrays.
-		if(currentPosition+numMutations >= snpPos.length) {
+		if(currentPosition+numMutations >= firstSNPPos.length) {
 			extendDensityArrays(currentPosition+numMutations);			
 	    }
-		for(int i = 0; i < numMutations; i++) {
-			basePair = mutatedBases.substring(i*2, i*2+2);
-			if(basePair.equals("AC"))      { ac++; snpPos[currentPosition]++; currentPosition++; }
-			else if(basePair.equals("AG")) { ag++; snpPos[currentPosition]++; currentPosition++; }
-			else if(basePair.equals("AT")) { at++; snpPos[currentPosition]++; currentPosition++; }
-			else if(basePair.equals("CA")) { ca++; snpPos[currentPosition]++; currentPosition++; }
-			else if(basePair.equals("CG")) { cg++; snpPos[currentPosition]++; currentPosition++; }
-			else if(basePair.equals("CT")) { ct++; snpPos[currentPosition]++; currentPosition++; }
-			else if(basePair.equals("GA")) { ga++; snpPos[currentPosition]++; currentPosition++; }
-			else if(basePair.equals("GC")) { gc++; snpPos[currentPosition]++; currentPosition++; }
-			else if(basePair.equals("GT")) { gt++; snpPos[currentPosition]++; currentPosition++; }
-			else if(basePair.equals("TA")) { ta++; snpPos[currentPosition]++; currentPosition++; }
-			else if(basePair.equals("TC")) { tc++; snpPos[currentPosition]++; currentPosition++; }
-			else if(basePair.equals("TG")) { tg++; snpPos[currentPosition]++; currentPosition++; }	
-			else if(basePair.charAt(0) == 'N') { referenceSkippedRegions++; currentPosition++; }
-			else if(basePair.charAt(1) == 'N') { readSkippedRegions++; currentPosition++; }			
+		if(cigarMDGenerator.isFirst()) {
+			for(int i = 0; i < numMutations; i++) {
+				basePair = mutatedBases.substring(i*2, i*2+2);
+				if(basePair.equals("AC"))      { ac++; firstSNPPos[currentPosition]++; currentPosition++; }
+				else if(basePair.equals("AG")) { ag++; firstSNPPos[currentPosition]++; currentPosition++; }
+				else if(basePair.equals("AT")) { at++; firstSNPPos[currentPosition]++; currentPosition++; }
+				else if(basePair.equals("CA")) { ca++; firstSNPPos[currentPosition]++; currentPosition++; }
+				else if(basePair.equals("CG")) { cg++; firstSNPPos[currentPosition]++; currentPosition++; }
+				else if(basePair.equals("CT")) { ct++; firstSNPPos[currentPosition]++; currentPosition++; }
+				else if(basePair.equals("GA")) { ga++; firstSNPPos[currentPosition]++; currentPosition++; }
+				else if(basePair.equals("GC")) { gc++; firstSNPPos[currentPosition]++; currentPosition++; }
+				else if(basePair.equals("GT")) { gt++; firstSNPPos[currentPosition]++; currentPosition++; }
+				else if(basePair.equals("TA")) { ta++; firstSNPPos[currentPosition]++; currentPosition++; }
+				else if(basePair.equals("TC")) { tc++; firstSNPPos[currentPosition]++; currentPosition++; }
+				else if(basePair.equals("TG")) { tg++; firstSNPPos[currentPosition]++; currentPosition++; }	
+				else if(basePair.charAt(0) == 'N') { referenceSkippedRegions++; currentPosition++; }
+				else if(basePair.charAt(1) == 'N') { readSkippedRegions++; currentPosition++; }			
+			}			
+		} else {
+			for(int i = 0; i < numMutations; i++) {
+				basePair = mutatedBases.substring(i*2, i*2+2);
+				if(basePair.equals("AC"))      { ac++; secondSNPPos[currentPosition]++; currentPosition++; }
+				else if(basePair.equals("AG")) { ag++; secondSNPPos[currentPosition]++; currentPosition++; }
+				else if(basePair.equals("AT")) { at++; secondSNPPos[currentPosition]++; currentPosition++; }
+				else if(basePair.equals("CA")) { ca++; secondSNPPos[currentPosition]++; currentPosition++; }
+				else if(basePair.equals("CG")) { cg++; secondSNPPos[currentPosition]++; currentPosition++; }
+				else if(basePair.equals("CT")) { ct++; secondSNPPos[currentPosition]++; currentPosition++; }
+				else if(basePair.equals("GA")) { ga++; secondSNPPos[currentPosition]++; currentPosition++; }
+				else if(basePair.equals("GC")) { gc++; secondSNPPos[currentPosition]++; currentPosition++; }
+				else if(basePair.equals("GT")) { gt++; secondSNPPos[currentPosition]++; currentPosition++; }
+				else if(basePair.equals("TA")) { ta++; secondSNPPos[currentPosition]++; currentPosition++; }
+				else if(basePair.equals("TC")) { tc++; secondSNPPos[currentPosition]++; currentPosition++; }
+				else if(basePair.equals("TG")) { tg++; secondSNPPos[currentPosition]++; currentPosition++; }	
+				else if(basePair.charAt(0) == 'N') { referenceSkippedRegions++; currentPosition++; }
+				else if(basePair.charAt(1) == 'N') { readSkippedRegions++; currentPosition++; }			
+			}			
 		}
 	}	
 	
@@ -421,15 +471,25 @@ public class VariantCallDetection extends AbstractQCModule {
 		int numInsertions = currentCigarMDElement.getLength();
 		String insertedBases = currentCigarMDElement.getBases();
 		// if the read.length is longer than what we supposed to be, here we increase the length of our *Pos arrays..
-		if(currentPosition+numInsertions >= insertionPos.length) {
+		if(currentPosition+numInsertions >= firstInsertionPos.length) {
 			extendDensityArrays(currentPosition+numInsertions);
 	    }
-		for(int i = 0; i < numInsertions; i++) {
-			if(insertedBases.charAt(i) == 'A')      { aInsertions++; insertionPos[currentPosition]++; currentPosition++; }
-			else if(insertedBases.charAt(i) == 'C') { cInsertions++; insertionPos[currentPosition]++; currentPosition++; }
-			else if(insertedBases.charAt(i) == 'G') { gInsertions++; insertionPos[currentPosition]++; currentPosition++; }
-			else if(insertedBases.charAt(i) == 'T') { tInsertions++; insertionPos[currentPosition]++; currentPosition++; }
-			else if(insertedBases.charAt(i) == 'N') { nInsertions++; currentPosition++; }			
+		if(cigarMDGenerator.isFirst()) {
+			for(int i = 0; i < numInsertions; i++) {
+				if(insertedBases.charAt(i) == 'A')      { aInsertions++; firstInsertionPos[currentPosition]++; currentPosition++; }
+				else if(insertedBases.charAt(i) == 'C') { cInsertions++; firstInsertionPos[currentPosition]++; currentPosition++; }
+				else if(insertedBases.charAt(i) == 'G') { gInsertions++; firstInsertionPos[currentPosition]++; currentPosition++; }
+				else if(insertedBases.charAt(i) == 'T') { tInsertions++; firstInsertionPos[currentPosition]++; currentPosition++; }
+				else if(insertedBases.charAt(i) == 'N') { nInsertions++; currentPosition++; }			
+			}
+		} else {
+			for(int i = 0; i < numInsertions; i++) {
+				if(insertedBases.charAt(i) == 'A')      { aInsertions++; secondInsertionPos[currentPosition]++; currentPosition++; }
+				else if(insertedBases.charAt(i) == 'C') { cInsertions++; secondInsertionPos[currentPosition]++; currentPosition++; }
+				else if(insertedBases.charAt(i) == 'G') { gInsertions++; secondInsertionPos[currentPosition]++; currentPosition++; }
+				else if(insertedBases.charAt(i) == 'T') { tInsertions++; secondInsertionPos[currentPosition]++; currentPosition++; }
+				else if(insertedBases.charAt(i) == 'N') { nInsertions++; currentPosition++; }			
+			}			
 		}
 	}
 	
@@ -438,15 +498,25 @@ public class VariantCallDetection extends AbstractQCModule {
 		int numDeletions = currentCigarMDElement.getLength();
 		String deletedBases = currentCigarMDElement.getBases();
 		// if the read.length is longer than what we supposed to be, here we increase the length of our *Pos arrays..
-		if(currentPosition+numDeletions >= deletionPos.length) {
+		if(currentPosition+numDeletions >= firstDeletionPos.length) {
 			extendDensityArrays(currentPosition+numDeletions);		
-	    }		
-		for(int i = 0; i < numDeletions; i++) {
-			if(deletedBases.charAt(i) == 'A')      { aDeletions++; deletionPos[currentPosition]++; currentPosition++; }
-			else if(deletedBases.charAt(i) == 'C') { cDeletions++; deletionPos[currentPosition]++; currentPosition++; }
-			else if(deletedBases.charAt(i) == 'G') { gDeletions++; deletionPos[currentPosition]++; currentPosition++; }
-			else if(deletedBases.charAt(i) == 'T') { tDeletions++; deletionPos[currentPosition]++; currentPosition++; }
-			else if(deletedBases.charAt(i) == 'N') { nDeletions++; currentPosition++; }			
+	    }
+		if(cigarMDGenerator.isFirst()) {
+			for(int i = 0; i < numDeletions; i++) {
+				if(deletedBases.charAt(i) == 'A')      { aDeletions++; firstDeletionPos[currentPosition]++; currentPosition++; }
+				else if(deletedBases.charAt(i) == 'C') { cDeletions++; firstDeletionPos[currentPosition]++; currentPosition++; }
+				else if(deletedBases.charAt(i) == 'G') { gDeletions++; firstDeletionPos[currentPosition]++; currentPosition++; }
+				else if(deletedBases.charAt(i) == 'T') { tDeletions++; firstDeletionPos[currentPosition]++; currentPosition++; }
+				else if(deletedBases.charAt(i) == 'N') { nDeletions++; currentPosition++; }			
+			}
+		} else {
+			for(int i = 0; i < numDeletions; i++) {
+				if(deletedBases.charAt(i) == 'A')      { aDeletions++; secondDeletionPos[currentPosition]++; currentPosition++; }
+				else if(deletedBases.charAt(i) == 'C') { cDeletions++; secondDeletionPos[currentPosition]++; currentPosition++; }
+				else if(deletedBases.charAt(i) == 'G') { gDeletions++; secondDeletionPos[currentPosition]++; currentPosition++; }
+				else if(deletedBases.charAt(i) == 'T') { tDeletions++; secondDeletionPos[currentPosition]++; currentPosition++; }
+				else if(deletedBases.charAt(i) == 'N') { nDeletions++; currentPosition++; }			
+			}			
 		}
 	}
 	
@@ -487,6 +557,10 @@ public class VariantCallDetection extends AbstractQCModule {
 	
 	public CigarMD getCigarMD() {
 		return cigarMD;
+	}
+	
+	public boolean existPairedReads() {
+		return existPairedReads;
 	}
 
 	public long getA2C() {
@@ -615,16 +689,28 @@ public class VariantCallDetection extends AbstractQCModule {
 		return totalReads;
 	}
 
-	public long[] getSNPPos() {
-		return snpPos;
+	public long[] getFirstSNPPos() {
+		return firstSNPPos;
+	}
+	
+	public long[] getSecondSNPPos() {
+		return secondSNPPos;
 	}
 
-	public long[] getInsertionPos() {
-		return insertionPos;
+	public long[] getFirstInsertionPos() {
+		return firstInsertionPos;
 	}
 
-	public long[] getDeletionPos() {
-		return deletionPos;
+	public long[] getFirstDeletionPos() {
+		return firstDeletionPos;
+	}
+	
+	public long[] getSecondInsertionPos() {
+		return secondInsertionPos;
+	}
+
+	public long[] getSecondDeletionPos() {
+		return secondDeletionPos;
 	}	
 	
 	public long[] getMatchPos() {

@@ -20,6 +20,7 @@
 
 package uk.ac.babraham.BamQC.Modules;
 
+import java.awt.GridLayout;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -45,8 +46,9 @@ public class SNPFrequencies extends AbstractQCModule {
 
 	private static Logger log = Logger.getLogger(SNPFrequencies.class);	
 	
-	// original threshold for the plot y axis.
-	private double maxY=0.0d; 
+	// threshold for the plot y axis.
+	private double firstMaxY=0.0d;
+	private double secondMaxY=0.0d; 
 	
 	// The analysis collecting all the results.
 	VariantCallDetection variantCallDetection = null;	
@@ -127,49 +129,59 @@ public class SNPFrequencies extends AbstractQCModule {
 		
 
 		long totSNPs = variantCallDetection.getTotalMutations(),
-			 totBases = variantCallDetection.getTotal();		
+			 totBases = variantCallDetection.getTotal();
+		
 		log.info("Total SNPs: " + totSNPs + " ( " + totSNPs*100f/totBases + "% )");
 		
 		
-		// We do not need a BaseGroup here
-		long[] snpPos = variantCallDetection.getSNPPos();
 		
-//		//////////////////////
-//		// OLD PLOT 
-//		//////////////////////
-//		// initialise and configure the LineGraph
-//		// compute the maximum value for the X axis
-//		int maxX = computeXMaxValue();
-//				
-//		String[] xCategories = new String[maxX];		
-//		double[] dSNPPos = new double[maxX];
-//		maxY = 0.0d;
-//		for(int i=0; i<maxX && i<snpPos.length; i++) {		
-//			dSNPPos[i]= (double)snpPos[i];
-//			if(dSNPPos[i] > maxY) { maxY = dSNPPos[i]; }
-//			xCategories[i] = String.valueOf(i+1);
-//		}
-//		// add 10% to the maximum for improving the plot rendering
-//		maxY = maxY + maxY*0.1; 		
-
+		JPanel resultsPanel = new JPanel();
+		// We do not need a BaseGroup here
+		// These two arrays have same length.
+		// first/second identify the first or second segments respectively. 
 		long[] totalPos = variantCallDetection.getTotalPos();
      	// initialise and configure the LineGraph
 		// compute the maximum value for the X axis
 		int maxX = computeXMaxValue();
-		//maxX = insertionPos.length;
-		String[] xCategories = new String[maxX];		
-		double[] dSNPPos = new double[maxX];
-		for(int i=0; i<maxX && i<snpPos.length; i++) {
-			dSNPPos[i]= (snpPos[i] * 100d) / totalPos[i];
-			if(dSNPPos[i] > maxY) { maxY = dSNPPos[i]; }
+		String[] xCategories = new String[maxX];
+		
+		
+		
+		// compute statistics from the FIRST segment data
+		// We do not need a BaseGroup here
+		long[] firstSNPPos = variantCallDetection.getFirstSNPPos();
+		double[] dFirstSNPPos = new double[maxX];
+		for(int i=0; i<maxX && i<firstSNPPos.length; i++) {
+			dFirstSNPPos[i]= (firstSNPPos[i] * 100d) / totalPos[i];
+			if(dFirstSNPPos[i] > firstMaxY) { firstMaxY = dFirstSNPPos[i]; }
 			xCategories[i] = String.valueOf(i+1);
 		}
 		// add 10% to the top for improving the visualisation of the plot.
-		maxY = maxY + maxY*0.1;
+		firstMaxY = firstMaxY + firstMaxY*0.1;	
+		double[][] firstSNPData = new double [][] {dFirstSNPPos};
+		String title = String.format("First Segment SNP frequencies ( total SNPs: %.3f %% )", totSNPs*100.0f/totBases);
+		resultsPanel.add(new LineGraph(firstSNPData, 0d, firstMaxY, "Position in read (bp)", snpName, xCategories, title));
 		
-		double[][] snpData = new double [][] {dSNPPos};
-		String title = String.format("SNP frequencies ( total SNPs: %.3f %% )", totSNPs*100.0f/totBases);
-		return new LineGraph(snpData, 0d, maxY, "Position in read (bp)", snpName, xCategories, title);
+		// compute statistics from the SECOND segment data if there are paired reads.
+		if(variantCallDetection.existPairedReads()) {
+			resultsPanel.setLayout(new GridLayout(2,1));
+			// We do not need a BaseGroup here
+			long[] secondSNPPos = variantCallDetection.getSecondSNPPos();
+			double[] dSecondSNPPos = new double[maxX];
+			for(int i=0; i<maxX && i<secondSNPPos.length; i++) {
+				dSecondSNPPos[i]= (secondSNPPos[i] * 100d) / totalPos[i];
+				if(dSecondSNPPos[i] > secondMaxY) { secondMaxY = dSecondSNPPos[i]; }
+			}
+			// add 10% to the top for improving the visualisation of the plot.
+			secondMaxY = secondMaxY + secondMaxY*0.1;
+			double[][] secondSNPData = new double [][] {dSecondSNPPos};
+			String title2 = "Second Segment SNP frequencies";
+			resultsPanel.add(new LineGraph(secondSNPData, 0d, secondMaxY, "Position in read (bp)", snpName, xCategories, title2));
+		} else {
+			resultsPanel.setLayout(new GridLayout(1,1));			
+		}
+		
+		return resultsPanel;
 	}
 
 	@Override	
@@ -187,14 +199,16 @@ public class SNPFrequencies extends AbstractQCModule {
 
 	@Override	
 	public boolean raisesError() {
-		if(maxY > ModuleConfig.getParam("variant_call_position_snp_threshold", "error"))
+		if(firstMaxY > ModuleConfig.getParam("variant_call_position_snp_threshold", "error") || 
+		   secondMaxY > ModuleConfig.getParam("variant_call_position_snp_threshold", "error"))
 			return true;		
 		return false;
 	}
 
 	@Override	
 	public boolean raisesWarning() {
-		if(maxY > ModuleConfig.getParam("variant_call_position_snp_threshold", "warn"))
+		if(firstMaxY > ModuleConfig.getParam("variant_call_position_snp_threshold", "warn") ||
+		   secondMaxY > ModuleConfig.getParam("variant_call_position_snp_threshold", "warn"))
 			return true;		
 		return false;
 	}

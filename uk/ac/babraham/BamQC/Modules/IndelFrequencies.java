@@ -20,6 +20,7 @@
 
 package uk.ac.babraham.BamQC.Modules;
 
+import java.awt.GridLayout;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -45,16 +46,15 @@ public class IndelFrequencies extends AbstractQCModule {
 
 	private static Logger log = Logger.getLogger(IndelFrequencies.class);	
 	
-	// original threshold for the plot y axis.
-	private double maxY=0.0d; 
+	private String[] indelNames = {"Insertions", "Deletions"};
+	
+	// threshold for the plot y axis.
+	private double firstMaxY=0.0d;
+	private double secondMaxY=0.0d; 
 	
 	// The analysis collecting all the results.
 	VariantCallDetection variantCallDetection = null;	
 	
-	// data fields for plotting
-	private static String[] indelNames = {
-		"Insertions",
-		"Deletions"};
 	
 	// Constructors
 	/**
@@ -130,8 +130,8 @@ public class IndelFrequencies extends AbstractQCModule {
 		}		
 		
 		long totIns = variantCallDetection.getTotalInsertions(),
-				 totDel = variantCallDetection.getTotalDeletions(), 
-				 totBases = variantCallDetection.getTotal();
+			 totDel = variantCallDetection.getTotalDeletions(), 
+			 totBases = variantCallDetection.getTotal();
 		
 		log.info("A insertions: " + variantCallDetection.getAInsertions());
 		log.info("C insertions: " + variantCallDetection.getCInsertions());
@@ -149,57 +149,62 @@ public class IndelFrequencies extends AbstractQCModule {
 		log.info("Skipped regions on the reference: " + variantCallDetection.getReferenceSkippedRegions());
 		log.info("Skipped reads: " + variantCallDetection.getSkippedReads() + " ( "+ (variantCallDetection.getSkippedReads()*100.0f)/variantCallDetection.getTotalReads() + "% )");
 		
+
 		
-		
+		JPanel resultsPanel = new JPanel();
 		// We do not need a BaseGroup here
 		// These two arrays have same length.
-		long[] insertionPos = variantCallDetection.getInsertionPos();
-		long[] deletionPos = variantCallDetection.getDeletionPos();
-		
-//		//////////////////////
-//		// OLD PLOT 
-//		//////////////////////
-//		// initialise and configure the LineGraph
-//		// compute the maximum value for the X axis
-//		int maxX = computeXMaxValue();
-//		String[] xCategories = new String[maxX];		
-//		double[] dInsertionPos = new double[maxX];
-//		double[] dDeletionPos = new double[maxX];
-//		maxY = 0.0d;
-//		for(int i=0; i<maxX && i<insertionPos.length; i++) {
-//			dInsertionPos[i]= (double)insertionPos[i];
-//			dDeletionPos[i]= (double)deletionPos[i];
-//			if(dInsertionPos[i] > maxY) { maxY = dInsertionPos[i]; }
-//			if(dDeletionPos[i] > maxY) { maxY = dDeletionPos[i]; }
-//			xCategories[i] = String.valueOf(i+1);
-//		}
-//		// add 10% to the maximum for improving the plot rendering
-//		maxY = maxY + maxY*0.05; 
-		
+		// first/second identify the first or second segments respectively. 
 		long[] totalPos = variantCallDetection.getTotalPos();
      	// initialise and configure the LineGraph
 		// compute the maximum value for the X axis
 		int maxX = computeXMaxValue();
-		//maxX = insertionPos.length;
-		String[] xCategories = new String[maxX];		
-		double[] dInsertionPos = new double[maxX];
-		double[] dDeletionPos = new double[maxX];
-		for(int i=0; i<maxX && i<insertionPos.length; i++) {
-			dInsertionPos[i]= (insertionPos[i] * 100d) / totalPos[i];
-			dDeletionPos[i]= (deletionPos[i] * 100d) / totalPos[i];
-			if(dInsertionPos[i] > maxY) { maxY = dInsertionPos[i]; }
-			if(dDeletionPos[i] > maxY) { maxY = dDeletionPos[i]; }
+		String[] xCategories = new String[maxX];
+		
+		
+		
+		// compute statistics from the FIRST segment data
+		long[] firstInsertionPos = variantCallDetection.getFirstInsertionPos();
+		long[] firstDeletionPos = variantCallDetection.getFirstDeletionPos();		
+		double[] dFirstInsertionPos = new double[maxX];
+		double[] dFirstDeletionPos = new double[maxX];		
+		for(int i=0; i<maxX && i<firstInsertionPos.length; i++) {
+			dFirstInsertionPos[i]= (firstInsertionPos[i] * 100d) / totalPos[i];
+			dFirstDeletionPos[i]= (firstDeletionPos[i] * 100d) / totalPos[i];
+			if(dFirstInsertionPos[i] > firstMaxY) { firstMaxY = dFirstInsertionPos[i]; }
+			if(dFirstDeletionPos[i] > firstMaxY) { firstMaxY = dFirstDeletionPos[i]; }
 			xCategories[i] = String.valueOf(i+1);
 		}
 		// add 10% to the top for improving the visualisation of the plot.
-		maxY = maxY + maxY*0.1;
+		firstMaxY = firstMaxY + firstMaxY*0.1;
+		double[][] firstIndelData = new double [][] {dFirstInsertionPos,dFirstDeletionPos};
+		String title = String.format("First Segment Indel Frequencies ( total insertions: %.3f %%, total deletions: %.3f %% )", 
+				totIns*100.0f/totBases,totDel*100.0f/totBases);	
+		resultsPanel.add(new LineGraph(firstIndelData, 0d, firstMaxY, "Position in read (bp)", indelNames, xCategories, title));		
 
-		double[][] indelData = new double [][] {dInsertionPos,dDeletionPos};
-		String title = String.format("Indel Frequencies ( total insertions: %.3f %%, total deletions: %.3f %% )", 
-				totIns*100.0f/totBases,totDel*100.0f/totBases);		
-	
-		return new LineGraph(indelData, 0d, maxY, "Position in read (bp)", indelNames, xCategories, title);
+		// compute statistics from the SECOND segment data if there are paired reads.
+		if(variantCallDetection.existPairedReads()) {
+			resultsPanel.setLayout(new GridLayout(2,1));
+			long[] secondInsertionPos = variantCallDetection.getSecondInsertionPos();
+			long[] secondDeletionPos = variantCallDetection.getSecondDeletionPos();
+			double[] dSecondInsertionPos = new double[maxX];
+			double[] dSecondDeletionPos = new double[maxX];		
+			for(int i=0; i<maxX && i<secondInsertionPos.length; i++) {
+				dSecondInsertionPos[i]= (secondInsertionPos[i] * 100d) / totalPos[i];
+				dSecondDeletionPos[i]= (secondDeletionPos[i] * 100d) / totalPos[i];			
+				if(dSecondInsertionPos[i] > secondMaxY) { secondMaxY = dSecondInsertionPos[i]; }			
+				if(dSecondDeletionPos[i] > secondMaxY) { secondMaxY = dSecondDeletionPos[i]; }			
+			}
+			// add 10% to the top for improving the visualisation of the plot.
+			secondMaxY = secondMaxY + secondMaxY*0.1;
+			double[][] secondIndelData = new double [][] {dSecondInsertionPos,dSecondDeletionPos};
+			String title2 = "Second Segment Indel Frequencies";	
+			resultsPanel.add(new LineGraph(secondIndelData, 0d, secondMaxY, "Position in read (bp)", indelNames, xCategories, title2));
+		} else {
+			resultsPanel.setLayout(new GridLayout(1,1));			
+		}
 
+		return resultsPanel;
 	}
 
 	@Override	
@@ -217,14 +222,16 @@ public class IndelFrequencies extends AbstractQCModule {
 
 	@Override	
 	public boolean raisesError() {
-		if(maxY > ModuleConfig.getParam("variant_call_position_indel_threshold", "error"))
+		if(firstMaxY > ModuleConfig.getParam("variant_call_position_indel_threshold", "error") ||
+		   secondMaxY > ModuleConfig.getParam("variant_call_position_indel_threshold", "error"))
 			return true;		
 		return false;
 	}
 
 	@Override	
 	public boolean raisesWarning() {
-		if(maxY > ModuleConfig.getParam("variant_call_position_indel_threshold", "warn"))
+		if(firstMaxY > ModuleConfig.getParam("variant_call_position_indel_threshold", "warn") || 
+		   secondMaxY > ModuleConfig.getParam("variant_call_position_indel_threshold", "warn"))
 			return true;		
 		return false;
 	}
