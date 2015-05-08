@@ -157,9 +157,6 @@ public class SNPFrequencies extends AbstractQCModule {
 			xCategories[i] = String.valueOf(i+1);
 		}
 		double[][] firstSNPData = new double [][] {dFirstSNPPos};
-		String title = String.format("First Segment SNP frequencies ( total SNPs: %.3f %% )", totSNPs*100.0f/totBases);
-		// add 10% to the top for improving the visualisation of the plot.
-		resultsPanel.add(new LineGraph(firstSNPData, 0d, firstMaxY+firstMaxY*0.1, "Position in read (bp)", snpName, xCategories, title));
 		
 		// compute statistics from the SECOND segment data if there are paired reads.
 		if(variantCallDetection.existPairedReads()) {
@@ -172,11 +169,19 @@ public class SNPFrequencies extends AbstractQCModule {
 				if(dSecondSNPPos[i] > secondMaxY) { secondMaxY = dSecondSNPPos[i]; }
 			}
 			double[][] secondSNPData = new double [][] {dSecondSNPPos};
-			String title2 = "Second Segment SNP frequencies";
+			
+			String title = String.format("First Read SNP frequencies ( total SNPs: %.3f %% )", totSNPs*100.0f/totBases);
+			// add 10% to the top for improving the visualisation of the plot.
+			resultsPanel.add(new LineGraph(firstSNPData, 0d, firstMaxY+firstMaxY*0.1, "Position in read (bp)", snpName, xCategories, title));
+			
+			String title2 = "Second Read SNP frequencies";
 			// add 10% to the top for improving the visualisation of the plot.
 			resultsPanel.add(new LineGraph(secondSNPData, 0d, secondMaxY+secondMaxY*0.1, "Position in read (bp)", snpName, xCategories, title2));
 		} else {
-			resultsPanel.setLayout(new GridLayout(1,1));			
+			resultsPanel.setLayout(new GridLayout(1,1));
+			String title = String.format("Read SNP frequencies ( total SNPs: %.3f %% )", totSNPs*100.0f/totBases);
+			// add 10% to the top for improving the visualisation of the plot.
+			resultsPanel.add(new LineGraph(firstSNPData, 0d, firstMaxY+firstMaxY*0.1, "Position in read (bp)", snpName, xCategories, title));
 		}
 		
 		return resultsPanel;

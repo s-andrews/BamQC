@@ -176,10 +176,6 @@ public class IndelFrequencies extends AbstractQCModule {
 			xCategories[i] = String.valueOf(i+1);
 		}
 		double[][] firstIndelData = new double [][] {dFirstInsertionPos,dFirstDeletionPos};
-		String title = String.format("First Segment Indel Frequencies ( total insertions: %.3f %%, total deletions: %.3f %% )", 
-				totIns*100.0f/totBases,totDel*100.0f/totBases);	
-		// add 10% to the top for improving the visualisation of the plot.
-		resultsPanel.add(new LineGraph(firstIndelData, 0d, firstMaxY+firstMaxY*0.1, "Position in read (bp)", indelNames, xCategories, title));		
 
 		// compute statistics from the SECOND segment data if there are paired reads.
 		if(variantCallDetection.existPairedReads()) {
@@ -195,11 +191,21 @@ public class IndelFrequencies extends AbstractQCModule {
 				if(dSecondDeletionPos[i] > secondMaxY) { secondMaxY = dSecondDeletionPos[i]; }			
 			}
 			double[][] secondIndelData = new double [][] {dSecondInsertionPos,dSecondDeletionPos};
-			String title2 = "Second Segment Indel Frequencies";	
+			
+			String title = String.format("First Read Indel Frequencies ( total insertions: %.3f %%, total deletions: %.3f %% )", 
+					totIns*100.0f/totBases,totDel*100.0f/totBases);	
+			// add 10% to the top for improving the visualisation of the plot.
+			resultsPanel.add(new LineGraph(firstIndelData, 0d, firstMaxY+firstMaxY*0.1, "Position in read (bp)", indelNames, xCategories, title));	
+			
+			String title2 = "Second Read Indel Frequencies";	
 			// add 10% to the top for improving the visualisation of the plot.
 			resultsPanel.add(new LineGraph(secondIndelData, 0d, secondMaxY+secondMaxY*0.1, "Position in read (bp)", indelNames, xCategories, title2));
 		} else {
-			resultsPanel.setLayout(new GridLayout(1,1));			
+			resultsPanel.setLayout(new GridLayout(1,1));
+			String title = String.format("Read Indel Frequencies ( total insertions: %.3f %%, total deletions: %.3f %% )", 
+					totIns*100.0f/totBases,totDel*100.0f/totBases);	
+			// add 10% to the top for improving the visualisation of the plot.
+			resultsPanel.add(new LineGraph(firstIndelData, 0d, firstMaxY+firstMaxY*0.1, "Position in read (bp)", indelNames, xCategories, title));	
 		}
 
 		return resultsPanel;
