@@ -124,7 +124,7 @@ public class SNPFrequencies extends AbstractQCModule {
 					new double[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()]},
 					0d, 100d, "Position in read (bp)", snpName, 
 					new String[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()], 
-					"SNP Frequencies ( total SNPs: 0.000 % )");
+					"Read SNP Frequencies ( total SNPs: 0.000 % )");
 		}		
 		
 
