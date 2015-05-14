@@ -31,6 +31,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	ReadStatisticsTest.class,
 	NormalDistributionModelerTest.class,
 	InsertDistributionTest.class,
+	VariantCallDetectionTest.class
 	//GenomeCoverageTest.class,
 	//RpkmReferenceTest.class
 	})
