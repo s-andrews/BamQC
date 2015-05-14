@@ -58,8 +58,8 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 		"C->A", "C->G", "C->T", 
 		"G->A", "G->C", "G->T", 
 		"T->A", "T->C", "T->G"};
-	private double[] firstSNPFrequenciesByType;
-	private double[] secondSNPFrequenciesByType;
+	private double[] dFirstSNPFrequenciesByType = null;
+	private double[] dSecondSNPFrequenciesByType = null;
 	
 	// Constructors
 	/**
@@ -125,23 +125,23 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 		log.info("first read SNP T->C: " + firstTC);
 		log.info("first read SNP T->G: " + firstTG);
 
-		firstSNPFrequenciesByType = new double[12];
-		firstSNPFrequenciesByType[0] = firstAC * 100d / totBases;
-		firstSNPFrequenciesByType[1] = firstAG * 100d / totBases;
-		firstSNPFrequenciesByType[2] = firstAT * 100d / totBases;
-		firstSNPFrequenciesByType[3] = firstCA * 100d / totBases;
-		firstSNPFrequenciesByType[4] = firstCG * 100d / totBases;
-		firstSNPFrequenciesByType[5] = firstCT * 100d / totBases;
-		firstSNPFrequenciesByType[6] = firstGA * 100d / totBases;
-		firstSNPFrequenciesByType[7] = firstGC * 100d / totBases;
-		firstSNPFrequenciesByType[8] = firstGT * 100d / totBases;
-		firstSNPFrequenciesByType[9] = firstTA * 100d / totBases;
-		firstSNPFrequenciesByType[10] = firstTC * 100d / totBases;
-		firstSNPFrequenciesByType[11] = firstTG * 100d / totBases;
+		dFirstSNPFrequenciesByType = new double[12];
+		dFirstSNPFrequenciesByType[0] = firstAC * 100d / totBases;
+		dFirstSNPFrequenciesByType[1] = firstAG * 100d / totBases;
+		dFirstSNPFrequenciesByType[2] = firstAT * 100d / totBases;
+		dFirstSNPFrequenciesByType[3] = firstCA * 100d / totBases;
+		dFirstSNPFrequenciesByType[4] = firstCG * 100d / totBases;
+		dFirstSNPFrequenciesByType[5] = firstCT * 100d / totBases;
+		dFirstSNPFrequenciesByType[6] = firstGA * 100d / totBases;
+		dFirstSNPFrequenciesByType[7] = firstGC * 100d / totBases;
+		dFirstSNPFrequenciesByType[8] = firstGT * 100d / totBases;
+		dFirstSNPFrequenciesByType[9] = firstTA * 100d / totBases;
+		dFirstSNPFrequenciesByType[10] = firstTC * 100d / totBases;
+		dFirstSNPFrequenciesByType[11] = firstTG * 100d / totBases;
 		
-		for(int i=0; i< firstSNPFrequenciesByType.length; i++) {
-			if(firstMaxX < firstSNPFrequenciesByType[i]) 
-				firstMaxX = firstSNPFrequenciesByType[i];
+		for(int i=0; i< dFirstSNPFrequenciesByType.length; i++) {
+			if(firstMaxX < dFirstSNPFrequenciesByType[i]) 
+				firstMaxX = dFirstSNPFrequenciesByType[i];
 		}
 		
 		// compute statistics from the SECOND segment data if there are paired reads.
@@ -168,38 +168,38 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 			log.info("second read SNP T->C: " + secondTC);
 			log.info("second read SNP T->G: " + secondTG);
 			
-			secondSNPFrequenciesByType = new double[12];
-			secondSNPFrequenciesByType[0] = secondAC * 100d / totBases;
-			secondSNPFrequenciesByType[1] = secondAG * 100d / totBases;
-			secondSNPFrequenciesByType[2] = secondAT * 100d / totBases;
-			secondSNPFrequenciesByType[3] = secondCA * 100d / totBases;
-			secondSNPFrequenciesByType[4] = secondCG * 100d / totBases;
-			secondSNPFrequenciesByType[5] = secondCT * 100d / totBases;
-			secondSNPFrequenciesByType[6] = secondGA * 100d / totBases;
-			secondSNPFrequenciesByType[7] = secondGC * 100d / totBases;
-			secondSNPFrequenciesByType[8] = secondGT * 100d / totBases;
-			secondSNPFrequenciesByType[9] = secondTA * 100d / totBases;
-			secondSNPFrequenciesByType[10] = secondTC * 100d / totBases;
-			secondSNPFrequenciesByType[11] = secondTG * 100d / totBases;
+			dSecondSNPFrequenciesByType = new double[12];
+			dSecondSNPFrequenciesByType[0] = secondAC * 100d / totBases;
+			dSecondSNPFrequenciesByType[1] = secondAG * 100d / totBases;
+			dSecondSNPFrequenciesByType[2] = secondAT * 100d / totBases;
+			dSecondSNPFrequenciesByType[3] = secondCA * 100d / totBases;
+			dSecondSNPFrequenciesByType[4] = secondCG * 100d / totBases;
+			dSecondSNPFrequenciesByType[5] = secondCT * 100d / totBases;
+			dSecondSNPFrequenciesByType[6] = secondGA * 100d / totBases;
+			dSecondSNPFrequenciesByType[7] = secondGC * 100d / totBases;
+			dSecondSNPFrequenciesByType[8] = secondGT * 100d / totBases;
+			dSecondSNPFrequenciesByType[9] = secondTA * 100d / totBases;
+			dSecondSNPFrequenciesByType[10] = secondTC * 100d / totBases;
+			dSecondSNPFrequenciesByType[11] = secondTG * 100d / totBases;
 			
-			for(int i=0; i< secondSNPFrequenciesByType.length; i++) {
-				if(secondMaxX < secondSNPFrequenciesByType[i]) 
-					secondMaxX = secondSNPFrequenciesByType[i];
+			for(int i=0; i< dSecondSNPFrequenciesByType.length; i++) {
+				if(secondMaxX < dSecondSNPFrequenciesByType[i]) 
+					secondMaxX = dSecondSNPFrequenciesByType[i];
 			}
 			
 			String title = String.format("First Read SNP frequencies by Type ( total SNPs: %.3f %% )", totSNPs*100.0f/totBases);
 			// add 10% to the top for improving the visualisation of the plot.
-			resultsPanel.add(new HorizontalBarGraph(snpTypeNames, firstSNPFrequenciesByType, title, 0d, firstMaxX+firstMaxX*0.1d));
+			resultsPanel.add(new HorizontalBarGraph(snpTypeNames, dFirstSNPFrequenciesByType, title, 0d, firstMaxX+firstMaxX*0.1d));
 			
 			String title2 = "Second Read SNP frequencies by Type";
 			// add 10% to the top for improving the visualisation of the plot.
-			resultsPanel.add(new HorizontalBarGraph(snpTypeNames, secondSNPFrequenciesByType, title2, 0d, secondMaxX+secondMaxX*0.1d));
+			resultsPanel.add(new HorizontalBarGraph(snpTypeNames, dSecondSNPFrequenciesByType, title2, 0d, secondMaxX+secondMaxX*0.1d));
 			
 		} else {
 			resultsPanel.setLayout(new GridLayout(1,1));
 			String title = String.format("Read SNP frequencies by Type ( total SNPs: %.3f %% )", totSNPs*100.0f/totBases);
 			// add 10% to the top for improving the visualisation of the plot.
-			resultsPanel.add(new HorizontalBarGraph(snpTypeNames, firstSNPFrequenciesByType, title, 0d, firstMaxX+firstMaxX*0.1d));			
+			resultsPanel.add(new HorizontalBarGraph(snpTypeNames, dFirstSNPFrequenciesByType, title, 0d, firstMaxX+firstMaxX*0.1d));			
 		}
 		return resultsPanel;
 	}
@@ -250,6 +250,32 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 	@Override	
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
 		super.writeDefaultImage(report, "snp_frequencies_by_type.png", "SNP Frequencies by Type", 800, 600);
+		
+		
+		// write raw data in a report
+		if(dFirstSNPFrequenciesByType == null) { return; }
+		
+		StringBuffer sb = report.dataDocument();
+		if(dSecondSNPFrequenciesByType != null) {
+			sb.append("SNPType\t1stReadFreq\t2ndReadFreq\n");
+			for (int i=0;i<dFirstSNPFrequenciesByType.length;i++) {
+				sb.append(snpTypeNames[i]);
+				sb.append("\t");
+				sb.append(dFirstSNPFrequenciesByType[i]);
+				sb.append("\t");
+				sb.append(dSecondSNPFrequenciesByType[i]);
+				sb.append("\n");
+			}
+		} else {
+			sb.append("SNPType\tReadSNPFreq\n");
+			for (int i=0;i<dFirstSNPFrequenciesByType.length;i++) {
+				sb.append(snpTypeNames[i]);
+				sb.append("\t");
+				sb.append(dFirstSNPFrequenciesByType[i]);
+				sb.append("\n");
+			}
+		}
+		
 	}
 	
 }

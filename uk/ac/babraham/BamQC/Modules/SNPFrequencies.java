@@ -46,6 +46,10 @@ public class SNPFrequencies extends AbstractQCModule {
 
 	private static Logger log = Logger.getLogger(SNPFrequencies.class);	
 	
+	
+	double[] dFirstSNPPos = null;
+	double[] dSecondSNPPos = null;
+	
 	// threshold for the plot y axis.
 	private double firstMaxY=0.0d;
 	private double secondMaxY=0.0d; 
@@ -150,7 +154,7 @@ public class SNPFrequencies extends AbstractQCModule {
 		// compute statistics from the FIRST segment data
 		// We do not need a BaseGroup here
 		long[] firstSNPPos = variantCallDetection.getFirstSNPPos();
-		double[] dFirstSNPPos = new double[maxX];
+		dFirstSNPPos = new double[maxX];
 		for(int i=0; i<maxX && i<firstSNPPos.length; i++) {
 			dFirstSNPPos[i]= (firstSNPPos[i] * 100d) / totalPos[i];
 			if(dFirstSNPPos[i] > firstMaxY) { firstMaxY = dFirstSNPPos[i]; }
@@ -163,7 +167,7 @@ public class SNPFrequencies extends AbstractQCModule {
 			resultsPanel.setLayout(new GridLayout(2,1));
 			// We do not need a BaseGroup here
 			long[] secondSNPPos = variantCallDetection.getSecondSNPPos();
-			double[] dSecondSNPPos = new double[maxX];
+			dSecondSNPPos = new double[maxX];
 			for(int i=0; i<maxX && i<secondSNPPos.length; i++) {
 				dSecondSNPPos[i]= (secondSNPPos[i] * 100d) / totalPos[i];
 				if(dSecondSNPPos[i] > secondMaxY) { secondMaxY = dSecondSNPPos[i]; }
@@ -233,6 +237,30 @@ public class SNPFrequencies extends AbstractQCModule {
 	@Override	
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
 		super.writeDefaultImage(report, "snp_frequencies.png", "SNP Frequencies", 800, 600);
+		
+		// write raw data in a report
+		if(dFirstSNPPos == null) { return; }
+		
+		StringBuffer sb = report.dataDocument();
+		if(dSecondSNPPos != null) {
+			sb.append("Position\t1stReadSNPFreq\t1stReadSNPFreq\n");
+			for (int i=0;i<dFirstSNPPos.length;i++) {
+				sb.append((i+1));
+				sb.append("\t");
+				sb.append(dFirstSNPPos[i]);
+				sb.append("\t");
+				sb.append(dSecondSNPPos[i]);
+				sb.append("\n");
+			}
+		} else {
+			sb.append("Position\tReadSNPFreq\n");
+			for (int i=0;i<dFirstSNPPos.length;i++) {
+				sb.append((i+1));
+				sb.append("\t");
+				sb.append(dFirstSNPPos[i]);
+				sb.append("\n");
+			}
+		}
 	}
 	
 }

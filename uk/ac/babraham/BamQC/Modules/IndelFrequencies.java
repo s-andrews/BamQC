@@ -48,6 +48,11 @@ public class IndelFrequencies extends AbstractQCModule {
 	
 	private String[] indelNames = {"Insertions", "Deletions"};
 	
+	double[] dFirstInsertionPos = null;
+	double[] dFirstDeletionPos = null;		
+	double[] dSecondInsertionPos = null;
+	double[] dSecondDeletionPos = null;		
+	
 	// threshold for the plot y axis.
 	private double firstMaxY=0.0d;
 	private double secondMaxY=0.0d; 
@@ -166,8 +171,8 @@ public class IndelFrequencies extends AbstractQCModule {
 		// compute statistics from the FIRST segment data
 		long[] firstInsertionPos = variantCallDetection.getFirstInsertionPos();
 		long[] firstDeletionPos = variantCallDetection.getFirstDeletionPos();		
-		double[] dFirstInsertionPos = new double[maxX];
-		double[] dFirstDeletionPos = new double[maxX];		
+		dFirstInsertionPos = new double[maxX];
+		dFirstDeletionPos = new double[maxX];		
 		for(int i=0; i<maxX && i<firstInsertionPos.length; i++) {
 			dFirstInsertionPos[i]= (firstInsertionPos[i] * 100d) / totalPos[i];
 			dFirstDeletionPos[i]= (firstDeletionPos[i] * 100d) / totalPos[i];
@@ -182,8 +187,8 @@ public class IndelFrequencies extends AbstractQCModule {
 			resultsPanel.setLayout(new GridLayout(2,1));
 			long[] secondInsertionPos = variantCallDetection.getSecondInsertionPos();
 			long[] secondDeletionPos = variantCallDetection.getSecondDeletionPos();
-			double[] dSecondInsertionPos = new double[maxX];
-			double[] dSecondDeletionPos = new double[maxX];		
+			dSecondInsertionPos = new double[maxX];
+			dSecondDeletionPos = new double[maxX];		
 			for(int i=0; i<maxX && i<secondInsertionPos.length; i++) {
 				dSecondInsertionPos[i]= (secondInsertionPos[i] * 100d) / totalPos[i];
 				dSecondDeletionPos[i]= (secondDeletionPos[i] * 100d) / totalPos[i];			
@@ -256,7 +261,37 @@ public class IndelFrequencies extends AbstractQCModule {
 
 	@Override	
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
-		super.writeDefaultImage(report, "indel_frequencies.png", "Indel Frequencies", 800, 600);	
+		super.writeDefaultImage(report, "indel_frequencies.png", "Indel Frequencies", 800, 600);
+		
+		// write raw data in a report
+		if(dFirstInsertionPos == null) { return; }
+		
+		StringBuffer sb = report.dataDocument();
+		if(dSecondInsertionPos != null) {
+			sb.append("Position\t1stReadInsFreq\t1stReadDelFreq\t2ndReadInsFreq\t2ndReadDelFreq\n");
+			for (int i=0;i<dFirstInsertionPos.length;i++) {
+				sb.append((i+1));
+				sb.append("\t");
+				sb.append(dFirstInsertionPos[i]);
+				sb.append("\t");
+				sb.append(dFirstDeletionPos[i]);
+				sb.append("\t");
+				sb.append(dSecondInsertionPos[i]);
+				sb.append("\t");
+				sb.append(dSecondDeletionPos[i]);
+				sb.append("\n");
+			}
+		} else {
+			sb.append("Position\tReadInsFreq\tReadDelFreq\n");
+			for (int i=0;i<dFirstInsertionPos.length;i++) {
+				sb.append((i+1));
+				sb.append("\t");
+				sb.append(dFirstInsertionPos[i]);
+				sb.append("\t");
+				sb.append(dFirstDeletionPos[i]);
+				sb.append("\n");
+			}
+		}
 	}
 	
 }
