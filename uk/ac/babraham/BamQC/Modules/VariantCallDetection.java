@@ -92,10 +92,14 @@ public class VariantCallDetection extends AbstractQCModule {
 	private long nDeletions = 0;	
 	private long totalDeletions = 0;	
 	private long totalMatches = 0;
+	private long totalSkippedRegions = 0;
+	private long totalSoftClips = 0;
+	private long totalHardClips = 0;
+	private long totalPaddings = 0;
 	private long total = 0;
 	
-	private long readSkippedRegions = 0;
-	private long referenceSkippedRegions = 0;
+	private long readUnknownBases = 0;
+	private long referenceUnknownBases = 0;
 	
     private long skippedReads = 0;
     private long totalReads = 0;
@@ -113,6 +117,8 @@ public class VariantCallDetection extends AbstractQCModule {
 		return contributingReadsPerPos;
 	}
 
+    // currentPosition is the current position used to record changes in the arrays above. This class processes 
+    // the CigarMD string, not the read, which is instead processed by class CigarMDGenerator.
 	private int currentPosition = 0;
     // This array reports how many reads are included for computing the statistics for each position. It is used for filtering 
     // statistics for positions having less then a defined percentage of reads.
@@ -128,7 +134,7 @@ public class VariantCallDetection extends AbstractQCModule {
 	
 	
 	private boolean existPairedReads = false;
-	
+
 	
 
 	// Constructors
@@ -181,28 +187,19 @@ public class VariantCallDetection extends AbstractQCModule {
 			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.DELETION)) {
 				processMDtagCigarOperatorD();				
 			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.SKIPPED_REGION)) {
-				//processMDtagCigarOperatorN();
-				log.debug("Extended CIGAR element N is currently unsupported.");
-				skippedReads++;
-				return;	
+				processMDtagCigarOperatorN();
 			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.SOFT_CLIP)) {
-				log.debug("Extended CIGAR element S is currently unsupported.");
-				skippedReads++;
-				return;	
+				processMDtagCigarOperatorS();
 			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.HARD_CLIP)) {
-				log.debug("Extended CIGAR element H is currently unsupported.");
-				skippedReads++;
-				return;	
+				processMDtagCigarOperatorH();
 			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.PADDING)) {
-				log.debug("Extended CIGAR element P is currently unsupported.");
-				skippedReads++;
-				return;	
+				processMDtagCigarOperatorP();
 			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.eq)) {
-				log.debug("Extended CIGAR element = is currently unsupported.");
+				log.debug("Extended CIGAR element = is not currently supported.");
 				skippedReads++;
 				return;	
 			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.x)) {
-				log.debug("Extended CIGAR element X is currently unsupported.");
+				log.debug("Extended CIGAR element X is not currently supported.");
 				skippedReads++;
 				return;	
 			} else {
@@ -237,10 +234,7 @@ public class VariantCallDetection extends AbstractQCModule {
 
 	@Override	
 	public JPanel getResultsPanel() {
-		String[] names = new String[0];
-		double[] vcd = new double[0];
-		String title = String.format("Variant call detection");		
-		return new HorizontalBarGraph(names, vcd, title, 0d,1d);
+		return new JPanel();
 	}
 
 	@Override	
@@ -293,12 +287,16 @@ public class VariantCallDetection extends AbstractQCModule {
 		nDeletions = 0;
 		totalDeletions = 0;
 		totalMatches = 0;
+		totalSkippedRegions = 0;
+		totalSoftClips = 0;
+		totalHardClips = 0;
+		totalPaddings = 0;
 		total = 0;
 		skippedReads = 0;
 		totalReads = 0;
 
-		readSkippedRegions = 0;
-		referenceSkippedRegions = 0;
+		readUnknownBases = 0;
+		referenceUnknownBases = 0;
 		
 		
 	    firstSNPPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
@@ -355,42 +353,36 @@ public class VariantCallDetection extends AbstractQCModule {
 		long[] oldFirstSNPPos = firstSNPPos;
 		long[] oldFirstInsertionPos = firstInsertionPos;
 		long[] oldFirstDeletionPos = firstDeletionPos;
-		long[] oldSecondSNPPos = secondSNPPos;
-		long[] oldSecondInsertionPos = secondInsertionPos;
-		long[] oldSecondDeletionPos = secondDeletionPos;		
 		long[] oldMatchPos = matchPos;
 		long[] oldTotalPos = totalPos;		
 		// We do not want to call this method too often, that's why it is better to extend it 
-		// 2 times the current length. However, if the newBound is larger than this, it is 
-		// better to be conservative and just increase for that new size.
-		if(firstSNPPos.length*2 < newBound) {
-			firstSNPPos = new long[newBound+1];
-			firstInsertionPos = new long[newBound+1];
-			firstDeletionPos = new long[newBound+1];
-			secondSNPPos = new long[newBound+1];			
-			secondInsertionPos = new long[newBound+1];
-			secondDeletionPos = new long[newBound+1];
-			matchPos = new long[newBound+1];
-			totalPos = new long[newBound+1];			
-		} else {
-			firstSNPPos = new long[firstSNPPos.length*2];
-			firstInsertionPos = new long[firstSNPPos.length*2];
-			firstDeletionPos = new long[firstSNPPos.length*2];
+		// 2 times the current length. 
+		firstSNPPos = new long[firstSNPPos.length*2];
+		firstInsertionPos = new long[firstSNPPos.length*2];
+		firstDeletionPos = new long[firstSNPPos.length*2];
+		matchPos = new long[firstSNPPos.length*2];
+		totalPos = new long[firstSNPPos.length*2];				
+		
+		System.arraycopy(oldFirstSNPPos, 0, firstSNPPos, 0, oldFirstSNPPos.length);
+		System.arraycopy(oldFirstInsertionPos, 0, firstInsertionPos, 0, oldFirstSNPPos.length);
+		System.arraycopy(oldFirstDeletionPos, 0, firstDeletionPos, 0, oldFirstSNPPos.length);	
+		System.arraycopy(oldMatchPos, 0, matchPos, 0, oldFirstSNPPos.length);
+		System.arraycopy(oldTotalPos, 0, totalPos, 0, oldFirstSNPPos.length);		
+		
+		if(existPairedReads) {
+			// only if really necessary
+			long[] oldSecondSNPPos = secondSNPPos;
+			long[] oldSecondInsertionPos = secondInsertionPos;
+			long[] oldSecondDeletionPos = secondDeletionPos;		
 			secondSNPPos = new long[firstSNPPos.length*2];			
 			secondInsertionPos = new long[firstSNPPos.length*2];
 			secondDeletionPos = new long[firstSNPPos.length*2];
-			matchPos = new long[firstSNPPos.length*2];
-			totalPos = new long[firstSNPPos.length*2];				
+			System.arraycopy(oldSecondSNPPos, 0, secondSNPPos, 0, oldFirstSNPPos.length);
+			System.arraycopy(oldSecondInsertionPos, 0, secondInsertionPos, 0, oldFirstSNPPos.length);
+			System.arraycopy(oldSecondDeletionPos, 0, secondDeletionPos, 0, oldFirstSNPPos.length);			
 		}
-		System.arraycopy(oldFirstSNPPos, 0, firstSNPPos, 0, oldFirstSNPPos.length);
-		System.arraycopy(oldFirstInsertionPos, 0, firstInsertionPos, 0, oldFirstInsertionPos.length);
-		System.arraycopy(oldFirstDeletionPos, 0, firstDeletionPos, 0, oldFirstDeletionPos.length);	
-		System.arraycopy(oldSecondSNPPos, 0, secondSNPPos, 0, oldSecondSNPPos.length);
-		System.arraycopy(oldSecondInsertionPos, 0, secondInsertionPos, 0, oldSecondInsertionPos.length);
-		System.arraycopy(oldSecondDeletionPos, 0, secondDeletionPos, 0, oldSecondDeletionPos.length);			
-		System.arraycopy(oldMatchPos, 0, matchPos, 0, oldMatchPos.length);
-		System.arraycopy(oldTotalPos, 0, totalPos, 0, oldTotalPos.length);		
 	}
+	
 	
 	/* Compute the totals */
 	private void computeTotals() {
@@ -407,13 +399,20 @@ public class VariantCallDetection extends AbstractQCModule {
 					      secondSNPPos[i] + secondInsertionPos[i] + secondDeletionPos[i] + 
 					      matchPos[i];
 		}
-		total = totalMutations + totalInsertions + totalDeletions + totalMatches;
+		// we do not consider totalSkippedRegions, totalHardClips and totalPaddings because they are not 
+		// recorded in the read.
+		total = totalMutations + totalInsertions + totalDeletions + totalMatches + totalSoftClips;
 	}
 	
 	
 
 	// These methods process the combined CigarMD object.
 	
+
+
+
+
+
 	/* Process the MD string once found the CigarMD operator m (match). */
 	private void processMDtagCigarOperatorM() {
 		int numMatches = currentCigarMDElement.getLength();
@@ -467,8 +466,8 @@ public class VariantCallDetection extends AbstractQCModule {
 				else if(basePair.equals("TA")) { firstTA++; firstSNPPos[currentPosition]++; currentPosition++; }
 				else if(basePair.equals("TC")) { firstTC++; firstSNPPos[currentPosition]++; currentPosition++; }
 				else if(basePair.equals("TG")) { firstTG++; firstSNPPos[currentPosition]++; currentPosition++; }	
-				else if(basePair.charAt(0) == 'N') { referenceSkippedRegions++; currentPosition++; }
-				else if(basePair.charAt(1) == 'N') { readSkippedRegions++; currentPosition++; }			
+				else if(basePair.charAt(0) == 'N') { referenceUnknownBases++; currentPosition++; }
+				else if(basePair.charAt(1) == 'N') { readUnknownBases++; currentPosition++; }			
 			}			
 		} else {
 			for(int i = 0; i < numMutations; i++) {
@@ -485,8 +484,8 @@ public class VariantCallDetection extends AbstractQCModule {
 				else if(basePair.equals("TA")) { secondTA++; secondSNPPos[currentPosition]++; currentPosition++; }
 				else if(basePair.equals("TC")) { secondTC++; secondSNPPos[currentPosition]++; currentPosition++; }
 				else if(basePair.equals("TG")) { secondTG++; secondSNPPos[currentPosition]++; currentPosition++; }	
-				else if(basePair.charAt(0) == 'N') { referenceSkippedRegions++; currentPosition++; }
-				else if(basePair.charAt(1) == 'N') { readSkippedRegions++; currentPosition++; }			
+				else if(basePair.charAt(0) == 'N') { referenceUnknownBases++; currentPosition++; }
+				else if(basePair.charAt(1) == 'N') { readUnknownBases++; currentPosition++; }			
 			}			
 		}
 	}	
@@ -551,24 +550,56 @@ public class VariantCallDetection extends AbstractQCModule {
 	/* Process the MD string once found the CigarMD operator n. */	
 	private void processMDtagCigarOperatorN() {
 		int numSkipped = currentCigarMDElement.getLength();		
-		readSkippedRegions = readSkippedRegions + numSkipped;
-		currentPosition = currentPosition + numSkipped;
+		totalSkippedRegions = totalSkippedRegions + numSkipped;
+//		currentPosition = currentPosition + numSkipped;
+//		// if the read.length is longer than what we supposed to be, here we increase the length of our *Pos arrays.
+//		if(currentPosition >= matchPos.length) {
+//			extendDensityArrays(currentPosition);			
+//	    }
 	}
 	
 	/* Process the MD string once found the CigarMD operator s. */	
-	private void processMDtagCigarOperatorS() {}
+	private void processMDtagCigarOperatorS() {
+		int numSoftClips = currentCigarMDElement.getLength();
+		totalSoftClips = totalSoftClips + numSoftClips;
+//		currentPosition = currentPosition + numSoftClips;
+//		// if the read.length is longer than what we supposed to be, here we increase the length of our *Pos arrays.
+//		if(currentPosition >= matchPos.length) {
+//			extendDensityArrays(currentPosition);			
+//	    }
+	}
 	
 	/* Process the MD string once found the CigarMD operator h. */	
-	private void processMDtagCigarOperatorH() {}
+	private void processMDtagCigarOperatorH() {
+		int numHardClips = currentCigarMDElement.getLength();		
+		totalHardClips = totalHardClips + numHardClips;
+//		currentPosition = currentPosition + numHardClips;
+//		// if the read.length is longer than what we supposed to be, here we increase the length of our *Pos arrays.
+//		if(currentPosition >= matchPos.length) {
+//			extendDensityArrays(currentPosition);			
+//	    }
+	}
 	
 	/* Process the MD string once found the CigarMD operator p. */
-	private void processMDtagCigarOperatorP() {}	
+	private void processMDtagCigarOperatorP() {
+		int numPaddings = currentCigarMDElement.getLength();		
+		totalPaddings = totalPaddings + numPaddings;
+//		currentPosition = currentPosition + numPaddings;
+//		// if the read.length is longer than what we supposed to be, here we increase the length of our *Pos arrays.
+//		if(currentPosition >= matchPos.length) {
+//			extendDensityArrays(currentPosition);			
+//	    }
+	}	
 	
 	/* Process the MD string once found the CigarMD operator =. */	
-	private void processMDtagCigarOperatorEQ() {}	
+	private void processMDtagCigarOperatorEQ() {
+		// is this operator used?
+	}	
 	
 	/* Process the MD string once found the CigarMD operator X. */	
-	private void processMDtagCigarOperatorNEQ() {}
+	private void processMDtagCigarOperatorNEQ() {
+		// is this operator used?
+	}
 
 	
 	
@@ -739,17 +770,36 @@ public class VariantCallDetection extends AbstractQCModule {
 	public long getTotalMatches() {
 		return totalMatches;
 	}
+	
+	public long getTotalSkippedRegions() {
+		return totalSkippedRegions;
+	}
+
+	public long getTotalSoftClips() {
+		return totalSoftClips;
+	}
+
+	public long getTotalHardClips() {
+		return totalHardClips;
+	}
+
+	public long getTotalPaddings() {
+		return totalPaddings;
+	}
+
+
+
 
 	public long getTotal() {
 		return total;
 	}
 
-	public long getReadSkippedRegions() {
-		return readSkippedRegions;
+	public long getReadUnknownBases() {
+		return readUnknownBases;
 	}	
 	
-	public long getReferenceSkippedRegions() {
-		return referenceSkippedRegions;
+	public long getReferenceUnknownBases() {
+		return referenceUnknownBases;
 	}	
 	
 	public long getSkippedReads() {
@@ -790,6 +840,8 @@ public class VariantCallDetection extends AbstractQCModule {
 	
 	public long[] getTotalPos() {
 		return totalPos;
-	}		
+	}
+	
+
 	
 }

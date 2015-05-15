@@ -260,14 +260,17 @@ public class VariantCallDetectionTest {
 	@Test
 	public void testStatistics() {
 		log.info("testStatistics");
-		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_M.sam");
-		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MI.sam");
-		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MD.sam");
-		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MID.sam");
-		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_full.sam");
-		//String filename = new String(new File("").getAbsolutePath() + "/test/resources/snp_examples.fastq_bowtie2.sam");		
-		//String filename = new String(new File("").getAbsolutePath() + "/../../Documents/BamQC_Examples/example.sam");
-		//String filename = new String(new File("").getAbsolutePath() + "/../../Documents/BamQC_Examples/large_example.bam");	
+		String filename;
+		// some test cases
+		//filename = new String(new File("").getAbsolutePath() + "/test/resources/example_M.sam");
+		//filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MI.sam");
+		//filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MD.sam");
+		//filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MID.sam");
+		filename = new String(new File("").getAbsolutePath() + "/test/resources/example_full.sam");
+		//filename = new String(new File("").getAbsolutePath() + "/test/resources/snp_examples.fastq_bowtie2.sam");		
+		//filename = new String(new File("").getAbsolutePath() + "/../../Documents/BamQC_Examples/example.sam");
+		//filename = new String(new File("").getAbsolutePath() + "/../../Documents/BamQC_Examples/HG00106.chrom20.illumina.mosaik.GBR.low_coverage.20111114.bam"); // nice test on a potentially corrupted file
+		filename = new String(new File("").getAbsolutePath() + "/../../Documents/BamQC_Examples/large_example.bam");	
 		
 		// Parse the file read by read as it happens normally
 		File file = new File(filename);
@@ -275,7 +278,7 @@ public class VariantCallDetectionTest {
 		try {
 			fis = new FileInputStream(file);
 		} catch (FileNotFoundException ex) { 
-			System.err.println("File " + filename + " does not exist"); 
+			log.warn("File " + filename + " does not exist"); 
 			return;
 		}
 		SAMFileReader samReader = new SAMFileReader(fis);
@@ -285,9 +288,9 @@ public class VariantCallDetectionTest {
 				SAMRecord samRecord = it.next();
 				//printCigarAndMD(samRecord);				
 				variantCallDetection.processSequence(samRecord);
-				log.debug("VariantCallDetectionTest.java: CigarMD: " + variantCallDetection.getCigarMD().toString());
+				log.debug("CigarMD: " + variantCallDetection.getCigarMD().toString());
 			} catch (SAMFormatException sfe) { 
-				System.out.println("SAMFormatException");
+				log.warn("SAMFormatException");
 			}
 		}
 		// close the file streams
@@ -334,10 +337,15 @@ public class VariantCallDetectionTest {
 		log.info("T Del: " + variantCallDetection.getTDeletions());
 		log.info("N Del: " + variantCallDetection.getNDeletions());		
 		log.info("Tot. Del.: " + variantCallDetection.getTotalDeletions());
-		log.info("Total: " + variantCallDetection.getTotal());		
 		log.info("Tot. Matches: " + variantCallDetection.getTotalMatches());
-		log.info("Skipped regions on the reads: " + variantCallDetection.getReadSkippedRegions());
-		log.info("Skipped regions on the reference: " + variantCallDetection.getReferenceSkippedRegions());
+		log.info("Tot. Soft Clips: " + variantCallDetection.getTotalSoftClips());
+		log.info("Tot. Hard Clips: " + variantCallDetection.getTotalHardClips());
+		log.info("Tot. Paddings: " + variantCallDetection.getTotalPaddings());
+		log.info("Tot. Skipped Regions: " + variantCallDetection.getTotalSkippedRegions());
+		log.info("Total: " + variantCallDetection.getTotal());
+		
+		log.info("Unknown bases on the reads: " + variantCallDetection.getReadUnknownBases());
+		log.info("Unknown bases on the reference: " + variantCallDetection.getReferenceUnknownBases());
 
 		log.info("SNP/Indels density for each read position:");
 		long[] firstSNPPos = variantCallDetection.getFirstDeletionPos();
@@ -346,7 +354,7 @@ public class VariantCallDetectionTest {
 		long[] secondSNPPos = variantCallDetection.getSecondDeletionPos();
 		long[] secondInsertionPos = variantCallDetection.getSecondInsertionPos();
 		long[] secondDeletionPos = variantCallDetection.getSecondDeletionPos();		
-		log.info("Position\tSNP   \t\tIns   \t\tDel   ");
+		log.info("Position\t1st SNP   \t1st Ins   \t1st Del   \t2nd SNP   \t2nd Ins   \t2nd Del");
 		for(int i=0; i<firstSNPPos.length; i++) {
 			// the above arrays have all the same length (see VariantCallDetection.java for details)
 			log.info(i + "\t\t" + firstSNPPos[i] + "\t\t" + firstInsertionPos[i] + "\t\t" + firstDeletionPos[i] + "\t\t" + secondSNPPos[i] + "\t\t" + secondInsertionPos[i] + "\t\t" + secondDeletionPos[i]);

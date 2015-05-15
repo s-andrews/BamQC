@@ -150,8 +150,6 @@ public class IndelFrequencies extends AbstractQCModule {
 		log.info("T deletions: " + variantCallDetection.getTDeletions());
 		log.info("N deletions: " + variantCallDetection.getNDeletions());		
 		log.info("Total deletions: " + totDel + " ( " + totDel*100f/totBases + "% )");
-		log.info("Skipped regions on the reads: " + variantCallDetection.getReadSkippedRegions());
-		log.info("Skipped regions on the reference: " + variantCallDetection.getReferenceSkippedRegions());
 		log.info("Skipped reads: " + variantCallDetection.getSkippedReads() + " ( "+ (variantCallDetection.getSkippedReads()*100.0f)/variantCallDetection.getTotalReads() + "% )");
 		
 
