@@ -268,9 +268,9 @@ public class VariantCallDetectionTest {
 		//filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MID.sam");
 		filename = new String(new File("").getAbsolutePath() + "/test/resources/example_full.sam");
 		//filename = new String(new File("").getAbsolutePath() + "/test/resources/snp_examples.fastq_bowtie2.sam");		
-		//filename = new String(new File("").getAbsolutePath() + "/../../Documents/BamQC_Examples/example.sam");
+		filename = new String(new File("").getAbsolutePath() + "/../../Documents/BamQC_Examples/example.sam");
 		//filename = new String(new File("").getAbsolutePath() + "/../../Documents/BamQC_Examples/HG00106.chrom20.illumina.mosaik.GBR.low_coverage.20111114.bam"); // nice test on a potentially corrupted file
-		filename = new String(new File("").getAbsolutePath() + "/../../Documents/BamQC_Examples/large_example.bam");	
+		//filename = new String(new File("").getAbsolutePath() + "/../../Documents/BamQC_Examples/large_example.bam");	
 		
 		// Parse the file read by read as it happens normally
 		File file = new File(filename);
