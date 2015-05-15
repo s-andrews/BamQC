@@ -54,6 +54,7 @@ public class VariantCallDetection extends AbstractQCModule {
 	// data fields for statistics
     // first or second indicate whether the read is the first or second segment. If the read is not paired, 
     // it is treated as a first.
+	
 	private long firstAC = 0;
 	private long firstAG = 0;
 	private long firstAT = 0;
@@ -144,6 +145,29 @@ public class VariantCallDetection extends AbstractQCModule {
 	public VariantCallDetection() { }
 
 	
+	/** 
+	 * Compute the totals. For improving efficiency, this method is not invoked 
+	 * inside void processSequence(SAMRecord read), but must be invoked 
+	 * later.
+	 */
+	public void computeTotals() {
+		if(totalMutations != 0 || totalInsertions != 0 || totalDeletions != 0) {
+			return;
+		}
+//		// NOTE: nInsertions and nDeletions are not counted in the totals. 
+		for(int i=0; i< firstSNPPos.length; i++) {
+			totalMutations = totalMutations + firstSNPPos[i] + secondSNPPos[i];
+			totalInsertions = totalInsertions + firstInsertionPos[i] + secondInsertionPos[i];
+			totalDeletions = totalDeletions + firstDeletionPos[i] + secondDeletionPos[i];
+			
+			totalPos[i] = firstSNPPos[i] + firstInsertionPos[i] + firstDeletionPos[i] + 
+					      secondSNPPos[i] + secondInsertionPos[i] + secondDeletionPos[i] + 
+					      matchPos[i];
+		}
+		// we do not consider totalSkippedRegions, totalHardClips and totalPaddings because they are not 
+		// recorded in the read.
+		total = totalMutations + totalInsertions + totalDeletions + totalMatches + totalSoftClips;
+	}
 	
 	
 	// @Override methods
@@ -156,7 +180,7 @@ public class VariantCallDetection extends AbstractQCModule {
 		// Compute and get the CigarMD object combining the strings Cigar and MD tag
 		cigarMDGenerator.generateCigarMD(read);
 		cigarMD = cigarMDGenerator.getCigarMD();
-				
+
 		if(cigarMD.isEmpty()) {
 			skippedReads++;
 			return;			
@@ -208,7 +232,7 @@ public class VariantCallDetection extends AbstractQCModule {
 				return;	
 			}		
 		}
-		computeTotals();
+		
 		if(contributingReadsPerPos.containsKey(read.getReadLength())) {
 			contributingReadsPerPos.put(read.getReadLength(), contributingReadsPerPos.get(read.getReadLength()) + 1L);
 		} else {
@@ -216,6 +240,7 @@ public class VariantCallDetection extends AbstractQCModule {
 		}
 		log.debug("key, value:" + read.getReadLength() + ", " + contributingReadsPerPos.get(read.getReadLength()));
 		log.debug("Combined Cigar MDtag: " + cigarMD.toString());
+
 		
 		// Are there better way to skip this test?
 		if(!cigarMDGenerator.isFirst()) { 
@@ -249,6 +274,7 @@ public class VariantCallDetection extends AbstractQCModule {
 
 	@Override	
 	public void reset() {
+				
 		firstAC = 0;
 		firstAG = 0;
 		firstAT = 0;
@@ -339,9 +365,7 @@ public class VariantCallDetection extends AbstractQCModule {
 	}
 
 	@Override	
-	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
-		super.writeDefaultImage(report, "variant_call_detection.png", "Variant Call Detection", 800, 600);
-	}	 
+	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException { }	 
 
 	
 	
@@ -370,7 +394,6 @@ public class VariantCallDetection extends AbstractQCModule {
 		System.arraycopy(oldTotalPos, 0, totalPos, 0, oldFirstSNPPos.length);		
 		
 		if(existPairedReads) {
-			// only if really necessary
 			long[] oldSecondSNPPos = secondSNPPos;
 			long[] oldSecondInsertionPos = secondInsertionPos;
 			long[] oldSecondDeletionPos = secondDeletionPos;		
@@ -381,38 +404,14 @@ public class VariantCallDetection extends AbstractQCModule {
 			System.arraycopy(oldSecondInsertionPos, 0, secondInsertionPos, 0, oldFirstSNPPos.length);
 			System.arraycopy(oldSecondDeletionPos, 0, secondDeletionPos, 0, oldFirstSNPPos.length);			
 		}
+		
 	}
 	
 	
-	/* Compute the totals */
-	private void computeTotals() {
-		totalMutations = 0;
-		// NOTE: nInsertions and nDeletions are not counted in the totals. 
-		totalInsertions = 0;
-		totalDeletions = 0;
-		for(int i=0; i< firstSNPPos.length; i++) {
-			totalMutations = totalMutations + firstSNPPos[i] + secondSNPPos[i];
-			totalInsertions = totalInsertions + firstInsertionPos[i] + secondInsertionPos[i];
-			totalDeletions = totalDeletions + firstDeletionPos[i] + secondDeletionPos[i];
-			
-			totalPos[i] = firstSNPPos[i] + firstInsertionPos[i] + firstDeletionPos[i] + 
-					      secondSNPPos[i] + secondInsertionPos[i] + secondDeletionPos[i] + 
-					      matchPos[i];
-		}
-		// we do not consider totalSkippedRegions, totalHardClips and totalPaddings because they are not 
-		// recorded in the read.
-		total = totalMutations + totalInsertions + totalDeletions + totalMatches + totalSoftClips;
-	}
-	
-	
-
 	// These methods process the combined CigarMD object.
 	
 
-
-
-
-
+	
 	/* Process the MD string once found the CigarMD operator m (match). */
 	private void processMDtagCigarOperatorM() {
 		int numMatches = currentCigarMDElement.getLength();
@@ -438,7 +437,7 @@ public class VariantCallDetection extends AbstractQCModule {
 		int numMutations = currentCigarMDElement.getLength();
 		String mutatedBases = currentCigarMDElement.getBases();
 		String basePair = "";
-		
+
 		if(mutatedBases.equals("")) {
 			log.error("Mutated bases not reported. currentCigarMDElement: " + currentCigarMDElement + ", cigarMD: " + cigarMD.toString() + 
 					 ", mutatedBases: " + mutatedBases);
@@ -466,8 +465,11 @@ public class VariantCallDetection extends AbstractQCModule {
 				else if(basePair.equals("TA")) { firstTA++; firstSNPPos[currentPosition]++; currentPosition++; }
 				else if(basePair.equals("TC")) { firstTC++; firstSNPPos[currentPosition]++; currentPosition++; }
 				else if(basePair.equals("TG")) { firstTG++; firstSNPPos[currentPosition]++; currentPosition++; }	
-				else if(basePair.charAt(0) == 'N') { referenceUnknownBases++; currentPosition++; }
-				else if(basePair.charAt(1) == 'N') { readUnknownBases++; currentPosition++; }			
+				else if(basePair.charAt(0) == 'N') { 
+					referenceUnknownBases++; currentPosition++; 
+					if(basePair.charAt(1) == 'N') { readUnknownBases++; currentPosition++; }
+				}
+				else if(basePair.charAt(1) == 'N') { readUnknownBases++; currentPosition++; }
 			}			
 		} else {
 			for(int i = 0; i < numMutations; i++) {
@@ -484,7 +486,10 @@ public class VariantCallDetection extends AbstractQCModule {
 				else if(basePair.equals("TA")) { secondTA++; secondSNPPos[currentPosition]++; currentPosition++; }
 				else if(basePair.equals("TC")) { secondTC++; secondSNPPos[currentPosition]++; currentPosition++; }
 				else if(basePair.equals("TG")) { secondTG++; secondSNPPos[currentPosition]++; currentPosition++; }	
-				else if(basePair.charAt(0) == 'N') { referenceUnknownBases++; currentPosition++; }
+				else if(basePair.charAt(0) == 'N') { 
+					referenceUnknownBases++; currentPosition++; 
+					if(basePair.charAt(1) == 'N') { readUnknownBases++; currentPosition++; }
+				}
 				else if(basePair.charAt(1) == 'N') { readUnknownBases++; currentPosition++; }			
 			}			
 		}
@@ -618,7 +623,7 @@ public class VariantCallDetection extends AbstractQCModule {
 	public boolean existPairedReads() {
 		return existPairedReads;
 	}
-
+	
 	public long getFirstA2C() {
 		return firstAC;
 	}

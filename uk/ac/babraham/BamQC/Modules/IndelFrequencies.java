@@ -62,10 +62,10 @@ public class IndelFrequencies extends AbstractQCModule {
 	
 	
 	// Constructors
-	/**
-	 * Default constructor
-	 */
-	public IndelFrequencies() {	}
+//	/**
+//	 * Default constructor
+//	 */
+//	public IndelFrequencies() {	}
 
 	
 	/**
@@ -132,7 +132,9 @@ public class IndelFrequencies extends AbstractQCModule {
 					0d, 100d, "Position in read (bp)", indelNames, 
 					new String[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()], 
 					"Read Indel Frequencies ( total insertions: 0.000 %, total deletions: 0.000 % )");
-		}		
+		}
+		variantCallDetection.computeTotals();
+		
 		
 		long totIns = variantCallDetection.getTotalInsertions(),
 			 totDel = variantCallDetection.getTotalDeletions(), 
@@ -152,7 +154,6 @@ public class IndelFrequencies extends AbstractQCModule {
 		log.info("Total deletions: " + totDel + " ( " + totDel*100f/totBases + "% )");
 		log.info("Skipped reads: " + variantCallDetection.getSkippedReads() + " ( "+ (variantCallDetection.getSkippedReads()*100.0f)/variantCallDetection.getTotalReads() + "% )");
 		
-
 		
 		JPanel resultsPanel = new JPanel();
 		// We do not need a BaseGroup here

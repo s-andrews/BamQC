@@ -62,10 +62,10 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 	private double[] dSecondSNPFrequenciesByType = null;
 	
 	// Constructors
-	/**
-	 * Default constructor
-	 */
-	public SNPFrequenciesByType() {	}
+//	/**
+//	 * Default constructor
+//	 */
+//	public SNPFrequenciesByType() {	}
 
 	
 	/**
@@ -95,7 +95,7 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 			String title = String.format("Read SNP frequencies by Type ( total SNPs: 0 (0.000 %) )");
 			return new HorizontalBarGraph(snpTypeNames, new double[12], title, 0, 1);
 		}		
-		
+		variantCallDetection.computeTotals();
 		
 		JPanel resultsPanel = new JPanel();
 		// first/second identify the first or second segments respectively.
