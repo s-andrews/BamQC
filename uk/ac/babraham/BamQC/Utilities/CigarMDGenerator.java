@@ -70,6 +70,11 @@ public class CigarMDGenerator {
 	// If the read is a first or second segment.
 	private boolean isFirst = true;
 	
+	// The read string. This can be quite long and read.getReadString() can be 
+	// quite time consuming as it copies the string every time. Here we copy it 
+	// one time only.
+	private String readString = null;
+	
 
 	// Public interface
 	// Constructors
@@ -167,6 +172,9 @@ public class CigarMDGenerator {
 		// Get the CIGAR list
 		cigarList = read.getCigar().getCigarElements();
 		
+		// Get the read string
+		readString = read.getReadString();
+		
 		
 		// Iterate the CigarList
 		Iterator<CigarElement> iterCigar = cigarList.iterator();
@@ -234,7 +242,7 @@ public class CigarMDGenerator {
 				// it is a first segment.
 				if(read.getSecondOfPairFlag()) {
 					// .. but it is also a second segment
-					log.warn("The read is part of a linear template, but it is neither the first nor the last read. Read: " + read.getReadString());
+					log.warn("The read is part of a linear template, but it is neither the first nor the last read. Read: " + readString);
 				} else if(read.getReadNegativeStrandFlag()) {
 					// it is reversed and complemented
 					log.debug("Current SAM read is FIRST(0x40) and parsed BACKWARD(0x10).");
@@ -246,7 +254,7 @@ public class CigarMDGenerator {
 				if(!read.getSecondOfPairFlag()) {
 					// .. but it is NOT a second segment either
 					isFirst = true; // let's leave it as first.
-					log.warn("The index of the read in the template is unknown. Non-linear template or index lost in data processing. Read: " + read.getReadString());
+					log.warn("The index of the read in the template is unknown. Non-linear template or index lost in data processing. Read: " + readString);
 				} else {
 					// it is a second segment.
 					isFirst = false;
@@ -369,6 +377,7 @@ public class CigarMDGenerator {
 		temporaryMDElementLength = 0;
 		currentMDElementPosition = 0;
 		currentBaseCallPosition = 0;
+		readString = null;
 		cigarMD = new CigarMD();
 	}
 
@@ -400,7 +409,7 @@ public class CigarMDGenerator {
 				char currentMDChar = mdString.charAt(currentMDElementPosition);
 				currentMDElement = String.valueOf(currentMDChar);
 				currentMDElementPosition++;
-				
+
 		     	// skip if the current MD element is zero. This is redundant information if the CIGAR string is read too..
 				if(currentMDElement.equals("0")) {
 					continue;
@@ -435,7 +444,7 @@ public class CigarMDGenerator {
 					// can be coded as 2uCAGT if the reference string CA are mutated into GT.
 					
 					// Retrieve the mutation and create the first couple of mutated bases.
-					char currentBaseCall = read.getReadString().charAt(currentBaseCallPosition);
+					char currentBaseCall = readString.charAt(currentBaseCallPosition);
 					log.debug("currentBaseCallPosition: " + currentBaseCallPosition);
 					if("ACGTN".indexOf("" + currentMDChar) > -1) {
 						bases = bases + currentMDChar + currentBaseCall;			
@@ -456,7 +465,7 @@ public class CigarMDGenerator {
 						if("ACGTN".indexOf("" + currentMDChar) > -1) {
 							log.debug("currentMDElement: " + currentMDElement + " currentBaseCall: " + currentBaseCall);								
 							log.debug("currentBaseCallPosition: " + (currentBaseCallPosition+temporaryMDElementLength));
-							currentBaseCall = read.getReadString().charAt(currentBaseCallPosition+temporaryMDElementLength);
+							currentBaseCall = readString.charAt(currentBaseCallPosition+temporaryMDElementLength);
 							bases = bases + currentMDChar + currentBaseCall;
 							temporaryMDElementLength++;
 							currentMDElementPosition++;
@@ -518,7 +527,7 @@ public class CigarMDGenerator {
 	/** Process the MD string once found the CIGAR operator I. */
 	private void processMDtagCigarOperatorI(SAMRecord read) {
 		// The MD string does not contain information regarding an insertion.
-		String wronglyInsertedBases = read.getReadString().substring(
+		String wronglyInsertedBases = readString.substring(
 				currentBaseCallPosition,
 				currentBaseCallPosition + currentCigarElementLength);
 		currentBaseCallPosition = currentBaseCallPosition

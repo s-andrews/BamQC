@@ -190,7 +190,6 @@ public class VariantCallDetection extends AbstractQCModule {
 		// Compute and get the CigarMD object combining the strings Cigar and MD tag
 		cigarMDGenerator.generateCigarMD(read);
 		cigarMD = cigarMDGenerator.getCigarMD();
-
 		if(cigarMD.isEmpty()) {
 			skippedReads++;
 			return;			
