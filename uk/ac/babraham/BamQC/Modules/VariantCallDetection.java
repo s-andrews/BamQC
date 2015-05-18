@@ -155,14 +155,24 @@ public class VariantCallDetection extends AbstractQCModule {
 			return;
 		}
 //		// NOTE: nInsertions and nDeletions are not counted in the totals. 
-		for(int i=0; i< firstSNPPos.length; i++) {
-			totalMutations = totalMutations + firstSNPPos[i] + secondSNPPos[i];
-			totalInsertions = totalInsertions + firstInsertionPos[i] + secondInsertionPos[i];
-			totalDeletions = totalDeletions + firstDeletionPos[i] + secondDeletionPos[i];
-			
-			totalPos[i] = firstSNPPos[i] + firstInsertionPos[i] + firstDeletionPos[i] + 
-					      secondSNPPos[i] + secondInsertionPos[i] + secondDeletionPos[i] + 
-					      matchPos[i];
+		
+		if(existPairedReads) {
+			for(int i=0; i< firstSNPPos.length; i++) {
+				totalMutations = totalMutations + firstSNPPos[i] + secondSNPPos[i];
+				totalInsertions = totalInsertions + firstInsertionPos[i] + secondInsertionPos[i];
+				totalDeletions = totalDeletions + firstDeletionPos[i] + secondDeletionPos[i];
+				totalPos[i] = firstSNPPos[i] + firstInsertionPos[i] + firstDeletionPos[i] + 
+							  secondSNPPos[i] + secondInsertionPos[i] + secondDeletionPos[i] + 
+					          matchPos[i];
+			}
+		} else {
+			for(int i=0; i< firstSNPPos.length; i++) {
+				totalMutations = totalMutations + firstSNPPos[i];
+				totalInsertions = totalInsertions + firstInsertionPos[i];
+				totalDeletions = totalDeletions + firstDeletionPos[i];
+				totalPos[i] = firstSNPPos[i] + firstInsertionPos[i] + firstDeletionPos[i] + 
+							  matchPos[i];
+			}
 		}
 		// we do not consider totalSkippedRegions, totalHardClips and totalPaddings because they are not 
 		// recorded in the read.
