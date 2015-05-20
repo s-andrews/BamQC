@@ -127,6 +127,8 @@ public class VariantCallDetection extends AbstractQCModule {
     private HashMap<Integer, Long> contributingReadsPerPos = new HashMap<Integer, Long>();	
     
     
+    private int readLength = 0;
+    
 	// Used for computing the statistics 
 	private CigarMDGenerator cigarMDGenerator = new CigarMDGenerator();
 
@@ -195,6 +197,8 @@ public class VariantCallDetection extends AbstractQCModule {
 			return;			
 		}
 
+		readLength = read.getReadLength();
+		
 		// Iterate the CigarMDElements list to collect statistics
 		List<CigarMDElement> cigarMDElements = cigarMD.getCigarMDElements();
 		Iterator<CigarMDElement> cigarMDIter = cigarMDElements.iterator();
@@ -242,12 +246,12 @@ public class VariantCallDetection extends AbstractQCModule {
 			}		
 		}
 		
-		if(contributingReadsPerPos.containsKey(read.getReadLength())) {
-			contributingReadsPerPos.put(read.getReadLength(), contributingReadsPerPos.get(read.getReadLength()) + 1L);
+		if(contributingReadsPerPos.containsKey(readLength)) {
+			contributingReadsPerPos.put(readLength, contributingReadsPerPos.get(readLength) + 1L);
 		} else {
-			contributingReadsPerPos.put(read.getReadLength(), 1L);
+			contributingReadsPerPos.put(readLength, 1L);
 		}
-		log.debug("key, value:" + read.getReadLength() + ", " + contributingReadsPerPos.get(read.getReadLength()));
+		log.debug("key, value:" + readLength + ", " + contributingReadsPerPos.get(readLength));
 		log.debug("Combined Cigar MDtag: " + cigarMD.toString());
 
 		
@@ -345,6 +349,7 @@ public class VariantCallDetection extends AbstractQCModule {
 	    currentPosition = 0;
 	    contributingReadsPerPos = new HashMap<Integer, Long>();
 
+	    readLength = 0;
 		cigarMD = new CigarMD();
 	}
 
