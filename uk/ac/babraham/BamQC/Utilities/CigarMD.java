@@ -35,11 +35,21 @@ import java.util.Collections;
 public class CigarMD {
 
 	private final List<CigarMDElement> cigarMDElements = new ArrayList<CigarMDElement>();
+	
+	// Store this as StringBuilder for maximising efficiency in the concatenation process.
+	private StringBuilder cigarMDString;
 
-	public CigarMD() { }
+	public CigarMD() { 
+		cigarMDString = new StringBuilder(); 
+	}
 
 	public CigarMD(final List<CigarMDElement> cigarMDElements) {
 		this.cigarMDElements.addAll(cigarMDElements);
+		
+		cigarMDString = new StringBuilder();
+		for(CigarMDElement element : cigarMDElements) {
+			cigarMDString.append(element.toString());
+		}
 	}
 
 	public List<CigarMDElement> getCigarMDElements() {
@@ -52,6 +62,7 @@ public class CigarMD {
 
 	public void add(final CigarMDElement cigarMDElement) {
 		cigarMDElements.add(cigarMDElement);
+		cigarMDString.append(cigarMDElement.toString());
 	}
 	
 	public int numCigarMDElements() {
@@ -244,25 +255,25 @@ public class CigarMD {
 	// }
 	// return ret;
 	// }
-
-	private static boolean isRealOperator(final CigarMDOperator op) {
-		return op == CigarMDOperator.m || op == CigarMDOperator.u
-				|| op == CigarMDOperator.eq || op == CigarMDOperator.x
-				|| op == CigarMDOperator.i || op == CigarMDOperator.d
-				|| op == CigarMDOperator.n;
-	}
-
-	private static boolean isInDelOperator(final CigarMDOperator op) {
-		return op == CigarMDOperator.i || op == CigarMDOperator.d;
-	}
-
-	private static boolean isClippingOperator(final CigarMDOperator op) {
-		return op == CigarMDOperator.s || op == CigarMDOperator.h;
-	}
-
-	private static boolean isPaddingOperator(final CigarMDOperator op) {
-		return op == CigarMDOperator.p;
-	}
+//
+//	private static boolean isRealOperator(final CigarMDOperator op) {
+//		return op == CigarMDOperator.m || op == CigarMDOperator.u
+//				|| op == CigarMDOperator.eq || op == CigarMDOperator.x
+//				|| op == CigarMDOperator.i || op == CigarMDOperator.d
+//				|| op == CigarMDOperator.n;
+//	}
+//
+//	private static boolean isInDelOperator(final CigarMDOperator op) {
+//		return op == CigarMDOperator.i || op == CigarMDOperator.d;
+//	}
+//
+//	private static boolean isClippingOperator(final CigarMDOperator op) {
+//		return op == CigarMDOperator.s || op == CigarMDOperator.h;
+//	}
+//
+//	private static boolean isPaddingOperator(final CigarMDOperator op) {
+//		return op == CigarMDOperator.p;
+//	}
 
 	@Override
 	public boolean equals(final Object o) {
@@ -288,10 +299,7 @@ public class CigarMD {
 
 	@Override
 	public String toString() {
-		String cigarMDString = "";
-		for(CigarMDElement element : cigarMDElements) {
-			cigarMDString = cigarMDString + element.toString();
-		}
-		return cigarMDString;
+		return cigarMDString.toString();
 	}
+	
 }

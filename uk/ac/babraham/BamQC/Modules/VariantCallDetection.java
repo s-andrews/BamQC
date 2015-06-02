@@ -201,44 +201,59 @@ public class VariantCallDetection extends AbstractQCModule {
 		
 		// Iterate the CigarMDElements list to collect statistics
 		List<CigarMDElement> cigarMDElements = cigarMD.getCigarMDElements();
-		Iterator<CigarMDElement> cigarMDIter = cigarMDElements.iterator();
+
 		CigarMDOperator currentCigarMDElementOperator;
 		
 		// restart the counter for computing SNP/Indels per read position.
 		currentPosition = 0;
 
-	
-		while(cigarMDIter.hasNext()) {
-			currentCigarMDElement = cigarMDIter.next();
+		// Use the old c-style for loop for memory (garbage collector) and CPU efficiency
+//		Iterator<CigarMDElement> cigarMDIter = cigarMDElements.iterator();	
+//		while(cigarMDIter.hasNext()) {
+//			currentCigarMDElement = cigarMDIter.next();
+		int cigarMDElementsSize = cigarMDElements.size();
+		for(int i=0; i<cigarMDElementsSize; i++) {
+			
+			currentCigarMDElement = cigarMDElements.get(i);
 
 			currentCigarMDElementOperator = currentCigarMDElement.getOperator();
 			
-			log.debug("Parsing CigarMDElement: " + currentCigarMDElement.toString());
+			//log.debug("Parsing CigarMDElement: " + currentCigarMDElement.toString());
 
-			if(currentCigarMDElementOperator.equals(CigarMDOperator.MATCH)) {
+			if(currentCigarMDElementOperator == CigarMDOperator.MATCH) {
 				processMDtagCigarOperatorM();
-			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.MISMATCH)) {
+				
+			} else if(currentCigarMDElementOperator == CigarMDOperator.MISMATCH) {
 				processMDtagCigarOperatorU();
-			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.INSERTION)) {
+				
+			} else if(currentCigarMDElementOperator == CigarMDOperator.INSERTION) {
 				processMDtagCigarOperatorI();
-			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.DELETION)) {
-				processMDtagCigarOperatorD();				
-			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.SKIPPED_REGION)) {
+				
+			} else if(currentCigarMDElementOperator == CigarMDOperator.DELETION) {
+				processMDtagCigarOperatorD();
+				
+			} else if(currentCigarMDElementOperator == CigarMDOperator.SKIPPED_REGION) {
 				processMDtagCigarOperatorN();
-			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.SOFT_CLIP)) {
+				
+			} else if(currentCigarMDElementOperator == CigarMDOperator.SOFT_CLIP) {
 				processMDtagCigarOperatorS();
-			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.HARD_CLIP)) {
+				
+			} else if(currentCigarMDElementOperator == CigarMDOperator.HARD_CLIP) {
 				processMDtagCigarOperatorH();
-			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.PADDING)) {
+				
+			} else if(currentCigarMDElementOperator == CigarMDOperator.PADDING) {
 				processMDtagCigarOperatorP();
-			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.eq)) {
+				
+			} else if(currentCigarMDElementOperator == CigarMDOperator.eq) {
 				log.debug("Extended CIGAR element = is not currently supported.");
 				skippedReads++;
 				return;	
-			} else if(currentCigarMDElementOperator.equals(CigarMDOperator.x)) {
+				
+			} else if(currentCigarMDElementOperator == CigarMDOperator.x) {
 				log.debug("Extended CIGAR element X is not currently supported.");
 				skippedReads++;
-				return;	
+				return;
+				
 			} else {
 				log.debug("Unknown operator in the CIGAR string.");
 				skippedReads++;
@@ -251,8 +266,8 @@ public class VariantCallDetection extends AbstractQCModule {
 		} else {
 			contributingReadsPerPos.put(readLength, 1L);
 		}
-		log.debug("key, value:" + readLength + ", " + contributingReadsPerPos.get(readLength));
-		log.debug("Combined Cigar MDtag: " + cigarMD.toString());
+		//log.debug("key, value:" + readLength + ", " + contributingReadsPerPos.get(readLength));
+		//log.debug("Combined Cigar MDtag: " + cigarMD.toString());
 
 		
 		// Are there better way to skip this test?
@@ -452,7 +467,7 @@ public class VariantCallDetection extends AbstractQCModule {
 		String mutatedBases = currentCigarMDElement.getBases();
 		String basePair = "";
 
-		if(mutatedBases.equals("")) {
+		if(mutatedBases.length() == 0) {
 			log.error("Mutated bases not reported. currentCigarMDElement: " + currentCigarMDElement + ", cigarMD: " + cigarMD.toString() + 
 					 ", mutatedBases: " + mutatedBases);
 			// if we are in this case, the following for loop will cause a java.lang.StringIndexOutOfBoundsException . 

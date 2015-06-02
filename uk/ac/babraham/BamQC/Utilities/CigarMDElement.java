@@ -70,7 +70,7 @@ public class CigarMDElement {
     
     @Override
     public String toString() {
-        return String.valueOf(length) + operator.toString() + bases;
+    	return String.valueOf(length) + operator + bases;
     }
     
 }
