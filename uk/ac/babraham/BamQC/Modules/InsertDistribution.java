@@ -43,7 +43,7 @@ public class InsertDistribution extends AbstractQCModule {
 
 		if (read.getReadPairedFlag() && read.getProperPairFlag()) {
 			if (inferredInsertSize > MAX_INSERT_SIZE) {
-				log.info("inferredInsertSize = " + inferredInsertSize);
+				log.debug("inferredInsertSize = " + inferredInsertSize);
 				aboveMaxInsertSizeCount++;
 			}
 			else {
