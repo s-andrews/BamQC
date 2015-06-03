@@ -473,15 +473,14 @@ public class CigarMDGenerator {
 					// Let's continue and see how many numbers we find.
 					// This comprehensive number is the temporaryMDElementLength, which tells us 
 					// how many matched bases we have.
-					boolean fullNumberFound = false;
-					while(currentMDElementPosition < mdString.length() && !fullNumberFound) {
+					while(currentMDElementPosition < mdString.length()) {
 						currentMDChar = mdString.charAt(currentMDElementPosition);
 						if(currentMDChar >= '0' && currentMDChar <= '9') {
 							currentMDElement = currentMDElement + currentMDChar;
 							currentMDElementPosition++;
 						} else {
 							// c is something else. The MD Element has been parsed.
-							fullNumberFound = true;
+							break;
 						}
 					}
 					// currentMDElement is a number.
@@ -518,8 +517,7 @@ public class CigarMDGenerator {
 					// Let's continue and see how many mismatches we find.
 					// The number of mismatches will be the temporaryMDElementLength, whereas the variable 
 					// bases will store the mismatched couples (ReferenceBase,ReadBaseMutation).
-					boolean allContiguousMutationsFound = false;
-					while(currentMDElementPosition < mdString.length() && !allContiguousMutationsFound) {		
+					while(currentMDElementPosition < mdString.length()) {		
 						currentMDChar = mdString.charAt(currentMDElementPosition);
 						if(acceptableBases.indexOf(String.valueOf(currentMDChar)) > -1) {
 							//log.debug("currentMDElement: " + currentMDElement + " currentBaseCall: " + currentBaseCall);								
@@ -533,7 +531,7 @@ public class CigarMDGenerator {
 							// are still parsing the Cigar operator M, and not something else. 
 							currentMDElementPosition++;
 						} else {
-							allContiguousMutationsFound = true;
+							break;
 						}			
 					}
 					
