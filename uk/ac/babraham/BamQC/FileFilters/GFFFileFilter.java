@@ -33,7 +33,7 @@ public class GFFFileFilter extends FileFilter {
 	}
 
 	public String getDescription() {
-		return "BAM/SAM Files";
+		return "GFF/GFF3/GTF Files";
 	}
 
 }
