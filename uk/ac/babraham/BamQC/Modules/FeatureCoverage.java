@@ -80,7 +80,7 @@ public class FeatureCoverage extends AbstractQCModule {
 	}
 
 	public String name() {
-		return "Featue type read counts";
+		return "Feature type read counts";
 	}
 
 	public String description() {

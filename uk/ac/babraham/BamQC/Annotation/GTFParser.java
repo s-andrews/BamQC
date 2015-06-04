@@ -23,14 +23,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Vector;
 
 /**
  * The Class GFFAnnotationParser reads sequence features from GFFv3 files
  */
-
-
 public class GTFParser implements AnnotationParser {
 
 	public void parseAnnotation(AnnotationSet annotationSet, File file) throws Exception {
@@ -43,7 +40,7 @@ public class GTFParser implements AnnotationParser {
 		BiotypeMapping bm = BiotypeMapping.getInstance();
 
 		int count = 0;
-		LINE: while ((line = br.readLine())!= null) {
+		while ((line = br.readLine())!= null) {
 
 			//			if (cancel) {
 			//				progressCancelled();
@@ -221,12 +218,11 @@ public class GTFParser implements AnnotationParser {
 		br.close();
 
 		// Now go through the grouped features adding them to the annotation set
-
-		Iterator<Transcript> i = groupedFeatures.values().iterator();
-		while (i.hasNext()) {
-			Feature f = i.next().feature();
-			annotationSet.addFeature(f);
-		}
+		Transcript[] t = groupedFeatures.values().toArray(new Transcript[0]);
+		for(int j=0; j<t.length; j++) {
+			annotationSet.addFeature(t[j].feature());
+		}		
+		
 
 	}
 	

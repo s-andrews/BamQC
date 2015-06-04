@@ -21,11 +21,13 @@
 package uk.ac.babraham.BamQC.Annotation;
 
 import java.util.Hashtable;
-import java.util.Iterator;
 
 import net.sf.samtools.SAMRecord;
 
 
+/** 
+ * This class stores the map of annotation features to objects of type FeatureSubclass. 
+ */
 public class FeatureClass {
 
 	private AnnotationSet annotationSet;
@@ -47,13 +49,12 @@ public class FeatureClass {
 	}
 	
 	public void processSequence (SAMRecord r) {
-		// Just pass this on to all of the subclasses
-		
-		Iterator<FeatureSubclass> it = subClasses.values().iterator();
-		
-		while (it.hasNext()) {
-			it.next().processSequence(r);
+		FeatureSubclass[] fsc = subClasses.values().toArray(new FeatureSubclass[0]);
+		for (int i=0; i<fsc.length; i++) {
+			fsc[i].processSequence(r);
 		}
+		
+		
 	}
 	
 	public String [] getSubclassNames () {

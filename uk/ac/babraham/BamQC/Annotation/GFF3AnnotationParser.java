@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -41,7 +40,7 @@ public class GFF3AnnotationParser implements AnnotationParser {
 		BufferedReader br  = new BufferedReader(new FileReader(file));
 		String line;
 
-		int count = 0;
+//		int count = 0;
 		while ((line = br.readLine())!= null) {
 			
 //			if (cancel) {
@@ -60,9 +59,8 @@ public class GFF3AnnotationParser implements AnnotationParser {
 //				annotationSet = new AnnotationSet(genome, file.getName()+"["+annotationSets.size()+"]");
 //				annotationSets.add(annotationSet);
 //			}
-
-			
-			++count;
+//			
+//			++count;
 			
 			
 			if (line.trim().length() == 0) continue;  //Ignore blank lines
@@ -243,12 +241,10 @@ public class GFF3AnnotationParser implements AnnotationParser {
 		}
 		br.close();
 		
-		// Now go through the grouped features adding them to the annotation set
-		
-		Iterator<FeatureGroup> i = groupedFeatures.values().iterator();
-		while (i.hasNext()) {
-			Feature f = i.next().feature();
-			annotationSet.addFeature(f);
+		// Now go through the grouped features adding them to the annotation set	
+		FeatureGroup[] fg = groupedFeatures.values().toArray(new FeatureGroup[0]);
+		for(int j=0; j<fg.length; j++) {
+			annotationSet.addFeature(fg[j].feature());
 		}
 				
 	}

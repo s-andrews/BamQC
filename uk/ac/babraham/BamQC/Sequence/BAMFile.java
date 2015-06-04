@@ -55,7 +55,6 @@ public class BAMFile implements SequenceFile {
 	private SAMRecord nextSequence = null;
 	Iterator<SAMRecord> it;
 	
-	
 	protected BAMFile (File file, boolean onlyMapped) throws SequenceFormatException, IOException {
 		this.file = file;
 		fileSize = file.length();
@@ -69,7 +68,7 @@ public class BAMFile implements SequenceFile {
 		br = new SAMFileReader(fis);
 		
 		header = br.getFileHeader();
-				
+		
 		it = br.iterator();
 		readNext();
 	}
@@ -88,9 +87,12 @@ public class BAMFile implements SequenceFile {
 		SAMSequenceDictionary dict = header.getSequenceDictionary();
 		List<SAMSequenceRecord> records = dict.getSequences();
 		
-		Iterator<SAMSequenceRecord> it = records.iterator();
-		while (it.hasNext()) {
-			SAMSequenceRecord record = it.next();
+//		Iterator<SAMSequenceRecord> it = records.iterator();
+//		while (it.hasNext()) {
+//			SAMSequenceRecord record = it.next();		
+		int recordsSize = records.size(); 
+		for(int i=0; i<recordsSize; i++) {
+			SAMSequenceRecord record = records.get(i);
 			Chromosome chr = annotationSet.chromosomeFactory().getChromosome(record.getSequenceName());
 			chr.setLength(record.getSequenceLength());
 			chrs.add(chr);

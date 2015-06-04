@@ -25,11 +25,15 @@ import java.util.Vector;
 
 import net.sf.samtools.SAMRecord;
 
+
+/** 
+ * This class stores the sub-features of a feature. 
+ * The feature objects we store will be split up by chromosome. They will be further
+ * split into sequence level chunks so that we can avoid having to do lengthy linear
+ * searches even when we're having random positions thrown at us.
+ */
 public class FeatureSubclass {
 
-	// The feature objects we store will be split up by chromosome.  They will be further
-	// split into sequence level chunks so that we can avoid having to do lengthy linear
-	// searches even when we're having random positions thrown at us.
 	
 	// TODO: Implement splitting
 	private static final int SEQUENCE_CHUNK_LENGTH = 100000;
