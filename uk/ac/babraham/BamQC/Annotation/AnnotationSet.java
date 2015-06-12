@@ -20,17 +20,26 @@
 
 package uk.ac.babraham.BamQC.Annotation;
 
-import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
+import uk.ac.babraham.BamQC.Modules.ModuleConfig;
 import net.sf.samtools.SAMRecord;
 
 public class AnnotationSet {
 	
 	private ChromosomeFactory factory = new ChromosomeFactory();
 	
-	private Hashtable<String, FeatureClass> features = new Hashtable<String, FeatureClass>();
+	private HashMap<String, FeatureClass> features = new HashMap<String, FeatureClass>();
 	
 	private FeatureClass [] featureArray = null;
+	
+	private final int cacheSize = ModuleConfig.getParam("feature_coverage_annotation_cache_size", "ignore").intValue();
+	//private List<ShortRead> readCache = new ArrayList<ShortRead>(cacheSize);
+	private List<TempSAMRecord> tempSAMRecordCache = new ArrayList<TempSAMRecord>(cacheSize);
+	
 	
 	public ChromosomeFactory chromosomeFactory () {
 		return factory;
@@ -58,11 +67,107 @@ public class AnnotationSet {
 		return features.get(type);
 	}
 	
+	
+	
+	
+	
+	
+	// TODO
+	// RE-ADAPT TO USE ShortRead instead of SAMRecord
 	public void processSequence (SAMRecord r) {
-		
+			
+//		// implementation using ShortRead
+//	    if(readCache.size() < cacheSize) {
+//	    	readCache.add(new ShortRead(r.getReferenceName(), r.getAlignmentStart(), r.getAlignmentEnd()));
+//	    } else {
+//	    	// sort the cache
+//	    	Collections.sort(readCache);
+//	    	// now parse the sorted cache
+//	    	for(int i=0; i < cacheSize; i++) {
+//	    		processCachedSequence(readCache.get(i));
+//	    	}
+//	    	// let's clear and reuse the array for now, instead of reallocating a new one every time.
+//	    	// Tricky to say what's the best is.. an O(n)remove vs allocation+GC ... 
+//	    	readCache.clear();
+//	    }
+	        
+		// implementation using SAMRecord
+	    if(tempSAMRecordCache.size() < cacheSize) {
+	    	tempSAMRecordCache.add(new TempSAMRecord(r));
+	    } else {
+	    	// sort the cache
+	    	Collections.sort(tempSAMRecordCache);
+	    	// now parse the sorted cache
+	    	for(int i=0; i < cacheSize; i++) {
+	    		processCachedSequence(tempSAMRecordCache.get(i).getSAMRecord());
+	    	}
+	    	// let's clear and reuse the array for now, instead of reallocating a new one every time.
+	    	// Tricky to say what's the best is.. an O(n)remove vs allocation+GC ... 
+	    	tempSAMRecordCache.clear();
+	    }
+	}
+	
+	
+	/** SOLUTION WITHOUT CHANGING THE DATA STRUCTURE SAMRecord */
+
+	/**
+	 * A temporary class storing a SAMRecord. 
+	 * It is used for cache. Future implementations will use 
+	 * ShortRead instead, but for now, we don't want to reimplement 
+	 * all the processSequence(SAMREcord) methods of the other classes, 
+	 * before testing whether or not this is a convenient solution.
+	 */
+	class TempSAMRecord implements Comparable<TempSAMRecord> {
+		private SAMRecord samRecord;
+		public TempSAMRecord(SAMRecord r) {
+			samRecord = r;
+		}
+		public int compareTo(TempSAMRecord sr) {
+			int compareTest = samRecord.getReferenceName().compareTo(sr.getSAMRecord().getReferenceName());
+			if(compareTest == 0) {
+				return Integer.valueOf(samRecord.getAlignmentStart()).compareTo(Integer.valueOf(sr.getSAMRecord().getAlignmentStart()));
+			}
+			return compareTest;
+		}
+		public SAMRecord getSAMRecord() { 
+			return samRecord;
+		}
+	}	
+	
+	private void processCachedSequence(SAMRecord r) {
 		if (!r.getReferenceName().equals("*")) {
 			Chromosome c = factory.getChromosome(r.getReferenceName());
 			c.processSequence(r);
+		}
+		if (featureArray == null) {
+			featureArray = features.values().toArray(new FeatureClass[0]);
+		}
+		for (int i=0;i<featureArray.length;i++) {
+			featureArray[i].processSequence(r);
+		}
+	}	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/** SOLUTION CHANGING THE DATA STRUCTURE SAMRecord to ShortRead */	
+	
+	// NEW CODE WILL USE ShortRead instead of SAMRecord
+	
+	// TODO IMPLEMENT CODE BELOW
+	private void processCachedSequence(ShortRead r) {
+		
+		if (!r.getReferenceName().equals("*")) {
+			Chromosome c = factory.getChromosome(r.getReferenceName());
+			// TODO IMPLEMENT the following code 
+			//c.processSequence(r);
 		}
 		
 		if (featureArray == null) {
@@ -70,12 +175,10 @@ public class AnnotationSet {
 		}
 		
 		for (int i=0;i<featureArray.length;i++) {
-			featureArray[i].processSequence(r);
+			// TODO IMPLEMENT the following code
+			//featureArray[i].processSequence(r);
 		}
-	}
-	
-	
-	
-	
+	}	
+
 	
 }
