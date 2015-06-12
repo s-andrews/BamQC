@@ -21,7 +21,7 @@
 package uk.ac.babraham.BamQC.Modules;
 
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 import javax.xml.stream.XMLStreamException;
@@ -46,8 +46,8 @@ public class FeatureCoverage extends AbstractQCModule {
 
 		featureNames = annotation.listFeatureTypes();
 		
-		Vector<String> names = new Vector<String>();
-		Vector<Float> values = new Vector<Float>();		
+		ArrayList<String> names = new ArrayList<String>();
+		ArrayList<Float> values = new ArrayList<Float>();		
 		
 		for (int i=0;i<featureNames.length;i++) {
 			
@@ -69,7 +69,7 @@ public class FeatureCoverage extends AbstractQCModule {
 		featureNames = names.toArray(new String[0]);
 		readCounts = new double[featureNames.length];
 		for (int i=0;i<readCounts.length;i++) {
-			readCounts[i] = values.elementAt(i);
+			readCounts[i] = values.get(i);
 		}
 		
 		

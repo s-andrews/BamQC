@@ -20,8 +20,8 @@
 package uk.ac.babraham.BamQC.Annotation;
 
 import java.util.Arrays;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 import net.sf.samtools.SAMRecord;
 
@@ -40,10 +40,10 @@ public class FeatureSubclass {
 
 	private AnnotationSet annotationSet;
 
-	private Hashtable<Chromosome, Vector<Feature>> featuresRaw = new Hashtable<Chromosome, Vector<Feature>>();
+	private HashMap<Chromosome, ArrayList<Feature>> featuresRaw = new HashMap<Chromosome, ArrayList<Feature>>();
 	
-	private Hashtable<Chromosome, Feature[]> features = null;
-	private Hashtable<Chromosome, int[]> indices = null;
+	private HashMap<Chromosome, Feature[]> features = null;
+	private HashMap<Chromosome, int[]> indices = null;
 	
 	// These are the collated values being stored
 	private int count = 0;
@@ -55,7 +55,7 @@ public class FeatureSubclass {
 	public void addFeature (Feature f) {
 		if (features != null) throw new IllegalStateException("Can't add more features after sending data");
 		if (!featuresRaw.containsKey(f.chr())) {
-			featuresRaw.put(f.chr(), new Vector<Feature>());
+			featuresRaw.put(f.chr(), new ArrayList<Feature>());
 		}
 		
 		featuresRaw.get(f.chr()).add(f);
@@ -111,8 +111,8 @@ public class FeatureSubclass {
 	
 	private void processFeatures () {
 		
-		features = new Hashtable<Chromosome, Feature[]>();
-		indices = new Hashtable<Chromosome, int[]>();
+		features = new HashMap<Chromosome, Feature[]>();
+		indices = new HashMap<Chromosome, int[]>();
 		
 		Chromosome [] chromosomes = featuresRaw.keySet().toArray(new Chromosome[0]);
 		

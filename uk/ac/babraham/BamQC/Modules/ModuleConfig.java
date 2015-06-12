@@ -73,6 +73,9 @@ public class ModuleConfig {
 		params.put("tile:ignore", 0d);
 		params.put("sequence_length:ignore", 0d);
 		params.put("adapter:ignore", 0d);
+		
+		params.put("feature_coverage_annotation_cache_size:ignore", 100000d);
+		
 		params.put("variant_call_position_length:ignore", 150d);
 		params.put("variant_call_position_indel_seqpercent_xaxis_threshold:ignore", 5d);
 		params.put("variant_call_position_indel_threshold:warn", 1d);	

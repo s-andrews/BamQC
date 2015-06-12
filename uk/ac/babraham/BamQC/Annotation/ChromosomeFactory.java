@@ -19,11 +19,11 @@
  */
 package uk.ac.babraham.BamQC.Annotation;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 public class ChromosomeFactory {
 
-	Hashtable<String,Chromosome> chromosomes = new Hashtable<String, Chromosome>();
+	HashMap<String,Chromosome> chromosomes = new HashMap<String, Chromosome>();
 	
 	public Chromosome getChromosome (String name) {
 		

@@ -20,7 +20,7 @@
 
 package uk.ac.babraham.BamQC.Annotation;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import net.sf.samtools.SAMRecord;
 
@@ -32,7 +32,7 @@ public class FeatureClass {
 
 	private AnnotationSet annotationSet;
 
-	private Hashtable<String, FeatureSubclass> subClasses = new Hashtable<String, FeatureSubclass>();
+	private HashMap<String, FeatureSubclass> subClasses = new HashMap<String, FeatureSubclass>();
 	
 	
 	public FeatureClass (AnnotationSet a) {
