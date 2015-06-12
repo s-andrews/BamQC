@@ -31,6 +31,9 @@ public class Location implements Serializable, Comparable<Location> {
 	private static final long serialVersionUID = 4931115654048485228L;
 
 	private long value;
+	// cache the values including the LAST_31_BIT_MASK for start() and end() methods
+	private int startValue, endValue;
+	
 	public static final int FORWARD = 1;
 	public static final int REVERSE = -1;
 	public static final int UNKNOWN = 0;
@@ -44,6 +47,8 @@ public class Location implements Serializable, Comparable<Location> {
 	private static final long REVERSE_TEST_MASK = Long.parseLong("0100000000000000000000000000000000000000000000000000000000000000",2);
 	private static final long REVERSE_BIT_MASK =  ~REVERSE_TEST_MASK;
 	
+	
+
 	/**
 	 * Constructs a new Location from a previously packed position.
 	 * This constructor should not be used normally.  It's only
@@ -54,10 +59,11 @@ public class Location implements Serializable, Comparable<Location> {
 	 */
 	public Location (long packedPosition) {
 		this.value = packedPosition;
+		// cache the starting and ending values
+		setStartEndValues();
 	}
 	
 	public Location (int start, int end, int strand) {
-
 		setPosition(start, end, strand);
 		if (strand != strand()) {
 			System.err.println("Strand "+strand+" didn't match "+strand());
@@ -106,7 +112,7 @@ public class Location implements Serializable, Comparable<Location> {
 	 * @return The start position
 	 */
 	public int start () {
-		return (int)(value & LAST_31_BIT_MASK);
+		return startValue;
 	}
 	
 	/**
@@ -116,7 +122,7 @@ public class Location implements Serializable, Comparable<Location> {
 	 * @return The end position
 	 */
 	public int end () {
-		return (int)((value>>31) & LAST_31_BIT_MASK);
+		return endValue;
 	}
 	
 	public int middle () {
@@ -162,6 +168,11 @@ public class Location implements Serializable, Comparable<Location> {
 		}
 	}
 	
+	private void setStartEndValues() {
+		startValue = (int)(value & LAST_31_BIT_MASK);
+		endValue = (int)((value>>31) & LAST_31_BIT_MASK);		
+	}
+	
 	protected void setPosition (int start, int end, int strand) {
 		if (start < 0 || end < 0) throw new IllegalArgumentException("Negative positions are not allowed");
 		
@@ -194,7 +205,8 @@ public class Location implements Serializable, Comparable<Location> {
 				throw new IllegalArgumentException("Strand was not FORWARD, REVERSE or UNKNOWN");
 				
 		}
-
+		// cache the starting and ending values
+		setStartEndValues();
 	}
 	
 	
