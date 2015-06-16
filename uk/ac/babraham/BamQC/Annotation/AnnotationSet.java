@@ -37,8 +37,8 @@ public class AnnotationSet {
 	private FeatureClass [] featureArray = null;
 	
 	private final int cacheSize = ModuleConfig.getParam("feature_coverage_annotation_cache_size", "ignore").intValue();
-	//private List<ShortRead> readCache = new ArrayList<ShortRead>(cacheSize);
-	private List<TempSAMRecord> tempSAMRecordCache = new ArrayList<TempSAMRecord>(cacheSize);
+	private List<ShortRead> readCache = new ArrayList<ShortRead>(cacheSize);
+	//private List<TempSAMRecord> tempSAMRecordCache = new ArrayList<TempSAMRecord>(cacheSize);
 	
 	
 	public ChromosomeFactory chromosomeFactory () {
@@ -76,35 +76,36 @@ public class AnnotationSet {
 	// RE-ADAPT TO USE ShortRead instead of SAMRecord
 	public void processSequence (SAMRecord r) {
 			
-//		// implementation using ShortRead
-//	    if(readCache.size() < cacheSize) {
-//	    	readCache.add(new ShortRead(r.getReferenceName(), r.getAlignmentStart(), r.getAlignmentEnd()));
-//	    } else {
-//	    	// sort the cache
-//	    	Collections.sort(readCache);
-//	    	// now parse the sorted cache
-//	    	for(int i=0; i < cacheSize; i++) {
-//	    		processCachedSequence(readCache.get(i));
-//	    	}
-//	    	// let's clear and reuse the array for now, instead of reallocating a new one every time.
-//	    	// Tricky to say what's the best is.. an O(n)remove vs allocation+GC ... 
-//	    	readCache.clear();
-//	    }
-	        
-		// implementation using SAMRecord
-	    if(tempSAMRecordCache.size() < cacheSize) {
-	    	tempSAMRecordCache.add(new TempSAMRecord(r));
+		// implementation using ShortRead
+	    if(readCache.size() < cacheSize) {
+	    	readCache.add(new ShortRead(r.getReferenceName(), r.getAlignmentStart(), r.getAlignmentEnd()));
 	    } else {
 	    	// sort the cache
-	    	Collections.sort(tempSAMRecordCache);
+	    	Collections.sort(readCache);
 	    	// now parse the sorted cache
 	    	for(int i=0; i < cacheSize; i++) {
-	    		processCachedSequence(tempSAMRecordCache.get(i).getSAMRecord());
+	    		processCachedSequence(readCache.get(i));
 	    	}
 	    	// let's clear and reuse the array for now, instead of reallocating a new one every time.
 	    	// Tricky to say what's the best is.. an O(n)remove vs allocation+GC ... 
-	    	tempSAMRecordCache.clear();
+	    	readCache.clear();
 	    }
+	        
+		
+//		// implementation using SAMRecord
+//	    if(tempSAMRecordCache.size() < cacheSize) {
+//	    	tempSAMRecordCache.add(new TempSAMRecord(r));
+//	    } else {
+//	    	// sort the cache
+//	    	Collections.sort(tempSAMRecordCache);
+//	    	// now parse the sorted cache
+//	    	for(int i=0; i < cacheSize; i++) {
+//	    		processCachedSequence(tempSAMRecordCache.get(i).getSAMRecord());
+//	    	}
+//	    	// let's clear and reuse the array for now, instead of reallocating a new one every time.
+//	    	// Tricky to say what's the best is.. an O(n)remove vs allocation+GC ... 
+//	    	tempSAMRecordCache.clear();
+//	    }
 	}
 	
 	
@@ -134,6 +135,7 @@ public class AnnotationSet {
 		}
 	}	
 	
+	@Deprecated
 	private void processCachedSequence(SAMRecord r) {
 		if (!r.getReferenceName().equals("*")) {
 			Chromosome c = factory.getChromosome(r.getReferenceName());
@@ -162,21 +164,16 @@ public class AnnotationSet {
 	// NEW CODE WILL USE ShortRead instead of SAMRecord
 	
 	// TODO IMPLEMENT CODE BELOW
-	private void processCachedSequence(ShortRead r) {
-		
+	private void processCachedSequence(ShortRead r) {	
 		if (!r.getReferenceName().equals("*")) {
 			Chromosome c = factory.getChromosome(r.getReferenceName());
-			// TODO IMPLEMENT the following code 
-			//c.processSequence(r);
+			c.processSequence(r);
 		}
-		
 		if (featureArray == null) {
 			featureArray = features.values().toArray(new FeatureClass[0]);
 		}
-		
 		for (int i=0;i<featureArray.length;i++) {
-			// TODO IMPLEMENT the following code
-			//featureArray[i].processSequence(r);
+			featureArray[i].processSequence(r);
 		}
 	}	
 

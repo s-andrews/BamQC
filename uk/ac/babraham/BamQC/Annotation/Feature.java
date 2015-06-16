@@ -62,7 +62,12 @@ public class Feature implements Comparable<Feature>{
 		return chr;
 	}
 	
+	@Deprecated
 	public void processSequence (SAMRecord r) {
+		//TODO: Placeholder in case we want to record something for every feature.
+	}
+	
+	public void processSequence (ShortRead r) {
 		//TODO: Placeholder in case we want to record something for every feature.
 	}
 
