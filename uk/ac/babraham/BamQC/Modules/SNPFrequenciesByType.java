@@ -111,19 +111,6 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 				.getFirstG2C(), firstGT = variantCallDetection.getFirstG2T(), firstTA = variantCallDetection
 				.getFirstT2A(), firstTC = variantCallDetection.getFirstT2C(), firstTG = variantCallDetection
 				.getFirstT2G();
-		
-		log.info("first read SNP A->C: " + firstAC);
-		log.info("first read SNP A->G: " + firstAG);
-		log.info("first read SNP A->T: " + firstAT);
-		log.info("first read SNP C->A: " + firstCA);
-		log.info("first read SNP C->G: " + firstCG);
-		log.info("first read SNP C->T: " + firstCT);
-		log.info("first read SNP G->A: " + firstGA);
-		log.info("first read SNP G->C: " + firstGC);
-		log.info("first read SNP G->T: " + firstGT);
-		log.info("first read SNP T->A: " + firstTA);
-		log.info("first read SNP T->C: " + firstTC);
-		log.info("first read SNP T->G: " + firstTG);
 
 		dFirstSNPFrequenciesByType = new double[12];
 		dFirstSNPFrequenciesByType[0] = firstAC * 100d / totBases;
@@ -154,19 +141,6 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 					.getSecondG2C(), secondGT = variantCallDetection.getSecondG2T(), secondTA = variantCallDetection
 					.getSecondT2A(), secondTC = variantCallDetection.getSecondT2C(), secondTG = variantCallDetection
 					.getSecondT2G();	
-			
-			log.info("second read SNP A->C: " + secondAC);
-			log.info("second read SNP A->G: " + secondAG);
-			log.info("second read SNP A->T: " + secondAT);
-			log.info("second read SNP C->A: " + secondCA);
-			log.info("second read SNP C->G: " + secondCG);
-			log.info("second read SNP C->T: " + secondCT);
-			log.info("second read SNP G->A: " + secondGA);
-			log.info("second read SNP G->C: " + secondGC);
-			log.info("second read SNP G->T: " + secondGT);
-			log.info("second read SNP T->A: " + secondTA);
-			log.info("second read SNP T->C: " + secondTC);
-			log.info("second read SNP T->G: " + secondTG);
 			
 			dSecondSNPFrequenciesByType = new double[12];
 			dSecondSNPFrequenciesByType[0] = secondAC * 100d / totBases;
