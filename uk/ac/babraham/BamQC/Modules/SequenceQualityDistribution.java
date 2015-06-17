@@ -21,6 +21,8 @@ public class SequenceQualityDistribution extends AbstractQCModule {
 	private static Logger log = Logger.getLogger(SequenceQualityDistribution.class);
 
 	private List<Integer> distribution = new ArrayList<Integer>();
+	
+	private double[] distributionDouble = null;
 
 	public SequenceQualityDistribution() {}
 
@@ -62,7 +64,7 @@ public class SequenceQualityDistribution extends AbstractQCModule {
 		for (int i = 0; i < label.length; i++) {
 			label[i] = Integer.toString(i);
 		}
-		double[] distributionDouble = new double[distribution.size()];
+		distributionDouble = new double[distribution.size()];
 		int maxCount = 0;
 		int i = 0;
 		int total = 0;
@@ -135,11 +137,8 @@ public class SequenceQualityDistribution extends AbstractQCModule {
 	
 		StringBuffer sb = report.dataDocument();
 		sb.append("Sequence Quality (Phred)\tSequence Quality Distribution\n");
-		for (int i=0;i<distribution.size();i++) {
-			sb.append(i);
-			sb.append("\t");
-			sb.append(distribution.get(i));
-			sb.append("\n");
+		for (int i=0;i<distributionDouble.length;i++) {
+			sb.append(i).append("\t").append(distributionDouble[i]).append("\n");
 		}
 		
 	}

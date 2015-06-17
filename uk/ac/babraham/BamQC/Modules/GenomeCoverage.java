@@ -239,9 +239,26 @@ public class GenomeCoverage extends AbstractQCModule {
 	
 	@Override
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
-		String title = "Reference Sequence(s) Coverage"; //String.format("");
+		super.writeDefaultImage(report, "GenomeCoverage.png", "Reference Sequence(s) Coverage", 800, 600);
+
+		if(chromosomeNames == null || binCounts == null) { return; }
+	
+		StringBuffer sb = report.dataDocument();
+		sb.append("ChromosomeName\tGenomePosition\n");
+		sb.append("Name\t");
+		for (int i=0;i<binCounts[0].length;i++) {
+			sb.append(i*Chromosome.COVERAGE_BIN_SIZE).append("\t");			
+		}
+		sb.append("\n");
 		
-		super.writeDefaultImage(report, "GenomeCoverage.png", title, 800, 600);  // TODO
+		for (int i=0;i<chromosomeNames.length;i++) {
+			sb.append(chromosomeNames[i]).append("\t");
+			for (int j=0;j<binCounts[i].length;j++) {
+				sb.append(binCounts[i][j]).append("\t");
+			}
+			sb.append("\n");
+		}
+		
 	}
 	
 //	public double[] getCoverage() {

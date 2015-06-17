@@ -26,6 +26,7 @@ public class InsertDistribution extends AbstractQCModule {
 	private static Logger log = Logger.getLogger(InsertDistribution.class);
 
 	private List<Long> distribution = new ArrayList<Long>();
+	private double[] distributionDouble = null;
 	private long aboveMaxInsertSizeCount = 0;
 	private long unpairedReads = 0;
 	private long reads = 0;
@@ -97,7 +98,7 @@ public class InsertDistribution extends AbstractQCModule {
 
 		// +2 = fraction and exceeding max values N
 		int binNumber = (distribution.size() / BIN_SIZE) + 2;
-		double[] distributionDouble = new double[binNumber];
+		distributionDouble = new double[binNumber];
 		long total = aboveMaxInsertSizeCount;
 
 		for (long count : distribution) {
@@ -190,8 +191,19 @@ public class InsertDistribution extends AbstractQCModule {
 	@Override
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
 		String title = String.format("Paired read insert size Distribution (Max %d bp), %d unpaired reads ", MAX_INSERT_SIZE, unpairedReads);
-
-		super.writeDefaultImage(report, "InsertDistribution.png", title, 800, 600); // TODO
+		super.writeDefaultImage(report, "InsertDistribution.png", title, 800, 600);
+		
+		if(distributionDouble == null) { return; }
+		
+		int binNumber = (distribution.size() / BIN_SIZE) + 2;
+		String[] label = buildLabels(binNumber);
+		
+		StringBuffer sb = report.dataDocument();
+		sb.append("InferredInsertSize(bp)\tPairedReadInsertSizeDistribution\n");
+		for (int i=0;i<distributionDouble.length;i++) {
+			sb.append(label[i]).append("\t").append(distributionDouble[i]).append("\n");
+		}
+		
 	}
 
 	public List<Long> getDistribution() {
