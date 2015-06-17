@@ -20,8 +20,8 @@
 package uk.ac.babraham.BamQC.Annotation;
 
 import java.util.Arrays;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 import net.sf.samtools.SAMRecord;
 
@@ -40,10 +40,22 @@ public class FeatureSubclass {
 
 	private AnnotationSet annotationSet;
 
-	private Hashtable<Chromosome, Vector<Feature>> featuresRaw = new Hashtable<Chromosome, Vector<Feature>>();
+	private HashMap<Chromosome, ArrayList<Feature>> featuresRaw = new HashMap<Chromosome, ArrayList<Feature>>();
 	
-	private Hashtable<Chromosome, Feature[]> features = null;
-	private Hashtable<Chromosome, int[]> indices = null;
+	private HashMap<Chromosome, Feature[]> features = null;
+	private HashMap<Chromosome, int[]> indices = null;
+	
+	
+	// cache these values
+	private String currReferenceName = "";
+	private int currRecordAlignmentStart = 0;
+	private int currRecordAlignmentEnd = 0;
+	private Chromosome currChromosome = null;
+	private Feature[] currChromosomeFeatures = null;
+	private int[] currChromosomeIndices = null;
+	private int index = 0;
+	
+	
 	
 	// These are the collated values being stored
 	private int count = 0;
@@ -52,21 +64,64 @@ public class FeatureSubclass {
 		annotationSet = a;
 	}
 	
+	public int count () {
+		return count;
+	}
+	
 	public void addFeature (Feature f) {
 		if (features != null) throw new IllegalStateException("Can't add more features after sending data");
 		if (!featuresRaw.containsKey(f.chr())) {
-			featuresRaw.put(f.chr(), new Vector<Feature>());
+			featuresRaw.put(f.chr(), new ArrayList<Feature>());
 		}
 		
 		featuresRaw.get(f.chr()).add(f);
 	}
 	
+	public void processSequence (ShortRead r) {
+		
+		if (features == null) {
+			processFeatures();
+		}
+	
+		currRecordAlignmentStart = r.getAlignmentStart();
+		currRecordAlignmentEnd = r.getAlignmentEnd();
+		int binStart = currRecordAlignmentStart/SEQUENCE_CHUNK_LENGTH;		
+		
+		if(!currReferenceName.equals(r.getReferenceName())) {
+			// NEW CHROMOSOME
+			// update chromosome info
+			currReferenceName = r.getReferenceName();
+			currChromosome = annotationSet.chromosomeFactory().getChromosome(currReferenceName);
+			currChromosomeFeatures = features.get(currChromosome);
+			currChromosomeIndices = indices.get(currChromosome);				
+		} 
+		
+		if (currChromosome == null || currChromosomeFeatures == null) return;
+
+		if (binStart >= currChromosomeIndices.length) {
+			System.err.println("Tried to get bin " + binStart + " from position " + currRecordAlignmentStart
+					+ " for feature on " + currChromosome.name() + " but found only " + currChromosomeIndices.length
+					+ " bins from a length of " + currChromosome.length());
+			return;
+		}
+
+		for (int i = currChromosomeIndices[binStart]; i < currChromosomeFeatures.length && 
+				currChromosomeFeatures[i].location().start() < currRecordAlignmentEnd; i++) {
+			if (currChromosomeFeatures[i].location().end() > currRecordAlignmentStart) {
+				count++;
+				break;
+			}			
+		}
+		
+	}
+	
+	@Deprecated
 	public void processSequence (SAMRecord r) {
 		
 		if (features == null) {
 			processFeatures();
 		}
-		
+
 		Chromosome chr = annotationSet.chromosomeFactory().getChromosome(r.getReferenceName());
 		
 		if (chr == null) return;
@@ -74,7 +129,6 @@ public class FeatureSubclass {
 		if (!features.containsKey(chr)) {
 			return;
 		}
-
 		
 		int start = r.getAlignmentStart();
 		int end = r.getAlignmentEnd();
@@ -82,15 +136,15 @@ public class FeatureSubclass {
 		int binStart = start/SEQUENCE_CHUNK_LENGTH;
 
 		Feature [] thisChrFeatures = features.get(chr);
-		
+
 		if (binStart >= indices.get(chr).length) {
 			System.err.println("Tried to get bin "+binStart+" from position "+start+" for feature on "+chr.name()+" but found only "+indices.get(chr).length+" bins from a length of "+chr.length());
 			return;
 		}
 		
 		boolean foundHit = false;
+		
 		for (int i=indices.get(chr)[binStart];i<thisChrFeatures.length;i++) {
-
 			// Check to see if we've gone past where this sequence could
 			// possibly hit.
 			if (thisChrFeatures[i].location().start() > end) break;
@@ -101,18 +155,14 @@ public class FeatureSubclass {
 					foundHit = true;
 				}
 			}			
-		}
-		
-	}
+		}	
+	}	
 	
-	public int count () {
-		return count;
-	}
 	
 	private void processFeatures () {
 		
-		features = new Hashtable<Chromosome, Feature[]>();
-		indices = new Hashtable<Chromosome, int[]>();
+		features = new HashMap<Chromosome, Feature[]>();
+		indices = new HashMap<Chromosome, int[]>();
 		
 		Chromosome [] chromosomes = featuresRaw.keySet().toArray(new Chromosome[0]);
 		
@@ -147,6 +197,8 @@ public class FeatureSubclass {
 		}
 		
 		featuresRaw = null;
+		
+		
 		
 	}
 	

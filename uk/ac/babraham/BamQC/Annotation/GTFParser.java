@@ -22,8 +22,8 @@ package uk.ac.babraham.BamQC.Annotation;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 /**
  * The Class GFFAnnotationParser reads sequence features from GFFv3 files
@@ -32,7 +32,7 @@ public class GTFParser implements AnnotationParser {
 
 	public void parseAnnotation(AnnotationSet annotationSet, File file) throws Exception {
 
-		Hashtable<String, Transcript> groupedFeatures = new Hashtable<String, Transcript>();
+		HashMap<String, Transcript> groupedFeatures = new HashMap<String, Transcript>();
 
 		BufferedReader br  = new BufferedReader(new FileReader(file));
 		String line;
@@ -251,7 +251,7 @@ public class GTFParser implements AnnotationParser {
 		private Feature feature;
 
 		/** The sub locations. */
-		private Vector<Location> subLocations = new Vector<Location>();
+		private ArrayList<Location> subLocations = new ArrayList<Location>();
 
 		private int startCodon;
 		private int stopCodon;
@@ -298,7 +298,7 @@ public class GTFParser implements AnnotationParser {
 				feature.setLocation(location);					
 			}
 			else if (subLocations.size() == 1) {
-				feature.setLocation(subLocations.elementAt(0));					
+				feature.setLocation(subLocations.get(0));					
 			}
 			else {
 				feature.setLocation(new SplitLocation(subLocations.toArray(new Location[0])));

@@ -20,7 +20,8 @@
 
 package uk.ac.babraham.BamQC.Annotation;
 
-import java.util.Hashtable;
+import java.util.Collection;
+import java.util.HashMap;
 
 import net.sf.samtools.SAMRecord;
 
@@ -32,7 +33,7 @@ public class FeatureClass {
 
 	private AnnotationSet annotationSet;
 
-	private Hashtable<String, FeatureSubclass> subClasses = new Hashtable<String, FeatureSubclass>();
+	private HashMap<String, FeatureSubclass> subClasses = new HashMap<String, FeatureSubclass>();
 	
 	
 	public FeatureClass (AnnotationSet a) {
@@ -48,13 +49,19 @@ public class FeatureClass {
 		
 	}
 	
+	@Deprecated
 	public void processSequence (SAMRecord r) {
 		FeatureSubclass[] fsc = subClasses.values().toArray(new FeatureSubclass[0]);
 		for (int i=0; i<fsc.length; i++) {
 			fsc[i].processSequence(r);
 		}
-		
-		
+	}
+	
+	public void processSequence (ShortRead r) {
+		FeatureSubclass[] fsc = subClasses.values().toArray(new FeatureSubclass[0]);
+		for (int i=0; i<fsc.length; i++) {
+			fsc[i].processSequence(r);
+		}
 	}
 	
 	public String [] getSubclassNames () {

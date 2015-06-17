@@ -21,7 +21,7 @@
 package uk.ac.babraham.BamQC.Modules;
 
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 import javax.xml.stream.XMLStreamException;
@@ -46,8 +46,8 @@ public class FeatureCoverage extends AbstractQCModule {
 
 		featureNames = annotation.listFeatureTypes();
 		
-		Vector<String> names = new Vector<String>();
-		Vector<Float> values = new Vector<Float>();		
+		ArrayList<String> names = new ArrayList<String>();
+		ArrayList<Float> values = new ArrayList<Float>();		
 		
 		for (int i=0;i<featureNames.length;i++) {
 			
@@ -69,7 +69,7 @@ public class FeatureCoverage extends AbstractQCModule {
 		featureNames = names.toArray(new String[0]);
 		readCounts = new double[featureNames.length];
 		for (int i=0;i<readCounts.length;i++) {
-			readCounts[i] = values.elementAt(i);
+			readCounts[i] = values.get(i);
 		}
 		
 		
@@ -80,7 +80,7 @@ public class FeatureCoverage extends AbstractQCModule {
 	}
 
 	public String name() {
-		return "Feature type read counts";
+		return "Feature Type Read Counts";
 	}
 
 	public String description() {
@@ -111,17 +111,25 @@ public class FeatureCoverage extends AbstractQCModule {
 	}
 
 	public boolean ignoreInReport() {
-		if (featureNames != null) {
-			if (featureNames.length == 0) {
-				return true;
-			}
-			return false;
+		if(featureNames == null || featureNames.length == 0) { 
+			return true;
 		}
-		return false;
+		return false;	
 	}
 
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
-		// TODO Auto-generated method stub
+		super.writeDefaultImage(report, "feature_coverage.png", "Feature Type Read Counts", 800, 600);
+		
+		if(featureNames == null) { return; }
+	
+		StringBuffer sb = report.dataDocument();
+		sb.append("FeatureName\tFeatureReadCounts\n");
+		for (int i=0;i<featureNames.length;i++) {
+			sb.append(featureNames[i]);
+			sb.append("\t");
+			sb.append(readCounts[i]);
+			sb.append("\n");
+		}
 
 	}
 

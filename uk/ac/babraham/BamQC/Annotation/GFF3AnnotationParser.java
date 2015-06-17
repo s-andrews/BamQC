@@ -22,9 +22,8 @@ package uk.ac.babraham.BamQC.Annotation;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 /**
  * The Class GFFAnnotationParser reads sequence features from GFFv3 files
@@ -35,7 +34,7 @@ public class GFF3AnnotationParser implements AnnotationParser {
 
 	public void parseAnnotation(AnnotationSet annotationSet, File file) throws Exception {
 				
-		Hashtable<String, FeatureGroup> groupedFeatures = new Hashtable<String, FeatureGroup>();
+		HashMap<String, FeatureGroup> groupedFeatures = new HashMap<String, FeatureGroup>();
 		
 		BufferedReader br  = new BufferedReader(new FileReader(file));
 		String line;
@@ -131,7 +130,7 @@ public class GFF3AnnotationParser implements AnnotationParser {
 				String [] attributes = sections[8].split(" *; *"); // Should check for escaped colons
 
 				// Make up a data structure of the attributes we have
-				Hashtable<String,Vector<String>> keyValuePairs = new Hashtable<String, Vector<String>>();
+				HashMap<String,ArrayList<String>> keyValuePairs = new HashMap<String, ArrayList<String>>();
 				
 				for (int a=0;a<attributes.length;a++) {
 					String [] keyValue = attributes[a].split("=",2); // Should check for escaped equals
@@ -152,7 +151,7 @@ public class GFF3AnnotationParser implements AnnotationParser {
 							keyValuePairs.get(keyValue[0]).add(keyValue[1]);
 						}
 						else {
-							Vector<String> newVector = new Vector<String>();
+							ArrayList<String> newVector = new ArrayList<String>();
 							newVector.add(keyValue[1]);
 							keyValuePairs.put(keyValue[0], newVector);
 						}
@@ -179,7 +178,7 @@ public class GFF3AnnotationParser implements AnnotationParser {
 					// We change exons to mRNA so we don't end up with spliced exon objects
 					if (sections[2].equals("exon")) sections[2] = "mRNA";
 					
-					String [] parents = keyValuePairs.get("Parent").elementAt(0).split(",");
+					String [] parents = keyValuePairs.get("Parent").get(0).split(",");
 					
 					for (int p=0;p<parents.length;p++) {
 
@@ -204,13 +203,13 @@ public class GFF3AnnotationParser implements AnnotationParser {
 					
 //					System.out.println("Adding feature "+sections[2]+" to GTF parent "+keyValuePairs.get("trancript_id").elementAt(0));
 
-					if (! groupedFeatures.containsKey(sections[2]+"_"+keyValuePairs.get("transcript_id").elementAt(0))) {
+					if (! groupedFeatures.containsKey(sections[2]+"_"+keyValuePairs.get("transcript_id").get(0))) {
 						Feature feature = new Feature(sections[2],c);
 												
-						groupedFeatures.put(sections[2]+"_"+keyValuePairs.get("transcript_id").elementAt(0), new FeatureGroup(feature, strand, feature.location()));
+						groupedFeatures.put(sections[2]+"_"+keyValuePairs.get("transcript_id").get(0), new FeatureGroup(feature, strand, feature.location()));
 					}						
 						
-					groupedFeatures.get(sections[2]+"_"+keyValuePairs.get("transcript_id").elementAt(0)).addSublocation(new Location(start, end, strand));
+					groupedFeatures.get(sections[2]+"_"+keyValuePairs.get("transcript_id").get(0)).addSublocation(new Location(start, end, strand));
 				}
 
 				else {
@@ -218,10 +217,9 @@ public class GFF3AnnotationParser implements AnnotationParser {
 				
 					Feature feature = new Feature(sections[2],c);
 					feature.setLocation(new Location(start,end,strand));
-					Enumeration<String> en = keyValuePairs.keys();
 					if (keyValuePairs.containsKey("ID")) {
 						// This is a feature which may end up having subfeatures
-						groupedFeatures.put(sections[2]+"_"+keyValuePairs.get("ID").elementAt(0), new FeatureGroup(feature, strand, feature.location()));				
+						groupedFeatures.put(sections[2]+"_"+keyValuePairs.get("ID").get(0), new FeatureGroup(feature, strand, feature.location()));				
 					}
 					else {
 						// We can just add this to the annotation collection
@@ -258,7 +256,7 @@ public class GFF3AnnotationParser implements AnnotationParser {
 		private Feature feature;
 		
 		/** The sub locations. */
-		private Vector<Location> subLocations = new Vector<Location>();
+		private ArrayList<Location> subLocations = new ArrayList<Location>();
 		
 		/** The location */
 		private Location location;
@@ -294,7 +292,7 @@ public class GFF3AnnotationParser implements AnnotationParser {
 				feature.setLocation(location);					
 			}
 			else if (subLocations.size() == 1) {
-				feature.setLocation(subLocations.elementAt(0));					
+				feature.setLocation(subLocations.get(0));					
 			}
 			else {
 				feature.setLocation(new SplitLocation(subLocations.toArray(new Location[0])));
