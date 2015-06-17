@@ -80,7 +80,7 @@ public class FeatureCoverage extends AbstractQCModule {
 	}
 
 	public String name() {
-		return "Feature type read counts";
+		return "Feature Type Read Counts";
 	}
 
 	public String description() {
@@ -111,17 +111,25 @@ public class FeatureCoverage extends AbstractQCModule {
 	}
 
 	public boolean ignoreInReport() {
-		if (featureNames != null) {
-			if (featureNames.length == 0) {
-				return true;
-			}
-			return false;
+		if(featureNames == null || featureNames.length == 0) { 
+			return true;
 		}
-		return false;
+		return false;	
 	}
 
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
-		// TODO Auto-generated method stub
+		super.writeDefaultImage(report, "feature_coverage.png", "Feature Type Read Counts", 800, 600);
+		
+		if(featureNames == null) { return; }
+	
+		StringBuffer sb = report.dataDocument();
+		sb.append("FeatureName\tFeatureReadCounts\n");
+		for (int i=0;i<featureNames.length;i++) {
+			sb.append(featureNames[i]);
+			sb.append("\t");
+			sb.append(readCounts[i]);
+			sb.append("\n");
+		}
 
 	}
 
