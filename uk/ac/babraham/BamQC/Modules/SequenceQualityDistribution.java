@@ -129,9 +129,19 @@ public class SequenceQualityDistribution extends AbstractQCModule {
 
 	@Override
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
-		String title = "Sequence Quality Distribution";
+		super.writeDefaultImage(report, "SequenceQualityDistribution.png", "Sequence Quality Distribution", 800, 600);
+
+		if(distribution == null) { return; }
+	
+		StringBuffer sb = report.dataDocument();
+		sb.append("Sequence Quality (Phred)\tSequence Quality Distribution\n");
+		for (int i=0;i<distribution.size();i++) {
+			sb.append(i);
+			sb.append("\t");
+			sb.append(distribution.get(i));
+			sb.append("\n");
+		}
 		
-		super.writeDefaultImage(report, "SequenceQualityDistribution.png", title, 800, 600);  // TODO
 	}
 	
 	public List<Integer> getDistribution() {
