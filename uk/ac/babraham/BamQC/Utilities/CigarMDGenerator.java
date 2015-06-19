@@ -56,8 +56,6 @@ public class CigarMDGenerator {
 	private int currentCigarElementLength = 0;
 	// The operator for the current Cigar element
 	private CigarOperator currentCigarElementOperator = null;
-	// The current MD tag element (substring of MD tag)
-	private String currentMDElement = null;
 	// The temporary processed length of the processed MD tag element
 	private int temporaryMDElementLength = 0;
 	// The current processed position of the processed MD tag (for the parser)
@@ -65,9 +63,6 @@ public class CigarMDGenerator {
 	// The current base call position of the read
 	private int currentBaseCallPosition = 0;
 
-	// Bases (used for search cache)
-	private static final String acceptableBases = "ACGTN";
-	
 	// Data fields storing the CigarMD object combining Cigar and MD strings.
 	private CigarMD cigarMD = new CigarMD();
 	
@@ -325,9 +320,9 @@ public class CigarMDGenerator {
 				
 			} else if(oldElement.getOperator() == CigarMDOperator.MISMATCH) {
 				// reverse and complement the bases couples
-				newBases = new StringBuilder();
 				oldBases = oldElement.getBases();
 				mutations = oldElement.getLength();
+				newBases = new StringBuilder(oldBases.length());
 				for(int j = 0; j < mutations; j++) {
 					newBases.insert(0, oldBases.substring(j*2, j*2+2));					
 				}
@@ -386,12 +381,13 @@ public class CigarMDGenerator {
 		currentCigarElement = null;
 		currentCigarElementLength = 0;
 		currentCigarElementOperator = null;
-		currentMDElement = "";
 		temporaryMDElementLength = 0;
 		currentMDElementPosition = 0;
 		currentBaseCallPosition = 0;
 		readString = null;
-		cigarMD = new CigarMD();
+		if(cigarMD != null && !cigarMD.isEmpty()) {
+			cigarMD = new CigarMD();
+		}
 	}
 
 	
@@ -439,7 +435,6 @@ public class CigarMDGenerator {
 	private boolean processMDtagCigarOperatorM(SAMRecord read) { 
 		// The temporary length of the current Cigar element
 		int temporaryCigarElementLength = currentCigarElementLength;
-		StringBuilder bases;
 
 		while(temporaryCigarElementLength > 0) {
 						
@@ -459,37 +454,41 @@ public class CigarMDGenerator {
 				
 				// extract new MD element char by char
 				char currentMDChar = mdString.charAt(currentMDElementPosition);
-				currentMDElement = String.valueOf(currentMDChar);
 				currentMDElementPosition++;
-
-		     	// skip if the current MD element is zero. This is redundant information if the CIGAR string is read too..
-				if(currentMDElement.equals("0")) {
+				
+		
+		     	// skip if the retrieved MD element char is zero. This is redundant information if the CIGAR string is read too..
+				if(currentMDChar == '0') {
 					continue;
 				}
 				
+				// the MD character is not 0. Therefore, we need to process it!
+				// Either we have a number (MATCH: 1 or more digits) or a string of bases (MISMATCH: 1 or more chars)
+
 				
 				if(currentMDChar >= '1' && currentMDChar <= '9') {
 					// CASE 1: The first character is a number. Therefore, we are parsing MATCHED bases.
 					// Let's continue and see how many numbers we find.
 					// This comprehensive number is the temporaryMDElementLength, which tells us 
 					// how many matched bases we have.
+					// Capacity initially set to 3: 3 digits of matches (up to 999!)
+					StringBuilder mdNumber = new StringBuilder(3);
+					mdNumber.append(currentMDChar);
 					while(currentMDElementPosition < mdString.length()) {
 						currentMDChar = mdString.charAt(currentMDElementPosition);
 						if(currentMDChar >= '0' && currentMDChar <= '9') {
-							currentMDElement = currentMDElement + currentMDChar;
+							mdNumber.append(currentMDChar);
 							currentMDElementPosition++;
 						} else {
 							// c is something else. The MD Element has been parsed.
 							break;
 						}
 					}
-					// currentMDElement is a number.
-					temporaryMDElementLength = Integer.parseInt(currentMDElement);
+
+					temporaryMDElementLength = Integer.parseInt(mdNumber.toString());
 					
 					// add the new MATCH element to the CigarMD string and update the temporaryCigarElementLength
-					temporaryCigarElementLength = addMatchToCigarMD(temporaryCigarElementLength);
-
-					
+					temporaryCigarElementLength = addMatchToCigarMD(temporaryCigarElementLength);	
 					
 				} else {
 					// CASE 2: The first character is a char. Therefore, we are parsing MISMATCHED bases or mutations.
@@ -500,11 +499,12 @@ public class CigarMDGenerator {
 					// can be coded as 2uCAGT if the reference string CA are mutated into GT.
 					
 					// The bases for this mismatch
-					bases = new StringBuilder();
+					// Capacity initially set to 8: 8 contiguous SNPs!
+					StringBuilder bases = new StringBuilder(8);
 					// Retrieve the mutation and create the first couple of mutated bases.
 					char currentBaseCall = readString.charAt(currentBaseCallPosition);
 					//log.debug("currentBaseCallPosition: " + currentBaseCallPosition);
-					if(acceptableBases.indexOf(currentMDElement) > -1) {
+					if(currentMDChar == 'A' || currentMDChar == 'C' || currentMDChar == 'G' || currentMDChar == 'T' || currentMDChar == 'N') {
 						bases.append(currentMDChar).append(currentBaseCall);			
 					} else {
 						log.warn("Found unrecognised mutation " + 
@@ -519,9 +519,7 @@ public class CigarMDGenerator {
 					// bases will store the mismatched couples (ReferenceBase,ReadBaseMutation).
 					while(currentMDElementPosition < mdString.length()) {		
 						currentMDChar = mdString.charAt(currentMDElementPosition);
-						if(acceptableBases.indexOf(String.valueOf(currentMDChar)) > -1) {
-							//log.debug("currentMDElement: " + currentMDElement + " currentBaseCall: " + currentBaseCall);								
-							//log.debug("currentBaseCallPosition: " + (currentBaseCallPosition+temporaryMDElementLength));
+						if(currentMDChar == 'A' || currentMDChar == 'C' || currentMDChar == 'G' || currentMDChar == 'T' || currentMDChar == 'N') {
 							currentBaseCall = readString.charAt(currentBaseCallPosition+temporaryMDElementLength);
 							bases.append(currentMDChar).append(currentBaseCall);
 							temporaryMDElementLength++;
@@ -549,15 +547,13 @@ public class CigarMDGenerator {
 			} else {
 				// DO NOT PARSE A NEW MD ELEMENT
 				
-				// The currentMDElement is a MATCH. This because temporaryMDElementLength > 0 and the MD tag string only reports numbers for matches. 
+				// The MD Element is a MATCH. This because temporaryMDElementLength > 0 and the MD tag string only reports numbers for matches. 
 				// Therefore, no mismatched bases to compute for this case.
-				//log.debug("temporaryMDElementLength!=0. Only matches here. tempCigElem: " + temporaryCigarElementLength + "M ~ " + "parsedMDElem: " + currentMDElement + " ; length: " + temporaryMDElementLength);
 				
 				// add the new MATCH element to the CigarMD string and update the temporaryCigarElementLength
 				temporaryCigarElementLength = addMatchToCigarMD(temporaryCigarElementLength);
 			}
 			
-			//log.debug("tempCigElem: " + temporaryCigarElementLength + "M ~ " + "parsedMDElem: " + currentMDElement + " ; length: " + temporaryMDElementLength);
 			//log.debug(cigarMD.toString());
 			
 		}
@@ -574,7 +570,7 @@ public class CigarMDGenerator {
 		currentBaseCallPosition = currentBaseCallPosition
 				+ currentCigarElementLength;
 
-		//log.debug("tempCigElem: " + currentCigarElementLength + "I ~ " + "parsedMDElem: " + currentMDElement + " ; length: " + temporaryMDElementLength);
+		//log.debug("tempCigElem: " + currentCigarElementLength + "I ~ " + " ; length: " + temporaryMDElementLength);
 		cigarMD.add(new CigarMDElement(currentCigarElementLength, CigarMDOperator.INSERTION, wronglyInsertedBases));
 	}
 
@@ -588,26 +584,25 @@ public class CigarMDGenerator {
 					+ ", CurrentCigarElement : " + currentCigarElement.getLength() + currentCigarElement.getOperator().toString());
 			return false;
 		}
-		// Parse and extract the currenMDElement. It is a string starting with ^
+		// Parse and extract the current MD Element. It is a string starting with ^
 		// and followed by a string of (A,C,G,T)
 		// Extract the first character for the MD element.
-		currentMDElement = String.valueOf(mdString
-				.charAt(currentMDElementPosition));
+		char currentMDChar = mdString.charAt(currentMDElementPosition);
 		currentMDElementPosition++;
 
 		// skip if the current MD element is zero. This is redundant information
 		// if the CIGAR string is read too..
-		while (currentMDElement.equals("0")) {
+		while (currentMDChar == '0') {
 			if(mdString.length() <= currentMDElementPosition) {
 				log.warn("MD tag string is shorter than expected (1). Cigar : " + read.getCigarString() + ", mdString : " + mdString
 						+ ", CurrentCigarElement : " + currentCigarElement.getLength() + currentCigarElement.getOperator().toString());
 				return false;
 			}
-			currentMDElement = String.valueOf(mdString.charAt(currentMDElementPosition));
+			currentMDChar = mdString.charAt(currentMDElementPosition);
 			currentMDElementPosition++;
 		}
 
-		if (!currentMDElement.equals("^")) {
+		if (currentMDChar != '^') {
 			// this means an inconsistency between the CIGAR and MD string
 			log.warn("^ not found in the MD string when processing Cigar-Oper D. Cigar : " + read.getCigarString() + ", mdString : " + mdString
 					+ ", CurrentCigarElement : " + currentCigarElement.getLength() + currentCigarElement.getOperator().toString());
@@ -621,14 +616,14 @@ public class CigarMDGenerator {
 		
 		// The first character is a ^. There are exactly
 		// temporaryCigarElementLength chars (A,C,G,T) to parse.
-		currentMDElement = mdString.substring(currentMDElementPosition,
+		String deletedBases = mdString.substring(currentMDElementPosition,
 				currentMDElementPosition + currentCigarElementLength);
 		currentMDElementPosition = currentMDElementPosition
 				+ currentCigarElementLength;
 
-//		log.debug("tempCigElem: " + currentCigarElementLength + "D ~ " + "parsedMDElem: " + currentMDElement + " ; length: " +
+//		log.debug("tempCigElem: " + currentCigarElementLength + "D ~ " + "DeletedBases: " + deletedBases + " ; length: " +
 //		currentMDElement.length());
-		cigarMD.add(new CigarMDElement(currentCigarElementLength, CigarMDOperator.DELETION, currentMDElement));		
+		cigarMD.add(new CigarMDElement(currentCigarElementLength, CigarMDOperator.DELETION, deletedBases));		
 		return true;
 	}
 	
@@ -639,8 +634,7 @@ public class CigarMDGenerator {
 		// Skipped regions are not reported in the read, so don't update currentBaseCallPosition.
 		// We do not record the bases.
 //		log.debug("tempCigElem: " +
-//		 currentCigarElementLength + "N ~ " + "parsedMDElem: "
-//		 + currentMDElement + " ; length: " +
+//		 currentCigarElementLength + "N ~ " + " ; length: " +
 //		 temporaryMDElementLength);
 		cigarMD.add(new CigarMDElement(currentCigarElementLength, CigarMDOperator.SKIPPED_REGION, ""));
 	}
@@ -652,8 +646,7 @@ public class CigarMDGenerator {
 		// Soft clips are reported in the read though, so the currentBaseCallPosition must be updated
 		// We do not record the bases.
 //		log.debug("tempCigElem: " +
-//		 currentCigarElementLength + "S ~ " + "parsedMDElem: "
-//		 + currentMDElement + " ; length: " +
+//		 currentCigarElementLength + "S ~ " + " ; length: " +
 //		 temporaryMDElementLength);
 		currentBaseCallPosition = currentBaseCallPosition + currentCigarElementLength;
 		cigarMD.add(new CigarMDElement(currentCigarElementLength, CigarMDOperator.SOFT_CLIP, ""));
@@ -666,8 +659,7 @@ public class CigarMDGenerator {
 		// Hard clips are not reported in the read, so don't update currentBaseCallPosition.
 		// We do not record the bases.
 //		log.debug("tempCigElem: " +
-//				 currentCigarElementLength + "H ~ " + "parsedMDElem: "
-//				 + currentMDElement + " ; length: " +
+//				 currentCigarElementLength + "H ~ " + " ; length: " +
 //				 temporaryMDElementLength);
 		cigarMD.add(new CigarMDElement(currentCigarElementLength, CigarMDOperator.HARD_CLIP, ""));
 	}
@@ -679,8 +671,7 @@ public class CigarMDGenerator {
 		// Paddings are not reported in the read, so don't update currentBaseCallPosition.
 		// We do not record the bases.
 //		log.debug("tempCigElem: " +
-//				 currentCigarElementLength + "P ~ " + "parsedMDElem: "
-//				 + currentMDElement + " ; length: " +
+//				 currentCigarElementLength + "P ~ " + " ; length: " +
 //				 temporaryMDElementLength);
 		cigarMD.add(new CigarMDElement(currentCigarElementLength, CigarMDOperator.PADDING, ""));
 	}
