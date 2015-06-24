@@ -53,8 +53,6 @@ public class FeatureSubclass {
 	private Chromosome currChromosome = null;
 	private Feature[] currChromosomeFeatures = null;
 	private int[] currChromosomeIndices = null;
-	private int index = 0;
-	
 	
 	
 	// These are the collated values being stored
@@ -93,7 +91,7 @@ public class FeatureSubclass {
 			currReferenceName = r.getReferenceName();
 			currChromosome = annotationSet.chromosomeFactory().getChromosome(currReferenceName);
 			currChromosomeFeatures = features.get(currChromosome);
-			currChromosomeIndices = indices.get(currChromosome);				
+			currChromosomeIndices = indices.get(currChromosome);
 		} 
 		
 		if (currChromosome == null || currChromosomeFeatures == null) return;
@@ -104,16 +102,55 @@ public class FeatureSubclass {
 					+ " bins from a length of " + currChromosome.length());
 			return;
 		}
-
+		
 		for (int i = currChromosomeIndices[binStart]; i < currChromosomeFeatures.length && 
-				currChromosomeFeatures[i].location().start() < currRecordAlignmentEnd; i++) {
-			if (currChromosomeFeatures[i].location().end() > currRecordAlignmentStart) {
+      		currChromosomeFeatures[i].location().start() < currRecordAlignmentEnd; i++) {
+			if (currChromosomeFeatures[i].location().end() > currRecordAlignmentStart) {	
 				count++;
-				break;
-			}			
+				break;		
+			}
 		}
 		
 	}
+	
+	private void processFeatures () {
+		
+		features = new HashMap<Chromosome, Feature[]>();
+		indices = new HashMap<Chromosome, int[]>();
+		
+		Chromosome [] chromosomes = featuresRaw.keySet().toArray(new Chromosome[0]);
+		
+		for (int c=0;c<chromosomes.length;c++) {
+
+			Feature [] featuresForThisChromosome = featuresRaw.get(chromosomes[c]).toArray(new Feature[0]);
+			
+			Arrays.sort(featuresForThisChromosome);
+	
+			features.put(chromosomes[c],featuresForThisChromosome);
+					
+			int numberOfBinsNeeded = (chromosomes[c].length()/SEQUENCE_CHUNK_LENGTH)+1;
+			if (!(chromosomes[c].length() % SEQUENCE_CHUNK_LENGTH == 0)) numberOfBinsNeeded++;
+			
+			int [] indicesForThisChromsome = new int[numberOfBinsNeeded];
+			indicesForThisChromsome[0] = 0;
+			indices.put(chromosomes[c],indicesForThisChromsome);
+			
+			int lastBin = 0;
+			
+			for (int f=0;f<featuresForThisChromosome.length;f++) {
+				int startBin = featuresForThisChromosome[f].location().start()/SEQUENCE_CHUNK_LENGTH;
+
+				if (startBin > lastBin) {
+					for (int i=lastBin+1;i<=startBin;i++) {
+						indicesForThisChromsome[i] = f;
+					}
+					lastBin = startBin;
+				}
+			}				
+		}
+		featuresRaw = null;	
+	}
+	
 	
 	@Deprecated
 	public void processSequence (SAMRecord r) {
@@ -157,50 +194,5 @@ public class FeatureSubclass {
 			}			
 		}	
 	}	
-	
-	
-	private void processFeatures () {
-		
-		features = new HashMap<Chromosome, Feature[]>();
-		indices = new HashMap<Chromosome, int[]>();
-		
-		Chromosome [] chromosomes = featuresRaw.keySet().toArray(new Chromosome[0]);
-		
-		for (int c=0;c<chromosomes.length;c++) {
-
-			Feature [] featuresForThisChromosome = featuresRaw.get(chromosomes[c]).toArray(new Feature[0]);
-			
-			Arrays.sort(featuresForThisChromosome);
-			
-			features.put(chromosomes[c],featuresForThisChromosome);
-					
-			int numberOfBinsNeeded = (chromosomes[c].length()/SEQUENCE_CHUNK_LENGTH)+1;
-			if (!(chromosomes[c].length() % SEQUENCE_CHUNK_LENGTH == 0)) ++numberOfBinsNeeded;
-			
-			int [] indicesForThisChromsome = new int[numberOfBinsNeeded];
-			indicesForThisChromsome[0] = 0;
-			indices.put(chromosomes[c],indicesForThisChromsome);
-			
-			int lastBin = 0;
-			
-			for (int f=0;f<featuresForThisChromosome.length;f++) {
-				int startBin = featuresForThisChromosome[f].location().start()/SEQUENCE_CHUNK_LENGTH;
-
-				if (startBin > lastBin) {
-					for (int i=lastBin+1;i<=startBin;i++) {
-						indicesForThisChromsome[i] = f;
-					}
-					lastBin = startBin;
-				}
-			}
-						
-		}
-		
-		featuresRaw = null;
-		
-		
-		
-	}
-	
 	
 }

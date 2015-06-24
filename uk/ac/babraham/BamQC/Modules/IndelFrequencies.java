@@ -35,7 +35,7 @@ import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 import uk.ac.babraham.BamQC.Graphs.LineGraph;
 
- 
+
 
 /** 
  * This class re-uses the computation collected by the class VariantCallDetection

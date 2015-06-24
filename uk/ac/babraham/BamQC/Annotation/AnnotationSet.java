@@ -71,9 +71,7 @@ public class AnnotationSet {
 	
 	
 	
-	
-	// TODO
-	// RE-ADAPT TO USE ShortRead instead of SAMRecord
+
 	public void processSequence (SAMRecord r) {
 			
 		// implementation using ShortRead
@@ -109,6 +107,22 @@ public class AnnotationSet {
 	}
 	
 	
+	/** SOLUTION CHANGING THE DATA STRUCTURE SAMRecord to ShortRead */	
+	private void processCachedSequence(ShortRead r) {	
+		if (!r.getReferenceName().equals("*")) {
+			Chromosome c = factory.getChromosome(r.getReferenceName());
+			c.processSequence(r);
+		}
+		if (featureArray == null) {
+			featureArray = features.values().toArray(new FeatureClass[0]);
+		}
+		for (int i=0;i<featureArray.length;i++) {
+			featureArray[i].processSequence(r);
+		}
+	}	
+	
+	
+	
 	/** SOLUTION WITHOUT CHANGING THE DATA STRUCTURE SAMRecord */
 
 	/**
@@ -137,34 +151,6 @@ public class AnnotationSet {
 	
 	@Deprecated
 	private void processCachedSequence(SAMRecord r) {
-		if (!r.getReferenceName().equals("*")) {
-			Chromosome c = factory.getChromosome(r.getReferenceName());
-			c.processSequence(r);
-		}
-		if (featureArray == null) {
-			featureArray = features.values().toArray(new FeatureClass[0]);
-		}
-		for (int i=0;i<featureArray.length;i++) {
-			featureArray[i].processSequence(r);
-		}
-	}	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	/** SOLUTION CHANGING THE DATA STRUCTURE SAMRecord to ShortRead */	
-	
-	// NEW CODE WILL USE ShortRead instead of SAMRecord
-	
-	// TODO IMPLEMENT CODE BELOW
-	private void processCachedSequence(ShortRead r) {	
 		if (!r.getReferenceName().equals("*")) {
 			Chromosome c = factory.getChromosome(r.getReferenceName());
 			c.processSequence(r);

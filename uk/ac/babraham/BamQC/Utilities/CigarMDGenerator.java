@@ -390,8 +390,7 @@ public class CigarMDGenerator {
 		}
 	}
 
-	
-	
+		
 	
 
 	// These methods process the MD string for each CIGAR operator.
