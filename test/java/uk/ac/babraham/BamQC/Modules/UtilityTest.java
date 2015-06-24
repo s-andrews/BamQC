@@ -15,7 +15,12 @@ public class UtilityTest {
 	public static List<Double> readInsertSizesDouble() {
 		List<Double> insertSizes = new ArrayList<Double>();
 
-		try (BufferedReader reader = new BufferedReader(new FileReader(INSERT_SIZES_FILENAME));) {
+		BufferedReader reader = null;
+		
+		try {
+			
+			reader = new BufferedReader(new FileReader(INSERT_SIZES_FILENAME));
+			
 			String line;
 
 			while ((line = reader.readLine()) != null) {
@@ -27,6 +32,12 @@ public class UtilityTest {
 		catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException("Cannot open file " + INSERT_SIZES_FILENAME);
+		} finally {
+			try {
+				reader.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		return insertSizes;
 	}
@@ -34,7 +45,12 @@ public class UtilityTest {
 	public static List<Long> readInsertSizesLong() {
 		List<Long> insertSizes = new ArrayList<Long>();
 
-		try (BufferedReader reader = new BufferedReader(new FileReader(INSERT_SIZES_FILENAME));) {
+		BufferedReader reader = null;
+		
+		try {
+			
+			reader = new BufferedReader(new FileReader(INSERT_SIZES_FILENAME));
+		
 			String line;
 
 			while ((line = reader.readLine()) != null) {
@@ -46,6 +62,12 @@ public class UtilityTest {
 		catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException("Cannot open file " + INSERT_SIZES_FILENAME);
+		} finally {
+			try {
+				reader.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		return insertSizes;
 	}
