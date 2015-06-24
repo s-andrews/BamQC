@@ -53,7 +53,8 @@ public class AboutDialog extends JDialog {
         JButton closeButton = new JButton("Close");
         getRootPane().setDefaultButton(closeButton);
         closeButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
+            @Override
+			public void actionPerformed(ActionEvent arg0) {
                 setVisible(false);
                 dispose();
             }

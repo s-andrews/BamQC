@@ -48,6 +48,8 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFormatException;
 
 public class BamQCApplication extends JFrame {	
 	
+	private static final long serialVersionUID = -1761781589885333860L;
+
 	public static final String VERSION = "0.1.0_devel";
 	
 	private JTabbedPane fileTabs;
@@ -202,17 +204,17 @@ public class BamQCApplication extends JFrame {
 		chooser.setMultiSelectionEnabled(false);
 		chooser.setFileFilter(new FileFilter() {
 		
+			@Override
 			public String getDescription() {
 				return "HTML files";
 			}
 		
+			@Override
 			public boolean accept(File f) {
 				if (f.isDirectory() || f.getName().toLowerCase().endsWith(".html")) {
 					return true;
 				}
-				else {
-					return false;
-				}
+				return false;
 			}
 		
 		});
@@ -233,13 +235,9 @@ public class BamQCApplication extends JFrame {
 				if (reply == JOptionPane.NO_OPTION) {
 					continue;
 				}
-				else {
-					break;
-				}
-			}
-			else {
 				break;
 			}
+			break;
 		}
 		
 		

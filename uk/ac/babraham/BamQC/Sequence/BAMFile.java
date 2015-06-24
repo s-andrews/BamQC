@@ -73,14 +73,17 @@ public class BAMFile implements SequenceFile {
 		readNext();
 	}
 	
+	@Override
 	public String name () {
 		return name;
 	}
 		
+	@Override
 	public boolean canListChromosomes() {
 		return !header.getSequenceDictionary().isEmpty();
 	}
 
+	@Override
 	public Chromosome[] listChromosomes() {
 		Vector<Chromosome> chrs = new Vector<Chromosome>();
 		
@@ -102,6 +105,7 @@ public class BAMFile implements SequenceFile {
 		
 	}
 
+	@Override
 	public int getPercentComplete() {
 		if (!hasNext()) return 100;
 		
@@ -115,14 +119,17 @@ public class BAMFile implements SequenceFile {
 		return 0;
 	}
 
+	@Override
 	public boolean isColorspace () {
 		return false;
 	}
 		
+	@Override
 	public boolean hasNext() {
 		return nextSequence != null;
 	}
 
+	@Override
 	public SAMRecord next () throws SequenceFormatException {
 		SAMRecord returnSeq = nextSequence;
 		readNext();
@@ -174,10 +181,12 @@ public class BAMFile implements SequenceFile {
 
 	}
 
+	@Override
 	public File getFile() {
 		return file;
 	}
 
+	@Override
 	public AnnotationSet annotationSet() {
 		return annotationSet;
 	}

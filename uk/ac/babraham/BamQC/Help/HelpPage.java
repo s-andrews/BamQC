@@ -34,6 +34,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
  */
 public class HelpPage extends DefaultMutableTreeNode {
 	
+	private static final long serialVersionUID = -5497623488733469306L;
+
 	/** The file. */
 	private File file;
 	
@@ -84,7 +86,6 @@ public class HelpPage extends DefaultMutableTreeNode {
 	 * @param hits the hits
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	@SuppressWarnings("unchecked")
 	public void containsString (String searchTerm, Vector<HelpPage>hits) throws IOException {
 				
 		// Since this will be part of a search thread then take a quick
@@ -121,6 +122,7 @@ public class HelpPage extends DefaultMutableTreeNode {
 	/* (non-Javadoc)
 	 * @see javax.swing.tree.DefaultMutableTreeNode#toString()
 	 */
+	@Override
 	public String toString () {
 		return name;
 	}
@@ -128,9 +130,10 @@ public class HelpPage extends DefaultMutableTreeNode {
 	/* (non-Javadoc)
 	 * @see javax.swing.tree.DefaultMutableTreeNode#isLeaf()
 	 */
+	@Override
 	public boolean isLeaf() {
 		if (file.isDirectory()) return false;
-		else return true;
+		return true;
 	}
 	
 	/**

@@ -39,6 +39,7 @@ import javax.swing.event.HyperlinkListener;
  */
 public class HelpPageDisplay extends JPanel implements HyperlinkListener {
 
+	private static final long serialVersionUID = 6274584311171948484L;
 	/** The html pane. */
 	public JEditorPane htmlPane;
 
@@ -76,6 +77,11 @@ public class HelpPageDisplay extends JPanel implements HyperlinkListener {
 	private class HelpEditor extends JEditorPane {
 		
 		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 5398497756074674632L;
+
+		/**
 		 * Instantiates a new help editor.
 		 * 
 		 * @param u the u
@@ -88,6 +94,7 @@ public class HelpPageDisplay extends JPanel implements HyperlinkListener {
 		/* (non-Javadoc)
 		 * @see javax.swing.JComponent#paint(java.awt.Graphics)
 		 */
+		@Override
 		public void paint(Graphics g) {
 			if (g instanceof Graphics2D) {
 				Graphics2D g2 = (Graphics2D)g;
@@ -100,6 +107,7 @@ public class HelpPageDisplay extends JPanel implements HyperlinkListener {
 	/* (non-Javadoc)
 	 * @see javax.swing.event.HyperlinkListener#hyperlinkUpdate(javax.swing.event.HyperlinkEvent)
 	 */
+	@Override
 	public void hyperlinkUpdate(HyperlinkEvent h) {
 		if (h.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 			try {

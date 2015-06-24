@@ -26,6 +26,7 @@ import javax.swing.JPanel;
 
 public class QualityBoxPlot extends JPanel {
 
+	private static final long serialVersionUID = -6133984815195517118L;
 	private double [] means;
 	private double [] medians;
 	private double [] lowest;
@@ -65,6 +66,7 @@ public class QualityBoxPlot extends JPanel {
 		this.yInterval = yInterval;
 	}
 	
+	@Override
 	public int getHeight () {
 		if (height <0) {
 			return super.getHeight();
@@ -72,6 +74,7 @@ public class QualityBoxPlot extends JPanel {
 		return height;
 	}
 
+	@Override
 	public int getWidth () {
 		if (width <0) {
 			return super.getWidth();
@@ -87,6 +90,7 @@ public class QualityBoxPlot extends JPanel {
 		this.width = -1;
 	}
 	
+	@Override
 	public void paint (Graphics g) {
 		super.paint(g);
 		

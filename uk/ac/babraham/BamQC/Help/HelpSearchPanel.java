@@ -40,6 +40,8 @@ import javax.swing.event.ListSelectionListener;
  */
 public class HelpSearchPanel extends JPanel implements ActionListener, ListSelectionListener, Runnable {
 
+	private static final long serialVersionUID = -3900154761896012849L;
+
 	/** The root. */
 	private HelpIndexRoot root;
 	
@@ -99,6 +101,7 @@ public class HelpSearchPanel extends JPanel implements ActionListener, ListSelec
 	/* (non-Javadoc)
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		Thread t = new Thread(this);
 		t.start();
@@ -107,6 +110,7 @@ public class HelpSearchPanel extends JPanel implements ActionListener, ListSelec
 	/* (non-Javadoc)
 	 * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
 	 */
+	@Override
 	public void valueChanged(ListSelectionEvent lse) {
 		Object o = resultList.getSelectedValue();
 		if (o != null && o instanceof HelpPage) {
@@ -117,6 +121,7 @@ public class HelpSearchPanel extends JPanel implements ActionListener, ListSelec
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()
 	 */
+	@Override
 	public void run() {
 		searchButton.setEnabled(false);
 		listModel.removeAllElements();

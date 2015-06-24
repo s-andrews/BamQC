@@ -89,7 +89,7 @@ public class MappingQualityDistribution extends AbstractQCModule {
 
 
 	public double[] getDistributionDouble() {
-		double total = (double) readNumber;
+		double total = readNumber;
 		List<Integer> distributionList = new ArrayList<Integer>();
 		
 		for (int count : distribution) {

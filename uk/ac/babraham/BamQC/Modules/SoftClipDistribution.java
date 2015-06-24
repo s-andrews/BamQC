@@ -40,6 +40,7 @@ public class SoftClipDistribution extends AbstractQCModule {
 	private long [] leftClipCounts = new long[1];
 	private long [] rightClipCounts = new long[1];
 	
+	@Override
 	public void processSequence(SAMRecord read) {
 		
 		if (read.getReadUnmappedFlag()) return;
@@ -92,10 +93,13 @@ public class SoftClipDistribution extends AbstractQCModule {
 		rightClipCounts = temp;
 	}
 	
+	@Override
 	public void processFile(SequenceFile file) {}
 
+	@Override
 	public void processAnnotationSet(AnnotationSet annotation) {}
 
+	@Override
 	public JPanel getResultsPanel() {
 
 		JPanel resultsPanel = new JPanel();
@@ -124,42 +128,51 @@ public class SoftClipDistribution extends AbstractQCModule {
 		return (resultsPanel);
 	}
 
+	@Override
 	public String name() {
 		return "Soft clip length distributions";
 	}
 
+	@Override
 	public String description() {
 		return "Looks at how much of your reads have been soft clipped";
 	}
 
+	@Override
 	public void reset() {
 		leftClipCounts = new long[1];
 		rightClipCounts = new long[1];
 		
 	}
 
+	@Override
 	public boolean raisesError() {
 		//TODO: Set this
 		return false;
 	}
 
+	@Override
 	public boolean raisesWarning() {
 		//TODO: Set this
 		return false;
 	}
 
+	@Override
 	public boolean needsToSeeSequences() {
 		return true;
 	}
 
+	@Override
 	public boolean needsToSeeAnnotation() {
 		return false;
 	}
 
+	@Override
 	public boolean ignoreInReport() {
 		return leftClipCounts.length==1 && rightClipCounts.length==1;
 	}
 
+	@Override
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
 
 		super.writeDefaultImage(report, "soft_clip_distribution_graph.png","Soft clipping distribution graph", 800, 600);

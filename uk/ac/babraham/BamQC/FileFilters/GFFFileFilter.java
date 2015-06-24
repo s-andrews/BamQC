@@ -25,6 +25,7 @@ import javax.swing.filechooser.FileFilter;
 
 public class GFFFileFilter extends FileFilter {
 
+	@Override
 	public boolean accept(File f) {
 		if (f.isDirectory() || f.getName().toLowerCase().endsWith(".gff") || f.getName().toLowerCase().endsWith(".gff3") || f.getName().toLowerCase().endsWith(".gtf")) {
 			return true;
@@ -32,6 +33,7 @@ public class GFFFileFilter extends FileFilter {
 		return false;
 	}
 
+	@Override
 	public String getDescription() {
 		return "GFF/GTF Files";
 	}

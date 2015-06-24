@@ -108,6 +108,7 @@ public class OfflineRunner implements AnalysisListener {
 
 	}	
 	
+	@Override
 	public void analysisComplete(SequenceFile file, QCModule[] results) {
 		File reportFile;
 		
@@ -133,6 +134,7 @@ public class OfflineRunner implements AnalysisListener {
 
 	}
 
+	@Override
 	public void analysisUpdated(SequenceFile file, int sequencesProcessed, int percentComplete) {
 		
 		if (percentComplete % 5 == 0) {
@@ -148,12 +150,14 @@ public class OfflineRunner implements AnalysisListener {
 		}
 	}
 
+	@Override
 	public void analysisExceptionReceived(SequenceFile file, Exception e) {
 		System.err.println("Failed to process file "+file.name());
 		e.printStackTrace();
 		filesRemaining.decrementAndGet();
 	}
 
+	@Override
 	public void analysisStarted(SequenceFile file) {
 		if (showUpdates) System.err.println("Started analysis of "+file.name());
 		

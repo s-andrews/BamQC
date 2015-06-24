@@ -53,6 +53,7 @@ public class AnalysisQueue implements Runnable, AnalysisListener{
 		queue.add(runner);
 	}
 
+	@Override
 	public void run() {
 
 		while (true) {
@@ -72,16 +73,20 @@ public class AnalysisQueue implements Runnable, AnalysisListener{
 		}
 	}
 
+	@Override
 	public void analysisComplete(SequenceFile file, QCModule[] results) {
 		usedSlots.decrementAndGet();
 	}
 
+	@Override
 	public void analysisUpdated(SequenceFile file, int sequencesProcessed, int percentComplete) {}
 
+	@Override
 	public void analysisExceptionReceived(SequenceFile file, Exception e) {
 		usedSlots.decrementAndGet();
 	}
 
+	@Override
 	public void analysisStarted(SequenceFile file) {}
 	
 	

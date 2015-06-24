@@ -38,10 +38,13 @@ public class FeatureCoverage extends AbstractQCModule {
 	private String [] featureNames = null;
 	private double [] readCounts;
 	
+	@Override
 	public void processSequence(SAMRecord read) {}
 
+	@Override
 	public void processFile(SequenceFile file) {}
 
+	@Override
 	public void processAnnotationSet(AnnotationSet annotation) {
 
 		featureNames = annotation.listFeatureTypes();
@@ -75,41 +78,50 @@ public class FeatureCoverage extends AbstractQCModule {
 		
 	}
 
+	@Override
 	public JPanel getResultsPanel() {
 		return new HorizontalBarGraph(featureNames, readCounts, "Feature read counts");
 	}
 
+	@Override
 	public String name() {
 		return "Feature Type Read Counts";
 	}
 
+	@Override
 	public String description() {
 		return "Tells how reads are distributed between feature types";
 	}
 
+	@Override
 	public void reset() {
 		// TODO Auto-generated method stub
 
 	}
 
+	@Override
 	public boolean raisesError() {
 		//TODO: Set this
 		return false;
 	}
 
+	@Override
 	public boolean raisesWarning() {
 		//TODO: Set this
 		return false;
 	}
 
+	@Override
 	public boolean needsToSeeSequences() {
 		return false;
 	}
 
+	@Override
 	public boolean needsToSeeAnnotation() {
 		return true;
 	}
 
+	@Override
 	public boolean ignoreInReport() {
 		if(featureNames == null || featureNames.length == 0) { 
 			return true;
@@ -117,6 +129,7 @@ public class FeatureCoverage extends AbstractQCModule {
 		return false;	
 	}
 
+	@Override
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
 		super.writeDefaultImage(report, "feature_coverage.png", "Feature Type Read Counts", 800, 600);
 		

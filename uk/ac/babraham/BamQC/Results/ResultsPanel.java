@@ -41,6 +41,7 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
 public class ResultsPanel extends JPanel implements ListSelectionListener, AnalysisListener{
 
+	private static final long serialVersionUID = 2141753423963373692L;
 	private static final ImageIcon ERROR_ICON = new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/BamQC/Resources/error.png"));
 	private static final ImageIcon WARNING_ICON = new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/BamQC/Resources/warning.png"));
 	private static final ImageIcon OK_ICON = new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/BamQC/Resources/tick.png"));
@@ -60,6 +61,7 @@ public class ResultsPanel extends JPanel implements ListSelectionListener, Analy
 		add(progressLabel,BorderLayout.CENTER);
 	}
 
+	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		int index = moduleList.getSelectedIndex();
 		if (index >= 0) {
@@ -81,6 +83,12 @@ public class ResultsPanel extends JPanel implements ListSelectionListener, Analy
 	
 	private class ModuleRenderer extends DefaultListCellRenderer {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 3665918496548081577L;
+
+		@Override
 		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 			if (! (value instanceof QCModule)) {
 				return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
@@ -109,6 +117,7 @@ public class ResultsPanel extends JPanel implements ListSelectionListener, Analy
 		
 	}
 
+	@Override
 	public void analysisComplete(SequenceFile file, QCModule[] rawModules) {
 		remove(progressLabel);
 
@@ -142,6 +151,7 @@ public class ResultsPanel extends JPanel implements ListSelectionListener, Analy
 		
 	}
 
+	@Override
 	public void analysisUpdated(SequenceFile file, int sequencesProcessed, int percentComplete) {
 		if (percentComplete > 99) {
 			progressLabel.setText("Read "+sequencesProcessed+" sequences");			
@@ -151,10 +161,12 @@ public class ResultsPanel extends JPanel implements ListSelectionListener, Analy
 		}
 	}
 
+	@Override
 	public void analysisExceptionReceived(SequenceFile file, Exception e) {
 		progressLabel.setText("Failed to process file: "+e.getLocalizedMessage());
 	}
 
+	@Override
 	public void analysisStarted(SequenceFile file) {
 		if (BamQCConfig.getInstance().gff_file == null) {
 			progressLabel.setText("Starting analysis...");

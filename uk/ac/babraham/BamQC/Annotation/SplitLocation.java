@@ -27,6 +27,10 @@ import java.util.Arrays;
  */
 public class SplitLocation extends Location {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4275718914518130070L;
 	private Location [] subLocations;
 	
 	/**

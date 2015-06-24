@@ -129,11 +129,13 @@ public class Location implements Serializable, Comparable<Location> {
 		return start()+((end()-start())/2);
 	}
 	
+	@Override
 	public String toString () {
 		return start()+"-"+end();
 	}
 		
 	
+	@Override
 	public int compareTo(Location o) {
 		if (start() != o.start()) return start() - o.start();
 		else if (end() != o.end()) return end()- o.end();

@@ -144,7 +144,6 @@ public class InsertDistribution extends AbstractQCModule {
 		if (!percentageDeviationCalculated) {
 			List<Double> distributionDouble = new ArrayList<Double>();
 			
-			int i = 0;
 			for (long count : distribution) {
 				distributionDouble.add((double) count);
 			}

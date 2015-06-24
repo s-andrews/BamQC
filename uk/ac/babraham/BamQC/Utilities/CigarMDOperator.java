@@ -59,7 +59,7 @@ public enum CigarMDOperator {
 
     private final boolean consumesReadBases;
     private final boolean consumesReferenceBases;
-    private final byte character;
+    //private final byte character;
     private final String string;
 
     // Readable synonyms of the above enums
@@ -79,7 +79,7 @@ public enum CigarMDOperator {
     CigarMDOperator(boolean consumesReadBases, boolean consumesReferenceBases, char character) {
         this.consumesReadBases = consumesReadBases;
         this.consumesReferenceBases = consumesReferenceBases;
-        this.character = (byte) character;
+        //this.character = (byte) character;
         this.string = new String(new char[] {character}).intern();
     }
 

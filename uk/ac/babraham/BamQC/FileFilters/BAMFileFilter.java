@@ -25,6 +25,7 @@ import javax.swing.filechooser.FileFilter;
 
 public class BAMFileFilter extends FileFilter {
 
+	@Override
 	public boolean accept(File f) {
 		if (f.isDirectory() || f.getName().toLowerCase().endsWith(".bam") || f.getName().toLowerCase().endsWith(".sam")) {
 			return true;
@@ -32,6 +33,7 @@ public class BAMFileFilter extends FileFilter {
 		return false;
 	}
 
+	@Override
 	public String getDescription() {
 		return "BAM/SAM Files";
 	}

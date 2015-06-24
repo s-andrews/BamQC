@@ -48,24 +48,29 @@ public class BasicStats extends AbstractQCModule {
 	private long singletonCount = 0;
 	private boolean hasAnnotation = false;
 	
+	@Override
 	public String description() {
 		return "Calculates some basic statistics about the file";
 	}
 	
+	@Override
 	public void processAnnotationSet(AnnotationSet annotation) {
 		if (annotation.hasFeatures()) {
 			hasAnnotation = true;
 		}		
 	}
 
+	@Override
 	public boolean needsToSeeSequences() {
 		return true;
 	}
 
+	@Override
 	public boolean needsToSeeAnnotation() {
 		return true;
 	}
 
+	@Override
 	public JPanel getResultsPanel() {
 		JPanel returnPanel = new JPanel();
 		returnPanel.setLayout(new BorderLayout());
@@ -78,13 +83,16 @@ public class BasicStats extends AbstractQCModule {
 	
 	}
 	
+	@Override
 	public void reset () {
 	}
 
+	@Override
 	public String name() {
 		return "Basic Statistics";
 	}
 
+	@Override
 	public void processSequence(SAMRecord sequence) {		
 		actualCount++;
 		if (!sequence.isSecondaryOrSupplementary()) {
@@ -102,22 +110,27 @@ public class BasicStats extends AbstractQCModule {
 		if (sequence.getDuplicateReadFlag()) duplicateCount++;
 	}
 	
+	@Override
 	public void processFile (SequenceFile file) {
 		this.name = file.name();
 	}
 	
+	@Override
 	public boolean raisesError() {
 		return false;
 	}
 
+	@Override
 	public boolean raisesWarning() {
 		return false;
 	}
 	
+	@Override
 	public boolean ignoreInReport () {
 		return false;
 	}
 
+	@Override
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException,IOException {
 		super.writeTable(report, new ResultsTable());
 	}
@@ -140,14 +153,17 @@ public class BasicStats extends AbstractQCModule {
 		};		
 		
 		// Sequence - Count - Percentage
+		@Override
 		public int getColumnCount() {
 			return 2;
 		}
 	
+		@Override
 		public int getRowCount() {
 			return pairedCount > 0 ? rowNames.length : 7; // Is there a nicer way to skip paired stats for single end?
 		}
 	
+		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			switch (columnIndex) {
 				case 0: return rowNames[rowIndex];
@@ -169,6 +185,7 @@ public class BasicStats extends AbstractQCModule {
 			return null;
 		}
 		
+		@Override
 		public String getColumnName (int columnIndex) {
 			switch (columnIndex) {
 				case 0: return "Measure";
@@ -181,6 +198,7 @@ public class BasicStats extends AbstractQCModule {
 	        return String.format("%6.3f", 100 * a / (double) b);
 	    }
 		
+		@Override
 		public Class<?> getColumnClass (int columnIndex) {
 			switch (columnIndex) {
 			case 0: return String.class;

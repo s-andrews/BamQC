@@ -20,7 +20,7 @@
 
 package uk.ac.babraham.BamQC.Annotation;
 
-import java.util.Collection;
+
 import java.util.HashMap;
 
 import net.sf.samtools.SAMRecord;

@@ -27,7 +27,6 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
-import uk.ac.babraham.BamQC.Modules.GenomeCoverage;
 
 /**
  * The Class GTFAnnotationParser reads sequence features from GTF files
@@ -36,6 +35,7 @@ public class GTFParser implements AnnotationParser {
 	
 	private static Logger log = Logger.getLogger(GTFParser.class);
 
+	@Override
 	public void parseAnnotation(AnnotationSet annotationSet, File file) throws Exception {
 
 		HashMap<String, Transcript> groupedFeatures = new HashMap<String, Transcript>();

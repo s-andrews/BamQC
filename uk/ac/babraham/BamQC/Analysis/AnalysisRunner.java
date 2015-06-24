@@ -65,6 +65,7 @@ public class AnalysisRunner implements Runnable {
 		AnalysisQueue.getInstance().addToQueue(this);
 	}
 
+	@Override
 	public void run() {
 
 		Iterator<AnalysisListener> i = listeners.iterator();

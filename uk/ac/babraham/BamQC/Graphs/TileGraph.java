@@ -33,6 +33,8 @@ import uk.ac.babraham.BamQC.Utilities.HotColdColourGradient;
 
 public class TileGraph extends JPanel {
 
+	private static final long serialVersionUID = -4332412677932412243L;
+
 	private String [] xLabels;
 	private int [] tiles;
 	private double [][]tileBaseMeans;
@@ -56,6 +58,7 @@ public class TileGraph extends JPanel {
 		this.width = -1;
 	}
 	
+	@Override
 	public int getHeight () {
 		if (height <0) {
 			return super.getHeight();
@@ -63,6 +66,7 @@ public class TileGraph extends JPanel {
 		return height;
 	}
 
+	@Override
 	public int getWidth () {
 		if (width <0) {
 			return super.getWidth();
@@ -75,6 +79,7 @@ public class TileGraph extends JPanel {
 	}
 
 
+	@Override
 	public void paint (Graphics g) {
 		super.paint(g);
 

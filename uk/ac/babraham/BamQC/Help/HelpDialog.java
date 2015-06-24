@@ -38,6 +38,8 @@ import javax.swing.tree.DefaultTreeModel;
  */
 public class HelpDialog extends JDialog implements TreeSelectionListener {
 	
+	private static final long serialVersionUID = -5895752006807164521L;
+
 	/** The tree. */
 	private JTree tree;
 	
@@ -111,6 +113,7 @@ public class HelpDialog extends JDialog implements TreeSelectionListener {
 	/* (non-Javadoc)
 	 * @see javax.swing.event.TreeSelectionListener#valueChanged(javax.swing.event.TreeSelectionEvent)
 	 */
+	@Override
 	public void valueChanged(TreeSelectionEvent tse) {
 		
 		if (tse.getNewLeadSelectionPath() == null) return;

@@ -112,6 +112,7 @@ public class Chromosome implements Comparable<Chromosome> {
 		
 	}
 	
+	@Override
 	public int compareTo(Chromosome o) {
 		
 		// We try to compare by number first and then by string if that

@@ -209,13 +209,12 @@ public class BaseGroup {
 		return value>=lowerCount && value<=upperCount;
 	}
 
+	@Override
 	public String toString () {
 		if (lowerCount == upperCount) {
 			return ""+lowerCount;
 		}
-		else {
-			return ""+lowerCount+"-"+upperCount;
-		}
+		return ""+lowerCount+"-"+upperCount;
 	}
 
 }

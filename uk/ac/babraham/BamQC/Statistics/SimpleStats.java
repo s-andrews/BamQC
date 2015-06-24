@@ -91,9 +91,7 @@ public class SimpleStats {
 			median /=2;
 			return median;
 		}
-		else {
-			return values[values.length/2];
-		}
+		return values[values.length/2];
 	}
 	
 	/**
@@ -125,9 +123,7 @@ public class SimpleStats {
 			median /=2;
 			return median;
 		}
-		else {
-			return values[effectiveLength/2];
-		}
+		return values[effectiveLength/2];
 	}
 	
 	/**
@@ -148,9 +144,7 @@ public class SimpleStats {
 			median /=2;
 			return median;
 		}
-		else {
-			return values[values.length/2];
-		}
+		return values[values.length/2];
 	}
 	
 	/**

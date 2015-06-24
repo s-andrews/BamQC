@@ -38,6 +38,7 @@ import uk.ac.babraham.BamQC.Help.HelpDialog;
 
 public class BamQCMenuBar extends JMenuBar implements ActionListener {
 
+	private static final long serialVersionUID = -1301056504996459340L;
 	private BamQCApplication application;
 	
 	public BamQCMenuBar (BamQCApplication application) {
@@ -119,6 +120,7 @@ public class BamQCMenuBar extends JMenuBar implements ActionListener {
 		
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent e) {
 
 		String command = e.getActionCommand();

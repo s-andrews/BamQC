@@ -117,6 +117,8 @@ public class BamQCTitlePanel extends JPanel {
 	 */
 	private class SmoothJLabel extends JLabel {
 		
+		private static final long serialVersionUID = 4036739763854114821L;
+
 		/**
 		 * Creates a new label
 		 * 
@@ -130,6 +132,7 @@ public class BamQCTitlePanel extends JPanel {
 		/* (non-Javadoc)
 		 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 		 */
+		@Override
 		public void paintComponent (Graphics g) {
 			if (g instanceof Graphics2D) {
 				((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

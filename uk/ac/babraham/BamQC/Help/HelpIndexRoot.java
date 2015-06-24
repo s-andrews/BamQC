@@ -34,6 +34,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
  */
 public class HelpIndexRoot extends DefaultMutableTreeNode {
 	
+	private static final long serialVersionUID = -4744317136889304693L;
 	/** The fs. */
 	public FileSorter fs = new FileSorter();
 	
@@ -83,7 +84,6 @@ public class HelpIndexRoot extends DefaultMutableTreeNode {
 	 * @return the help page[]
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	@SuppressWarnings("unchecked")
 	public HelpPage [] findPagesForTerm (String searchTerm) throws IOException {
 		Vector<HelpPage>hits = new Vector<HelpPage>();
 				
@@ -107,6 +107,7 @@ public class HelpIndexRoot extends DefaultMutableTreeNode {
 		/* (non-Javadoc)
 		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 		 */
+		@Override
 		public int compare(File f1, File f2) {
 			
 			// The file names should be preceeded by a series of

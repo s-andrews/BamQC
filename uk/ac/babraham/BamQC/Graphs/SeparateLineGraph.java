@@ -30,6 +30,7 @@ import javax.swing.JPanel;
 
 public class SeparateLineGraph extends JPanel {
 
+	private static final long serialVersionUID = -2880615892132541273L;
 	private String [] xTitles;
 	private String xLabel;
 	private String [] xCategories;
@@ -82,15 +83,18 @@ public class SeparateLineGraph extends JPanel {
 		
 	}
 	
+	@Override
 	public Dimension getPreferredSize () {
 		return new Dimension(800,600);
 	}
 
+	@Override
 	public Dimension getMinimumSize () {
 		return new Dimension(100,200);
 	}
 
 	
+	@Override
 	public int getHeight () {
 		if (height <0) {
 			return super.getHeight();
@@ -98,6 +102,7 @@ public class SeparateLineGraph extends JPanel {
 		return height;
 	}
 
+	@Override
 	public int getWidth () {
 		if (width <0) {
 			return super.getWidth();
@@ -114,6 +119,7 @@ public class SeparateLineGraph extends JPanel {
 	}
 	
 	
+	@Override
 	public void paint (Graphics g) {
 		super.paint(g);
 		

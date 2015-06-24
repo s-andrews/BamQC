@@ -31,6 +31,7 @@ import uk.ac.babraham.BamQC.Utilities.AxisScale;
 
 public class HorizontalBarGraph extends JPanel {
 
+	private static final long serialVersionUID = -4964032131806305960L;
 	private String [] labels;
 	private double [] values;
 	private String title;
@@ -66,15 +67,18 @@ public class HorizontalBarGraph extends JPanel {
 	}
 	
 	
+	@Override
 	public Dimension getPreferredSize () {
 		return new Dimension(800,20*labels.length);
 	}
 
+	@Override
 	public Dimension getMinimumSize () {
 		return new Dimension(100,200);
 	}
 
 	
+	@Override
 	public int getHeight () {
 		if (height <0) {
 			return super.getHeight();
@@ -82,6 +86,7 @@ public class HorizontalBarGraph extends JPanel {
 		return height;
 	}
 
+	@Override
 	public int getWidth () {
 		if (width <0) {
 			return super.getWidth();
@@ -98,6 +103,7 @@ public class HorizontalBarGraph extends JPanel {
 	}
 	
 	
+	@Override
 	public void paint (Graphics g) {
 		super.paint(g);
 		

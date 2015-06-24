@@ -56,10 +56,11 @@ public class GenomeCoverage extends AbstractQCModule {
 	private int errorReads = 0;
 	private int readNumber = 0;
 
-	
+	@Override
 	public void processSequence(SAMRecord read) {
 	}
 
+	@Override
 	public void processFile(SequenceFile file) {
 		log.info("processFile called");
 	}
@@ -184,6 +185,7 @@ public class GenomeCoverage extends AbstractQCModule {
 		}
 	}
 
+	@Override
 	public JPanel getResultsPanel() {
 		
 		int maxBins = 0;

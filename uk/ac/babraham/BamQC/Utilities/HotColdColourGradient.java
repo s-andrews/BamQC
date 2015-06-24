@@ -34,6 +34,7 @@ public class HotColdColourGradient {
 	
 	private final Color [] colors = makeColors();
 	
+	@Override
 	public String toString() {
 		return "Hot Cold Colour Gradient";
 	}

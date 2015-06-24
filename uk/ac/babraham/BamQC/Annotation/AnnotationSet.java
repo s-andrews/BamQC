@@ -132,11 +132,13 @@ public class AnnotationSet {
 	 * all the processSequence(SAMREcord) methods of the other classes, 
 	 * before testing whether or not this is a convenient solution.
 	 */
+	@Deprecated
 	class TempSAMRecord implements Comparable<TempSAMRecord> {
 		private SAMRecord samRecord;
 		public TempSAMRecord(SAMRecord r) {
 			samRecord = r;
 		}
+		@Override
 		public int compareTo(TempSAMRecord sr) {
 			int compareTest = samRecord.getReferenceName().compareTo(sr.getSAMRecord().getReferenceName());
 			if(compareTest == 0) {

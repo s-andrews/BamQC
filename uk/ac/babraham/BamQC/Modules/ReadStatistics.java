@@ -140,11 +140,11 @@ public class ReadStatistics extends AbstractQCModule {
 			if (columnIndex == 0) {
 				return resultNames[rowIndex];
 			}
-			else {
-				return results[rowIndex];
-			}
+			return results[rowIndex];
+			
 		}
 
+		@Override
 		public String getColumnName(int columnIndex) {
 			switch (columnIndex) {
 			case 0:
@@ -155,6 +155,7 @@ public class ReadStatistics extends AbstractQCModule {
 			return null;
 		}
 
+		@Override
 		public Class<?> getColumnClass(int columnIndex) {
 			switch (columnIndex) {
 			case 0:

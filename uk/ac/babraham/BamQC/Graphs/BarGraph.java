@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
 
 public class BarGraph extends JPanel {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -7292512222510200683L;
 
 	private static Logger log = Logger.getLogger(BarGraph.class);
 
@@ -81,14 +81,17 @@ public class BarGraph extends JPanel {
 		}
 	}
 
+	@Override
 	public Dimension getPreferredSize() {
 		return new Dimension(800, 600);
 	}
 
+	@Override
 	public Dimension getMinimumSize() {
 		return new Dimension(100, 200);
 	}
 
+	@Override
 	public int getHeight() {
 		if (height < 0) {
 			return super.getHeight();
@@ -96,6 +99,7 @@ public class BarGraph extends JPanel {
 		return height;
 	}
 
+	@Override
 	public int getWidth() {
 		if (width < 0) {
 			return super.getWidth();
@@ -111,6 +115,7 @@ public class BarGraph extends JPanel {
 		this.width = -1;
 	}
 
+	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
 

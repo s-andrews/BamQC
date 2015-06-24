@@ -39,10 +39,13 @@ public class ChromosomeDensity extends AbstractQCModule {
 	private String [] chromosomeNames;
 	private double [] readDensities;
 	
+	@Override
 	public void processSequence(SAMRecord read) {}
 
+	@Override
 	public void processFile(SequenceFile file) {}
 
+	@Override
 	public void processAnnotationSet(AnnotationSet annotation) {
 
 		Chromosome [] chromosomes = annotation.chromosomeFactory().getAllChromosomes();
@@ -68,45 +71,55 @@ public class ChromosomeDensity extends AbstractQCModule {
 		}
 	}
 
+	@Override
 	public JPanel getResultsPanel() {
 		return new HorizontalBarGraph(chromosomeNames, readDensities, "Per-chromosome read density");
 	}
 
+	@Override
 	public String name() {
 		return "Chromosome Read Density";
 	}
 
+	@Override
 	public String description() {
 		return "Tells if the read density varies between chromosomes";
 	}
 
+	@Override
 	public void reset() {
 		// TODO Auto-generated method stub
 
 	}
 
+	@Override
 	public boolean raisesError() {
 		//TODO: Set this
 		return false;
 	}
 
+	@Override
 	public boolean raisesWarning() {
 		//TODO: Set this
 		return false;
 	}
 
+	@Override
 	public boolean needsToSeeSequences() {
 		return false;
 	}
 
+	@Override
 	public boolean needsToSeeAnnotation() {
 		return true;
 	}
 
+	@Override
 	public boolean ignoreInReport() {
 		return false;
 	}
 
+	@Override
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
 		
 		super.writeDefaultImage(report, "chromosome_density.png", "Chromsome Density Graph", 800, 600);

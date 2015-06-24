@@ -26,7 +26,7 @@ import java.io.IOException;
 import javax.swing.JPanel;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 
 import net.sf.samtools.SAMRecord;
 import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
@@ -43,7 +43,7 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFile;
  */
 public class SNPFrequenciesByType extends AbstractQCModule {
 
-	private static Logger log = Logger.getLogger(SNPFrequenciesByType.class);
+	//private static Logger log = Logger.getLogger(SNPFrequenciesByType.class);
 	
 	// original threshold for the plot x axis.
 	private double firstMaxX=0.0d; 

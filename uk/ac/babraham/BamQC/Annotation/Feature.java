@@ -71,6 +71,7 @@ public class Feature implements Comparable<Feature>{
 		//TODO: Placeholder in case we want to record something for every feature.
 	}
 
+	@Override
 	public int compareTo(Feature o) {
 		return location.compareTo(o.location);
 	}

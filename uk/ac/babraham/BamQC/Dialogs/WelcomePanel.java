@@ -26,9 +26,9 @@ import java.awt.Insets;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-@SuppressWarnings("serial")
 public class WelcomePanel extends JPanel {
-	private static final long serialVersionUID = 1L;
+
+	private static final long serialVersionUID = 2018308540239092880L;
 
 	public WelcomePanel () {
 		setLayout(new GridBagLayout());
