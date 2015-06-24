@@ -89,7 +89,7 @@ public class BamQCTitlePanel extends JPanel {
 		c.add(website,constraints);
 		constraints.gridy++;
 
-		JLabel copyright = new JLabel("\u00a9 Simon Andrews, Pierre Lindenbaum, Brian Howard, Phil Ewels 2011-14,", JLabel.CENTER);
+		JLabel copyright = new JLabel("<html>\u00a9 Simon Andrews, Pierre Lindenbaum, Brian Howard, <br>Phil Ewels, Bart Ailey, Piero Dalle Pezze 2011-15</html>", JLabel.CENTER);
 		copyright.setFont(new Font("Dialog",Font.PLAIN,14));
 		c.add(copyright,constraints);
 		constraints.gridy++;
