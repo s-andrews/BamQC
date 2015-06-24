@@ -25,10 +25,16 @@ import java.io.FileReader;
 import java.util.HashMap;
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
+
+import uk.ac.babraham.BamQC.Modules.GenomeCoverage;
+
 /**
- * The Class GFFAnnotationParser reads sequence features from GFFv3 files
+ * The Class GTFAnnotationParser reads sequence features from GTF files
  */
 public class GTFParser implements AnnotationParser {
+	
+	private static Logger log = Logger.getLogger(GTFParser.class);
 
 	public void parseAnnotation(AnnotationSet annotationSet, File file) throws Exception {
 
@@ -59,12 +65,12 @@ public class GTFParser implements AnnotationParser {
 			//				annotationSets.add(annotationSet);
 			//			}
 
-
-			++count;
+			count++;
 			
-			if (count % 10000 == 0) {
-				System.err.println ("Processed "+count+" lines currently holding "+groupedFeatures.size()+" features");
-			}
+			if (count % 100000 == 0) {
+				System.out.println ("Processed "+count+" lines currently holding "+groupedFeatures.size()+" features");
+			}			
+
 
 
 			if (line.trim().length() == 0) continue;  //Ignore blank lines
@@ -214,7 +220,8 @@ public class GTFParser implements AnnotationParser {
 
 		}
 
-
+		log.info("Parsed " + groupedFeatures.size()+ " features");
+		
 		br.close();
 
 		// Now go through the grouped features adding them to the annotation set

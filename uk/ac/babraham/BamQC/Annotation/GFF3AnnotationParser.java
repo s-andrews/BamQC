@@ -25,13 +25,15 @@ import java.io.FileReader;
 import java.util.HashMap;
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
+
 /**
  * The Class GFFAnnotationParser reads sequence features from GFFv3 files
  */
-
-
 public class GFF3AnnotationParser implements AnnotationParser {
 
+	private static Logger log = Logger.getLogger(GFF3AnnotationParser.class);
+	
 	public void parseAnnotation(AnnotationSet annotationSet, File file) throws Exception {
 				
 		HashMap<String, FeatureGroup> groupedFeatures = new HashMap<String, FeatureGroup>();
@@ -39,7 +41,7 @@ public class GFF3AnnotationParser implements AnnotationParser {
 		BufferedReader br  = new BufferedReader(new FileReader(file));
 		String line;
 
-//		int count = 0;
+		int count = 0;
 		while ((line = br.readLine())!= null) {
 			
 //			if (cancel) {
@@ -58,8 +60,13 @@ public class GFF3AnnotationParser implements AnnotationParser {
 //				annotationSet = new AnnotationSet(genome, file.getName()+"["+annotationSets.size()+"]");
 //				annotationSets.add(annotationSet);
 //			}
-//			
-//			++count;
+
+			
+			count++;
+			
+			if (count % 100000 == 0) {
+				System.out.println ("Processed "+count+" lines currently holding "+groupedFeatures.size()+" features");
+			}
 			
 			
 			if (line.trim().length() == 0) continue;  //Ignore blank lines
@@ -237,6 +244,9 @@ public class GFF3AnnotationParser implements AnnotationParser {
 			
 						
 		}
+		
+		log.info("Parsed " + groupedFeatures.size()+ " features");
+		
 		br.close();
 		
 		// Now go through the grouped features adding them to the annotation set	
