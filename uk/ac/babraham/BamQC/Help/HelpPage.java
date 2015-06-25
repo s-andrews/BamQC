@@ -97,20 +97,29 @@ public class HelpPage extends DefaultMutableTreeNode {
 		
 		// We don't want to be trying to open directories
 		if (isLeaf()) {
-			BufferedReader br = new BufferedReader(new FileReader(file));
-			searchTerm = searchTerm.toLowerCase();
-			String line;
-			while ((line = br.readLine()) != null) {
-//				System.out.println("Read line "+line);
-				if (line.toLowerCase().indexOf(searchTerm)!=-1) {
-					hits.add(this);
-					break;
+			BufferedReader br = null;
+			try { 
+				br = new BufferedReader(new FileReader(file));
+				searchTerm = searchTerm.toLowerCase();
+				String line;
+				while ((line = br.readLine()) != null) {
+	//				System.out.println("Read line "+line);
+					if (line.toLowerCase().indexOf(searchTerm)!=-1) {
+						hits.add(this);
+						break;
+					}
+				}
+			} catch(IOException e) {
+				throw e;
+			} finally {
+				if(br != null) {
+					br.close();
 				}
 			}
 		}
 
 		// Extend the search to our children
-		Enumeration kids = children();
+		Enumeration<?> kids = children();
 		while (kids.hasMoreElements()) {
 			Object node = kids.nextElement();
 			if (node instanceof HelpPage) {

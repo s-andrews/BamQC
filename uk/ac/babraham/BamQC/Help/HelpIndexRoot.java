@@ -87,7 +87,7 @@ public class HelpIndexRoot extends DefaultMutableTreeNode {
 	public HelpPage [] findPagesForTerm (String searchTerm) throws IOException {
 		Vector<HelpPage>hits = new Vector<HelpPage>();
 				
-		Enumeration kids = children();
+		Enumeration<?> kids = children();
 		while (kids.hasMoreElements()) {
 			Object node = kids.nextElement();
 			if (node instanceof HelpPage) {

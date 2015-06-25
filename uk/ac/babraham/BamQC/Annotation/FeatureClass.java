@@ -23,7 +23,6 @@ package uk.ac.babraham.BamQC.Annotation;
 
 import java.util.HashMap;
 
-import net.sf.samtools.SAMRecord;
 
 
 /** 
@@ -48,15 +47,7 @@ public class FeatureClass {
 		subClasses.get(f.subclass()).addFeature(f);
 		
 	}
-	
-	@Deprecated
-	public void processSequence (SAMRecord r) {
-		FeatureSubclass[] fsc = subClasses.values().toArray(new FeatureSubclass[0]);
-		for (int i=0; i<fsc.length; i++) {
-			fsc[i].processSequence(r);
-		}
-	}
-	
+		
 	public void processSequence (ShortRead r) {
 		FeatureSubclass[] fsc = subClasses.values().toArray(new FeatureSubclass[0]);
 		for (int i=0; i<fsc.length; i++) {

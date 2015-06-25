@@ -19,8 +19,6 @@
  */
 package uk.ac.babraham.BamQC.Annotation;
 
-import net.sf.samtools.SAMRecord;
-
 public class Chromosome implements Comparable<Chromosome> {
 
 	
@@ -67,28 +65,6 @@ public class Chromosome implements Comparable<Chromosome> {
 		
 	public int seqCount() {
 		return seqCount;
-	}
-	
-	@Deprecated
-	public void processSequence (SAMRecord record) {
-		seqCount++;
-		
-		if (record.getAlignmentEnd() > length) {
-			length = record.getAlignmentEnd();
-		}
-		
-		int bin = record.getAlignmentStart()/COVERAGE_BIN_SIZE;
-		
-		if (bin >= coverageBins.length) {
-			long [] elongatedBins = new long[bin+1];
-			for (int i=0;i<coverageBins.length;i++) {
-				elongatedBins[i] = coverageBins[i];
-			}
-			coverageBins = elongatedBins;
-		}
-		
-		coverageBins[bin]++;
-		
 	}
 	
 	public void processSequence (ShortRead record) {

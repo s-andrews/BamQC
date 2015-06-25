@@ -127,7 +127,7 @@ public class AnalysisRunner implements Runnable {
 			if (seqCount % 1000 == 0) {
 			if (file.getPercentComplete() >= percentComplete+5) {
 			
-				percentComplete = (((int)file.getPercentComplete())/5)*5;
+				percentComplete = file.getPercentComplete();
 				
 				i = listeners.iterator();
 					while (i.hasNext()) {

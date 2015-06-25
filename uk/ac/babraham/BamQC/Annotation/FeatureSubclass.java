@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.ArrayList;
 
-import net.sf.samtools.SAMRecord;
 
 
 /** 
@@ -151,48 +150,5 @@ public class FeatureSubclass {
 		featuresRaw = null;	
 	}
 	
-	
-	@Deprecated
-	public void processSequence (SAMRecord r) {
-		
-		if (features == null) {
-			processFeatures();
-		}
-
-		Chromosome chr = annotationSet.chromosomeFactory().getChromosome(r.getReferenceName());
-		
-		if (chr == null) return;
-		
-		if (!features.containsKey(chr)) {
-			return;
-		}
-		
-		int start = r.getAlignmentStart();
-		int end = r.getAlignmentEnd();
-		
-		int binStart = start/SEQUENCE_CHUNK_LENGTH;
-
-		Feature [] thisChrFeatures = features.get(chr);
-
-		if (binStart >= indices.get(chr).length) {
-			System.err.println("Tried to get bin "+binStart+" from position "+start+" for feature on "+chr.name()+" but found only "+indices.get(chr).length+" bins from a length of "+chr.length());
-			return;
-		}
-		
-		boolean foundHit = false;
-		
-		for (int i=indices.get(chr)[binStart];i<thisChrFeatures.length;i++) {
-			// Check to see if we've gone past where this sequence could
-			// possibly hit.
-			if (thisChrFeatures[i].location().start() > end) break;
-
-			if (thisChrFeatures[i].location().start() < end && thisChrFeatures[i].location().end() > start) {
-				if (!foundHit) {
-					++count;
-					foundHit = true;
-				}
-			}			
-		}	
-	}	
 	
 }

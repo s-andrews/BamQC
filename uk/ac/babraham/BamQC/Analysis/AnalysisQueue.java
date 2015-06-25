@@ -26,7 +26,7 @@ import uk.ac.babraham.BamQC.BamQCConfig;
 import uk.ac.babraham.BamQC.Modules.QCModule;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
-public class AnalysisQueue implements Runnable, AnalysisListener{
+public class AnalysisQueue implements Runnable, AnalysisListener {
 
 	private static AnalysisQueue instance = new AnalysisQueue();
 	

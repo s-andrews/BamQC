@@ -34,7 +34,9 @@ public class UtilityTest {
 			throw new RuntimeException("Cannot open file " + INSERT_SIZES_FILENAME);
 		} finally {
 			try {
-				reader.close();
+				if(reader != null) {
+					reader.close();
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -64,7 +66,9 @@ public class UtilityTest {
 			throw new RuntimeException("Cannot open file " + INSERT_SIZES_FILENAME);
 		} finally {
 			try {
-				reader.close();
+				if(reader != null) {
+					reader.close();
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

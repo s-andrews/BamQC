@@ -19,7 +19,6 @@
  */
 package uk.ac.babraham.BamQC.Annotation;
 
-import net.sf.samtools.SAMRecord;
 
 public class Feature implements Comparable<Feature>{
 
@@ -61,12 +60,7 @@ public class Feature implements Comparable<Feature>{
 	public Chromosome chr () {
 		return chr;
 	}
-	
-	@Deprecated
-	public void processSequence (SAMRecord r) {
-		//TODO: Placeholder in case we want to record something for every feature.
-	}
-	
+		
 	public void processSequence (ShortRead r) {
 		//TODO: Placeholder in case we want to record something for every feature.
 	}

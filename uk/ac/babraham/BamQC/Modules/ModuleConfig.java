@@ -22,6 +22,7 @@ package uk.ac.babraham.BamQC.Modules;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
@@ -101,7 +102,7 @@ public class ModuleConfig {
 		// Now read the config file to see if there are updated values for any
 		// of these.
 
-		BufferedReader br;
+		BufferedReader br = null;
 
 		try {
 			if (BamQCConfig.getInstance().limits_file == null) {
@@ -143,8 +144,17 @@ public class ModuleConfig {
 
 			}
 		}
-		catch (Exception e) {
+		catch (IOException e) {
 			e.printStackTrace();
+		}
+		finally {
+			try {
+				if(br != null) {
+					br.close();
+				}
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
 		}
 		return params;
 

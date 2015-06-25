@@ -3,6 +3,7 @@ package uk.ac.babraham.BamQC.Annotation;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
@@ -26,7 +27,7 @@ public class BiotypeMapping {
 
 	private BiotypeMapping () {
 
-		BufferedReader br;
+		BufferedReader br = null;
 
 		try {
 			if (BamQCConfig.getInstance().biotype_mapping_file == null) {
@@ -54,8 +55,17 @@ public class BiotypeMapping {
 
 			}
 		}
-		catch (Exception e) {
+		catch (IOException e) {
 			e.printStackTrace();
+		}
+		finally {
+			try{ 
+				if(br != null) {
+					br.close();
+				}
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 	}

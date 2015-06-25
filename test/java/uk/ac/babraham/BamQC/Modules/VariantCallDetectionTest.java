@@ -76,9 +76,11 @@ public class VariantCallDetectionTest {
 		// close the file streams
 		try {
 			fis.close();
-			samReader.close();
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
+			return false;
+		} finally {
+			samReader.close();			
 		}
 		return true;
 	}
@@ -273,7 +275,7 @@ public class VariantCallDetectionTest {
 		
 		// Parse the file read by read as it happens normally
 		File file = new File(filename);
-		FileInputStream fis;
+		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream(file);
 		} catch (FileNotFoundException ex) { 
@@ -298,6 +300,8 @@ public class VariantCallDetectionTest {
 			samReader.close();
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
+		} finally {
+			samReader.close();			
 		}
 		log.info("A->C: " + variantCallDetection.getFirstA2C());
 		log.info("A->G: " + variantCallDetection.getFirstA2G());

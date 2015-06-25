@@ -21,6 +21,8 @@ package uk.ac.babraham.BamQC.Sequence;
 
 public class SequenceFormatException extends Exception {
 	
+	private static final long serialVersionUID = 1529251209608725931L;
+
 	public SequenceFormatException (String message) {
 		super(message);
 	}
