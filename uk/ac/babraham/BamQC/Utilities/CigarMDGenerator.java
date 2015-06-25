@@ -197,7 +197,7 @@ public class CigarMDGenerator {
 				}
 					
 			} else if (currentCigarElementOperator == CigarOperator.INSERTION) {
-				processMDtagCigarOperatorI(read);
+				processMDtagCigarOperatorI();
 							
 			} else if (currentCigarElementOperator == CigarOperator.DELETION) {
 				if(!processMDtagCigarOperatorD(read)) {
@@ -560,7 +560,7 @@ public class CigarMDGenerator {
 	
 	
 	/** Process the MD string once found the CIGAR operator I. */
-	private void processMDtagCigarOperatorI(SAMRecord read) {
+	private void processMDtagCigarOperatorI() {
 		// The MD string does not contain information regarding an insertion.
 		String wronglyInsertedBases = readString.substring(
 				currentBaseCallPosition,

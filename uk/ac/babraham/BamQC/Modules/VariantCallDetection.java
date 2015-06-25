@@ -400,7 +400,7 @@ public class VariantCallDetection extends AbstractQCModule {
 	// Private methods here
 	
 	
-	private void extendDensityArrays(int newBound) {
+	private void extendDensityArrays() {
 		long[] oldFirstSNPPos = firstSNPPos;
 		long[] oldFirstInsertionPos = firstInsertionPos;
 		long[] oldFirstDeletionPos = firstDeletionPos;
@@ -445,7 +445,7 @@ public class VariantCallDetection extends AbstractQCModule {
 		totalMatches = totalMatches + numMatches;
 		// if the read.length is longer than what we supposed to be, here we increase the length of our *Pos arrays.
 		if(currentPosition+numMatches >= matchPos.length) {
-			extendDensityArrays(currentPosition+numMatches);			
+			extendDensityArrays();			
 	    }
 		for(int i=0; i<numMatches; i++) {
 			matchPos[currentPosition+i]++;
@@ -475,7 +475,7 @@ public class VariantCallDetection extends AbstractQCModule {
 		
 		// if the read.length is longer than what we supposed to be, here we increase the length of our *Pos arrays.
 		if(currentPosition+numMutations >= firstSNPPos.length) {
-			extendDensityArrays(currentPosition+numMutations);			
+			extendDensityArrays();			
 	    }
 		if(cigarMDGenerator.isFirst()) {
 			for(int i = 0; i < numMutations; i++) {
@@ -528,7 +528,7 @@ public class VariantCallDetection extends AbstractQCModule {
 		String insertedBases = currentCigarMDElement.getBases();
 		// if the read.length is longer than what we supposed to be, here we increase the length of our *Pos arrays..
 		if(currentPosition+numInsertions >= firstInsertionPos.length) {
-			extendDensityArrays(currentPosition+numInsertions);
+			extendDensityArrays();
 	    }
 		if(cigarMDGenerator.isFirst()) {
 			for(int i = 0; i < numInsertions; i++) {
@@ -555,7 +555,7 @@ public class VariantCallDetection extends AbstractQCModule {
 		String deletedBases = currentCigarMDElement.getBases();
 		// if the read.length is longer than what we supposed to be, here we increase the length of our *Pos arrays..
 		if(currentPosition+numDeletions >= firstDeletionPos.length) {
-			extendDensityArrays(currentPosition+numDeletions);		
+			extendDensityArrays();		
 	    }
 		if(cigarMDGenerator.isFirst()) {
 			for(int i = 0; i < numDeletions; i++) {

@@ -88,7 +88,7 @@ public class RpkmReference extends AbstractQCModule {
 			log.info(String.format("binStart %d binEnd %d, start = %d, end %d, length = %d", binStart, binEnd, start, end, (end - start)));
 			log.info("index = " + index);
 			
-			double binCoverage = length / (double) binNucleotides;
+			double binCoverage = length / binNucleotides;
 
 			coverage[index] += binCoverage;
 

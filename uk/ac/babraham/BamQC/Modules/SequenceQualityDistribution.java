@@ -47,7 +47,7 @@ public class SequenceQualityDistribution extends AbstractQCModule {
 		int count = 0;
 		int total = 0;
 		for (byte quality : baseQuality) {
-			total += (int) quality;
+			total = total + quality;
 			//log.debug(String.format("%d) int %d total %d", count, (int) quality, total));
 			count++;
 		}

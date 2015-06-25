@@ -165,9 +165,8 @@ public class BAMFile implements SequenceFile {
 			if (onlyMapped && record.getReadUnmappedFlag()) {
 				continue;
 			}
-			else {
-				break;
-			}
+			break;
+			
 		}
 		
 		if (recordSize == 0) {

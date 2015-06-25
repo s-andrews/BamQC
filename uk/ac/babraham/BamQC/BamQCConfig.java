@@ -108,7 +108,7 @@ public class BamQCConfig {
 			do_unzip = true;
 		}
 		
-	};
+	}
 
 	public static BamQCConfig getInstance() {
 		return instance;

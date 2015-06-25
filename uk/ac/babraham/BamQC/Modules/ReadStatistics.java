@@ -86,7 +86,7 @@ public class ReadStatistics extends AbstractQCModule {
 	}
 
 	private String getPercentage(int count, int total) {
-		return String.format("%.3f", 100 * (double) count / (double) total);
+		return String.format("%.3f", 100 * ((double) count / total));
 	}
 
 	@Override
