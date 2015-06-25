@@ -127,6 +127,8 @@ public class SeparateLineGraph extends JPanel {
 		g.fillRect(0, 0, getWidth(), getHeight());
 		g.setColor(Color.BLACK);
 		
+		
+		
 		int lastY = 0;
 		
 		double yStart;
@@ -168,30 +170,35 @@ public class SeparateLineGraph extends JPanel {
 		g.drawString(xLabel, (getWidth()/2) - (g.getFontMetrics().stringWidth(xLabel)/2), getHeight()-5);
 		
 		
-		// Now draw the data points
-		int baseWidth = (getWidth()-(xOffset+10))/data[0].length;
-		if (baseWidth<1) baseWidth=1;
+		int baseWidth = 1;
 		
-		// System.out.println("Base Width is "+baseWidth);
-		// First draw faint boxes over alternating bases so you can see which is which
-		// Let's find the longest label, and then work out how often we can draw labels
-		
-		int lastXLabelEnd = 0;
-		
-		for (int i=0;i<data[0].length;i++) {
-			if (i%2 != 0) {
-				g.setColor(new Color(230, 230, 230));
-				g.fillRect(xOffset+(baseWidth*i), 40, baseWidth, getHeight()-80);
-			}
-			g.setColor(Color.BLACK);
-			
-			String baseNumber = ""+xCategories[i];
-			int baseNumberWidth = g.getFontMetrics().stringWidth(baseNumber);
-			int baseNumberPosition =  (baseWidth/2)+xOffset+(baseWidth*i)-(baseNumberWidth/2);
-			
-			if (baseNumberPosition > lastXLabelEnd) {
-				g.drawString(baseNumber,baseNumberPosition, getHeight()-25);
-				lastXLabelEnd = baseNumberPosition+baseNumberWidth+5;
+		// check that there is some data
+		if(data.length > 0) {
+			// Now draw the data points
+			baseWidth = (getWidth()-(xOffset+10))/data[0].length;
+			if (baseWidth<1) baseWidth=1;
+
+			// System.out.println("Base Width is "+baseWidth);
+			// First draw faint boxes over alternating bases so you can see which is which
+			// Let's find the longest label, and then work out how often we can draw labels
+
+			int lastXLabelEnd = 0;
+
+			for (int i=0;i<data[0].length;i++) {
+				if (i%2 != 0) {
+					g.setColor(new Color(230, 230, 230));
+					g.fillRect(xOffset+(baseWidth*i), 40, baseWidth, getHeight()-80);
+				}
+				g.setColor(Color.BLACK);
+
+				String baseNumber = ""+xCategories[i];
+				int baseNumberWidth = g.getFontMetrics().stringWidth(baseNumber);
+				int baseNumberPosition =  (baseWidth/2)+xOffset+(baseWidth*i)-(baseNumberWidth/2);
+
+				if (baseNumberPosition > lastXLabelEnd) {
+					g.drawString(baseNumber,baseNumberPosition, getHeight()-25);
+					lastXLabelEnd = baseNumberPosition+baseNumberWidth+5;
+				}
 			}
 		}
 		
