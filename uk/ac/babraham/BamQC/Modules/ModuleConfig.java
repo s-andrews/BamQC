@@ -93,8 +93,8 @@ public class ModuleConfig {
 		params.put("binCoverageRsdFraction:warn", 0.25d);
 		params.put("binCoverageRsdFraction:error", 0.50d);
 		
-		params.put("InsertDistribution:error", 50.0d);
-		params.put("InsertDistribution:warn", 75.0d);
+		params.put("InsertLengthDistribution:error", 50.0d);
+		params.put("InsertLengthDistribution:warn", 75.0d);
 		
 		params.put("MappingQualityDistribution:error", 0.50d);
 		params.put("MappingQualityDistribution:warn", 0.75d);

@@ -47,6 +47,17 @@ public class BasicStats extends AbstractQCModule {
 	private long qcFailCount = 0;
 	private long singletonCount = 0;
 	private boolean hasAnnotation = false;
+
+	// For splicing analysis and other information about skipped reads (e.g. % reads without MD tag string).
+	VariantCallDetection variantCallDetection = null;	
+
+	/**
+	 * Constructor. Reuse of the computation provided by VariantCallDetection analysis.
+	 */
+	public BasicStats(VariantCallDetection vcd) {
+		super();
+		variantCallDetection = vcd;
+	}
 	
 	@Override
 	public String description() {
