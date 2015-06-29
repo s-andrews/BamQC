@@ -71,7 +71,8 @@ public class SNPFrequencies extends AbstractQCModule {
 	/**
 	 * Constructor. Reuse of the computation provided by VariantCallDetection analysis.
 	 */
-	public SNPFrequencies(VariantCallDetection vcd) {	
+	public SNPFrequencies(VariantCallDetection vcd) {
+		super();
 		variantCallDetection = vcd;
 	}
 	
@@ -231,7 +232,8 @@ public class SNPFrequencies extends AbstractQCModule {
 
 	@Override	
 	public boolean ignoreInReport() {
-		if(variantCallDetection == null) 
+		if(variantCallDetection == null || 
+		   variantCallDetection.getTotalMutations() == 0) 
 			return true; 
 		return false;
 	}

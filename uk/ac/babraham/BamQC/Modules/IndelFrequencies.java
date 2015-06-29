@@ -72,6 +72,7 @@ public class IndelFrequencies extends AbstractQCModule {
 	 * Constructor. Reuse of the computation provided by VariantCallDetection analysis.
 	 */
 	public IndelFrequencies(VariantCallDetection vcd) {	
+		super();
 		variantCallDetection = vcd;
 	}
 	
@@ -244,7 +245,8 @@ public class IndelFrequencies extends AbstractQCModule {
 
 	@Override	
 	public boolean ignoreInReport() {
-		if(variantCallDetection == null) 
+		if(variantCallDetection == null || 
+		   (variantCallDetection.getTotalInsertions() == 0 && variantCallDetection.getTotalDeletions() == 0)) 
 			return true; 
 		return false;
 	}
