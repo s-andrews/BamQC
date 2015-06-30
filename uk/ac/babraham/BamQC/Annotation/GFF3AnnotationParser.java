@@ -37,6 +37,8 @@ public class GFF3AnnotationParser implements AnnotationParser {
 	@Override
 	public void parseAnnotation(AnnotationSet annotationSet, File file) throws Exception {
 
+		annotationSet.setFile(file);
+		
 		HashMap<String, FeatureGroup> groupedFeatures = new HashMap<String, FeatureGroup>();
 		BufferedReader br = null;
 

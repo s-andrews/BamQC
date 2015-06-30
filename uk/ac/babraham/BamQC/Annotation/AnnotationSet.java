@@ -20,6 +20,7 @@
 
 package uk.ac.babraham.BamQC.Annotation;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,6 +30,9 @@ import uk.ac.babraham.BamQC.Modules.ModuleConfig;
 import net.sf.samtools.SAMRecord;
 
 public class AnnotationSet {
+	
+	/** The reference file for this annotation set */
+	private File file = null;
 	
 	private ChromosomeFactory factory = new ChromosomeFactory();
 	
@@ -40,6 +44,15 @@ public class AnnotationSet {
 	private List<ShortRead> readCache = new ArrayList<ShortRead>(cacheSize);
 
 	
+	
+	public File getFile() {
+		return file;
+	}
+
+	public void setFile(File file) {
+		this.file = file;
+	}
+
 	public ChromosomeFactory chromosomeFactory () {
 		return factory;
 	}

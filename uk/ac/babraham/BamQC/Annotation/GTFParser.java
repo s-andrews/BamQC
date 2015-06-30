@@ -38,6 +38,8 @@ public class GTFParser implements AnnotationParser {
 	@Override
 	public void parseAnnotation(AnnotationSet annotationSet, File file) throws Exception {
 
+		annotationSet.setFile(file);
+		
 		HashMap<String, Transcript> groupedFeatures = new HashMap<String, Transcript>();
 		BufferedReader br = null;
 
