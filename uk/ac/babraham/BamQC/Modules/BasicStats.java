@@ -38,10 +38,10 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
 public class BasicStats extends AbstractQCModule {
 
-	private String name = null;
-	private String command = null;
+	private String filename = "";
+	private String command = "";
 	private boolean hasAnnotation = false;
-	private String annotationFile = null;
+	private String annotationFile = "";
 	private long actualCount = 0;
 	private long primaryCount = 0;
 	private long pairedCount = 0;
@@ -70,6 +70,7 @@ public class BasicStats extends AbstractQCModule {
 	public void processAnnotationSet(AnnotationSet annotation) {
 		if (annotation.hasFeatures()) {
 			hasAnnotation = true;
+			annotationFile = annotation.getFile().getName();
 		}		
 	}
 
@@ -125,7 +126,7 @@ public class BasicStats extends AbstractQCModule {
 	
 	@Override
 	public void processFile (SequenceFile file) {
-		this.name = file.name();
+		this.filename = file.name();
 	}
 	
 	@Override
@@ -163,17 +164,21 @@ public class BasicStats extends AbstractQCModule {
 		private ArrayList<String> rowValues = new ArrayList<String>();
 		
 		public ResultsTable() {
-			rowNames.add("Filename");
-			rowValues.add(name);
+			super();
 			
-			rowNames.add("Command generating Sam/Bam file");
-			rowValues.add(command);
+			rowNames.add("File name");
+			rowValues.add(filename);
+			
+			if(!command.equals("")) {
+				rowNames.add("Command generating Sam/Bam file");
+				rowValues.add(command);
+			}
 			
 			rowNames.add("Has annotation");
  			if(hasAnnotation) { 
  				rowValues.add("Yes");
  				
- 				rowNames.add("Annotation file");
+ 				rowNames.add("Annotation file name");
  				rowValues.add(annotationFile);
  			} 
  			else { 
