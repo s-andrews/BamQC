@@ -131,7 +131,7 @@ public class SNPFrequencies extends AbstractQCModule {
 					new String[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()], 
 					"Read SNP Frequencies ( total SNPs: 0.000 % )");
 		}		
-		variantCallDetection.computeTotals();
+		//variantCallDetection.computeTotals();
 		
 
 		long totSNPs = variantCallDetection.getTotalMutations(),

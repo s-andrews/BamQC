@@ -134,7 +134,7 @@ public class IndelFrequencies extends AbstractQCModule {
 					new String[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()], 
 					"Read Indel Frequencies ( total insertions: 0.000 %, total deletions: 0.000 % )");
 		}
-		variantCallDetection.computeTotals();
+		//variantCallDetection.computeTotals();
 		
 		
 		long totIns = variantCallDetection.getTotalInsertions(),

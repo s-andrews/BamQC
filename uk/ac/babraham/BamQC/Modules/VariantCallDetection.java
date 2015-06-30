@@ -103,6 +103,8 @@ public class VariantCallDetection extends AbstractQCModule {
     private long skippedReads = 0;
     private long totalReads = 0;
     
+    private long splicedReads = 0;
+    
     // These arrays are used to store the density of SNP and Indels at each read position.
     private long[] firstSNPPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
     private long[] firstInsertionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
@@ -150,11 +152,15 @@ public class VariantCallDetection extends AbstractQCModule {
 	 * inside void processSequence(SAMRecord read), but must be invoked 
 	 * later.
 	 */
-	public void computeTotals() {
-		if(totalMutations != 0 || totalInsertions != 0 || totalDeletions != 0) {
-			return;
-		}
+	private void computeTotals() {
+//		if(totalMutations != 0 || totalInsertions != 0 || totalDeletions != 0) {
+//			return;
+//		}
 //		// NOTE: nInsertions and nDeletions are not counted in the totals. 
+		
+		totalMutations = 0;
+		totalInsertions = 0;
+		totalDeletions = 0;
 		
 		if(existPairedReads) {
 			for(int i=0; i< firstSNPPos.length; i++) {
@@ -185,6 +191,7 @@ public class VariantCallDetection extends AbstractQCModule {
 	@Override
 	public void processSequence(SAMRecord read) {
 
+		boolean isReadSpliced = false;
 		totalReads++;
 		
 		// Compute and get the CigarMD object combining the strings Cigar and MD tag
@@ -192,6 +199,7 @@ public class VariantCallDetection extends AbstractQCModule {
 		cigarMD = cigarMDGenerator.getCigarMD();
 		if(cigarMD.isEmpty()) {
 			skippedReads++;
+			computeTotals();
 			return;			
 		}
 
@@ -206,9 +214,6 @@ public class VariantCallDetection extends AbstractQCModule {
 		currentPosition = 0;
 
 		// Use the old c-style for loop for memory (garbage collector) and CPU efficiency
-//		Iterator<CigarMDElement> cigarMDIter = cigarMDElements.iterator();	
-//		while(cigarMDIter.hasNext()) {
-//			currentCigarMDElement = cigarMDIter.next();
 		int cigarMDElementsSize = cigarMDElements.size();
 		for(int i=0; i<cigarMDElementsSize; i++) {
 			
@@ -232,6 +237,10 @@ public class VariantCallDetection extends AbstractQCModule {
 				
 			} else if(currentCigarMDElementOperator == CigarMDOperator.SKIPPED_REGION) {
 				processMDtagCigarOperatorN();
+				if(!isReadSpliced) {
+					isReadSpliced = true;
+					splicedReads++;
+				}
 				
 			} else if(currentCigarMDElementOperator == CigarMDOperator.SOFT_CLIP) {
 				processMDtagCigarOperatorS();
@@ -272,6 +281,7 @@ public class VariantCallDetection extends AbstractQCModule {
 		if(!cigarMDGenerator.isFirst()) { 
 			existPairedReads=true;
 		}
+		computeTotals();
 	}
 	
 	
@@ -346,6 +356,7 @@ public class VariantCallDetection extends AbstractQCModule {
 		total = 0;
 		skippedReads = 0;
 		totalReads = 0;
+		splicedReads = 0;
 
 		readUnknownBases = 0;
 		referenceUnknownBases = 0;
@@ -819,11 +830,12 @@ public class VariantCallDetection extends AbstractQCModule {
 		return totalPaddings;
 	}
 
-
-
-
 	public long getTotal() {
 		return total;
+	}
+	
+	public long getTotalSplicedReads() {
+		return splicedReads;
 	}
 
 	public long getReadUnknownBases() {

@@ -21,6 +21,7 @@ package uk.ac.babraham.BamQC.Modules;
 
 import java.awt.BorderLayout;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -38,6 +39,9 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 public class BasicStats extends AbstractQCModule {
 
 	private String name = null;
+	private String command = null;
+	private boolean hasAnnotation = false;
+	private String annotationFile = null;
 	private long actualCount = 0;
 	private long primaryCount = 0;
 	private long pairedCount = 0;
@@ -46,17 +50,15 @@ public class BasicStats extends AbstractQCModule {
 	private long duplicateCount = 0;
 	private long qcFailCount = 0;
 	private long singletonCount = 0;
-	private boolean hasAnnotation = false;
 
-	// For splicing analysis and other information about skipped reads (e.g. % reads without MD tag string).
-	VariantCallDetection variantCallDetection = null;	
+	VariantCallDetection vcd = null;
 
 	/**
 	 * Constructor. Reuse of the computation provided by VariantCallDetection analysis.
 	 */
 	public BasicStats(VariantCallDetection vcd) {
 		super();
-		variantCallDetection = vcd;
+		this.vcd = vcd;
 	}
 	
 	@Override
@@ -148,20 +150,82 @@ public class BasicStats extends AbstractQCModule {
 
 	@SuppressWarnings("serial")
 	private class ResultsTable extends AbstractTableModel {
-				
-		private String [] rowNames = new String [] {
-				"Filename",
-				"Total sequences",
-				"Percent primary alignments",
-				"Has annotation",
-				"Percent sequences failed vendor QC",
-				"Percent marked duplicate",
-				"Percent sequences mapped",
-				"Percent sequences paired",
-				"Percent sequences properly paired",
-				"Percent singletons"
-				
-		};		
+		
+		private long totalSplicedReads = vcd.getTotalSplicedReads();
+		private long totalSkippedReads = vcd.getSkippedReads();
+		private long variantCallDetectionTotalReads = vcd.getTotalReads();
+		private long totalInsertions = vcd.getTotalInsertions();
+		private long totalDeletions = vcd.getTotalDeletions();
+		private long totalMutations = vcd.getTotalMutations();
+		private long totalBases = vcd.getTotal();
+		
+		private ArrayList<String> rowNames = new ArrayList<String>();
+		private ArrayList<String> rowValues = new ArrayList<String>();
+		
+		public ResultsTable() {
+			rowNames.add("Filename");
+			rowValues.add(name);
+			
+			rowNames.add("Command generating Sam/Bam file");
+			rowValues.add(command);
+			
+			rowNames.add("Has annotation");
+ 			if(hasAnnotation) { 
+ 				rowValues.add("Yes");
+ 				
+ 				rowNames.add("Annotation file");
+ 				rowValues.add(annotationFile);
+ 			} 
+ 			else { 
+ 				rowValues.add("No");
+ 			}
+ 			
+ 			rowNames.add("Total sequences");
+ 			rowValues.add("" + actualCount);
+ 			
+ 			rowNames.add("Percent primary alignments");
+ 			rowValues.add(formatPercentage(primaryCount, actualCount));
+ 			
+ 			rowNames.add("Percent sequences failed vendor QC");
+ 			rowValues.add(formatPercentage(qcFailCount, actualCount));
+ 			
+ 			rowNames.add("Percent marked duplicate");
+ 			rowValues.add(formatPercentage(duplicateCount, actualCount));
+ 					
+ 			rowNames.add("Percent sequences mapped");
+ 			rowValues.add(formatPercentage(mappedCount, actualCount));
+ 			
+ 			rowNames.add("Percent sequences paired");
+ 			rowValues.add(formatPercentage(pairedCount, actualCount));
+ 			if(pairedCount > 0) {
+ 				rowNames.add("Percent sequences properly paired");
+ 				rowValues.add(formatPercentage(properPairCount, actualCount));
+ 			
+ 				rowNames.add("Percent singletons");
+ 				rowValues.add(formatPercentage(singletonCount, actualCount));
+ 			}
+ 			
+ 			rowNames.add("Percent spliced reads");
+ 			rowValues.add(formatPercentage(totalSplicedReads, variantCallDetectionTotalReads));
+ 			
+ 			rowNames.add("Percent reads without MD tag string");
+ 			rowValues.add(formatPercentage(totalSkippedReads, variantCallDetectionTotalReads));
+ 			
+ 			rowNames.add("Percent indels");
+ 			if(totalBases > 0) { 
+ 				rowValues.add(formatPercentage(totalInsertions+totalDeletions, totalBases)); 
+ 			} else {
+ 				rowValues.add("NaN");
+ 			}
+ 			
+ 			rowNames.add("Percent SNPs");	
+ 			if(totalBases > 0) { 
+ 				rowValues.add(formatPercentage(totalMutations, totalBases)); 
+ 			} else {
+ 				rowValues.add("NaN");
+ 			}
+ 			
+		}
 		
 		// Sequence - Count - Percentage
 		@Override
@@ -171,31 +235,19 @@ public class BasicStats extends AbstractQCModule {
 	
 		@Override
 		public int getRowCount() {
-			return pairedCount > 0 ? rowNames.length : 7; // Is there a nicer way to skip paired stats for single end?
+			return rowNames.size();
 		}
 	
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			switch (columnIndex) {
-				case 0: return rowNames[rowIndex];
-				case 1:
-					switch (rowIndex) {
-					case 0 : return name;
-					case 1 : return ""+actualCount;
-					case 2 : return formatPercentage(primaryCount, actualCount);
-					case 3 : return (hasAnnotation) ? "Yes" : "No"; // I prefer Y/N but feel free to change back
-					case 4 : return formatPercentage(qcFailCount, actualCount);
-					case 5 : return formatPercentage(duplicateCount, actualCount);
-					case 6 : return formatPercentage(mappedCount, actualCount);
-					case 7 : return formatPercentage(pairedCount, actualCount);
-					case 8 : return formatPercentage(properPairCount, actualCount);
-					case 9 : return formatPercentage(singletonCount, actualCount);
-					
-					}
-			}
-			return null;
+			if(columnIndex == 0)
+				return rowNames.get(rowIndex);
+			else if(columnIndex == 1) 
+				return rowValues.get(rowIndex);
+			else 
+				return null;
 		}
-		
+			
 		@Override
 		public String getColumnName (int columnIndex) {
 			switch (columnIndex) {
