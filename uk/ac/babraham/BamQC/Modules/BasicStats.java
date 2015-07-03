@@ -35,10 +35,12 @@ import net.sf.samtools.SAMRecord;
 import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
+import uk.ac.babraham.BamQC.Utilities.MultiLineTableCellRenderer;
 
 public class BasicStats extends AbstractQCModule {
 
 	private String filename = "";
+	private boolean headerParsed = false;
 	private String command = "";
 	private boolean hasAnnotation = false;
 	private String annotationFile = "";
@@ -50,6 +52,15 @@ public class BasicStats extends AbstractQCModule {
 	private long duplicateCount = 0;
 	private long qcFailCount = 0;
 	private long singletonCount = 0;
+	
+	private long totalSplicedReads = 0;
+	private long totalSkippedReads = 0;
+	private long variantCallDetectionTotalReads = 0;
+	private long totalInsertions = 0;
+	private long totalDeletions = 0;
+	private long totalMutations = 0;
+	private long totalBases = 0;
+	
 
 	VariantCallDetection vcd = null;
 
@@ -90,8 +101,20 @@ public class BasicStats extends AbstractQCModule {
 		returnPanel.setLayout(new BorderLayout());
 		returnPanel.add(new JLabel("Basic sequence stats",JLabel.CENTER),BorderLayout.NORTH);
 		
+		// extract these results
+		totalSplicedReads = vcd.getTotalSplicedReads();
+		totalSkippedReads = vcd.getSkippedReads();
+		variantCallDetectionTotalReads = vcd.getTotalReads();
+		totalInsertions = vcd.getTotalInsertions();
+		totalDeletions = vcd.getTotalDeletions();
+		totalMutations = vcd.getTotalMutations();
+		totalBases = vcd.getTotal();
+		
 		TableModel model = new ResultsTable();
-		returnPanel.add(new JScrollPane(new JTable(model)),BorderLayout.CENTER);
+		JTable table = new JTable(model);
+		// add multi line per cell renderer to this table.
+		table.setDefaultRenderer(String.class, new MultiLineTableCellRenderer());
+		returnPanel.add(new JScrollPane(table),BorderLayout.CENTER);
 		
 		return returnPanel;
 	
@@ -107,7 +130,23 @@ public class BasicStats extends AbstractQCModule {
 	}
 
 	@Override
-	public void processSequence(SAMRecord sequence) {		
+	public void processSequence(SAMRecord sequence) {
+		
+		// extract the method used for generating the SAM/BAM file if present in the header file.
+		if(!headerParsed) {
+			String fullHeader = sequence.getHeader().getTextHeader();
+			if(fullHeader != null) {
+				String[] headerLines = fullHeader.split("@");
+				for(int i=0; i<headerLines.length; i++) {
+					if(headerLines[i].startsWith("PG")) {
+						command += headerLines[i].replace("PG\t", "").replace('\t', ' ');
+					}
+				}
+			}
+			headerParsed = true;
+		}
+		
+		
 		actualCount++;
 		if (!sequence.isSecondaryOrSupplementary()) {
 			++primaryCount;
@@ -146,20 +185,23 @@ public class BasicStats extends AbstractQCModule {
 
 	@Override
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException,IOException {
+		// note: the following method generates both the HTML code and the text report. 
+		// Therefore no text report code is required here.
 		super.writeTable(report, new ResultsTable());
 	}
+	
+	private String formatPercentage(long a, long b) {
+        return String.format("%6.3f", 100 * a / (double) b);
+    }
+	
 
-	@SuppressWarnings("serial")
+	/**
+	 * The Table containing the statistics and additional information about the SAM/Bam file.
+	 * @author dallepep
+	 */
 	private class ResultsTable extends AbstractTableModel {
-		
-		private long totalSplicedReads = vcd.getTotalSplicedReads();
-		private long totalSkippedReads = vcd.getSkippedReads();
-		private long variantCallDetectionTotalReads = vcd.getTotalReads();
-		private long totalInsertions = vcd.getTotalInsertions();
-		private long totalDeletions = vcd.getTotalDeletions();
-		private long totalMutations = vcd.getTotalMutations();
-		private long totalBases = vcd.getTotal();
-		
+		private static final long serialVersionUID = 4444508216021418468L;
+			
 		private ArrayList<String> rowNames = new ArrayList<String>();
 		private ArrayList<String> rowValues = new ArrayList<String>();
 		
@@ -261,24 +303,18 @@ public class BasicStats extends AbstractQCModule {
 			}
 			return null;
 		}
-		
-		private String formatPercentage(long a, long b) {
-	        return String.format("%6.3f", 100 * a / (double) b);
-	    }
-		
+				
 		@Override
 		public Class<?> getColumnClass (int columnIndex) {
-			switch (columnIndex) {
-			case 0: return String.class;
-			case 1: return String.class;
-			case 2: return Float.class;
-			case 3: return String.class;
+			return String.class;
 		}
-		return null;
-			
-		}
+		
+		@Override
+	    public boolean isCellEditable(int row, int column) {
+	       return false;
+	    }
+		
 	}
 
-	
 
 }
