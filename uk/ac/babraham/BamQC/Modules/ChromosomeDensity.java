@@ -20,24 +20,32 @@
 
 package uk.ac.babraham.BamQC.Modules;
 
+
+
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Vector;
+import java.util.Comparator;
 
 import javax.swing.JPanel;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.math3.util.Precision;
+
 import net.sf.samtools.SAMRecord;
 import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
 import uk.ac.babraham.BamQC.Annotation.Chromosome;
-import uk.ac.babraham.BamQC.Graphs.HorizontalBarGraph;
+import uk.ac.babraham.BamQC.Graphs.BarGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
 public class ChromosomeDensity extends AbstractQCModule {
 
 	private String [] chromosomeNames;
+	@Deprecated // TODO remove after testing new plot
 	private double [] readDensities;
+	private double [] logReadNumber;
+	private double [] logChromosomeLength;
 	
 	@Override
 	public void processSequence(SAMRecord read) {}
@@ -45,12 +53,13 @@ public class ChromosomeDensity extends AbstractQCModule {
 	@Override
 	public void processFile(SequenceFile file) {}
 
-	@Override
-	public void processAnnotationSet(AnnotationSet annotation) {
+	// TODO REMOVE once replaced with new plot
+	@Deprecated 
+	private void processAnnotationSetDeprecated(AnnotationSet annotation) {
 
 		Chromosome [] chromosomes = annotation.chromosomeFactory().getAllChromosomes();
 		
-		Vector<Chromosome> keptChromosomes = new Vector<Chromosome>();
+		ArrayList<Chromosome> keptChromosomes = new ArrayList<Chromosome>();
 		
 		for (int c=0;c<chromosomes.length;c++) {
 			if (chromosomes[c].seqCount() > 0) {
@@ -70,12 +79,84 @@ public class ChromosomeDensity extends AbstractQCModule {
 			readDensities[c] = chromosomes[c].seqCount()/(chromosomes[c].length()/1000f);			
 		}
 	}
+	
+	
+	@Override
+	public void processAnnotationSet(AnnotationSet annotation) {
 
+		//processAnnotationSetDeprecated(annotation);
+		
+		Chromosome [] chromosomes = annotation.chromosomeFactory().getAllChromosomes();
+		
+		ArrayList<Chromosome> keptChromosomes = new ArrayList<Chromosome>();
+		
+		for (int c=0;c<chromosomes.length;c++) {
+			if (chromosomes[c].seqCount() > 0) {
+				keptChromosomes.add(chromosomes[c]);
+			}
+		}
+		
+		chromosomes = keptChromosomes.toArray(new Chromosome[0]);
+		
+
+		// Sort by chromosome length, replacing the Chromosome implementation of compare.
+		Arrays.sort(chromosomes, new Comparator<Chromosome>() {
+			@Override	
+			public int compare(Chromosome c1, Chromosome c2) {
+				if(c1.length() < c2.length()) { 
+					return -1;
+				} else if(c1.length() == c2.length()) {
+					return 0;
+				} 
+				return 1;
+			}
+			});
+		
+		// recorded for the plot and text report
+		logReadNumber = new double [chromosomes.length];
+		logChromosomeLength = new double[chromosomes.length];
+		// recorded for the text report only
+		chromosomeNames = new String [chromosomes.length];
+				
+		for (int c=0; c<chromosomes.length; c++) {
+			logReadNumber[c] = Precision.round(Math.log(chromosomes[c].seqCount()), 2);
+			logChromosomeLength[c] = Precision.round(Math.log(chromosomes[c].length()), 2);
+			chromosomeNames[c] = chromosomes[c].name();
+		}
+		
+	}
+	
+	
 	@Override
 	public JPanel getResultsPanel() {
-		return new HorizontalBarGraph(chromosomeNames, readDensities, "Per-chromosome read density");
+		// TODO REMOVE once replaced with new plot
+		// TODO remove return new HorizontalBarGraph(chromosomeNames, readDensities, "Per-chromosome read density");
+
+		String title = "Chromosome Read Density (Log Read Number per Log Chromosome Length)";
+		String[] xCategories;
+		String xLabel = "Log Chromosome Length";
+		double maxY = 0d;
+		
+		if(logReadNumber.length < 2) {
+			xCategories = new String[]{"Null"};
+			return new BarGraph(new double[1], 0d, maxY+maxY*0.1, xLabel, xCategories, title);
+		}
+		
+		xCategories = new String[logChromosomeLength.length];
+		
+		for(int i=0; i<logReadNumber.length; i++) {
+			if(maxY < logReadNumber[i]) {
+				maxY = logReadNumber[i];
+			}
+		}
+		
+		for(int i=0; i<logChromosomeLength.length; i++) {
+			xCategories[i] = String.valueOf(logChromosomeLength[i]);
+		}
+		return new BarGraph(logReadNumber, 0d, maxY+maxY*0.1, xLabel, xCategories, title);
 	}
 
+	
 	@Override
 	public String name() {
 		return "Chromosome Read Density";
@@ -87,20 +168,15 @@ public class ChromosomeDensity extends AbstractQCModule {
 	}
 
 	@Override
-	public void reset() {
-		// TODO Auto-generated method stub
-
-	}
+	public void reset() { }
 
 	@Override
 	public boolean raisesError() {
-		//TODO: Set this
 		return false;
 	}
 
 	@Override
 	public boolean raisesWarning() {
-		//TODO: Set this
 		return false;
 	}
 
@@ -116,6 +192,9 @@ public class ChromosomeDensity extends AbstractQCModule {
 
 	@Override
 	public boolean ignoreInReport() {
+		if(logChromosomeLength.length < 2) { 
+			return true;
+		}
 		return false;
 	}
 
@@ -126,14 +205,16 @@ public class ChromosomeDensity extends AbstractQCModule {
 				
 		StringBuffer sb = report.dataDocument();
 		
-		sb.append("Chromosome\tDensity\n");
+		sb.append("ChromosomeName\tChromosomeLength(log)\tReadNumber(log)\n");
 		for (int i=0;i<chromosomeNames.length;i++) {
 			sb.append(chromosomeNames[i]);
 			sb.append("\t");
-			sb.append(readDensities[i]);
+			sb.append(logChromosomeLength[i]);
+			sb.append("\t");
+			sb.append(logReadNumber[i]);
 			sb.append("\n");
 		}
-		
+				
 	}
 
 }
