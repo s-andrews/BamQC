@@ -25,15 +25,16 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ 
-	MappingQualityDistributionTest.class, 
-	SequenceQualityDistributionTest.class,
+@SuiteClasses({
+	BasicStatsTest.class,
 	ReadFlagStatisticsTest.class,
+	MappingQualityDistributionTest.class, 
 	NormalDistributionModelerTest.class,
 	InsertLengthDistributionTest.class,
 	VariantCallDetectionTest.class,
 	//GenomeCoverageTest.class,
-	RpkmReferenceTest.class
+	RpkmReferenceTest.class,
+	SequenceQualityDistributionTest.class
 	})
 
 public class AllTests { }
