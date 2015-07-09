@@ -158,9 +158,10 @@ public class BasicStats extends AbstractQCModule {
 			if (sequence.getMateUnmappedFlag() && ! sequence.getReadUnmappedFlag()) singletonCount++;
 		}
 		
-		if (! sequence.getReadUnmappedFlag()) mappedCount++;
+		if (!sequence.getReadUnmappedFlag()) mappedCount++;
 		if (sequence.getReadFailsVendorQualityCheckFlag()) qcFailCount++;
 		if (sequence.getDuplicateReadFlag()) duplicateCount++;
+		
 	}
 	
 	@Override
