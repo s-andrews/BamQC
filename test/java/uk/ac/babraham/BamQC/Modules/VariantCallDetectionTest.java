@@ -50,40 +50,6 @@ public class VariantCallDetectionTest {
 	private List<SAMRecord> samRecords = null;
 	private VariantCallDetection variantCallDetection = null;
 
-
-	// Load the whole SAM file, as this is very short. (3-10 lines).
-	// Clearly this is not a correct approach generally.
-	private boolean loadSAMFile(String filename) {
-		File file = new File(filename);
-		FileInputStream fis;
-		try {
-			fis = new FileInputStream(file);
-		} catch (FileNotFoundException ex) { 
-			System.err.println("File " + filename + " does not exist"); 
-			return false;
-		}
-		SAMFileReader samReader = new SAMFileReader(fis);
-		Iterator<SAMRecord> it = samReader.iterator();
-		SAMRecord samRecord;	
-		while(it.hasNext()) {
-			try { 
-				samRecord = it.next();
-				samRecords.add(samRecord);
-			} catch (SAMFormatException sfe) { 
-				System.out.println("SAMFormatException");
-			}
-		}
-		// close the file streams
-		try {
-			fis.close();
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-			return false;
-		} finally {
-			samReader.close();			
-		}
-		return true;
-	}
 	
 	private void debugCigarAndMD(SAMRecord samRecord) { 
 		// Get the CIGAR list and MD tag string.
@@ -107,8 +73,7 @@ public class VariantCallDetectionTest {
 	}		
 	
 	@Before
-	public void setUp() throws Exception {
-		samRecords = new ArrayList<SAMRecord>();		
+	public void setUp() throws Exception {	
 		variantCallDetection = new VariantCallDetection();		
 	}
 
@@ -137,7 +102,8 @@ public class VariantCallDetectionTest {
 	public void testCigarOperM() {
 		log.info("testCigarOperM");
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_M.sam");
-		if(!loadSAMFile(filename)) { return; }
+		samRecords = SAMRecordLoader.loadSAMFile(filename);
+		if(samRecords.isEmpty()) { return; }
 		List<String> combinedCigarMDtagList = new ArrayList<String>();
 		for (SAMRecord samRecord : samRecords) {
 			//printCigarAndMD(samRecord);
@@ -156,7 +122,8 @@ public class VariantCallDetectionTest {
 	public void testCigarOperMD() {
 		log.info("testCigarOperMD");
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MD.sam");
-		if(!loadSAMFile(filename)) { return; }
+		samRecords = SAMRecordLoader.loadSAMFile(filename);
+		if(samRecords.isEmpty()) { return; }
 		List<String> combinedCigarMDtagList = new ArrayList<String>();			
 		for (SAMRecord samRecord : samRecords) {
 	        //printCigarAndMD(samRecord);	
@@ -172,7 +139,8 @@ public class VariantCallDetectionTest {
 	public void testCigarOperMI() {
 		log.info("testCigarOperMI");
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MI.sam");
-		if(!loadSAMFile(filename)) { return; }
+		samRecords = SAMRecordLoader.loadSAMFile(filename);
+		if(samRecords.isEmpty()) { return; }
 		List<String> combinedCigarMDtagList = new ArrayList<String>();		
 		for (SAMRecord samRecord : samRecords) {
 			//printCigarAndMD(samRecord);
@@ -188,7 +156,8 @@ public class VariantCallDetectionTest {
 	public void testCigarOperMID() {
 		log.info("testCigarOperMID");
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MID.sam");
-		if(!loadSAMFile(filename)) { return; }
+		samRecords = SAMRecordLoader.loadSAMFile(filename);
+		if(samRecords.isEmpty()) { return; }
 		List<String> combinedCigarMDtagList = new ArrayList<String>();			
 		for (SAMRecord samRecord : samRecords) {
           //printCigarAndMD(samRecord);		
@@ -205,7 +174,8 @@ public class VariantCallDetectionTest {
 	public void testCigarOperFull() {
 		log.info("testCigarOperFull");
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_full.sam");
-		if(!loadSAMFile(filename)) { return; }
+		samRecords = SAMRecordLoader.loadSAMFile(filename);
+		if(samRecords.isEmpty()) { return; }
 		List<String> combinedCigarMDtagList = new ArrayList<String>();			
 		for (SAMRecord samRecord : samRecords) {
           //printCigarAndMD(samRecord);		
@@ -235,7 +205,8 @@ public class VariantCallDetectionTest {
 	public void testReversedReads() {
 		log.info("testReversedReads");
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/snp_examples.fastq_bowtie2.sam");
-		if(!loadSAMFile(filename)) { return; }
+		samRecords = SAMRecordLoader.loadSAMFile(filename);
+		if(samRecords.isEmpty()) { return; }
 		List<String> combinedCigarMDtagList = new ArrayList<String>();
 		for (SAMRecord samRecord : samRecords) {
 		  variantCallDetection.processSequence(samRecord);
