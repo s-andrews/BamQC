@@ -192,7 +192,7 @@ public class InsertLengthDistribution extends AbstractQCModule {
 		String title = String.format("Paired read insert length Distribution (Max %d bp), %d unpaired reads ", MAX_INSERT_SIZE, unpairedReads);
 		super.writeDefaultImage(report, "InsertLengthDistribution.png", title, 800, 600);
 		
-		if(distributionDouble == null) { return; }
+		if(distribution == null) { return; }
 		
 		int binNumber = (distribution.size() / BIN_SIZE) + 2;
 		String[] label = buildLabels(binNumber);

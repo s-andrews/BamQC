@@ -28,7 +28,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({ 
 	MappingQualityDistributionTest.class, 
 	SequenceQualityDistributionTest.class,
-	ReadStatisticsTest.class,
+	ReadFlagStatisticsTest.class,
 	NormalDistributionModelerTest.class,
 	InsertLengthDistributionTest.class,
 	VariantCallDetectionTest.class,

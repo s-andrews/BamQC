@@ -39,6 +39,11 @@ import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
+/*
+ * The analysis made by this class is replicated in BasicStats. Therefore, 
+ * this class is currently deprecated and should be removed in the future
+ */
+@Deprecated
 public class ReadFlagStatistics extends AbstractQCModule {
 
 	private static final int ROWS = 6;

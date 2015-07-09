@@ -29,7 +29,7 @@ public class ModuleFactory {
 				new BasicStats(variantCallDetection),
 				new ChromosomeDensity(),
 				new FeatureCoverage(),
-				new SoftClipDistribution(), // this could reuse varianCallDetection too..
+				new SoftClipDistribution(), // this could also reuse varianCallDetection
 				new IndelFrequencies(variantCallDetection),
 				new SNPFrequencies(variantCallDetection),
 				new SNPFrequenciesByType(variantCallDetection),

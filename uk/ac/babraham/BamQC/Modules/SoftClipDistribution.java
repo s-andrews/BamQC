@@ -147,13 +147,11 @@ public class SoftClipDistribution extends AbstractQCModule {
 
 	@Override
 	public boolean raisesError() {
-		//TODO: Set this
 		return false;
 	}
 
 	@Override
 	public boolean raisesWarning() {
-		//TODO: Set this
 		return false;
 	}
 
@@ -174,7 +172,6 @@ public class SoftClipDistribution extends AbstractQCModule {
 
 	@Override
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
-
 		super.writeDefaultImage(report, "soft_clip_distribution_graph.png","Soft clipping distribution graph", 800, 600);
 				
 		StringBuffer sb = report.dataDocument();

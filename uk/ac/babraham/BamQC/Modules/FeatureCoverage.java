@@ -94,20 +94,15 @@ public class FeatureCoverage extends AbstractQCModule {
 	}
 
 	@Override
-	public void reset() {
-		// TODO Auto-generated method stub
-
-	}
+	public void reset() { }
 
 	@Override
 	public boolean raisesError() {
-		//TODO: Set this
 		return false;
 	}
 
 	@Override
 	public boolean raisesWarning() {
-		//TODO: Set this
 		return false;
 	}
 
