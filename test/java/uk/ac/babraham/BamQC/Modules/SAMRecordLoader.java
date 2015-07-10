@@ -26,7 +26,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMFormatException;
@@ -36,11 +35,11 @@ public class SAMRecordLoader {
 
 	// Load the whole SAM file, as this is very short. (3-10 lines).
 	// Clearly this is not a correct approach generally.
-	public static List<SAMRecord> loadSAMFile(String filename) {
-		List<SAMRecord> samRecords = new ArrayList<SAMRecord>();
+	public static ArrayList<SAMRecord> loadSAMFile(String filename) {
+		ArrayList<SAMRecord> samRecords = new ArrayList<SAMRecord>();
 		
 		File file = new File(filename);
-		FileInputStream fis;
+		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream(file);
 		} catch (FileNotFoundException ex) { 
@@ -49,26 +48,23 @@ public class SAMRecordLoader {
 		}
 		SAMFileReader samReader = new SAMFileReader(fis);
 		Iterator<SAMRecord> it = samReader.iterator();
-		SAMRecord samRecord;	
+		SAMRecord samRecord;
 		while(it.hasNext()) {
-			try { 
+			try {
 				samRecord = it.next();
 				samRecords.add(samRecord);
 			} catch (SAMFormatException sfe) { 
-				System.out.println("SAMFormatException");
+				//System.err.println("SAMFormatException");
 			}
 		}
 		// close the file streams
 		try {
+			samReader.close();
 			fis.close();
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			return samRecords;
-		} finally {
-			samReader.close();			
 		}
 		return samRecords;
 	}
-	
-	
 }

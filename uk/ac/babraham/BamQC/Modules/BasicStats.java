@@ -198,7 +198,7 @@ public class BasicStats extends AbstractQCModule {
 
 	/**
 	 * The Table containing the statistics and additional information about the SAM/Bam file.
-	 * @author dallepep
+	 * @author Piero Dalle Pezze
 	 */
 	private class ResultsTable extends AbstractTableModel {
 		private static final long serialVersionUID = 4444508216021418468L;
@@ -315,6 +315,87 @@ public class BasicStats extends AbstractQCModule {
 	       return false;
 	    }
 		
+	}
+
+
+	public String getFilename() {
+		return filename;
+	}
+
+	public boolean isHeaderParsed() {
+		return headerParsed;
+	}
+
+	public String getCommand() {
+		return command;
+	}
+
+	public boolean isHasAnnotation() {
+		return hasAnnotation;
+	}
+
+	public String getAnnotationFile() {
+		return annotationFile;
+	}
+
+	public long getActualCount() {
+		return actualCount;
+	}
+
+	public long getPrimaryCount() {
+		return primaryCount;
+	}
+
+	public long getPairedCount() {
+		return pairedCount;
+	}
+
+	public long getProperPairCount() {
+		return properPairCount;
+	}
+
+	public long getMappedCount() {
+		return mappedCount;
+	}
+
+	public long getDuplicateCount() {
+		return duplicateCount;
+	}
+
+	public long getQcFailCount() {
+		return qcFailCount;
+	}
+
+	public long getSingletonCount() {
+		return singletonCount;
+	}
+
+	public long getTotalSplicedReads() {
+		return totalSplicedReads;
+	}
+
+	public long getTotalSkippedReads() {
+		return totalSkippedReads;
+	}
+
+	public long getVariantCallDetectionTotalReads() {
+		return variantCallDetectionTotalReads;
+	}
+
+	public long getTotalInsertions() {
+		return totalInsertions;
+	}
+
+	public long getTotalDeletions() {
+		return totalDeletions;
+	}
+
+	public long getTotalMutations() {
+		return totalMutations;
+	}
+
+	public long getTotalBases() {
+		return totalBases;
 	}
 
 
