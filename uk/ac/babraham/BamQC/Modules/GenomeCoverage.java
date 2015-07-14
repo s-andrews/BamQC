@@ -49,12 +49,15 @@ public class GenomeCoverage extends AbstractQCModule {
 	private String [] chromosomeNames;
 	private double [][] binCounts;
 	private String [] binNames;
+	private long [] coverage = null;
 	
 	private boolean raiseError = false;
 	private boolean raiseWarning = false;
 	private double maxCoverage = 0.0;
 	private int errorReads = 0;
 	private int readNumber = 0;
+	
+
 
 	@Override
 	public void processSequence(SAMRecord read) {
@@ -138,7 +141,7 @@ public class GenomeCoverage extends AbstractQCModule {
 		for (int c=0;c<chromosomes.length;c++) {
 			chromosomeNames[c] = chromosomes[c].name();
 //			System.err.println("Chromosome is "+chromosomes[c].name());
-			long [] coverage = chromosomes[c].getBinCountData();
+			coverage = chromosomes[c].getBinCountData();
 			binCounts[c] = new double[binsToUse];
 			
 			int [] replicateCounts = new int[binsToUse];

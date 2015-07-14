@@ -1,3 +1,23 @@
+/**
+ * Copyright Copyright 2014 Bart Ailey Eagle Genomics Ltd
+ *
+ *    This file is part of BamQC.
+ *
+ *    BamQC is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 3 of the License, or
+ *    (at your option) any later version.
+ *
+ *    BamQC is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with BamQC; if not, write to the Free Software
+ *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 package test.java.uk.ac.babraham.BamQC.Modules;
 
 import static org.junit.Assert.*;
@@ -19,16 +39,20 @@ public class SequenceQualityDistributionTest {
 
 	private static Logger log = Logger.getLogger(SequenceQualityDistributionTest.class);
 	
-	private SequenceQualityDistribution sequenceQualityDistribution;
-	private TestObjectFactory testObjectFactory;
-	private List<SAMRecord> samRecords;
+	private SequenceQualityDistribution sequenceQualityDistribution = null;
+	private TestObjectFactory testObjectFactory = null;
+	private List<SAMRecord> samRecords = null;
 	
 	
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {}
+	public static void setUpBeforeClass() throws Exception {
+		System.out.println("Set up : SequenceQualityDistributionTest");	
+	}
 
 	@AfterClass
-	public static void tearDownAfterClass() throws Exception {}
+	public static void tearDownAfterClass() throws Exception {
+		System.out.println("Tear down : SequenceQualityDistributionTest");	
+	}
 
 	@Before
 	public void setUp() throws Exception {
@@ -38,7 +62,11 @@ public class SequenceQualityDistributionTest {
 	}
 
 	@After
-	public void tearDown() throws Exception {}
+	public void tearDown() throws Exception {
+		testObjectFactory = null;
+		samRecords = null;
+		sequenceQualityDistribution = null;
+	}
 
 	@Test
 	public void testProcessSequence() {

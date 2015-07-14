@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2014 Bart Ailey Eagle Genomics Ltd
+ * Copyright Copyright 2015 Piero Dalle Pezze
  *
  *    This file is part of BamQC.
  *
@@ -22,6 +22,7 @@ package test.java.uk.ac.babraham.BamQC.Modules;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
 import java.util.List;
 
 import net.sf.samtools.SAMRecord;
@@ -33,58 +34,58 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import uk.ac.babraham.BamQC.Modules.RpkmReference;
+import uk.ac.babraham.BamQC.Modules.SoftClipDistribution;
 
-public class RpkmReferenceTest {
 
-	private static Logger log = Logger.getLogger(RpkmReferenceTest.class);
+public class SoftClipDistributionTest {
 	
-	private RpkmReference rpkmReference = null;
-	private TestObjectFactory testObjectFactory = null;
+	private static Logger log = Logger.getLogger(SoftClipDistributionTest.class);
+	
+	private SoftClipDistribution softClipDistribution = null;
 	private List<SAMRecord> samRecords = null;
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		System.out.println("Set up : RpkmReferenceTest");	
+		System.out.println("Set up : SoftClipDistributionTest");
 	}
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-		System.out.println("Tear down : RpkmReferenceTest");	
+		System.out.println("Tear down : SoftClipDistributionTest");
 	}
 
 	@Before
 	public void setUp() throws Exception {
-		rpkmReference = new RpkmReference();
-		testObjectFactory = new TestObjectFactory();
-		samRecords = testObjectFactory.getSamRecords();
+		softClipDistribution = new SoftClipDistribution();
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		rpkmReference = null;
-		testObjectFactory = null;
 		samRecords = null;
+		softClipDistribution = null;
 	}
 
 	@Test
-	public void testProcessSequence() {
-		log.info("testProcessSequence");
-		
-		int count = 0;
-		for (SAMRecord samRecord : samRecords) {
-			rpkmReference.processSequence(samRecord);
-			
-			double[] coverageReference = rpkmReference.getCoverage();
-			
-			if (count == 0) {
-				assertEquals(9.0E-4, coverageReference[0], 0.0000001);
-			}
-			count++;
+	public void testSoftClipDistribution() {
+		log.info("testSoftClipDistribution");
+		String filename = new String(new File("").getAbsolutePath() + "/test/resources/test_header.sam");
+		samRecords = SAMRecordLoader.loadSAMFile(filename);		
+		if(samRecords.isEmpty()) { 
+			log.warn("Impossible to run the test as " + filename + " seems empty");
+			return; 
 		}
-		double[] coverageReference = rpkmReference.getCoverage();
 		
-		assertEquals(3.5E-3, coverageReference[0], 0.000001);
+		for (SAMRecord read : samRecords) {
+			softClipDistribution.processSequence(read);
+		}
+	
+		long[] leftClipCounts = softClipDistribution.getLeftClipCounts();
+		long[] rightClipCounts = softClipDistribution.getRightClipCounts();
+		
+		assertEquals(1, leftClipCounts.length);
+		assertEquals(15, leftClipCounts[0]);
+		assertEquals(15, rightClipCounts[0]);
+	
 	}
 
 }

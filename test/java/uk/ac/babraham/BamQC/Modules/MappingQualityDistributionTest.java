@@ -39,15 +39,19 @@ public class MappingQualityDistributionTest {
 
 	private static Logger log = Logger.getLogger(MappingQualityDistributionTest.class);
 	
-	private MappingQualityDistribution qualityDistribution;
-	private TestObjectFactory testObjectFactory;
-	private List<SAMRecord> samRecords;
+	private MappingQualityDistribution qualityDistribution = null;
+	private TestObjectFactory testObjectFactory = null;
+	private List<SAMRecord> samRecords = null;
 	
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {}
+	public static void setUpBeforeClass() throws Exception {
+		System.out.println("Set up : MappingQualityDistributionTest");	
+	}
 
 	@AfterClass
-	public static void tearDownAfterClass() throws Exception {}
+	public static void tearDownAfterClass() throws Exception {
+		System.out.println("Tear down : MappingQualityDistributionTest");	
+	}
 
 	@Before
 	public void setUp() throws Exception {
@@ -58,7 +62,11 @@ public class MappingQualityDistributionTest {
 	}
 
 	@After
-	public void tearDown() throws Exception {}
+	public void tearDown() throws Exception {
+		qualityDistribution = null;
+		testObjectFactory = null;
+		samRecords = null;
+	}
 
 	@Test
 	public void testDistribution() {

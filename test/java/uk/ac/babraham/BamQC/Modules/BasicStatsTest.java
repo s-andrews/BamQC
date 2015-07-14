@@ -25,6 +25,7 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.util.List;
 
+import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
 
 import org.apache.log4j.Logger;
@@ -43,12 +44,13 @@ public class BasicStatsTest {
 	
 	private static Logger log = Logger.getLogger(BasicStatsTest.class);
 	
-	private BasicStats basicStats;
 	private List<SAMRecord> samRecords = null;
+	private BasicStats basicStats = null;
+	private VariantCallDetection variantCallDetection = null;
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		System.out.println("Set up : BasicStatsTest");
+		System.out.println("Set up : BasicStatsTest");	
 	}
 
 	@AfterClass
@@ -57,50 +59,56 @@ public class BasicStatsTest {
 	}
 
 	@Before
-	public void setUp() throws Exception {}
+	public void setUp() throws Exception {	
+		variantCallDetection = new VariantCallDetection();
+		basicStats = new BasicStats(variantCallDetection);
+	}
 
 	@After
-	public void tearDown() throws Exception {}
+	public void tearDown() throws Exception { 
+		samRecords = null;
+		variantCallDetection = null;
+		basicStats = null;
+	}
 
 	@Test
 	public void testBasicStats() {
 		log.info("testBasicStats");
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/test_header.sam");
-		samRecords = SAMRecordLoader.loadSAMFile(filename);
-		
+		samRecords = SAMRecordLoader.loadSAMFile(filename);		
 		if(samRecords.isEmpty()) { 
-			log.warn("Impossible to run the test as the provided SAM file seems empty");
+			log.warn("Impossible to run the test as " + filename + " seems empty");
 			return; 
 		}
-		VariantCallDetection vcd = new VariantCallDetection();
-		basicStats = new BasicStats(vcd);
-		
-		for (SAMRecord read : samRecords) {
-			vcd.processSequence(read);
+
+		for(SAMRecord read : samRecords) {
+			variantCallDetection.processSequence(read);
 			basicStats.processSequence(read);
 		}
 	
+		basicStats.getResultsPanel();
+		
 		//assertEquals(3, basicStats.getReadNumber());
 		assertEquals("", basicStats.getFilename());
 		assertEquals(true, basicStats.isHeaderParsed());
-		assertEquals("ID:bwa VN:0.5.4\nID:GATK TableRecalibration VN:1.0.3471 CL:Covariates=[ReadGroupCovariate, QualityScoreCovariate, CycleCovariate, DinucCovariate, TileCovariate], default_read_group=null, default_platform=null, force_read_group=null, force_platform=null, solid_recal_mode=SET_Q_ZERO, window_size_nqs=5, homopolymer_nback=7, exception_if_no_tile=false, ignore_nocall_colorspace=false, pQ=5, maxQ=40, smoothing=1\n", basicStats.getCommand());
+		assertEquals("ID:bwa VN:0.5.4 (header copied manually)\nID:GATK TableRecalibration VN:1.0.3471 CL:Covariates=[ReadGroupCovariate, QualityScoreCovariate, CycleCovariate, DinucCovariate, TileCovariate], default_read_group=null, default_platform=null, force_read_group=null, force_platform=null, solid_recal_mode=SET_Q_ZERO, window_size_nqs=5, homopolymer_nback=7, exception_if_no_tile=false, ignore_nocall_colorspace=false, pQ=5, maxQ=40, smoothing=1\n", basicStats.getCommand());
 		assertEquals(false, basicStats.isHasAnnotation());
 		assertEquals("", basicStats.getAnnotationFile());
-		assertEquals(3, basicStats.getActualCount());
-		assertEquals(3, basicStats.getPrimaryCount());
-		assertEquals(3, basicStats.getPairedCount());
-		assertEquals(3, basicStats.getProperPairCount());
-		assertEquals(3, basicStats.getMappedCount());
-		assertEquals(0, basicStats.getDuplicateCount());
-		assertEquals(0, basicStats.getQcFailCount());
+		assertEquals(17, basicStats.getActualCount());
+		assertEquals(17, basicStats.getPrimaryCount());
+		assertEquals(17, basicStats.getPairedCount());
+		assertEquals(15, basicStats.getProperPairCount());
+		assertEquals(15, basicStats.getMappedCount());
+		assertEquals(1, basicStats.getDuplicateCount());
+		assertEquals(1, basicStats.getQcFailCount());
 		assertEquals(0, basicStats.getSingletonCount());
-		assertEquals(0, basicStats.getTotalSplicedReads());
-		assertEquals(0, basicStats.getTotalSkippedReads());
-		assertEquals(0, basicStats.getVariantCallDetectionTotalReads());
-		assertEquals(0, basicStats.getTotalInsertions());
-		assertEquals(0, basicStats.getTotalDeletions());
-		assertEquals(0, basicStats.getTotalMutations());
-		assertEquals(0, basicStats.getTotalBases());
+		assertEquals(1, basicStats.getTotalSplicedReads());
+		assertEquals(2, basicStats.getTotalSkippedReads());
+		assertEquals(17, basicStats.getVariantCallDetectionTotalReads());
+		assertEquals(10, basicStats.getTotalInsertions());
+		assertEquals(14, basicStats.getTotalDeletions());
+		assertEquals(22, basicStats.getTotalMutations());
+		assertEquals(1348, basicStats.getTotalBases());
 	
 	}
 

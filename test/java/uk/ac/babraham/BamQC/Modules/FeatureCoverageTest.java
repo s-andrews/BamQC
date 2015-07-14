@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2014 Bart Ailey Eagle Genomics Ltd
+ * Copyright Copyright 2015 Piero Dalle Pezze
  *
  *    This file is part of BamQC.
  *
@@ -22,8 +22,10 @@ package test.java.uk.ac.babraham.BamQC.Modules;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
 import java.util.List;
 
+import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
 
 import org.apache.log4j.Logger;
@@ -33,58 +35,41 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import uk.ac.babraham.BamQC.Modules.RpkmReference;
+import uk.ac.babraham.BamQC.Modules.FeatureCoverage;
 
-public class RpkmReferenceTest {
 
-	private static Logger log = Logger.getLogger(RpkmReferenceTest.class);
+
+public class FeatureCoverageTest {
 	
-	private RpkmReference rpkmReference = null;
-	private TestObjectFactory testObjectFactory = null;
+	private static Logger log = Logger.getLogger(FeatureCoverageTest.class);
+	
 	private List<SAMRecord> samRecords = null;
+	private FeatureCoverage featureCoverage = null;
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		System.out.println("Set up : RpkmReferenceTest");	
+		System.out.println("Set up : BasicStatsTest");	
 	}
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-		System.out.println("Tear down : RpkmReferenceTest");	
+		System.out.println("Tear down : BasicStatsTest");
 	}
 
 	@Before
-	public void setUp() throws Exception {
-		rpkmReference = new RpkmReference();
-		testObjectFactory = new TestObjectFactory();
-		samRecords = testObjectFactory.getSamRecords();
+	public void setUp() throws Exception {	
+		featureCoverage = new FeatureCoverage();
 	}
 
 	@After
-	public void tearDown() throws Exception {
-		rpkmReference = null;
-		testObjectFactory = null;
+	public void tearDown() throws Exception { 
 		samRecords = null;
+		featureCoverage = null;
 	}
 
 	@Test
-	public void testProcessSequence() {
-		log.info("testProcessSequence");
-		
-		int count = 0;
-		for (SAMRecord samRecord : samRecords) {
-			rpkmReference.processSequence(samRecord);
-			
-			double[] coverageReference = rpkmReference.getCoverage();
-			
-			if (count == 0) {
-				assertEquals(9.0E-4, coverageReference[0], 0.0000001);
-			}
-			count++;
-		}
-		double[] coverageReference = rpkmReference.getCoverage();
-		
-		assertEquals(3.5E-3, coverageReference[0], 0.000001);
+	public void testFeatureCoverage() {
+		log.info("testFeatureCoverage - NOT YET DEFINED");
 	}
 
 }

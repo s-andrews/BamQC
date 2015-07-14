@@ -27,14 +27,16 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
 	BasicStatsTest.class,
-	ReadFlagStatisticsTest.class,
-	MappingQualityDistributionTest.class, 
-	NormalDistributionModelerTest.class,
+	ChromosomeDensityTest.class,
+	FeatureCoverageTest.class,
+	GenomeCoverageTest.class,
 	InsertLengthDistributionTest.class,
-	VariantCallDetectionTest.class,
-	//GenomeCoverageTest.class,
+	MappingQualityDistributionTest.class,
+	NormalDistributionModelerTest.class,
 	RpkmReferenceTest.class,
-	SequenceQualityDistributionTest.class
+	//SequenceQualityDistributionTest.class,	
+	SoftClipDistributionTest.class,
+	VariantCallDetectionTest.class
 	})
 
 public class AllTests { }

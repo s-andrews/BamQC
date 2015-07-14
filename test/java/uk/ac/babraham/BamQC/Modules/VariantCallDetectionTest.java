@@ -23,16 +23,10 @@ package test.java.uk.ac.babraham.BamQC.Modules;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import net.sf.samtools.SAMFormatException;
 import net.sf.samtools.SAMRecord;
-import net.sf.samtools.SAMFileReader;
 
 import org.apache.log4j.Logger;
 import org.junit.After;
@@ -63,8 +57,7 @@ public class VariantCallDetectionTest {
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		System.out.println("Set up : VariantCallDetection");
-		SAMFileReader.setDefaultValidationStringency(SAMFileReader.ValidationStringency.SILENT);		
+		System.out.println("Set up : VariantCallDetection");	
 	}
 
 	@AfterClass
@@ -93,7 +86,7 @@ public class VariantCallDetectionTest {
 		samRecords = testObjectFactory.getSamRecords();	
 		variantCallDetection = new VariantCallDetection();
 		
-		for (SAMRecord samRecord : samRecords) {
+		for(SAMRecord samRecord : samRecords) {
 			variantCallDetection.processSequence(samRecord);
 		}	
 	}
@@ -102,10 +95,13 @@ public class VariantCallDetectionTest {
 	public void testCigarOperM() {
 		log.info("testCigarOperM");
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_M.sam");
-		samRecords = SAMRecordLoader.loadSAMFile(filename);
-		if(samRecords.isEmpty()) { return; }
+		samRecords = SAMRecordLoader.loadSAMFile(filename);		
+		if(samRecords.isEmpty()) { 
+			log.warn("Impossible to run the test as " + filename + " seems empty");
+			return; 
+		}
 		List<String> combinedCigarMDtagList = new ArrayList<String>();
-		for (SAMRecord samRecord : samRecords) {
+		for(SAMRecord samRecord : samRecords) {
 			//printCigarAndMD(samRecord);
 			variantCallDetection.processSequence(samRecord);
 			combinedCigarMDtagList.add(variantCallDetection.getCigarMD().toString());
@@ -122,10 +118,13 @@ public class VariantCallDetectionTest {
 	public void testCigarOperMD() {
 		log.info("testCigarOperMD");
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MD.sam");
-		samRecords = SAMRecordLoader.loadSAMFile(filename);
-		if(samRecords.isEmpty()) { return; }
+		samRecords = SAMRecordLoader.loadSAMFile(filename);		
+		if(samRecords.isEmpty()) { 
+			log.warn("Impossible to run the test as " + filename + " seems empty");
+			return; 
+		}
 		List<String> combinedCigarMDtagList = new ArrayList<String>();			
-		for (SAMRecord samRecord : samRecords) {
+		for(SAMRecord samRecord : samRecords) {
 	        //printCigarAndMD(samRecord);	
 			variantCallDetection.processSequence(samRecord);
 			combinedCigarMDtagList.add(variantCallDetection.getCigarMD().toString());	
@@ -139,10 +138,13 @@ public class VariantCallDetectionTest {
 	public void testCigarOperMI() {
 		log.info("testCigarOperMI");
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MI.sam");
-		samRecords = SAMRecordLoader.loadSAMFile(filename);
-		if(samRecords.isEmpty()) { return; }
+		samRecords = SAMRecordLoader.loadSAMFile(filename);		
+		if(samRecords.isEmpty()) { 
+			log.warn("Impossible to run the test as " + filename + " seems empty");
+			return; 
+		}
 		List<String> combinedCigarMDtagList = new ArrayList<String>();		
-		for (SAMRecord samRecord : samRecords) {
+		for(SAMRecord samRecord : samRecords) {
 			//printCigarAndMD(samRecord);
 			variantCallDetection.processSequence(samRecord);
 			combinedCigarMDtagList.add(variantCallDetection.getCigarMD().toString());			
@@ -156,10 +158,13 @@ public class VariantCallDetectionTest {
 	public void testCigarOperMID() {
 		log.info("testCigarOperMID");
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MID.sam");
-		samRecords = SAMRecordLoader.loadSAMFile(filename);
-		if(samRecords.isEmpty()) { return; }
+		samRecords = SAMRecordLoader.loadSAMFile(filename);		
+		if(samRecords.isEmpty()) { 
+			log.warn("Impossible to run the test as " + filename + " seems empty");
+			return; 
+		}
 		List<String> combinedCigarMDtagList = new ArrayList<String>();			
-		for (SAMRecord samRecord : samRecords) {
+		for(SAMRecord samRecord : samRecords) {
           //printCigarAndMD(samRecord);		
 		  variantCallDetection.processSequence(samRecord);
 		  combinedCigarMDtagList.add(variantCallDetection.getCigarMD().toString());		  
@@ -174,10 +179,13 @@ public class VariantCallDetectionTest {
 	public void testCigarOperFull() {
 		log.info("testCigarOperFull");
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_full.sam");
-		samRecords = SAMRecordLoader.loadSAMFile(filename);
-		if(samRecords.isEmpty()) { return; }
+		samRecords = SAMRecordLoader.loadSAMFile(filename);		
+		if(samRecords.isEmpty()) { 
+			log.warn("Impossible to run the test as " + filename + " seems empty");
+			return; 
+		}
 		List<String> combinedCigarMDtagList = new ArrayList<String>();			
-		for (SAMRecord samRecord : samRecords) {
+		for(SAMRecord samRecord : samRecords) {
           //printCigarAndMD(samRecord);		
 		  variantCallDetection.processSequence(samRecord);
 		  combinedCigarMDtagList.add(variantCallDetection.getCigarMD().toString());		  
@@ -205,10 +213,13 @@ public class VariantCallDetectionTest {
 	public void testReversedReads() {
 		log.info("testReversedReads");
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/snp_examples.fastq_bowtie2.sam");
-		samRecords = SAMRecordLoader.loadSAMFile(filename);
-		if(samRecords.isEmpty()) { return; }
+		samRecords = SAMRecordLoader.loadSAMFile(filename);		
+		if(samRecords.isEmpty()) { 
+			log.warn("Impossible to run the test as " + filename + " seems empty");
+			return; 
+		}
 		List<String> combinedCigarMDtagList = new ArrayList<String>();
-		for (SAMRecord samRecord : samRecords) {
+		for(SAMRecord samRecord : samRecords) {
 		  variantCallDetection.processSequence(samRecord);
 		  log.debug("Name: " + samRecord.getReadName());
 		  log.debug("String: " + samRecord.getReadString());
@@ -224,7 +235,7 @@ public class VariantCallDetectionTest {
 		assertEquals("21m2dTT63m", combinedCigarMDtagList.get(4));
 		assertEquals("57m2dTT27m", combinedCigarMDtagList.get(5));	 // reversed and complemented (unpaired)
 		assertEquals("36m2iCC50m", combinedCigarMDtagList.get(6));
-		assertEquals("53m2iCC33m", combinedCigarMDtagList.get(7));	 // reversed and complemented (unpaired)			
+		assertEquals("53m2iCC33m", combinedCigarMDtagList.get(7));	 // reversed and complemented (unpaired)	
 	}		
 	
 	
@@ -244,36 +255,17 @@ public class VariantCallDetectionTest {
 		filename = new String(new File("").getAbsolutePath() + "/../../Documents/BamQC_Examples/example.sam");
 		//filename = new String(new File("").getAbsolutePath() + "/../../Documents/BamQC_Examples/HG00106.chrom20.illumina.mosaik.GBR.low_coverage.20111114.bam"); // nice test on a potentially corrupted file
 		
-		// Parse the file read by read as it happens normally
-		File file = new File(filename);
-		FileInputStream fis = null;
-		try {
-			fis = new FileInputStream(file);
-		} catch (FileNotFoundException ex) { 
-			log.warn("File " + filename + " does not exist"); 
-			return;
+		samRecords = SAMRecordLoader.loadSAMFile(filename);		
+		if(samRecords.isEmpty()) { 
+			log.warn("Impossible to run the test as " + filename + " seems empty");
+			return; 
 		}
-		SAMFileReader samReader = new SAMFileReader(fis);
-		Iterator<SAMRecord> it = samReader.iterator();
-		while(it.hasNext()) {
-			try {
-				SAMRecord samRecord = it.next();
-				//printCigarAndMD(samRecord);				
-				variantCallDetection.processSequence(samRecord);
-				log.debug("CigarMD: " + variantCallDetection.getCigarMD().toString());
-			} catch (SAMFormatException sfe) { 
-				log.warn("SAMFormatException");
-			}
+		for(SAMRecord read : samRecords) {
+			//printCigarAndMD(samRecord);				
+			variantCallDetection.processSequence(read);
+			log.debug("CigarMD: " + variantCallDetection.getCigarMD().toString());
 		}
-		// close the file streams
-		try {
-			fis.close();
-			samReader.close();
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		} finally {
-			samReader.close();			
-		}
+
 		log.info("A->C: " + variantCallDetection.getFirstA2C());
 		log.info("A->G: " + variantCallDetection.getFirstA2G());
 		log.info("A->T: " + variantCallDetection.getFirstA2T());

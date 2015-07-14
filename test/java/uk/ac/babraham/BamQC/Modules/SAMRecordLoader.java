@@ -31,6 +31,10 @@ import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMFormatException;
 import net.sf.samtools.SAMRecord;
 
+/** 
+ * The purpose of this class is to load a small SAM/BAM file in an ArrayList 
+ * and return it to the user. It is convenient for test cases.
+ */
 public class SAMRecordLoader {
 
 	// Load the whole SAM file, as this is very short. (3-10 lines).
@@ -46,6 +50,8 @@ public class SAMRecordLoader {
 			System.err.println("File " + filename + " does not exist"); 
 			return samRecords;
 		}
+		// Set the default validation Stringency
+		SAMFileReader.setDefaultValidationStringency(SAMFileReader.ValidationStringency.SILENT);
 		SAMFileReader samReader = new SAMFileReader(fis);
 		Iterator<SAMRecord> it = samReader.iterator();
 		SAMRecord samRecord;
@@ -54,7 +60,7 @@ public class SAMRecordLoader {
 				samRecord = it.next();
 				samRecords.add(samRecord);
 			} catch (SAMFormatException sfe) { 
-				//System.err.println("SAMFormatException");
+				System.err.println("SAMFormatException");
 			}
 		}
 		// close the file streams

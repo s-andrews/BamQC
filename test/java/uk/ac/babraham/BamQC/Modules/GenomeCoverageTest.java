@@ -37,31 +37,42 @@ import uk.ac.babraham.BamQC.Modules.GenomeCoverage;
 
 public class GenomeCoverageTest {
 
-//	private static Logger log = Logger.getLogger(GenomeCoverageTest.class);
-//	
-//	private GenomeCoverage genomeCoverage;
-//	private TestObjectFactory testObjectFactory;
-//	private List<SAMRecord> samRecords;
-//	
-//	@BeforeClass
-//	public static void setUpBeforeClass() throws Exception {}
-//
-//	@AfterClass
-//	public static void tearDownAfterClass() throws Exception {}
-//
-//	@Before
-//	public void setUp() throws Exception {
-//		genomeCoverage = new GenomeCoverage();
-//	
-////		genomeCoverage.setBinNucleotides(1000, new long[]{0});
-//		
-//		testObjectFactory = new TestObjectFactory();
-//		samRecords = testObjectFactory.getSamRecords();
-//	}
-//
-//	@After
-//	public void tearDown() throws Exception {}
-//
+	private static Logger log = Logger.getLogger(GenomeCoverageTest.class);
+	
+	private GenomeCoverage genomeCoverage = null;
+	private TestObjectFactory testObjectFactory = null;
+	private List<SAMRecord> samRecords = null;
+	
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+		System.out.println("Set up : GenomeCoverageTest");	
+	}
+
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
+		System.out.println("Tear down : GenomeCoverageTest");	
+	}
+
+	@Before
+	public void setUp() throws Exception {
+		genomeCoverage = new GenomeCoverage();
+//		genomeCoverage.setBinNucleotides(1000, new long[]{0});
+		testObjectFactory = new TestObjectFactory();
+		samRecords = testObjectFactory.getSamRecords();
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		genomeCoverage = null;
+		testObjectFactory = null;
+		samRecords = null;
+	}
+
+	@Test
+	public void testGenomeCoverage() {
+		log.info("testGenomeCoverage - NOT YET DEFINED");
+	}
+	
 //	@Test
 //	public void testProcessSequence() {
 //		log.info("testProcessSequence");
@@ -89,7 +100,7 @@ public class GenomeCoverageTest {
 //		assertEquals(1.5, coverageReference[1], 0.000001);
 //		assertEquals(0.6, coverageReference[2], 0.000001);
 //	}
-//	
+
 //	@Test
 //	public void testBooleans() {
 //		log.info("testBooleans");

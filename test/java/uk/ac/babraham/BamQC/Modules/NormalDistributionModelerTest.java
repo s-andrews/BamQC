@@ -17,13 +17,17 @@ public class NormalDistributionModelerTest {
 
 	private static Logger log = Logger.getLogger(NormalDistributionModelerTest.class);
 	
-	private NormalDistributionModeler normalDistributionModeler;
+	private NormalDistributionModeler normalDistributionModeler = null;
 	
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {}
+	public static void setUpBeforeClass() throws Exception {
+		System.out.println("Set up : NormalDistributionModelerTest");	
+	}
 
 	@AfterClass
-	public static void tearDownAfterClass() throws Exception {}
+	public static void tearDownAfterClass() throws Exception {
+		System.out.println("Tear down : NormalDistributionModelerTest");	
+	}
 
 	@Before
 	public void setUp() throws Exception {
@@ -31,7 +35,9 @@ public class NormalDistributionModelerTest {
 	}
 
 	@After
-	public void tearDown() throws Exception {}
+	public void tearDown() throws Exception {
+		normalDistributionModeler = null;
+	}
 
 	@Test
 	public void testCalculateDistribution() {

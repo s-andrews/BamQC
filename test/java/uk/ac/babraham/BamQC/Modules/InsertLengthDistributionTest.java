@@ -20,26 +20,33 @@ public class InsertLengthDistributionTest {
 
 	private static Logger log = Logger.getLogger(InsertLengthDistributionTest.class);
 
-	private InsertLengthDistribution insertLengthDistribution;
-	private TestObjectFactory testObjectFactory;
-	private List<SAMRecord> samRecords;
+	private InsertLengthDistribution insertLengthDistribution = null;
+	private TestObjectFactory testObjectFactory = null;
+	private List<SAMRecord> samRecords = null;
 
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {}
+	public static void setUpBeforeClass() throws Exception {
+		System.out.println("Set up : InsertLengthDistributionTest");	
+	}
 
 	@AfterClass
-	public static void tearDownAfterClass() throws Exception {}
+	public static void tearDownAfterClass() throws Exception {
+		System.out.println("Tear down : InsertLengthDistributionTest");	
+	}
 
 	@Before
 	public void setUp() throws Exception {
 		testObjectFactory = new TestObjectFactory();
 		samRecords = testObjectFactory.getSamRecords();
-
 		insertLengthDistribution = new InsertLengthDistribution();
 	}
 
 	@After
-	public void tearDown() throws Exception {}
+	public void tearDown() throws Exception {
+		testObjectFactory = null;
+		samRecords = null;
+		insertLengthDistribution = null;
+	}
 
 	@Test(expected = IndexOutOfBoundsException.class)
 	public void testProcessSequence() {

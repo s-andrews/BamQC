@@ -187,4 +187,12 @@ public class SoftClipDistribution extends AbstractQCModule {
 		}
 	}
 
+	public long[] getLeftClipCounts() {
+		return leftClipCounts;
+	}
+
+	public long[] getRightClipCounts() {
+		return rightClipCounts;
+	}
+
 }
