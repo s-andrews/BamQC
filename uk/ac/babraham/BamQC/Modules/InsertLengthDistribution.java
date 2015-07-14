@@ -1,3 +1,22 @@
+/**
+ * Copyright Copyright 2014 Bart Ailey Eagle Genomics Ltd
+ *
+ *    This file is part of BamQC.
+ *
+ *    BamQC is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 3 of the License, or
+ *    (at your option) any later version.
+ *
+ *    BamQC is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with FastQC; if not, write to the Free Software
+ *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
 package uk.ac.babraham.BamQC.Modules;
 
 import java.io.IOException;
@@ -16,6 +35,9 @@ import uk.ac.babraham.BamQC.Graphs.BarGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
+
+
+
 public class InsertLengthDistribution extends AbstractQCModule {
 
 	public final static int MAX_INSERT_SIZE = 5000;
@@ -25,9 +47,14 @@ public class InsertLengthDistribution extends AbstractQCModule {
 	
 	private static Logger log = Logger.getLogger(InsertLengthDistribution.class);
 
-	private List<Long> distribution = new ArrayList<Long>();
+	private ArrayList<Long> insertLengthCounts = new ArrayList<Long>();
 	private double[] distributionDouble = null;
-	private long aboveMaxInsertSizeCount = 0;
+	private long aboveMaxInsertLengthCount = 0;
+	private double [] graphCounts = null;
+	private String [] xCategories = new String[0];
+	private double max = 0;
+	private boolean calculated = false;
+	
 	private long unpairedReads = 0;
 	private long reads = 0;
 	
@@ -36,8 +63,18 @@ public class InsertLengthDistribution extends AbstractQCModule {
 
 	public InsertLengthDistribution() {}
 
+	
+	@Override
+	public void processFile(SequenceFile file) { }
+
+	@Override
+	public void processAnnotationSet(AnnotationSet annotation) {
+		throw new UnsupportedOperationException("processAnnotationSet called");
+	}	
+	
 	@Override
 	public void processSequence(SAMRecord read) {
+
 		int inferredInsertSize = Math.abs(read.getInferredInsertSize());
 
 		reads++;
@@ -45,19 +82,19 @@ public class InsertLengthDistribution extends AbstractQCModule {
 		if (read.getReadPairedFlag() && read.getProperPairFlag()) {
 			if (inferredInsertSize > MAX_INSERT_SIZE) {
 				log.debug("inferredInsertSize = " + inferredInsertSize);
-				aboveMaxInsertSizeCount++;
+				aboveMaxInsertLengthCount++;
 			}
 			else {
-				if (inferredInsertSize >= distribution.size()) {
-					for (long i = distribution.size(); i < inferredInsertSize; i++) {
-						distribution.add(0L);
+				if (inferredInsertSize >= insertLengthCounts.size()) {
+					for (long i = insertLengthCounts.size(); i < inferredInsertSize; i++) {
+						insertLengthCounts.add(0L);
 					}
-					distribution.add(1L);
+					insertLengthCounts.add(1L);
 				}
 				else {
-					long existingValue = distribution.get(inferredInsertSize);
+					long existingValue = insertLengthCounts.get(inferredInsertSize);
 
-					distribution.set(inferredInsertSize, ++existingValue);
+					insertLengthCounts.set(inferredInsertSize, ++existingValue);
 				}
 			}
 		}
@@ -66,62 +103,128 @@ public class InsertLengthDistribution extends AbstractQCModule {
 		}
 	}
 	
-	@Override
-	public void processFile(SequenceFile file) {
-		// Method called but not needed
-	}
-
-	@Override
-	public void processAnnotationSet(AnnotationSet annotation) {
-		throw new UnsupportedOperationException("processAnnotationSet called");
-	}
-
-	private String[] buildLabels(int binNumber) {
-		String[] label = new String[binNumber];
-
-		label[binNumber - 1] = "N";
-
-		for (int i = 0; i < (label.length - 1); i++) {
-			label[i] = Integer.toString(i * 10);
-		}
-		return label;
-	}
-
+	
+	
 	private double percent(long value, long total) {
 		return ((double) value / total) * 100.0;
 	}
-
-	@Override
-	public JPanel getResultsPanel() {
-		log.info("Number of inferred insert sizes above the maximum allowed = " + aboveMaxInsertSizeCount);
-		log.info("Number of unpaired reads = " + unpairedReads);
-
+	
+	private void prepareDistribution() {
 		// +2 = fraction and exceeding max values N
-		int binNumber = (distribution.size() / BIN_SIZE) + 2;
+		int binNumber = (insertLengthCounts.size() / BIN_SIZE) + 2;
 		distributionDouble = new double[binNumber];
-		long total = aboveMaxInsertSizeCount;
-
-		for (long count : distribution) {
+		long total = aboveMaxInsertLengthCount;
+		
+		for (long count : insertLengthCounts) {
 			total += count;
 		}
-		distributionDouble[binNumber - 1] = percent(aboveMaxInsertSizeCount, total);
+		distributionDouble[binNumber - 1] = percent(aboveMaxInsertLengthCount, total);
 
-		for (int i = 0; i < distribution.size(); i++) {
+		for (int i = 0; i < insertLengthCounts.size(); i++) {
 			int index = (i / BIN_SIZE);
-
-			distributionDouble[index] += percent(distribution.get(i), total);
+			distributionDouble[index] += percent(insertLengthCounts.get(i), total);
 		}
-		double maxPercent = 0.0;
-
-		for (double percent : distributionDouble)
-			if (percent > maxPercent) maxPercent = percent;
-
-		String title = String.format("Paired read insert length Distribution, a %d bp max size and %.3f %% unpaired reads", MAX_INSERT_SIZE, (((double) unpairedReads / reads) * 100.0));
-		String[] label = buildLabels(binNumber);
-
-		return new BarGraph(distributionDouble, 0.0D, maxPercent, "Infered Insert Length bp", label, title);
 	}
+	
+	private int [] getSizeDistribution(int min, int max) {
+		int base = 1;
+		while (base > (max-min)) {
+			base /= 10;
+		}
+		int interval;
+		int starting;
+		int [] divisions = new int [] {1,2,5};
+		OUTER: while (true) {
+			for (int d=0;d<divisions.length;d++) {
+				int tester = base * divisions[d];
+				if (((max-min) / tester) <= 50) {
+					interval = tester;
+					break OUTER;
+				}
+			}
+			base *=10;
+		}
+		// Now we work out the first value to be plotted
+		int basicDivision = min/interval;	
+		int testStart = basicDivision * interval;	
+		starting = testStart;
+		return new int[] {starting,interval};
+		
+	}	
+	
+	private void calculateDistribution() {
+		int maxLen = 0;
+		int minLen = -1;
+		max = 0;
+		
+		prepareDistribution();	
+		
+		// Find the min and max lengths		
+		for (int i=0;i<distributionDouble.length;i++) {
+			if (distributionDouble[i] > 0.0d) {
+				if (minLen < 0) {
+					minLen = i;
+				}
+				maxLen = i;
+			}
+		}
+		
+		// We put one extra category either side of the actual size
+		if (minLen>0) minLen--;
+		maxLen++;
+		
+		int [] startAndInterval = getSizeDistribution(minLen, maxLen);
+				
+		// Work out how many categories we need
+		int categories = 0;
+		int currentValue = startAndInterval[0];
+		while (currentValue<= maxLen) {
+			++categories;
+			currentValue+= startAndInterval[1];
+		}
+		
+		graphCounts = new double[categories];
+		xCategories = new String[categories];
+		
+		for (int i=0;i<graphCounts.length;i++) {
+			
+			int minValue = startAndInterval[0]+(startAndInterval[1]*i);
+			int maxValue = (startAndInterval[0]+(startAndInterval[1]*(i+1)))-1;
 
+			if (maxValue > maxLen) {
+				maxValue = maxLen;
+			}
+			
+			for (int bp=minValue;bp<=maxValue;bp++) {
+				if (bp < distributionDouble.length) {
+					graphCounts[i] += distributionDouble[bp];
+				}
+			}
+			
+			if (startAndInterval[1] == 1) {
+				xCategories[i] = ""+Integer.toString(minValue * 10);
+			}
+			else {
+				xCategories[i] = Integer.toString(minValue * 10)+"-"+Integer.toString(maxValue * 10);
+			}
+			if (graphCounts[i] > max) max = graphCounts[i];
+		}
+	}
+	
+	
+	@Override
+	public JPanel getResultsPanel() {
+		log.info("Number of inferred insert sizes above the maximum allowed = " + aboveMaxInsertLengthCount);
+		log.info("Number of unpaired reads = " + unpairedReads);
+		
+		if (!calculated) calculateDistribution();		
+
+		String title = String.format("Paired read insert length distrib, a %d bp max size and %.3f %% unpaired reads", MAX_INSERT_SIZE, (((double) unpairedReads / reads) * 100.0));
+		return new BarGraph(graphCounts, 0.0d, max, "Inferred Insert Length bp", xCategories, title);
+	}
+	
+	
+	
 	@Override
 	public String name() {
 		return "Insert Length Distribution";
@@ -134,8 +237,8 @@ public class InsertLengthDistribution extends AbstractQCModule {
 
 	@Override
 	public void reset() {
-		distribution = new ArrayList<Long>();
-		aboveMaxInsertSizeCount = 0;
+		insertLengthCounts = new ArrayList<Long>();
+		aboveMaxInsertLengthCount = 0;
 		percentageDeviationCalculated = false;
 		percentageDeviation = 0.0;
 	}
@@ -144,7 +247,7 @@ public class InsertLengthDistribution extends AbstractQCModule {
 		if (!percentageDeviationCalculated) {
 			List<Double> distributionDouble = new ArrayList<Double>();
 			
-			for (long count : distribution) {
+			for (long count : insertLengthCounts) {
 				distributionDouble.add((double) count);
 			}
 			NormalDistributionModeler normalDistributionModeler = new NormalDistributionModeler();
@@ -184,17 +287,25 @@ public class InsertLengthDistribution extends AbstractQCModule {
 
 	@Override
 	public boolean ignoreInReport() {
-		return distribution.size() == 0;
+		return insertLengthCounts.size() == 0;
 	}
 
+	private String[] buildLabels(int binNumber) {
+		String[] label = new String[binNumber];
+		for (int i = 0; i < label.length; i++) {
+			label[i] = Integer.toString(i * 10);
+		}
+		return label;
+	}
+	
 	@Override
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
 		String title = String.format("Paired read insert length Distribution (Max %d bp), %d unpaired reads ", MAX_INSERT_SIZE, unpairedReads);
 		super.writeDefaultImage(report, "InsertLengthDistribution.png", title, 800, 600);
 		
-		if(distribution == null) { return; }
+		if(insertLengthCounts == null) { return; }
 		
-		int binNumber = (distribution.size() / BIN_SIZE) + 2;
+		int binNumber = (insertLengthCounts.size() / BIN_SIZE) + 2;
 		String[] label = buildLabels(binNumber);
 		
 		StringBuffer sb = report.dataDocument();
@@ -205,8 +316,8 @@ public class InsertLengthDistribution extends AbstractQCModule {
 		
 	}
 
-	public List<Long> getDistribution() {
-		return distribution;
+	public ArrayList<Long> getInsertLengthCounts() {
+		return insertLengthCounts;
 	}
 
 	public long getUnpairedReads() {

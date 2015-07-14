@@ -2,6 +2,7 @@ package test.java.uk.ac.babraham.BamQC.Modules;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.samtools.SAMFileHeader;
@@ -55,13 +56,13 @@ public class InsertLengthDistributionTest {
 		for (SAMRecord samRecord : samRecords) {
 			insertLengthDistribution.processSequence(samRecord);
 		}
-		List<Long> distribution = insertLengthDistribution.getDistribution();
+		ArrayList<Long> insertLengthCounts = insertLengthDistribution.getInsertLengthCounts();
 
 		// distribution now takes account of negative values
-		assertEquals(0, (long) distribution.get(0));
-		assertEquals(0, (long) distribution.get(1));
-		assertEquals(0, (long) distribution.get(2));
-		assertEquals(1, (long) distribution.get(3));
+		assertEquals(0, (long) insertLengthCounts.get(0));
+		assertEquals(0, (long) insertLengthCounts.get(1));
+		assertEquals(0, (long) insertLengthCounts.get(2));
+		assertEquals(1, (long) insertLengthCounts.get(3));
 
 		assertEquals(2, insertLengthDistribution.getUnpairedReads());
 
@@ -69,7 +70,7 @@ public class InsertLengthDistributionTest {
 		assertTrue(insertLengthDistribution.raisesError());
 
 		// throws exception
-		distribution.get(4);
+		insertLengthCounts.get(4);
 	}
 
 	@Test
