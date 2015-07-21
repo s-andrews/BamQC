@@ -31,18 +31,18 @@ import javax.swing.JPanel;
 public class SeparateLineGraph extends JPanel {
 
 	private static final long serialVersionUID = -2880615892132541273L;
-	private String [] xTitles;
-	private String xLabel;
-	private String [] xCategories;
-	private double [][] data;
-	private String graphTitle;
-	private double minY;
-	private double maxY;
-	private double yInterval;
-	private int height = -1;
-	private int width = -1;
+	protected String [] xTitles;
+	protected String xLabel;
+	protected String [] xCategories;
+	protected double [][] data;
+	protected String graphTitle;
+	protected double minY;
+	protected double maxY;
+	protected double yInterval;
+	protected int height = -1;
+	protected int width = -1;
 	
-	private static final Color [] COLOURS = new Color[] {new Color(220,0,0), new Color(0,0,220), new Color(0,220,0), Color.DARK_GRAY, Color.MAGENTA, Color.ORANGE,Color.YELLOW,Color.CYAN,Color.PINK,Color.LIGHT_GRAY};
+	protected static final Color [] COLOURS = new Color[] {new Color(220,0,0), new Color(0,0,220), new Color(0,220,0), Color.DARK_GRAY, Color.MAGENTA, Color.ORANGE,Color.YELLOW,Color.CYAN,Color.PINK,Color.LIGHT_GRAY};
 	
 	public SeparateLineGraph (double [] [] data, double minY, double maxY, String xLabel, String [] xTitles, int [] xCategories, String graphTitle) {
 		this(data,minY,maxY,xLabel,xTitles,new String[0],graphTitle);
@@ -128,17 +128,7 @@ public class SeparateLineGraph extends JPanel {
 		g.setColor(Color.BLACK);
 		
 		
-		
 		int lastY = 0;
-		
-		double yStart;
-		
-		if (minY % yInterval == 0) {
-			yStart = minY;
-		}
-		else {
-			yStart = yInterval * (((int)minY/yInterval)+1);
-		}
 		
 		int xOffset = 0;
 
