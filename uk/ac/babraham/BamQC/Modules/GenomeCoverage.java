@@ -39,7 +39,7 @@ import uk.ac.babraham.BamQC.Statistics.SimpleStats;
 
 public class GenomeCoverage extends AbstractQCModule {
 
-	private static final int PLOT_BINS_PER_CHROMOSOME = 25;  // 25 //100;
+	private static final int PLOT_BINS_PER_CHROMOSOME = 15;  // 25 //100;
 
 	private static Logger log = Logger.getLogger(GenomeCoverage.class);
 	private static double binCoverageZeroWarningFraction = ModuleConfig.getParam("binCoverageZeroFraction", "warn");
