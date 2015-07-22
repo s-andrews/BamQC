@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-14 Simon Andrews
+ * Copyright Copyright 2010-12 Piero Dalle Pezze
  *
  *    This file is part of BamQC.
  *
@@ -28,32 +28,36 @@ import java.awt.RenderingHints;
 
 import javax.swing.JPanel;
 
-public class SeparateLineGraph extends JPanel {
 
-	private static final long serialVersionUID = -2880615892132541273L;
+public class LineWithHorizontalBarGraph extends JPanel {
+
+	private static final long serialVersionUID = -5947375412672203276L;
 	protected String [] xTitles;
 	protected String xLabel;
 	protected String [] xCategories;
-	protected double [][] data;
+	protected double [][] lineData;
+	protected double [] barData;
 	protected String graphTitle;
-	protected double minY = 0.0d;
-	protected double maxY = 0.0d;
-	protected double yInterval = 0.0d;
+	protected double minY;
+	protected double maxY;
+	protected double maxX;
+	protected double yInterval;
 	protected int height = -1;
 	protected int width = -1;
 	
 	protected static final Color [] COLOURS = new Color[] {new Color(220,0,0), new Color(0,0,220), new Color(0,220,0), Color.DARK_GRAY, Color.MAGENTA, Color.ORANGE,Color.YELLOW,Color.CYAN,Color.PINK,Color.LIGHT_GRAY};
 	
-	public SeparateLineGraph (double [] [] data, double minY, double maxY, String xLabel, String [] xTitles, int [] xCategories, String graphTitle) {
-		this(data,minY,maxY,xLabel,xTitles,new String[0],graphTitle);
+	public LineWithHorizontalBarGraph(double[] barData, double[][] lineData, double minY, double maxY, String xLabel, String[] xTitles, int[] xCategories, String graphTitle) {
+		this(barData,lineData,minY,maxY,xLabel,xTitles,new String[0],graphTitle);
 		this.xCategories = new String [xCategories.length];
 		for (int i=0;i<xCategories.length;i++) {
 			this.xCategories[i] = ""+xCategories[i];
 		}
 	}
 	
-	public SeparateLineGraph (double [] [] data, double minY, double maxY, String xLabel, String [] xTitles, String [] xCategories, String graphTitle) {
-		this.data = data;
+	public LineWithHorizontalBarGraph(double[] barData, double[][] lineData, double minY, double maxY, String xLabel, String[] xTitles, String[] xCategories, String graphTitle) {
+		this.barData = barData;
+		this.lineData = lineData;
 		this.minY = minY;
 		this.maxY = maxY;
 		this.xTitles = xTitles;
@@ -104,7 +108,7 @@ public class SeparateLineGraph extends JPanel {
 
 	@Override
 	public int getWidth () {
-		if (width <0) {
+		if (width < 0) {
 			return super.getWidth();
 		}
 		return width;
@@ -118,7 +122,7 @@ public class SeparateLineGraph extends JPanel {
 		this.width = -1;
 	}
 	
-	
+
 	@Override
 	public void paint (Graphics g) {
 		super.paint(g);
@@ -128,62 +132,72 @@ public class SeparateLineGraph extends JPanel {
 		g.setColor(Color.BLACK);
 		
 		
-		int lastY = 0;
-		
-		int xOffset = 0;
+		int xOffsetLineGraph = 0;
 
 		double midY = minY+((maxY-minY)/2);
-		for (int d=0;d<data.length;d++) {
+		for (int d=0;d<lineData.length;d++) {
 			String label = xTitles[d];
 			int width = g.getFontMetrics().stringWidth(label);
-			if (width > xOffset) {
-				xOffset = width;
+			if (width > xOffsetLineGraph) {
+				xOffsetLineGraph = width;
 			}
-			
 			g.drawString(label, 2, getY(midY,d)+(g.getFontMetrics().getAscent()/2));
 			
 		}
+		// calculate maxX
+		maxX=0;
+		for(int i=0; i<barData.length; i++) {
+			maxX = maxX + barData[i];
+		}
+		
 	
 		// Give the x axis a bit of breathing space
-		xOffset += 5;
+		xOffsetLineGraph += 5;
+		
+		
 		
 		// Draw the graph title
 		int titleWidth = g.getFontMetrics().stringWidth(graphTitle);
-		g.drawString(graphTitle, (xOffset + ((getWidth()-(xOffset+10))/2)) - (titleWidth/2), 30);
-		
+		g.drawString(graphTitle, (xOffsetLineGraph + ((getWidth()-(xOffsetLineGraph+10))/2)) - (titleWidth/2), 30);
 		
 		// Now draw the axes
-		g.drawLine(xOffset, getHeight()-40, getWidth()-10,getHeight()-40);
-		g.drawLine(xOffset, getHeight()-40, xOffset, 40);
-		
+		// x axis
+		g.drawLine(xOffsetLineGraph, getHeight()-40, getWidth()-10,getHeight()-40);
+		// y axis
+		g.drawLine(xOffsetLineGraph, getHeight()-40, xOffsetLineGraph, 80);
+
 		// Draw the xLabel under the xAxis
 		g.drawString(xLabel, (getWidth()/2) - (g.getFontMetrics().stringWidth(xLabel)/2), getHeight()-5);
 		
 		
-		int baseWidth = 1;
 		
+		
+		
+		// First draw faint boxes over alternating bases so you can see which is which
+		// Let's find the longest label, and then work out how often we can draw labels
+		int baseWidth = 1;	
+		int lastY = 0;
 		// check that there is some data
-		if(data.length > 0) {
+		if(lineData.length > 0) {
 			// Now draw the data points
-			baseWidth = (getWidth()-(xOffset+10))/data[0].length;
+			// Set the width for the plot line
+			baseWidth = (getWidth()-(xOffsetLineGraph+10))/lineData[0].length;
 			if (baseWidth<1) baseWidth=1;
 
 			// System.out.println("Base Width is "+baseWidth);
-			// First draw faint boxes over alternating bases so you can see which is which
-			// Let's find the longest label, and then work out how often we can draw labels
-
 			int lastXLabelEnd = 0;
 
-			for (int i=0;i<data[0].length;i++) {
-				if (i%2 != 0) {
-					g.setColor(new Color(230, 230, 230));
-					g.fillRect(xOffset+(baseWidth*i), 40, baseWidth, getHeight()-80);
-				}
-				g.setColor(Color.BLACK);
+			for (int i=0;i<lineData[0].length;i++) {
+//				// DON'T PLOT THESE FAINT BOXES FOR NOW AT LEAST.
+//				if (i%2 != 0) {
+//					g.setColor(new Color(230, 230, 230));
+//					g.fillRect(xOffsetLineGraph+(baseWidth*i), 200, baseWidth, getHeight()-240);
+//				}
+//				g.setColor(Color.BLACK);
 
 				String baseNumber = ""+xCategories[i];
 				int baseNumberWidth = g.getFontMetrics().stringWidth(baseNumber);
-				int baseNumberPosition =  (baseWidth/2)+xOffset+(baseWidth*i)-(baseNumberWidth/2);
+				int baseNumberPosition =  (baseWidth/2)+xOffsetLineGraph+(baseWidth*i)-(baseNumberWidth/2);
 
 				if (baseNumberPosition > lastXLabelEnd) {
 					g.drawString(baseNumber,baseNumberPosition, getHeight()-25);
@@ -192,11 +206,50 @@ public class SeparateLineGraph extends JPanel {
 			}
 		}
 		
-		// Now draw horizontal lines across from the y axis
+		
+		
+		
 
+	
+		// Now draw the horizontal bar (1st plot)
+		// First we need to find the widest label
+		int leftSpace = g.getFontMetrics().stringWidth("");
+		
+		// Add 3px either side for a bit of space;
+		leftSpace += 6;
+
+		int xPos=0;
+		int xOffsetBarGraph=0;
+		// set y coordinates
+		int yPos=+80;
+		int yOffset=60;
+		int cumulativeXOffset = 0;
+		
+		for(int i=0; i<barData.length; i++) {
+			int xValue = getX(Math.min(barData[i], maxX), leftSpace);
+			// set xPos and xOffset
+			if(cumulativeXOffset==0) 
+				xPos=leftSpace;
+			else 
+				xPos=cumulativeXOffset;
+			xOffsetBarGraph=xValue-leftSpace;
+			
+			g.setColor(new Color(200,0,0));
+			g.fillRect(xPos, yPos, xOffsetBarGraph, yOffset);
+			g.setColor(Color.BLACK);
+			g.drawRect(xPos, yPos, xOffsetBarGraph, yOffset);
+				
+			cumulativeXOffset = xPos+xOffsetBarGraph;
+		}
+		
+
+		// Now draw horizontal lines across from the y axis (2nd plot)
+
+
+		
 		g.setColor(new Color(180,180,180));
-		for (int d=0;d<data.length;d++) {
-			g.drawLine(xOffset, getY(midY,d), getWidth()-10, getY(midY,d));
+		for (int d=0;d<lineData.length;d++) {
+			//g.drawLine(xOffsetLineGraph, getY(midY,d), getWidth()-10, getY(midY,d));
 		}
 		g.setColor(Color.BLACK);
 		
@@ -207,16 +260,16 @@ public class SeparateLineGraph extends JPanel {
 			((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		}
 		
-		for (int d=0;d<data.length;d++) {
+		for (int d=0;d<lineData.length;d++) {
 			g.setColor(COLOURS[0]);
 						
-			lastY = getY(data[d][0],d);
-			for (int i=1;i<data[d].length;i++) {
-				if (Double.isNaN(data[d][i])) break;
+			lastY = getY(lineData[d][0],d);
+			for (int i=1;i<lineData[d].length;i++) {
+				if (Double.isNaN(lineData[d][i])) break;
 				
-				int thisY = getY(data[d][i],d);
+				int thisY = getY(lineData[d][i],d);
 				
-				g.drawLine((baseWidth/2)+xOffset+(baseWidth*(i-1)), lastY, (baseWidth/2)+xOffset+(baseWidth*i), thisY);
+				g.drawLine((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i-1)), lastY, (baseWidth/2)+xOffsetLineGraph+(baseWidth*i), thisY);
 				lastY = thisY;
 			}
 			
@@ -225,12 +278,21 @@ public class SeparateLineGraph extends JPanel {
 		
 	}
 
+	
 	private int getY(double y, int index) {
 		
-		int totalPlotArea = getHeight()-80;
-		int plotAreaPerSample = totalPlotArea/data.length;
+		int totalPlotArea = getHeight()-160;
+		int plotAreaPerSample = totalPlotArea/lineData.length;
 				
-		return (getHeight()-40) - ((plotAreaPerSample*index)+(int)((plotAreaPerSample/(maxY-minY))*(y-minY)));
+		return (getHeight()) - ((plotAreaPerSample*index)+(int)((plotAreaPerSample/(maxY-minY))*(y-minY)));
 	}
 	
-}
+	private int getX(double value, int longestLabel) {
+		int lengthToUse = getWidth()-(longestLabel+20);
+		double proportion = value/maxX;		
+		return longestLabel+(int)(lengthToUse*proportion);
+	}
+
+	
+	
+}

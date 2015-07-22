@@ -32,13 +32,14 @@ import org.apache.log4j.Logger;
 import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
 import uk.ac.babraham.BamQC.Annotation.Chromosome;
 import uk.ac.babraham.BamQC.Graphs.SeparateLineGraph;
+import uk.ac.babraham.BamQC.Graphs.LineWithHorizontalBarGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 import uk.ac.babraham.BamQC.Statistics.SimpleStats;
 
 public class GenomeCoverage extends AbstractQCModule {
 
-	private static final int PLOT_BINS_PER_CHROMOSOME = 100;
+	private static final int PLOT_BINS_PER_CHROMOSOME = 25;  // 25 //100;
 
 	private static Logger log = Logger.getLogger(GenomeCoverage.class);
 	private static double binCoverageZeroWarningFraction = ModuleConfig.getParam("binCoverageZeroFraction", "warn");
@@ -60,13 +61,10 @@ public class GenomeCoverage extends AbstractQCModule {
 
 
 	@Override
-	public void processSequence(SAMRecord read) {
-	}
+	public void processSequence(SAMRecord read) { }
 
 	@Override
-	public void processFile(SequenceFile file) {
-		log.info("processFile called");
-	}
+	public void processFile(SequenceFile file) { }
 
 	@Override
 	public String name() {
@@ -108,6 +106,9 @@ public class GenomeCoverage extends AbstractQCModule {
 
 	@Override
 	public boolean ignoreInReport() {
+		if(chromosomeNames == null || binCounts == null || binCounts.length == 0) { 
+			return true; 
+		}
 		return false;
 	}
 
@@ -121,7 +122,7 @@ public class GenomeCoverage extends AbstractQCModule {
 
 		// We'll plot everything on the same scale, which means we'll reduce everything to a 
 		// common scale.  Our limit is going to be that we'll put 200 points on the longest
-		// chromsome
+		// chromosome
 		
 		int maxBins = 0;
 		
@@ -188,22 +189,74 @@ public class GenomeCoverage extends AbstractQCModule {
 		}
 	}
 
+//  old plot showing the genome coverage per chromosome nicely. 
+//  possibly this plot should be shown if chromosomes below a certain threshold?
+//	@Deprecated
+//	public JPanel getResultsPanelOld() {
+//		
+//		int maxBins = 0;
+//		for (int i=0;i<binCounts.length;i++) {
+//			if (binCounts[i].length > maxBins) maxBins = binCounts[i].length;
+//		}
+//		
+//		String [] labels = new String[maxBins];
+//		for (int i=0;i<maxBins;i++) {
+//			labels[i] = ""+(i*Chromosome.COVERAGE_BIN_SIZE);
+//		}
+//		
+//		return new SeparateLineGraph(binCounts, 0-maxCoverage, maxCoverage, "Genome Position", chromosomeNames, labels, "Genome Coverage");		
+//		
+//	}
+	
+	
 	@Override
 	public JPanel getResultsPanel() {
 		
-		int maxBins = 0;
-		for (int i=0;i<binCounts.length;i++) {
-			if (binCounts[i].length > maxBins) maxBins = binCounts[i].length;
-		}
+		/* Set up for separate line chart representing chromosome coverages. */
+		int[] scaffoldLengths = new int[binCounts.length];
 		
-		String [] labels = new String[maxBins];
-		for (int i=0;i<maxBins;i++) {
+		int fullBinCountsLength=0;
+		for(int i=0; i<binCounts.length; i++) {
+			boolean nanFound = false;
+			for(scaffoldLengths[i]=0; scaffoldLengths[i]<binCounts[i].length && !nanFound; scaffoldLengths[i]++) {
+				if(Double.isNaN(binCounts[i][scaffoldLengths[i]])) {
+					nanFound = true;
+					scaffoldLengths[i]--;
+				}
+			}
+			fullBinCountsLength = fullBinCountsLength + scaffoldLengths[i];
+		}
+		double[][] fullBinCounts = new double[1][fullBinCountsLength];
+		double[] fullBinLengths = new double[binCounts.length];
+		int k=0;
+		for(int i=0; i<binCounts.length; i++) {
+			for(int j=0; j<scaffoldLengths[i]; j++) {
+				fullBinCounts[0][k] = binCounts[i][j];
+				k++;
+			}
+			fullBinLengths[i] = scaffoldLengths[i]*Chromosome.COVERAGE_BIN_SIZE;
+		}
+		int maxBins = fullBinCounts[0].length;
+		String[] labels = new String[maxBins];
+		for(int i=0; i<maxBins; i++) {
 			labels[i] = ""+(i*Chromosome.COVERAGE_BIN_SIZE);
 		}
 		
-		return new SeparateLineGraph(binCounts, 0-maxCoverage, maxCoverage, "Genome Position", chromosomeNames, labels, "Genome Coverage");		
 		
+		/* Set up for stacked row chart representing chromosome coverages. */
+		
+		double maxLimit = maxCoverage*(1.5*maxCoverage);
+		String title = "Genome Coverage";
+		
+		
+		/* plot the data */
+		JPanel resultsPanel = new JPanel();
+		resultsPanel.setLayout(new javax.swing.BoxLayout(resultsPanel, javax.swing.BoxLayout.PAGE_AXIS));
+		resultsPanel.add(new LineWithHorizontalBarGraph(fullBinLengths, fullBinCounts, 0-maxLimit, maxLimit, "Genome Position", new String[]{""}, labels, title));
+		
+		return resultsPanel;
 	}
+	
 
 	private void raiseWarningErrorsZeroCoverage(int zeroCoverageBins) {
 //		double zeroCoverageBinFraction = (double) zeroCoverageBins / BIN_NUMBER;
