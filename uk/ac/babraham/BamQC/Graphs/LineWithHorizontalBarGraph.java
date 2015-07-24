@@ -242,7 +242,7 @@ public class LineWithHorizontalBarGraph extends JPanel {
 		
 		g.setColor(new Color(180,180,180));
 		for (int d=0;d<lineData.length;d++) {
-			//g.drawLine(xOffsetLineGraph, getY(midY,d), getWidth()-10, getY(midY,d));
+			g.drawLine(xOffsetLineGraph, getY(midY,d), getWidth()-10, getY(midY,d));
 		}
 		g.setColor(Color.BLACK);
 		
@@ -257,7 +257,7 @@ public class LineWithHorizontalBarGraph extends JPanel {
 		
 		for (int d=0;d<lineData.length;d++) {
 			g.setColor(COLOURS[0]);
-				
+			lastY = getY(lineData[d][0],d);	
 			for (int i=1;i<lineData[d].length;i++) {
 				if (Double.isNaN(lineData[d][i])) break;
 				int thisY = getY(lineData[d][i],d);

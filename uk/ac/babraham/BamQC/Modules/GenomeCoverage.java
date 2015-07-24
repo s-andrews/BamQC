@@ -31,7 +31,6 @@ import org.apache.log4j.Logger;
 
 import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
 import uk.ac.babraham.BamQC.Annotation.Chromosome;
-import uk.ac.babraham.BamQC.Graphs.SeparateLineGraph;
 import uk.ac.babraham.BamQC.Graphs.LineWithHorizontalBarGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
