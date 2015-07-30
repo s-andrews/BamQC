@@ -38,14 +38,15 @@ import uk.ac.babraham.BamQC.Statistics.SimpleStats;
 
 public class GenomeCoverage extends AbstractQCModule {
 
-	private static final int PLOT_BINS_PER_CHROMOSOME = 15;  // 25 //100;
+	private int plotBinsPerChromosome = ModuleConfig.getParam("GenomeCoverage_plot_bins_per_chromosome", "ignore").intValue();
 
 	private static Logger log = Logger.getLogger(GenomeCoverage.class);
-	private static double binCoverageZeroWarningFraction = ModuleConfig.getParam("binCoverageZeroFraction", "warn");
-	private static double binCoverageZeroErrorFraction = ModuleConfig.getParam("binCoverageZeroFraction", "error");
-	private static double binCoverageRsdWarningFraction = ModuleConfig.getParam("binCoverageRsdFraction", "warn");
-	private static double binCoverageRsdErrorFraction = ModuleConfig.getParam("binCoverageRsdFraction", "error");
+	private double genomeCoverageZeroWarningFraction = ModuleConfig.getParam("GenomeCoverage_zero_fraction", "warn");
+	private double genomeCoverageZeroErrorFraction = ModuleConfig.getParam("GenomeCoverage_zero_fraction", "error");
+	private double genomeCoverageRsdWarningFraction = ModuleConfig.getParam("GenomeCoverage_rsd_fraction", "warn");
+	private double genomeCoverageRsdErrorFraction = ModuleConfig.getParam("GenomeCoverage_rsd_fraction", "error");
 
+	Chromosome [] chromosomes = null;
 	private String [] chromosomeNames;
 	private double [][] binCounts;
 	private String [] binNames;
@@ -81,6 +82,7 @@ public class GenomeCoverage extends AbstractQCModule {
 		raiseWarning = false;
 		errorReads = 0;
 		readNumber = 0;
+		chromosomes = null;
 	}
 
 	@Override
@@ -105,7 +107,7 @@ public class GenomeCoverage extends AbstractQCModule {
 
 	@Override
 	public boolean ignoreInReport() {
-		if(chromosomeNames == null || binCounts == null || binCounts.length == 0) { 
+		if(chromosomes == null || chromosomes.length == 0) { 
 			return true; 
 		}
 		return false;
@@ -114,7 +116,7 @@ public class GenomeCoverage extends AbstractQCModule {
 	@Override
 	public void processAnnotationSet(AnnotationSet annotation) {
 
-		Chromosome [] chromosomes = annotation.chromosomeFactory().getAllChromosomes();
+		chromosomes = annotation.chromosomeFactory().getAllChromosomes();	
 	
 		chromosomeNames = new String [chromosomes.length];
 		binCounts = new double[chromosomes.length][];
@@ -129,11 +131,11 @@ public class GenomeCoverage extends AbstractQCModule {
 			if (chromosomes[c].getBinCountData().length>maxBins) maxBins = chromosomes[c].getBinCountData().length;
 		}
 		
-		int binsToUse = PLOT_BINS_PER_CHROMOSOME;
+		int binsToUse = plotBinsPerChromosome;
 		
-		double binRatio = maxBins/(double)PLOT_BINS_PER_CHROMOSOME;
+		double binRatio = maxBins/(double)plotBinsPerChromosome;
 				
-		if (maxBins<PLOT_BINS_PER_CHROMOSOME) {
+		if (maxBins<plotBinsPerChromosome) {
 			binRatio = 1;
 			binsToUse = maxBins;
 		}
@@ -188,7 +190,8 @@ public class GenomeCoverage extends AbstractQCModule {
 		}
 	}
 
-//  old plot showing the genome coverage per chromosome nicely. 
+	
+//  Old plot showing the genome coverage per chromosome nicely. 
 //  possibly this plot should be shown if chromosomes below a certain threshold?
 //	@Deprecated
 //	public JPanel getResultsPanelOld() {
@@ -262,10 +265,10 @@ public class GenomeCoverage extends AbstractQCModule {
 //
 //		log.info(String.format("zeroCoverageBins %d, zeroCoverageBinFraction %f", zeroCoverageBins, zeroCoverageBinFraction));
 //
-//		if (zeroCoverageBinFraction >= binCoverageZeroErrorFraction) {
+//		if (zeroCoverageBinFraction >= genomeCoverageZeroErrorFraction) {
 //			raiseError = true;
 //		}
-//		else if (zeroCoverageBinFraction >= binCoverageZeroWarningFraction) {
+//		else if (zeroCoverageBinFraction >= genomeCoverageZeroWarningFraction) {
 //			raiseWarning = true;
 //		}
 	}
@@ -285,10 +288,10 @@ public class GenomeCoverage extends AbstractQCModule {
 //		double rsdFraction = Math.sqrt((variance / coverage.length)) / mean;
 //		log.info("rsdFraction = " + rsdFraction);
 //
-//		if (rsdFraction >= binCoverageRsdErrorFraction) {
+//		if (rsdFraction >= genomeCoverageRsdErrorFraction) {
 //			raiseError = true;
 //		}
-//		else if (rsdFraction >= binCoverageRsdWarningFraction) {
+//		else if (rsdFraction >= genomeCoverageRsdWarningFraction) {
 //			raiseWarning = true;
 //		}
 	}

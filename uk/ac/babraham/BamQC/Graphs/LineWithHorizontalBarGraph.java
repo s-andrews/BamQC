@@ -196,12 +196,21 @@ public class LineWithHorizontalBarGraph extends JPanel {
 				xPos=cumulativeXOffset;
 			xOffsetBarGraph=xValue-leftSpace;
 			
+			// draw the stacked horizontal bar scaffolds
 			g.setColor(new Color(200,0,0));
 			g.fillRect(xPos, yPos, xOffsetBarGraph, yOffset);
 			g.setColor(Color.BLACK);
 			g.drawRect(xPos, yPos, xOffsetBarGraph, yOffset);
-							
+			
+			// increase the cumulative X offset to get a measure for this plot, 
+			// as we need this for scaling the second plot.
 			cumulativeXOffset = xPos+xOffsetBarGraph;
+			
+			// draw grey lines to annotate the second plots
+			g.setColor(new Color(230, 230, 230));
+			g.drawLine(cumulativeXOffset, getHeight()-40-1, cumulativeXOffset, 140);
+			g.setColor(Color.BLACK);	
+			
 		}
 
 		
@@ -210,28 +219,20 @@ public class LineWithHorizontalBarGraph extends JPanel {
 		// Now draw horizontal lines across from the y axis (2nd plot)
 		// First draw faint boxes over alternating bases so you can see which is which
 		// Let's find the longest label, and then work out how often we can draw labels
-		int baseWidth = 1;	
+		double baseWidth = 1;	
 		int lastY = 0;
 		// check that there is some data
 		if(lineData.length > 0) {
 			// Now draw the data points
 			// Set the width for the plot line
-			baseWidth = (getWidth()-(xOffsetLineGraph+10))/lineData[0].length;
-			if (baseWidth<1) baseWidth=1;
+			baseWidth = 1.0*(cumulativeXOffset)/lineData[0].length;			
 
 			int lastXLabelEnd = 0;
 			for(int i=0; i<lineData[0].length; i++) {
-//				// DON'T PLOT THESE FAINT BOXES AT LEAST FOR NOW.
-//				if (i%2 != 0) {
-//					g.setColor(new Color(230, 230, 230));
-//					g.fillRect(xOffsetLineGraph+(baseWidth*i), 200, baseWidth, getHeight()-240);
-//				}
-//				g.setColor(Color.BLACK);
-
 				String baseNumber = ""+xCategories[i];
 				int baseNumberWidth = g.getFontMetrics().stringWidth(baseNumber);
-				int baseNumberPosition =  (baseWidth/2)+xOffsetLineGraph+(baseWidth*i)-(baseNumberWidth/2);
-
+				int baseNumberPosition =  (int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*i)-(baseNumberWidth/2));
+				
 				if (baseNumberPosition > lastXLabelEnd) {
 					g.drawString(baseNumber,baseNumberPosition, getHeight()-25);
 					lastXLabelEnd = baseNumberPosition+baseNumberWidth+5;
@@ -239,16 +240,15 @@ public class LineWithHorizontalBarGraph extends JPanel {
 			}
 		}
 		
-		
+		// Draw an horizontal line behind the line graph.
 		g.setColor(new Color(180,180,180));
+		g.setColor(new Color(128,128,128));
 		for (int d=0;d<lineData.length;d++) {
 			g.drawLine(xOffsetLineGraph, getY(midY,d), getWidth()-10, getY(midY,d));
 		}
 		g.setColor(Color.BLACK);
 		
-
-		
-		
+	
 		// Now draw the datasets
 		if (g instanceof Graphics2D) {
 			((Graphics2D)g).setStroke(new BasicStroke(2));
@@ -257,15 +257,16 @@ public class LineWithHorizontalBarGraph extends JPanel {
 		
 		for (int d=0;d<lineData.length;d++) {
 			g.setColor(COLOURS[0]);
-			lastY = getY(lineData[d][0],d);	
-			for (int i=1;i<lineData[d].length;i++) {
-				if (Double.isNaN(lineData[d][i])) break;
-				int thisY = getY(lineData[d][i],d);
-				g.drawLine((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i-1)), lastY, (baseWidth/2)+xOffsetLineGraph+(baseWidth*i), thisY);
-			
-				lastY = thisY;
+			if(lineData[d].length > 0) {
+				lastY = getY(lineData[d][0],d);	
+				for (int i=1;i<lineData[d].length;i++) {
+					if (Double.isNaN(lineData[d][i])) break;
+					int thisY = getY(lineData[d][i],d);
+					g.drawLine((int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i-1))), lastY, (int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*i)), thisY);
+				
+					lastY = thisY;
+				}
 			}
-	
 			
 		}
 				
