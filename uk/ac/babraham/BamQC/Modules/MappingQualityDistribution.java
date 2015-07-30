@@ -40,8 +40,8 @@ public class MappingQualityDistribution extends AbstractQCModule {
 	private static Logger log = Logger.getLogger(MappingQualityDistribution.class);
 
 	private final static int QUALITY_MAP_SIZE = 256;
-	private static final double ERROR_FRACTION = ModuleConfig.getParam("MappingQualityDistribution", "error");
-	private static final double WARNING_FRACTION = ModuleConfig.getParam("MappingQualityDistribution", "warn");
+	private static final double ERROR_FRACTION = ModuleConfig.getParam("MappingQualityDistribution_fraction", "error");
+	private static final double WARNING_FRACTION = ModuleConfig.getParam("MappingQualityDistribution_fraction", "warn");
 	
 	private int maxCount = 0;
 	private int readNumber = 0; 

@@ -38,66 +38,31 @@ public class ModuleConfig {
 		HashMap<String, Double> params = new HashMap<String, Double>();
 
 		// Set the defaults to use if we don't have any overrides
-		params.put("duplication:warn", 70d);
-		params.put("duplication:error", 50d);
-		params.put("kmer:warn", 2d);
-		params.put("kmer:error", 5d);
-		params.put("n_content:warn", 5d);
-		params.put("n_content:error", 20d);
-		params.put("overrepresented:warn", 0.1);
-		params.put("overrepresented:error", 1d);
-		params.put("quality_base_lower:warn", 10d);
-		params.put("quality_base_lower:error", 5d);
-		params.put("quality_base_median:warn", 25d);
-		params.put("quality_base_median:error", 20d);
-		params.put("sequence:warn", 10d);
-		params.put("sequence:error", 20d);
-		params.put("gc_sequence:warn", 15d);
-		params.put("gc_sequence:error", 30d);
-		params.put("quality_sequence:warn", 20d);
-		params.put("quality_sequence:error", 27d);
-		params.put("tile:warn", 5d);
-		params.put("tile:error", 10d);
-		params.put("sequence_length:warn", 1d);
-		params.put("sequence_length:error", 1d);
-		params.put("adapter:warn", 5d);
-		params.put("adapter:error", 10d);
+		// Please, use the following format: ClassName_field
+		params.put("AnnotationSet_annotation_cache_size:ignore", 100000d);
+		
+		params.put("VariantCallPosition_array_length:ignore", 150d);
+		params.put("VariantCallPosition_indel_seqpercent_xaxis_threshold:ignore", 5d);
+		params.put("VariantCallPosition_indel_threshold:warn", 1d);	
+		params.put("VariantCallPosition_indel_threshold:error", 4d);
+		params.put("VariantCallPosition_snp_seqpercent_xaxis_threshold:ignore", 5d); 		
+		params.put("VariantCallPosition_snp_threshold:warn", 2d);	
+		params.put("VariantCallPosition_snp_threshold:error", 5d);
+		params.put("VariantCallPosition_snp_by_type_threshold:warn", 0.15d);	
+		params.put("VariantCallPosition_snp_by_type_threshold:error", 0.4d);		
 
-		params.put("duplication:ignore", 0d);
-		params.put("kmer:ignore", 0d);
-		params.put("n_content:ignore", 0d);
-		params.put("overrepresented:ignore", 0d);
-		params.put("quality_base:ignore", 0d);
-		params.put("sequence:ignore", 0d);
-		params.put("gc_quality:ignore", 0d);
-		params.put("quality_sequence:ignore", 0d);
-		params.put("tile:ignore", 0d);
-		params.put("sequence_length:ignore", 0d);
-		params.put("adapter:ignore", 0d);
+		params.put("GenomeCoverage_plot_bins_per_chromosome:ignore", 25d);
+		params.put("GenomeCoverage_zero_fraction:warn", 0.1d);
+		params.put("GenomeCoverage_zero_fraction:error", 0.2d);
+		params.put("GenomeCoverage_rsd_fraction:warn", 0.25d);
+		params.put("GenomeCoverage_rsd_fraction:error", 0.50d);
 		
-		params.put("feature_coverage_annotation_cache_size:ignore", 100000d);
+		params.put("InsertLengthDistribution_percentage_deviation:error", 50.0d);
+		params.put("InsertLengthDistribution_percentage_deviation:warn", 75.0d);
 		
-		params.put("variant_call_position_length:ignore", 150d);
-		params.put("variant_call_position_indel_seqpercent_xaxis_threshold:ignore", 5d);
-		params.put("variant_call_position_indel_threshold:warn", 1d);	
-		params.put("variant_call_position_indel_threshold:error", 4d);
-		params.put("variant_call_position_snp_seqpercent_xaxis_threshold:ignore", 5d); 		
-		params.put("variant_call_position_snp_threshold:warn", 2d);	
-		params.put("variant_call_position_snp_threshold:error", 5d);
-		params.put("variant_call_position_snp_by_type_threshold:warn", 0.15d);	
-		params.put("variant_call_position_snp_by_type_threshold:error", 0.4d);		
-		
-		// EAGLE
-		params.put("binCoverageZeroFraction:warn", 0.1d);
-		params.put("binCoverageZeroFraction:error", 0.2d);
-		params.put("binCoverageRsdFraction:warn", 0.25d);
-		params.put("binCoverageRsdFraction:error", 0.50d);
-		
-		params.put("InsertLengthDistribution:error", 50.0d);
-		params.put("InsertLengthDistribution:warn", 75.0d);
-		
-		params.put("MappingQualityDistribution:error", 0.50d);
-		params.put("MappingQualityDistribution:warn", 0.75d);
+		params.put("MappingQualityDistribution_fraction:error", 0.50d);
+		params.put("MappingQualityDistribution_fraction:warn", 0.75d);
+			
 		
 		// Now read the config file to see if there are updated values for any
 		// of these.

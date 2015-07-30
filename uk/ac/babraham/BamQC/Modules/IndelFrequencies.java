@@ -95,7 +95,7 @@ public class IndelFrequencies extends AbstractQCModule {
 				moreFrequentReadLength = readCounts[i];
 			}
 		}
-		double threshold = moreFrequentReadLength * ModuleConfig.getParam("variant_call_position_indel_seqpercent_xaxis_threshold", "ignore").intValue() / 100d;
+		double threshold = moreFrequentReadLength * ModuleConfig.getParam("VariantCallPosition_indel_seqpercent_xaxis_threshold", "ignore").intValue() / 100d;
 		// Filters the reads to show based on a the threshold computed previously.
 		for(int i=0; i<readCounts.length; i++) {
 			if(readCounts[i] >= threshold && xMaxValue < readLengths[i]) {
@@ -128,10 +128,10 @@ public class IndelFrequencies extends AbstractQCModule {
 		
 		if(variantCallDetection == null) { 
 			return new LineGraph(new double [][]{
-					new double[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()],
-					new double[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()]},
+					new double[ModuleConfig.getParam("VariantCallPosition_array_length", "ignore").intValue()],
+					new double[ModuleConfig.getParam("VariantCallPosition_array_length", "ignore").intValue()]},
 					0d, 100d, "Position in read (bp)", indelNames, 
-					new String[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()], 
+					new String[ModuleConfig.getParam("VariantCallPosition_array_length", "ignore").intValue()], 
 					"Read Indel Frequencies ( total insertions: 0.000 %, total deletions: 0.000 % )");
 		}
 		//variantCallDetection.computeTotals();
@@ -221,14 +221,14 @@ public class IndelFrequencies extends AbstractQCModule {
 
 	@Override	
 	public boolean raisesError() {
-		if(firstMaxY+secondMaxY > ModuleConfig.getParam("variant_call_position_indel_threshold", "error").doubleValue())
+		if(firstMaxY+secondMaxY > ModuleConfig.getParam("VariantCallPosition_indel_threshold", "error").doubleValue())
 			return true;		
 		return false;
 	}
 
 	@Override	
 	public boolean raisesWarning() {
-		if(firstMaxY+secondMaxY > ModuleConfig.getParam("variant_call_position_indel_threshold", "warn").doubleValue())
+		if(firstMaxY+secondMaxY > ModuleConfig.getParam("VariantCallPosition_indel_threshold", "warn").doubleValue())
 			return true;		
 		return false;
 	}

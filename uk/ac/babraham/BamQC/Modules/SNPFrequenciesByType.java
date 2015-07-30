@@ -194,14 +194,14 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 
 	@Override	
 	public boolean raisesError() {
-		if(firstMaxX+secondMaxX> ModuleConfig.getParam("variant_call_position_snp_by_type_threshold", "error").doubleValue())
+		if(firstMaxX+secondMaxX> ModuleConfig.getParam("VariantCallPosition_snp_by_type_threshold", "error").doubleValue())
 			return true;		
 		return false;
 	}
 
 	@Override	
 	public boolean raisesWarning() {
-		if(firstMaxX+secondMaxX > ModuleConfig.getParam("variant_call_position_snp_by_type_threshold", "warn").doubleValue())
+		if(firstMaxX+secondMaxX > ModuleConfig.getParam("VariantCallPosition_snp_by_type_threshold", "warn").doubleValue())
 			return true;		
 		return false;
 	}

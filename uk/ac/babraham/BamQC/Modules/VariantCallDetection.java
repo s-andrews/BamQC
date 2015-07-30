@@ -106,14 +106,14 @@ public class VariantCallDetection extends AbstractQCModule {
     private long splicedReads = 0;
     
     // These arrays are used to store the density of SNP and Indels at each read position.
-    private long[] firstSNPPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
-    private long[] firstInsertionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
-    private long[] firstDeletionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
-    private long[] secondSNPPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];    
-    private long[] secondInsertionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
-    private long[] secondDeletionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];    
-    private long[] matchPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
-    private long[] totalPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
+    private long[] firstSNPPos = new long[ModuleConfig.getParam("VariantCallPosition_array_length", "ignore").intValue()];
+    private long[] firstInsertionPos = new long[ModuleConfig.getParam("VariantCallPosition_array_length", "ignore").intValue()];
+    private long[] firstDeletionPos = new long[ModuleConfig.getParam("VariantCallPosition_array_length", "ignore").intValue()];
+    private long[] secondSNPPos = new long[ModuleConfig.getParam("VariantCallPosition_array_length", "ignore").intValue()];    
+    private long[] secondInsertionPos = new long[ModuleConfig.getParam("VariantCallPosition_array_length", "ignore").intValue()];
+    private long[] secondDeletionPos = new long[ModuleConfig.getParam("VariantCallPosition_array_length", "ignore").intValue()];    
+    private long[] matchPos = new long[ModuleConfig.getParam("VariantCallPosition_array_length", "ignore").intValue()];
+    private long[] totalPos = new long[ModuleConfig.getParam("VariantCallPosition_array_length", "ignore").intValue()];
     public HashMap<Integer, Long> getContributingReadsPerPos() {
 		return contributingReadsPerPos;
 	}
@@ -362,14 +362,14 @@ public class VariantCallDetection extends AbstractQCModule {
 		referenceUnknownBases = 0;
 		
 		
-	    firstSNPPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
-	    firstInsertionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
-	    firstDeletionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
-	    secondSNPPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
-	    secondInsertionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
-	    secondDeletionPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];	    
-	    matchPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];
-	    totalPos = new long[ModuleConfig.getParam("variant_call_position_length", "ignore").intValue()];	  	    
+	    firstSNPPos = new long[ModuleConfig.getParam("VariantCallPosition_array_length", "ignore").intValue()];
+	    firstInsertionPos = new long[ModuleConfig.getParam("VariantCallPosition_array_length", "ignore").intValue()];
+	    firstDeletionPos = new long[ModuleConfig.getParam("VariantCallPosition_array_length", "ignore").intValue()];
+	    secondSNPPos = new long[ModuleConfig.getParam("VariantCallPosition_array_length", "ignore").intValue()];
+	    secondInsertionPos = new long[ModuleConfig.getParam("VariantCallPosition_array_length", "ignore").intValue()];
+	    secondDeletionPos = new long[ModuleConfig.getParam("VariantCallPosition_array_length", "ignore").intValue()];	    
+	    matchPos = new long[ModuleConfig.getParam("VariantCallPosition_array_length", "ignore").intValue()];
+	    totalPos = new long[ModuleConfig.getParam("VariantCallPosition_array_length", "ignore").intValue()];	  	    
 	    currentPosition = 0;
 	    contributingReadsPerPos = new HashMap<Integer, Long>();
 

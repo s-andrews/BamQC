@@ -40,7 +40,7 @@ public class AnnotationSet {
 	
 	private FeatureClass [] featureArray = null;
 	
-	private final int cacheSize = ModuleConfig.getParam("feature_coverage_annotation_cache_size", "ignore").intValue();
+	private final int cacheSize = ModuleConfig.getParam("AnnotationSet_annotation_cache_size", "ignore").intValue();
 	private List<ShortRead> readCache = new ArrayList<ShortRead>(cacheSize);
 
 	
