@@ -48,7 +48,6 @@ public class GenomeCoverage extends AbstractQCModule {
 	Chromosome [] chromosomes = null;
 	private String [] chromosomeNames = null;
 	private double [][] binCounts = null;
-	private String [] binNames = null;
 	private long [] coverage = null;
 	private int noBinCountChromosomes = 0;
 	
@@ -85,7 +84,6 @@ public class GenomeCoverage extends AbstractQCModule {
 		chromosomes = null;
 		chromosomeNames = null;
 		binCounts = null;
-		binNames = null;
 		coverage = null;
 	}
 
@@ -273,7 +271,8 @@ public class GenomeCoverage extends AbstractQCModule {
 		
 		int maxBins = 0;
 		for (int i=0;i<binCounts.length;i++) {
-			if (binCounts[i].length > maxBins) maxBins = binCounts[i].length;
+			if (binCounts[i].length > maxBins) 
+				maxBins = binCounts[i].length;
 		}
 		
 		String [] labels = new String[maxBins];
@@ -347,9 +346,13 @@ public class GenomeCoverage extends AbstractQCModule {
 		}
 		
 	}
-	
-//	public double[] getCoverage() {
-//		return coverage;
-//	}
 
+	public String[] getChromosomeNames() {
+		return chromosomeNames;
+	}
+	
+	public long[] getCoverage() {
+		return coverage;
+	}
+	
 }

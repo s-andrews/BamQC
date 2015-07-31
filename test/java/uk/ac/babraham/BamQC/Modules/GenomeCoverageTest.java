@@ -22,6 +22,7 @@ package test.java.uk.ac.babraham.BamQC.Modules;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
 import java.util.List;
 
 import net.sf.samtools.SAMRecord;
@@ -33,6 +34,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
+import uk.ac.babraham.BamQC.Annotation.Chromosome;
 import uk.ac.babraham.BamQC.Modules.GenomeCoverage;
 
 public class GenomeCoverageTest {
@@ -40,7 +43,8 @@ public class GenomeCoverageTest {
 	private static Logger log = Logger.getLogger(GenomeCoverageTest.class);
 	
 	private GenomeCoverage genomeCoverage = null;
-	private TestObjectFactory testObjectFactory = null;
+	private AnnotationSet annotationSet = null;
+//	private TestObjectFactory testObjectFactory = null;
 	private List<SAMRecord> samRecords = null;
 	
 	@BeforeClass
@@ -56,22 +60,47 @@ public class GenomeCoverageTest {
 	@Before
 	public void setUp() throws Exception {
 		genomeCoverage = new GenomeCoverage();
+		annotationSet = new AnnotationSet();
 //		genomeCoverage.setBinNucleotides(1000, new long[]{0});
-		testObjectFactory = new TestObjectFactory();
-		samRecords = testObjectFactory.getSamRecords();
+//		testObjectFactory = new TestObjectFactory();
+//		samRecords = testObjectFactory.getSamRecords();
 	}
 
 	@After
 	public void tearDown() throws Exception {
 		genomeCoverage = null;
-		testObjectFactory = null;
+		annotationSet = null;
+//		testObjectFactory = null;
 		samRecords = null;
 	}
 
 	@Test
 	public void testGenomeCoverage() {
-		log.info("testGenomeCoverage - NOT YET DEFINED");
+		log.info("testGenomeCoverage");
+		String filename = new String(new File("").getAbsolutePath() + "/test/resources/genome_coverage.sam");
+		samRecords = SAMRecordLoader.loadSAMFile(filename);		
+		if(samRecords.isEmpty()) { 
+			log.warn("Impossible to run the test as " + filename + " seems empty");
+			return; 
+		}
+
+		for(SAMRecord read : samRecords) {
+			annotationSet.processSequenceNoCache(read);
+		}
+		genomeCoverage.processAnnotationSet(annotationSet);
+
+		String[] chromosomeNames = genomeCoverage.getChromosomeNames();
+		assertEquals(2, chromosomeNames.length);		
+		assertEquals("chromosome 6", "chromosome " + chromosomeNames[0]);
+		assertEquals("chromosome 13", "chromosome " + chromosomeNames[1]);
+
+		long[] coverage = genomeCoverage.getCoverage();	
+		assertEquals(99, coverage.length);
+		assertEquals(0, coverage[0]);
+		assertEquals(2, coverage[98]);
+		
 	}
+	
 	
 //	@Test
 //	public void testProcessSequence() {
