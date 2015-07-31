@@ -32,13 +32,12 @@ import org.apache.log4j.Logger;
 import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
 import uk.ac.babraham.BamQC.Annotation.Chromosome;
 import uk.ac.babraham.BamQC.Graphs.LineWithHorizontalBarGraph;
+import uk.ac.babraham.BamQC.Graphs.SeparateLineGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 import uk.ac.babraham.BamQC.Statistics.SimpleStats;
 
 public class GenomeCoverage extends AbstractQCModule {
-
-	private int plotBinsPerChromosome = ModuleConfig.getParam("GenomeCoverage_plot_bins_per_chromosome", "ignore").intValue();
 
 	private static Logger log = Logger.getLogger(GenomeCoverage.class);
 	private double genomeCoverageZeroWarningFraction = ModuleConfig.getParam("GenomeCoverage_zero_fraction", "warn");
@@ -47,10 +46,11 @@ public class GenomeCoverage extends AbstractQCModule {
 	private double genomeCoverageRsdErrorFraction = ModuleConfig.getParam("GenomeCoverage_rsd_fraction", "error");
 
 	Chromosome [] chromosomes = null;
-	private String [] chromosomeNames;
-	private double [][] binCounts;
-	private String [] binNames;
+	private String [] chromosomeNames = null;
+	private double [][] binCounts = null;
+	private String [] binNames = null;
 	private long [] coverage = null;
+	private int noBinCountChromosomes = 0;
 	
 	private boolean raiseError = false;
 	private boolean raiseWarning = false;
@@ -83,6 +83,10 @@ public class GenomeCoverage extends AbstractQCModule {
 		errorReads = 0;
 		readNumber = 0;
 		chromosomes = null;
+		chromosomeNames = null;
+		binCounts = null;
+		binNames = null;
+		coverage = null;
 	}
 
 	@Override
@@ -107,7 +111,7 @@ public class GenomeCoverage extends AbstractQCModule {
 
 	@Override
 	public boolean ignoreInReport() {
-		if(chromosomes == null || chromosomes.length == 0) { 
+		if(chromosomes == null || chromosomes.length == 0 || noBinCountChromosomes == chromosomes.length) { 
 			return true; 
 		}
 		return false;
@@ -117,7 +121,7 @@ public class GenomeCoverage extends AbstractQCModule {
 	public void processAnnotationSet(AnnotationSet annotation) {
 
 		chromosomes = annotation.chromosomeFactory().getAllChromosomes();	
-	
+		
 		chromosomeNames = new String [chromosomes.length];
 		binCounts = new double[chromosomes.length][];
 
@@ -125,11 +129,35 @@ public class GenomeCoverage extends AbstractQCModule {
 		// common scale.  Our limit is going to be that we'll put 200 points on the longest
 		// chromosome
 		
-		int maxBins = 0;
+		int maxBins = 1;
+		noBinCountChromosomes = 0;
 		
 		for (int c=0;c<chromosomes.length;c++) {
-			if (chromosomes[c].getBinCountData().length>maxBins) maxBins = chromosomes[c].getBinCountData().length;
+			if(chromosomes[c].getBinCountData().length <= 1) {
+				noBinCountChromosomes++;
+			} else if (chromosomes[c].getBinCountData().length>maxBins) { 
+				maxBins = chromosomes[c].getBinCountData().length;
+			}
 		}
+		
+		// configuration of how many bins per chromosome we want to plot.
+		// This is the number of bins per chromosome for the official plot getResultsPanel()
+		int plotBinsPerChromosome = 0; 
+		if(noBinCountChromosomes == chromosomes.length) {
+			plotBinsPerChromosome = ModuleConfig.getParam("GenomeCoverage_plot_bins_per_chromosome", "ignore").intValue();
+		} else {
+			plotBinsPerChromosome = ModuleConfig.getParam("GenomeCoverage_plot_bins_all_chromosomes", "ignore").intValue() / (chromosomes.length - noBinCountChromosomes);
+		}
+		// This is the number of bins per chromosome for the old plot now called getSeparateChromosomeResultsPanel()		
+		//plotBinsPerChromosome = ModuleConfig.getParam("GenomeCoverage_plot_bins_per_chromosome", "ignore").intValue();
+		
+		plotBinsPerChromosome = ModuleConfig.getParam("GenomeCoverage_plot_bins_per_chromosome", "ignore").intValue();
+
+		
+		// We could set a threshold and show the second plot if chromosomes.length < 20 (?) or the first plot otherwise. 
+		// Alternatively, we could move the previous code in another module which reuses the computation of this module. 
+		// or simply ignore the second plot (which is the current solution).
+		
 		
 		int binsToUse = plotBinsPerChromosome;
 		
@@ -139,10 +167,10 @@ public class GenomeCoverage extends AbstractQCModule {
 			binRatio = 1;
 			binsToUse = maxBins;
 		}
-		
+				
 		for (int c=0;c<chromosomes.length;c++) {
 			chromosomeNames[c] = chromosomes[c].name();
-//			System.err.println("Chromosome is "+chromosomes[c].name());
+//			System.out.println("Chromosome is " + chromosomes[c].name());
 			coverage = chromosomes[c].getBinCountData();
 			binCounts[c] = new double[binsToUse];
 			
@@ -190,27 +218,6 @@ public class GenomeCoverage extends AbstractQCModule {
 		}
 	}
 
-	
-//  Old plot showing the genome coverage per chromosome nicely. 
-//  possibly this plot should be shown if chromosomes below a certain threshold?
-//	@Deprecated
-//	public JPanel getResultsPanelOld() {
-//		
-//		int maxBins = 0;
-//		for (int i=0;i<binCounts.length;i++) {
-//			if (binCounts[i].length > maxBins) maxBins = binCounts[i].length;
-//		}
-//		
-//		String [] labels = new String[maxBins];
-//		for (int i=0;i<maxBins;i++) {
-//			labels[i] = ""+(i*Chromosome.COVERAGE_BIN_SIZE);
-//		}
-//		
-//		return new SeparateLineGraph(binCounts, 0-maxCoverage, maxCoverage, "Genome Position", chromosomeNames, labels, "Genome Coverage");		
-//		
-//	}
-	
-	
 	@Override
 	public JPanel getResultsPanel() {
 		
@@ -254,10 +261,30 @@ public class GenomeCoverage extends AbstractQCModule {
 		/* plot the data */
 		JPanel resultsPanel = new JPanel();
 		resultsPanel.setLayout(new javax.swing.BoxLayout(resultsPanel, javax.swing.BoxLayout.PAGE_AXIS));
-		resultsPanel.add(new LineWithHorizontalBarGraph(fullBinLengths, fullBinCounts, 0-maxLimit, maxLimit, "Genome Position", new String[]{""}, labels, title));
+		resultsPanel.add(new LineWithHorizontalBarGraph(fullBinLengths, fullBinCounts, 0-maxLimit, maxLimit, "Genome Position", new String[]{""}, labels, title, "Scaffold"));
 		
 		return resultsPanel;
 	}
+	
+	
+//  Old plot showing the genome coverage per chromosome nicely. 
+//  possibly this plot should be shown if chromosomes below a certain threshold?
+	public JPanel getSeparateChromosomeResultsPanel() {
+		
+		int maxBins = 0;
+		for (int i=0;i<binCounts.length;i++) {
+			if (binCounts[i].length > maxBins) maxBins = binCounts[i].length;
+		}
+		
+		String [] labels = new String[maxBins];
+		for (int i=0;i<maxBins;i++) {
+			labels[i] = ""+(i*Chromosome.COVERAGE_BIN_SIZE);
+		}
+		return new SeparateLineGraph(binCounts, 0-maxCoverage, maxCoverage, "Genome Position", chromosomeNames, labels, "Genome Coverage");				
+	}
+	
+	
+
 	
 
 	private void raiseWarningErrorsZeroCoverage(int zeroCoverageBins) {

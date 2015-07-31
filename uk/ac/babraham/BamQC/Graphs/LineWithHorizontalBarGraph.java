@@ -34,6 +34,7 @@ public class LineWithHorizontalBarGraph extends JPanel {
 	private static final long serialVersionUID = -5947375412672203276L;
 	protected String [] xTitles;
 	protected String xLabel;
+	protected String barDataLabel;	
 	protected String [] xCategories;
 	protected double [][] lineData;
 	protected double [] barData;
@@ -47,15 +48,15 @@ public class LineWithHorizontalBarGraph extends JPanel {
 	
 	protected static final Color [] COLOURS = new Color[] {new Color(220,0,0), new Color(0,0,220), new Color(0,220,0), Color.DARK_GRAY, Color.MAGENTA, Color.ORANGE,Color.YELLOW,Color.CYAN,Color.PINK,Color.LIGHT_GRAY};
 	
-	public LineWithHorizontalBarGraph(double[] barData, double[][] lineData, double minY, double maxY, String xLabel, String[] xTitles, int[] xCategories, String graphTitle) {
-		this(barData,lineData,minY,maxY,xLabel,xTitles,new String[0],graphTitle);
+	public LineWithHorizontalBarGraph(double[] barData, double[][] lineData, double minY, double maxY, String xLabel, String[] xTitles, int[] xCategories, String graphTitle, String barDataLabel) {
+		this(barData,lineData,minY,maxY,xLabel,xTitles,new String[0],graphTitle, barDataLabel);
 		this.xCategories = new String [xCategories.length];
 		for (int i=0;i<xCategories.length;i++) {
 			this.xCategories[i] = ""+xCategories[i];
 		}
 	}
 	
-	public LineWithHorizontalBarGraph(double[] barData, double[][] lineData, double minY, double maxY, String xLabel, String[] xTitles, String[] xCategories, String graphTitle) {
+	public LineWithHorizontalBarGraph(double[] barData, double[][] lineData, double minY, double maxY, String xLabel, String[] xTitles, String[] xCategories, String graphTitle, String barDataLabel) {
 		this.barData = barData;
 		this.lineData = lineData;
 		this.minY = minY;
@@ -64,6 +65,7 @@ public class LineWithHorizontalBarGraph extends JPanel {
 		this.xLabel = xLabel;
 		this.xCategories = xCategories;
 		this.graphTitle = graphTitle;
+		this.barDataLabel = barDataLabel;
 		this.yInterval = findOptimalYInterval(maxY);
 	}
 	
@@ -169,12 +171,14 @@ public class LineWithHorizontalBarGraph extends JPanel {
 		// Draw the xLabel under the xAxis
 		g.drawString(xLabel, (getWidth()/2) - (g.getFontMetrics().stringWidth(xLabel)/2), getHeight()-5);
 		
-		
+		// Draw the label for the bar data
+		g.drawString(barDataLabel, xOffsetLineGraph, 78);
 		
 		
 			
 		// Now draw the horizontal bar (1st plot)
 		// First we need to find the widest label
+		
 		int leftSpace = g.getFontMetrics().stringWidth("");
 		
 		// Add 3px either side for a bit of space;
@@ -201,6 +205,7 @@ public class LineWithHorizontalBarGraph extends JPanel {
 			g.fillRect(xPos, yPos, xOffsetBarGraph, yOffset);
 			g.setColor(Color.BLACK);
 			g.drawRect(xPos, yPos, xOffsetBarGraph, yOffset);
+			
 			
 			// increase the cumulative X offset to get a measure for this plot, 
 			// as we need this for scaling the second plot.
@@ -273,14 +278,12 @@ public class LineWithHorizontalBarGraph extends JPanel {
 		
 	}
 
-	
 	private int getY(double y, int index) {
-		
 		int totalPlotArea = getHeight()-160;
 		int plotAreaPerSample = totalPlotArea/lineData.length;
-				
-		return (getHeight()) - ((plotAreaPerSample*index)+(int)((plotAreaPerSample/(maxY-minY))*(y-minY)));
+		return (getHeight()-30) - ((plotAreaPerSample*index)+(int)((plotAreaPerSample/(maxY-minY))*(y-minY)));		
 	}
+	
 	
 	private int getX(double value, int longestLabel) {
 		int lengthToUse = getWidth()-(longestLabel+20);
