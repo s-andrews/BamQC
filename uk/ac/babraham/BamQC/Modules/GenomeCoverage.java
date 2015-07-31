@@ -149,9 +149,6 @@ public class GenomeCoverage extends AbstractQCModule {
 		// This is the number of bins per chromosome for the old plot now called getSeparateChromosomeResultsPanel()		
 		//plotBinsPerChromosome = ModuleConfig.getParam("GenomeCoverage_plot_bins_per_chromosome", "ignore").intValue();
 		
-		plotBinsPerChromosome = ModuleConfig.getParam("GenomeCoverage_plot_bins_per_chromosome", "ignore").intValue();
-
-		
 		// We could set a threshold and show the second plot if chromosomes.length < 20 (?) or the first plot otherwise. 
 		// Alternatively, we could move the previous code in another module which reuses the computation of this module. 
 		// or simply ignore the second plot (which is the current solution).
