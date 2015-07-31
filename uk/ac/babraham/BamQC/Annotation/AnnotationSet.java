@@ -79,6 +79,13 @@ public class AnnotationSet {
 		return features.get(type);
 	}
 	
+	
+	public void processSequenceNoCache(SAMRecord r) {
+		// implementation using ShortRead
+		processCachedSequence(new ShortRead(r.getReferenceName(), r.getAlignmentStart(), r.getAlignmentEnd()));
+	}
+	
+	
 	public void processSequence (SAMRecord r) {
 			
 		// implementation using ShortRead
