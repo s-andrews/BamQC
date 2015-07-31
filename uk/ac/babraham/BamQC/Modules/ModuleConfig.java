@@ -58,6 +58,8 @@ public class ModuleConfig {
 		params.put("GenomeCoverage_rsd_fraction:warn", 0.25d);
 		params.put("GenomeCoverage_rsd_fraction:error", 0.50d);
 		
+		params.put("InsertLengthDistribution_max_insert_size:ignore", 5000.0d);
+		params.put("InsertLengthDistribution_bin_size:ignore", 25.0d);
 		params.put("InsertLengthDistribution_percentage_deviation:error", 50.0d);
 		params.put("InsertLengthDistribution_percentage_deviation:warn", 75.0d);
 		
