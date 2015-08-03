@@ -24,14 +24,26 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JWindow;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.event.MouseInputAdapter;
+
 
 
 public class LineWithHorizontalBarGraph extends JPanel {
 
 	private static final long serialVersionUID = -5947375412672203276L;
+	protected String [] barLabels;
 	protected String [] xTitles;
 	protected String xLabel;
 	protected String barDataLabel;	
@@ -46,47 +58,57 @@ public class LineWithHorizontalBarGraph extends JPanel {
 	protected int height = -1;
 	protected int width = -1;
 	
+	// TOOL TIPS management
+	private List<Rectangle> rectangles = new ArrayList<Rectangle>();
+	private List<String> tips = new ArrayList<String>();
+    private JWindow toolTip = new JWindow();
+    private JLabel label = new JLabel();
+	private Tipster tipster = null;
+	
 	protected static final Color [] COLOURS = new Color[] {new Color(220,0,0), new Color(0,0,220), new Color(0,220,0), Color.DARK_GRAY, Color.MAGENTA, Color.ORANGE,Color.YELLOW,Color.CYAN,Color.PINK,Color.LIGHT_GRAY};
 	
-	public LineWithHorizontalBarGraph(double[] barData, double[][] lineData, double minY, double maxY, String xLabel, String[] xTitles, int[] xCategories, String graphTitle, String barDataLabel) {
-		this(barData,lineData,minY,maxY,xLabel,xTitles,new String[0],graphTitle, barDataLabel);
+	public LineWithHorizontalBarGraph(double[] barData, double[][] lineData, double minY, double maxY, String xLabel, String[] barLabels, String[] xTitles, int[] xCategories, String graphTitle, String barDataLabel) {
+		this(barData,lineData,minY,maxY,xLabel,barLabels, xTitles,new String[0],graphTitle, barDataLabel);
 		this.xCategories = new String [xCategories.length];
 		for (int i=0;i<xCategories.length;i++) {
 			this.xCategories[i] = ""+xCategories[i];
 		}
 	}
 	
-	public LineWithHorizontalBarGraph(double[] barData, double[][] lineData, double minY, double maxY, String xLabel, String[] xTitles, String[] xCategories, String graphTitle, String barDataLabel) {
+	public LineWithHorizontalBarGraph(double[] barData, double[][] lineData, double minY, double maxY, String xLabel, String[] barLabels, String[] xTitles, String[] xCategories, String graphTitle, String barDataLabel) {
 		this.barData = barData;
 		this.lineData = lineData;
 		this.minY = minY;
 		this.maxY = maxY;
+		this.barLabels = barLabels;		
 		this.xTitles = xTitles;
 		this.xLabel = xLabel;
 		this.xCategories = xCategories;
 		this.graphTitle = graphTitle;
 		this.barDataLabel = barDataLabel;
 		this.yInterval = findOptimalYInterval(maxY);
+		
+		// TOOL TIPS management
+        label.setHorizontalAlignment(JLabel.CENTER);
+        label.setOpaque(true);
+        label.setBackground(UIManager.getColor("ToolTip.white"));
+        label.setBorder(UIManager.getBorder("ToolTip.border"));
+        toolTip.add(label);
+        setOpaque(true);
 	}
 	
 	private double findOptimalYInterval(double max) {
-		
 		int base = 1;
 		double [] divisions = new double [] {1,2,2.5,5};
-		
 		while (true) {
-			
 			for (int d=0;d<divisions.length;d++) {
 				double tester = base * divisions[d];
 				if (max / tester <= 10) {
 					return tester;
 				}
 			}
-		
 			base *=10;
-			
 		}
-		
 	}
 	
 	@Override
@@ -190,7 +212,7 @@ public class LineWithHorizontalBarGraph extends JPanel {
 		int yPos=+80;
 		int yOffset=60;
 		int cumulativeXOffset = 0;
-		
+				
 		for(int i=0; i<barData.length; i++) {
 			int xValue = getX(Math.min(barData[i], maxX), leftSpace);
 			// set xPos and xOffset
@@ -201,10 +223,15 @@ public class LineWithHorizontalBarGraph extends JPanel {
 			xOffsetBarGraph=xValue-leftSpace;
 			
 			// draw the stacked horizontal bar scaffolds
+			Rectangle r = new Rectangle(xPos, yPos, xOffsetBarGraph, yOffset);
 			g.setColor(new Color(200,0,0));
-			g.fillRect(xPos, yPos, xOffsetBarGraph, yOffset);
+			g.fillRect((int)r.getX(), (int)r.getY(), (int)r.getWidth(), (int)r.getHeight());
 			g.setColor(Color.BLACK);
-			g.drawRect(xPos, yPos, xOffsetBarGraph, yOffset);
+			g.drawRect((int)r.getX(), (int)r.getY(), (int)r.getWidth(), (int)r.getHeight());
+			// TOOL TIPS management
+			// add rectangle coordinates and tooltip to these two lists
+			rectangles.add(r);
+			tips.add(barLabels[i]);
 			
 			
 			// increase the cumulative X offset to get a measure for this plot, 
@@ -217,7 +244,10 @@ public class LineWithHorizontalBarGraph extends JPanel {
 			g.setColor(Color.BLACK);	
 			
 		}
-
+		
+        tipster = new Tipster(this);
+        addMouseListener(tipster);
+        addMouseMotionListener(tipster);
 		
 		
 		
@@ -271,11 +301,8 @@ public class LineWithHorizontalBarGraph extends JPanel {
 				
 					lastY = thisY;
 				}
-			}
-			
+			}	
 		}
-				
-		
 	}
 
 	private int getY(double y, int index) {
@@ -284,13 +311,64 @@ public class LineWithHorizontalBarGraph extends JPanel {
 		return (getHeight()-30) - ((plotAreaPerSample*index)+(int)((plotAreaPerSample/(maxY-minY))*(y-minY)));		
 	}
 	
-	
 	private int getX(double value, int longestLabel) {
 		int lengthToUse = getWidth()-(longestLabel+20);
 		double proportion = value/maxX;		
 		return longestLabel+(int)(lengthToUse*proportion);
 	}
 
-	
-	
+
+	///////////////////////
+	// TOOL TIPS management
+    ///////////////////////
+	public void showToolTip(int index, Point p) {
+    	p.setLocation(p.getX()+10, p.getY()+25);
+        label.setText(tips.get(index));
+        toolTip.pack();
+        toolTip.setLocation(p);
+        toolTip.setVisible(true);
+    }
+ 
+    public void hideToolTip() {
+        toolTip.dispose();
+    }
+ 
+    public boolean isToolTipShowing() {
+        return toolTip.isShowing();
+    }
+     
+    class Tipster extends MouseInputAdapter {
+        private LineWithHorizontalBarGraph toolTips;
+     
+        public Tipster(LineWithHorizontalBarGraph tt) {
+            toolTips = tt;
+        }
+     
+        @Override
+    	public void mouseMoved(MouseEvent e) {
+            Point p = e.getPoint();
+            boolean traversing = false;
+            List<Rectangle> rects = toolTips.rectangles;
+            for(int j = 0; j < rects.size(); j++) {
+                Rectangle r = rects.get(j);
+                if(r.contains(p)) {
+                    SwingUtilities.convertPointToScreen(p, toolTips);
+                    toolTips.showToolTip(j, p);
+                    traversing = true;
+                    break;
+                }
+            }
+            if(!traversing && toolTips.isToolTipShowing())
+            	toolTips.hideToolTip();
+        }
+        
+    }
+
 }
+
+
+
+
+
+
+

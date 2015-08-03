@@ -148,6 +148,8 @@ public class GenomeCoverage extends AbstractQCModule {
 		}
 		// This is the number of bins per chromosome for the old plot now called getSeparateChromosomeResultsPanel()		
 		//plotBinsPerChromosome = ModuleConfig.getParam("GenomeCoverage_plot_bins_per_chromosome", "ignore").intValue();
+
+
 		
 		// We could set a threshold and show the second plot if chromosomes.length < 20 (?) or the first plot otherwise. 
 		// Alternatively, we could move the previous code in another module which reuses the computation of this module. 
@@ -164,7 +166,7 @@ public class GenomeCoverage extends AbstractQCModule {
 		}
 				
 		for (int c=0;c<chromosomes.length;c++) {
-			chromosomeNames[c] = chromosomes[c].name();
+			chromosomeNames[c] = "chromosome " + chromosomes[c].name();
 //			System.out.println("Chromosome is " + chromosomes[c].name());
 			coverage = chromosomes[c].getBinCountData();
 			binCounts[c] = new double[binsToUse];
@@ -256,7 +258,7 @@ public class GenomeCoverage extends AbstractQCModule {
 		/* plot the data */
 		JPanel resultsPanel = new JPanel();
 		resultsPanel.setLayout(new javax.swing.BoxLayout(resultsPanel, javax.swing.BoxLayout.PAGE_AXIS));
-		resultsPanel.add(new LineWithHorizontalBarGraph(fullBinLengths, fullBinCounts, 0-maxLimit, maxLimit, "Genome Position", new String[]{""}, labels, title, "Scaffold"));
+		resultsPanel.add(new LineWithHorizontalBarGraph(fullBinLengths, fullBinCounts, 0-maxLimit, maxLimit, "Genome Position", chromosomeNames, new String[]{""}, labels, title, "Scaffold (for chromosome names, cross the red bars with the mouse)"));
 		
 		return resultsPanel;
 	}
