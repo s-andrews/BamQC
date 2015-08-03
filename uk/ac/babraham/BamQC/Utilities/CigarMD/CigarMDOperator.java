@@ -18,7 +18,7 @@
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package uk.ac.babraham.BamQC.Utilities;
+package uk.ac.babraham.BamQC.Utilities.CigarMD;
 
 /**
  * The operators that can appear in a cigar md string, and information about their disk representations.

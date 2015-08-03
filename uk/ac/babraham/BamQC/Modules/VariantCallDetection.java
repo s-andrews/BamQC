@@ -33,10 +33,10 @@ import net.sf.samtools.SAMRecord;
 import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
-import uk.ac.babraham.BamQC.Utilities.CigarMDGenerator;
-import uk.ac.babraham.BamQC.Utilities.CigarMDElement;
-import uk.ac.babraham.BamQC.Utilities.CigarMDOperator;
-import uk.ac.babraham.BamQC.Utilities.CigarMD;
+import uk.ac.babraham.BamQC.Utilities.CigarMD.CigarMD;
+import uk.ac.babraham.BamQC.Utilities.CigarMD.CigarMDElement;
+import uk.ac.babraham.BamQC.Utilities.CigarMD.CigarMDGenerator;
+import uk.ac.babraham.BamQC.Utilities.CigarMD.CigarMDOperator;
 
 
 
