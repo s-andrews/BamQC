@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-14 Simon Andrews
+ * Copyright Copyright 2010-15 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -14,27 +14,28 @@
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with BamQC; if not, write to the Free Software
+ *    along with SeqMonk; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package uk.ac.babraham.BamQC.Sequence;
+package uk.ac.babraham.BamQC;
 
-import java.io.File;
+/**
+ * A generic exception class representing logic exceptions generated within BamQC
+ */
+public class BamQCException extends Exception {
 
-import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
-import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
-import net.sf.samtools.SAMRecord;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2638136960061734517L;
 
-public interface SequenceFile {
-
-	public boolean hasNext();
-	public SAMRecord next() throws SequenceFormatException;
-	public boolean isColorspace();
-	public String name();
-	public int getPercentComplete();
-	public File getFile();
-	public boolean canListChromosomes();
-	public Chromosome [] listChromosomes();
-	public AnnotationSet annotationSet();
+	/**
+	 * Instantiates a new bamqc exception.
+	 * 
+	 * @param error Error text
+	 */
+	public BamQCException (String error) {
+		super(error);
+	}
 	
 }

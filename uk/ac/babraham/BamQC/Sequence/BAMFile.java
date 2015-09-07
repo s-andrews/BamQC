@@ -26,9 +26,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
-import uk.ac.babraham.BamQC.Annotation.Chromosome;
-
+import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
+import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMFormatException;

@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-14 Simon Andrews
+ * Copyright 2010-15 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -17,24 +17,36 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package uk.ac.babraham.BamQC.Sequence;
+package uk.ac.babraham.BamQC.Network.DownloadableGenomes;
 
-import java.io.File;
+import java.util.Vector;
 
-import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
-import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
-import net.sf.samtools.SAMRecord;
+public class GenomeSpecies {
 
-public interface SequenceFile {
-
-	public boolean hasNext();
-	public SAMRecord next() throws SequenceFormatException;
-	public boolean isColorspace();
-	public String name();
-	public int getPercentComplete();
-	public File getFile();
-	public boolean canListChromosomes();
-	public Chromosome [] listChromosomes();
-	public AnnotationSet annotationSet();
+	private Vector<GenomeAssembly> assemblies = new Vector<GenomeAssembly>();
+	private String name;
+	
+	public GenomeSpecies (String name) {
+		this.name = name;
+	}
+	
+	public String name () {
+		return name;
+	}
+	
+	@Override
+	public String toString () {
+		return name();
+	}
+	
+	public void addAssembly (GenomeAssembly assembly) {
+		if (assembly != null) {
+			assemblies.add(assembly);
+		}
+	}
+	
+	public GenomeAssembly [] assemblies () {
+		return assemblies.toArray(new GenomeAssembly[0]);
+	}
 	
 }

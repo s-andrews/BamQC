@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-14 Simon Andrews
+ * Copyright Copyright 2014 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -17,24 +17,28 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package uk.ac.babraham.BamQC.Sequence;
+package uk.ac.babraham.BamQC.DataTypes.Genome;
 
-import java.io.File;
+import java.util.HashMap;
 
-import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
-import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
-import net.sf.samtools.SAMRecord;
+public class ChromosomeFactory {
 
-public interface SequenceFile {
-
-	public boolean hasNext();
-	public SAMRecord next() throws SequenceFormatException;
-	public boolean isColorspace();
-	public String name();
-	public int getPercentComplete();
-	public File getFile();
-	public boolean canListChromosomes();
-	public Chromosome [] listChromosomes();
-	public AnnotationSet annotationSet();
+	HashMap<String,Chromosome> chromosomes = new HashMap<String, Chromosome>();
+	
+	public Chromosome getChromosome (String name) {
+		
+		if (name.equals("*")) {
+			return null;
+		}
+		if (!chromosomes.containsKey(name)) {
+			chromosomes.put(name,new Chromosome(name));
+		}
+		return chromosomes.get(name);
+	}
+	
+	public Chromosome [] getAllChromosomes () {
+		return chromosomes.values().toArray(new Chromosome[0]);
+	}
+	
 	
 }

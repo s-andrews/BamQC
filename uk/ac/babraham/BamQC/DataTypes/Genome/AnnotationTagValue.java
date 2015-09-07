@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-14 Simon Andrews
+ * Copyright 2010-15 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -17,24 +17,48 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package uk.ac.babraham.BamQC.Sequence;
+package uk.ac.babraham.BamQC.DataTypes.Genome;
 
-import java.io.File;
 
-import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
-import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
-import net.sf.samtools.SAMRecord;
+/**
+ * The Class AnnotationTagValue stores a key value pair associated 
+ * with an annotation feature
+ */
+public class AnnotationTagValue {
 
-public interface SequenceFile {
-
-	public boolean hasNext();
-	public SAMRecord next() throws SequenceFormatException;
-	public boolean isColorspace();
-	public String name();
-	public int getPercentComplete();
-	public File getFile();
-	public boolean canListChromosomes();
-	public Chromosome [] listChromosomes();
-	public AnnotationSet annotationSet();
+	/** The tag. */
+	private String tag;
+	
+	/** The value. */
+	private String value;
+	
+	/**
+	 * Instantiates a new annotation tag value.
+	 * 
+	 * @param tag the tag
+	 * @param value the value
+	 */
+	public AnnotationTagValue (String tag, String value) {
+		this.tag = tag;
+		this.value = value;
+	}
+	
+	/**
+	 * Tag.
+	 * 
+	 * @return the string
+	 */
+	public String tag () {
+		return tag;
+	}
+	
+	/**
+	 * Value.
+	 * 
+	 * @return the string
+	 */
+	public String value () {
+		return value;
+	}
 	
 }

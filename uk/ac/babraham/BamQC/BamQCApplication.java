@@ -22,6 +22,8 @@ package uk.ac.babraham.BamQC;
 import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
@@ -29,10 +31,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 
+import sun.net.ProgressListener;
 import uk.ac.babraham.BamQC.Analysis.AnalysisRunner;
 import uk.ac.babraham.BamQC.Analysis.OfflineRunner;
 import uk.ac.babraham.BamQC.Dialogs.WelcomePanel;
@@ -45,8 +49,18 @@ import uk.ac.babraham.BamQC.Results.ResultsPanel;
 import uk.ac.babraham.BamQC.Sequence.SequenceFactory;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 import uk.ac.babraham.BamQC.Sequence.SequenceFormatException;
+import uk.ac.babraham.BamQC.AnnotationParsers.GenomeParser;
+import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationCollectionListener;
+import uk.ac.babraham.BamQC.DataTypes.Genome.Genome;
+import uk.ac.babraham.BamQC.Dialogs.ProgressDialog;
+import uk.ac.babraham.BamQC.Network.GenomeDownloader;
+import uk.ac.babraham.BamQC.DataTypes.CacheListener;
 
-public class BamQCApplication extends JFrame {	
+
+
+public class BamQCApplication extends JFrame { //implements ProgressListener, AnnotationCollectionListener {	
+	
+	private static BamQCApplication application;
 	
 	private static final long serialVersionUID = -1761781589885333860L;
 
@@ -55,6 +69,11 @@ public class BamQCApplication extends JFrame {
 	private JTabbedPane fileTabs;
 	private WelcomePanel welcomePanel;
 	private File lastUsedDir = null;
+	
+	
+	/** The cache listeners */
+	private Vector<CacheListener> cacheListeners = new Vector<CacheListener>();
+	
 	
 	public BamQCApplication () {
 			setTitle("BamQC");
@@ -251,6 +270,88 @@ public class BamQCApplication extends JFrame {
 			e.printStackTrace();
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	// TODO code extracted from BamQC and then edited.
+
+	/**
+	 * Notifies all listeners that the disk cache was used.
+	 */
+	public void cacheUsed () {
+		Enumeration<CacheListener>en = cacheListeners.elements();
+		while (en.hasMoreElements()) {
+			en.nextElement().cacheUsed();
+		}
+	}
+	
+	/**
+	 * This method is usually called from data gathered by the genome selector
+	 * which will provide the required values for the assembly name.  This does
+	 * not actually load the specified genome, but just downloads it from the
+	 * online genome repository.
+	 * 
+	 * @param species Species name
+	 * @param assembly Assembly name
+	 * @param size The size of the compressed genome file in bytes
+	 */
+	public void downloadGenome (String species, String assembly, int size) {
+		GenomeDownloader d = new GenomeDownloader();
+		//d.addProgressListener(this);
+		ProgressDialog pd = new ProgressDialog(this,"Downloading genome...");
+		d.addProgressListener(pd);
+		d.downloadGenome(species,assembly,size,true);
+		pd.requestFocus();
+	}
+	
+	/**
+	 * Loads a genome assembly.  This will fail if the genome isn't currently
+	 * in the local cache and downloadGenome should be set first in this case.
+	 * 
+	 * @param baseLocation The folder containing the requested genome.
+	 */
+	public void loadGenome (File baseLocation) {
+		GenomeParser parser = new GenomeParser();
+		ProgressDialog pd = new ProgressDialog(this,"Loading genome...");
+		parser.addProgressListener(pd);
+		//parser.addProgressListener(this);
+		parser.parseGenome(baseLocation);
+		pd.requestFocus();
+	}
+	
+	// End of the GenomeProgressListener methods. (code from SeqMonk)
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Provides a static way to access the main instance of the SeqMonk
+	 * Application so we don't need to keep passing references around
+	 * through obscure paths.
+	 * 
+	 * @return The currently running application instance.
+	 */
+	
+	public static BamQCApplication getInstance () {
+		return application;
+	}
+	
+	
 
 	public static void main(String[] args) {
 		
@@ -290,9 +391,9 @@ public class BamQCApplication extends JFrame {
 				BamQCConfig.getInstance().do_unzip = false;
 			}
 	
-			BamQCApplication app = new BamQCApplication();
+			application = new BamQCApplication();
 	
-			app.setVisible(true);
+			application.setVisible(true);
 		}
 	}	
 

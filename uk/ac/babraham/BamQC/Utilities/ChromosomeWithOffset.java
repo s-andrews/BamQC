@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-14 Simon Andrews
+ * Copyright 2013-15 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -17,24 +17,34 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package uk.ac.babraham.BamQC.Sequence;
+package uk.ac.babraham.BamQC.Utilities;
 
-import java.io.File;
-
-import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
-import net.sf.samtools.SAMRecord;
 
-public interface SequenceFile {
+public class ChromosomeWithOffset {
 
-	public boolean hasNext();
-	public SAMRecord next() throws SequenceFormatException;
-	public boolean isColorspace();
-	public String name();
-	public int getPercentComplete();
-	public File getFile();
-	public boolean canListChromosomes();
-	public Chromosome [] listChromosomes();
-	public AnnotationSet annotationSet();
+	/**
+	 * This class is used to return a lookup to a chromosome name where we
+	 * can optionally add an offset as well.  This allows us to use other
+	 * coordinate spaces for our identifiers as long as the linear values
+	 * within the region are the same.  This is useful for building 
+	 * pseudo chromosomes or for other non-linear mapping in the future
+	 */
+	
+	private Chromosome chromosome;
+	private int offset;
+	
+	public ChromosomeWithOffset (Chromosome chromosome, int offset) {
+		this.chromosome = chromosome;
+		this.offset = offset;
+	}
+	
+	public Chromosome chromosome () {
+		return chromosome;
+	}
+	
+	public int position (int basePosition) {
+		return basePosition+offset;
+	}
 	
 }

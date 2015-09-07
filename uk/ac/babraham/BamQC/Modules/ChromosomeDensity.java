@@ -33,8 +33,8 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.math3.util.Precision;
 
 import net.sf.samtools.SAMRecord;
-import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
-import uk.ac.babraham.BamQC.Annotation.Chromosome;
+import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
+import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.BamQC.Graphs.BarGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;

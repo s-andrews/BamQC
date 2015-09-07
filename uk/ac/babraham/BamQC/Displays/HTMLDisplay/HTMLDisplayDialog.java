@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2014 Simon Andrews
+ * Copyright 2012-15 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -17,28 +17,32 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package uk.ac.babraham.BamQC.Annotation;
+package uk.ac.babraham.BamQC.Displays.HTMLDisplay;
 
-import java.util.HashMap;
+import javax.swing.JDialog;
+import javax.swing.JEditorPane;
+import javax.swing.JScrollPane;
 
-public class ChromosomeFactory {
+import uk.ac.babraham.BamQC.BamQCApplication;
 
-	HashMap<String,Chromosome> chromosomes = new HashMap<String, Chromosome>();
-	
-	public Chromosome getChromosome (String name) {
+public class HTMLDisplayDialog extends JDialog {
+
+	public HTMLDisplayDialog (String html) {
 		
-		if (name.equals("*")) {
-			return null;
-		}
-		if (!chromosomes.containsKey(name)) {
-			chromosomes.put(name,new Chromosome(name));
-		}
-		return chromosomes.get(name);
+		super(BamQCApplication.getInstance(),"Crash Report Help");
+		
+		System.err.println("Making help dialog");
+		
+		JEditorPane jep = new JEditorPane("text/html", html);
+		
+		setContentPane(new JScrollPane(jep,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
+		
+		setSize(700,500);
+		setLocationRelativeTo(BamQCApplication.getInstance());
+		setVisible(true);
+		
 	}
 	
-	public Chromosome [] getAllChromosomes () {
-		return chromosomes.values().toArray(new Chromosome[0]);
-	}
 	
 	
 }

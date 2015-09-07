@@ -25,10 +25,10 @@ import java.util.List;
 
 import net.sf.samtools.SAMRecord;
 import uk.ac.babraham.BamQC.BamQCConfig;
-import uk.ac.babraham.BamQC.Annotation.AnnotationParser;
-import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
-import uk.ac.babraham.BamQC.Annotation.GFF3AnnotationParser;
-import uk.ac.babraham.BamQC.Annotation.GTFParser;
+import uk.ac.babraham.BamQC.AnnotationParsers.AnnotationParser;
+import uk.ac.babraham.BamQC.AnnotationParsers.GFF3AnnotationParser;
+import uk.ac.babraham.BamQC.AnnotationParsers.GTFParser;
+import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.Modules.QCModule;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 import uk.ac.babraham.BamQC.Sequence.SequenceFormatException;

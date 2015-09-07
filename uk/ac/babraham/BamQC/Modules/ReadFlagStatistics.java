@@ -35,7 +35,7 @@ import net.sf.samtools.SAMRecord;
 
 import org.apache.log4j.Logger;
 
-import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
+import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 

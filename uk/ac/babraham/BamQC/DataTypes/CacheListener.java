@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-14 Simon Andrews
+ * Copyright 2010-15 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -17,24 +17,14 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package uk.ac.babraham.BamQC.Sequence;
+package uk.ac.babraham.BamQC.DataTypes;
 
-import java.io.File;
-
-import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
-import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
-import net.sf.samtools.SAMRecord;
-
-public interface SequenceFile {
-
-	public boolean hasNext();
-	public SAMRecord next() throws SequenceFormatException;
-	public boolean isColorspace();
-	public String name();
-	public int getPercentComplete();
-	public File getFile();
-	public boolean canListChromosomes();
-	public Chromosome [] listChromosomes();
-	public AnnotationSet annotationSet();
-	
+/**
+ * The cache listener is a way to listen for events which require
+ * data to be loaded from disk cache.  Each event is reported only
+ * once and there is no way to determine when that event has finished
+ * so you just get to watch for the number of events.
+ */
+public interface CacheListener {
+	public void cacheUsed ();
 }

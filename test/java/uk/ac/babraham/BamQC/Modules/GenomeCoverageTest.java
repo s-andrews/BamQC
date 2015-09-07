@@ -34,8 +34,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import uk.ac.babraham.BamQC.Annotation.AnnotationSet;
-import uk.ac.babraham.BamQC.Annotation.Chromosome;
+import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
+import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.BamQC.Modules.GenomeCoverage;
 
 public class GenomeCoverageTest {

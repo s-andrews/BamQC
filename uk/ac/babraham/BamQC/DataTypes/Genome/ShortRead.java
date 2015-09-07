@@ -18,7 +18,7 @@
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package uk.ac.babraham.BamQC.Annotation;
+package uk.ac.babraham.BamQC.DataTypes.Genome;
 
 
 /**

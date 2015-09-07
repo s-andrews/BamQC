@@ -1,4 +1,4 @@
-package uk.ac.babraham.BamQC.Annotation;
+package uk.ac.babraham.BamQC.AnnotationParsers;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

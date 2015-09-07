@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-14 Simon Andrews
+ * Copyright 2010-15 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -17,24 +17,44 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package uk.ac.babraham.BamQC.Sequence;
+package uk.ac.babraham.BamQC.Network.DownloadableGenomes;
 
-import java.io.File;
+import java.util.Date;
 
-import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
-import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
-import net.sf.samtools.SAMRecord;
+public class GenomeAssembly {
 
-public interface SequenceFile {
-
-	public boolean hasNext();
-	public SAMRecord next() throws SequenceFormatException;
-	public boolean isColorspace();
-	public String name();
-	public int getPercentComplete();
-	public File getFile();
-	public boolean canListChromosomes();
-	public Chromosome [] listChromosomes();
-	public AnnotationSet annotationSet();
+	private GenomeSpecies species;
+	private String assembly;
+	private int fileSize;
+	private Date date;
+	
+	public GenomeAssembly (GenomeSpecies species, String assmebly, int fileSize, Date date) {
+		this.species = species;
+		this.assembly = assmebly;
+		this.fileSize = fileSize;
+		this.date = date;
+		species.addAssembly(this);
+	}
+	
+	public GenomeSpecies species () {
+		return species;
+	}
+	
+	public String assembly () {
+		return assembly;
+	}
+	
+	public int fileSize () {
+		return fileSize;
+	}
+	
+	@Override
+	public String toString () {
+		return assembly();
+	}
+	
+	public Date date () {
+		return date;
+	}
 	
 }

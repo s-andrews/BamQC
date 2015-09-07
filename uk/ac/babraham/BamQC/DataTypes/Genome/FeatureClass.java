@@ -18,7 +18,7 @@
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package uk.ac.babraham.BamQC.Annotation;
+package uk.ac.babraham.BamQC.DataTypes.Genome;
 
 
 import java.util.HashMap;
@@ -38,7 +38,7 @@ public class FeatureClass {
 	public FeatureClass (AnnotationSet a) {
 			annotationSet = a;
 	}
-	
+
 	public void addFeature (Feature f) {
 		if (! subClasses.containsKey(f.subclass())) {
 			subClasses.put(f.subclass(), new FeatureSubclass(annotationSet));
@@ -47,7 +47,7 @@ public class FeatureClass {
 		subClasses.get(f.subclass()).addFeature(f);
 		
 	}
-		
+	
 	public void processSequence (ShortRead r) {
 		FeatureSubclass[] fsc = subClasses.values().toArray(new FeatureSubclass[0]);
 		for (int i=0; i<fsc.length; i++) {
@@ -64,6 +64,5 @@ public class FeatureClass {
 			return subClasses.get(name);
 		}
 		return null;
-	}
-	
+	}	
 }
