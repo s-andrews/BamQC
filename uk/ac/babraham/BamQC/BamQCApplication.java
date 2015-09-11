@@ -1349,11 +1349,6 @@ public class BamQCApplication extends JFrame implements ProgressListener, DataCh
 	
 	
 	
-	
-	
-	
-	
-	
 	/**
 	 * Provides a static way to access the main instance of the BamQC
 	 * Application so we don't need to keep passing references around
