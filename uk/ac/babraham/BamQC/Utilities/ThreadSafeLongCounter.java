@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-14 Simon Andrews
+ * Copyright 2011-15 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -17,25 +17,39 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package uk.ac.babraham.BamQC.FileFilters;
+package uk.ac.babraham.BamQC.Utilities;
+/**
+ * This class provides a thread safe implementation of a counter
+ * where the increment and decrement methods can be called from
+ * any number of threads with no concern that the values will 
+ * clash or updates be lost.
+ * 
+ * @author andrewss
+ *
+ */
+public class ThreadSafeLongCounter {
 
-import java.io.File;
-
-import javax.swing.filechooser.FileFilter;
-
-public class BAMFileFilter extends FileFilter {
-
-	@Override
-	public boolean accept(File f) {
-		if (f.isDirectory() || f.getName().toLowerCase().endsWith(".bam") || f.getName().toLowerCase().endsWith(".sam")) {
-			return true;
-		}
-		return false;
+	private long value = 0;
+	
+	public synchronized void increment () {
+		value++;
+	}
+	
+	public synchronized void decrement () {
+		value--;
+	}
+	
+	public synchronized void incrementBy (long amount) {
+		value += amount;
 	}
 
-	@Override
-	public String getDescription() {
-		return "BAM/SAM Files";
+	public synchronized void decrementBy (long amount) {
+		value -= amount;
 	}
 
+	public long value () {
+		return value;
+	}
+	
+	
 }

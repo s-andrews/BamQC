@@ -1,5 +1,5 @@
 /**
- * Copyright 2010-15 Simon Andrews
+ * Copyright 2011-15 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -17,52 +17,36 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package uk.ac.babraham.BamQC.DataTypes.Genome;
-
-import java.io.Serializable;
-
-
+package uk.ac.babraham.BamQC.Utilities;
 /**
- * The Class AnnotationTagValue stores a key value pair associated 
- * with an annotation feature
+ * This class provides a way to track a count via an object which 
+ * doesn't need to be updated to a new object on every increment 
+ * @author andrewss
+ *
  */
-public class AnnotationTagValue implements Serializable {
+public class NonThreadSafeIntCounter {
 
-	private static final long serialVersionUID = -3177990565516366064L;
-
-	/** The tag. */
-	private String tag;
+	private int value = 0;
 	
-	/** The value. */
-	private String value;
-	
-	/**
-	 * Instantiates a new annotation tag value.
-	 * 
-	 * @param tag the tag
-	 * @param value the value
-	 */
-	public AnnotationTagValue (String tag, String value) {
-		this.tag = tag;
-		this.value = value;
+	public void increment () {
+		value++;
 	}
 	
-	/**
-	 * Tag.
-	 * 
-	 * @return the string
-	 */
-	public String tag () {
-		return tag;
+	public void decrement () {
+		value--;
 	}
 	
-	/**
-	 * Value.
-	 * 
-	 * @return the string
-	 */
-	public String value () {
+	public void incrementBy (int amount) {
+		value += amount;
+	}
+
+	public void decrementBy (int amount) {
+		value -= amount;
+	}
+
+	public int value () {
 		return value;
 	}
+	
 	
 }

@@ -19,11 +19,15 @@
  */
 package uk.ac.babraham.BamQC.DataTypes.Genome;
 
+import java.io.Serializable;
+
 
 /**
  * The Class Feature represents a single annotation feature
  */
-public class Feature implements Comparable<Feature> {
+public class Feature implements Comparable<Feature>, Serializable {
+	
+	private static final long serialVersionUID = 5959879654165469490L;
 	
 	/** The type. */
 	private String type;

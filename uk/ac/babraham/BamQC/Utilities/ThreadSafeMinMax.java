@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-14 Simon Andrews
+ * Copyright 2011-15 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -17,25 +17,39 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package uk.ac.babraham.BamQC.FileFilters;
+package uk.ac.babraham.BamQC.Utilities;
+/**
+ * This class provides a thread safe implementation of a record
+ * of the max and min values ever seen
+ * 
+ * @author andrewss
+ *
+ */
+public class ThreadSafeMinMax {
 
-import java.io.File;
-
-import javax.swing.filechooser.FileFilter;
-
-public class GFFFileFilter extends FileFilter {
-
-	@Override
-	public boolean accept(File f) {
-		if (f.isDirectory() || f.getName().toLowerCase().endsWith(".gff") || f.getName().toLowerCase().endsWith(".gff3") || f.getName().toLowerCase().endsWith(".gtf")) {
-			return true;
+	private int min = 0;
+	private int max = 0;
+	private boolean anyData = false;
+	
+	public synchronized void addValue (int value) {
+		if (anyData) {
+			if (value < min) min = value;
+			if (value > max) max = value;
 		}
-		return false;
+		else {
+			min = value;
+			max = value;
+		}
+	
 	}
-
-	@Override
-	public String getDescription() {
-		return "GFF/GTF Files";
+	
+	public int min () {
+		return min;
 	}
-
+	
+	public int max () {
+		return max;
+	}
+	
+	
 }

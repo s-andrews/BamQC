@@ -1,5 +1,5 @@
 /**
- * Copyright 2010-15 Simon Andrews
+ * Copyright 2011-15 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -17,52 +17,39 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package uk.ac.babraham.BamQC.DataTypes.Genome;
-
-import java.io.Serializable;
-
-
+package uk.ac.babraham.BamQC.Utilities;
 /**
- * The Class AnnotationTagValue stores a key value pair associated 
- * with an annotation feature
+ * This class provides a thread safe implementation of a counter
+ * where the increment and decrement methods can be called from
+ * any number of threads with no concern that the values will 
+ * clash or updates be lost.
+ * 
+ * @author andrewss
+ *
  */
-public class AnnotationTagValue implements Serializable {
+public class ThreadSafeIntCounter {
 
-	private static final long serialVersionUID = -3177990565516366064L;
-
-	/** The tag. */
-	private String tag;
+	private int value = 0;
 	
-	/** The value. */
-	private String value;
-	
-	/**
-	 * Instantiates a new annotation tag value.
-	 * 
-	 * @param tag the tag
-	 * @param value the value
-	 */
-	public AnnotationTagValue (String tag, String value) {
-		this.tag = tag;
-		this.value = value;
+	public synchronized void increment () {
+		value++;
 	}
 	
-	/**
-	 * Tag.
-	 * 
-	 * @return the string
-	 */
-	public String tag () {
-		return tag;
+	public synchronized void decrement () {
+		value--;
 	}
 	
-	/**
-	 * Value.
-	 * 
-	 * @return the string
-	 */
-	public String value () {
+	public synchronized void incrementBy (int amount) {
+		value += amount;
+	}
+
+	public synchronized void decrementBy (int amount) {
+		value -= amount;
+	}
+
+	public int value () {
 		return value;
 	}
+	
 	
 }

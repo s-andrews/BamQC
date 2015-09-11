@@ -44,13 +44,10 @@ public class BamQCPreferences {
 	private HashSet<String> ignoredAnnotations = new HashSet<String>();
 	
 	/** The directory under which to look for genome files */
-	private File genomeBase = null;
+	private File genomeBase = new File(System.getProperty("user.home")); //null;
 	
 	/** The default data location. */
 	private File dataLocation = new File(System.getProperty("user.home"));
-	
-	/** The location of the R executable **/
-	private String rExecutableLocation = new String("R");
 	
 	/** The last used data location. */
 	private File lastUsedDataLocation = null;
@@ -65,11 +62,8 @@ public class BamQCPreferences {
 	private File preferencesFile = null;
 	
 	/** The directory in which to save temporary cache files */
-	private File tempDirectory = null;
+	private File tempDirectory = new File(System.getProperty("user.home")); //null;
 		
-	/** Whether we've opted to compress our output files */
-	private boolean compressOutput = false;
-	
 	/** The network address from where we can download new genomes */
 	private String genomeDownloadLocation = "http://www.bioinformatics.babraham.ac.uk/seqmonk/genomes/";
 	
@@ -81,9 +75,6 @@ public class BamQCPreferences {
 	
 	/** The proxy port. */
 	private int proxyPort = 0;
-	
-	/** Whether we should check for updates every time we're launched. */
-	private boolean checkForUpdates = true;
 	
 	/** The email address we should attach to crash reports */
 	private String crashEmail = null;
@@ -98,7 +89,7 @@ public class BamQCPreferences {
 	private BamQCPreferences () {
 				
 //		System.out.println("Looking for preferences at: "+System.getProperty("user.home")+"/chipmonk_prefs.txt");
-		preferencesFile= new File(System.getProperty("user.home")+"/seqmonk_prefs.txt");
+		preferencesFile= new File(System.getProperty("user.home")+"/bamqc_prefs.txt");
 		
 		if (preferencesFile!=null && preferencesFile.exists()) {
 //			System.out.println("Loading preferences from file...");
@@ -160,18 +151,12 @@ public class BamQCPreferences {
 				else if (sections[0].equals("SaveLocation")) {
 					saveLocation = new File(sections[1]);
 				}				
-				else if (sections[0].equals("RLocation")) {
-					rExecutableLocation = sections[1];
-				}				
 				else if (sections[0].equals("TempDirectory")) {
 					tempDirectory = new File(sections[1]);
 				}
 				else if (sections[0].equals("UseTempDir")) {
 					// Old option, no longer required
 				}				
-				else if (sections[0].equals("CompressOutput")) {
-					compressOutput = sections[1].equals("1");
-				}
 				else if (sections[0].equals("CrashEmail")) {
 					crashEmail = sections[1];
 				}
@@ -212,14 +197,6 @@ public class BamQCPreferences {
 						ignoredAnnotations.add(sections[i]);
 					}
 				}
-				else if (sections[0].equals("CheckForUpdates")) {
-					if (sections[1].equals("0")) {
-						checkForUpdates = false;
-					}
-					else {
-						checkForUpdates = true;
-					}
-				}
 				else {
 					System.err.println("Unknown preference '"+sections[0]+"'");
 				}
@@ -256,8 +233,6 @@ public class BamQCPreferences {
 		// Then the saveLocation
 		p.println("SaveLocation\t"+saveLocation.getAbsolutePath());
 
-		// Then the R Location
-		p.println("RLocation\t"+rExecutableLocation);
 		
 		// Then the proxy information
 		p.println("Proxy\t"+proxyHost+"\t"+proxyPort);
@@ -275,23 +250,7 @@ public class BamQCPreferences {
 			p.println("CrashEmail\t"+crashEmail);
 		}
 		
-		// Whether to compress our output
-		if (compressOutput) {
-			p.println("CompressOutput\t1");
-		}
-		else {
-			p.println("CompressOutput\t0");
-		}
-
-		
-		// Whether we want to check for updates
-		if (checkForUpdates) {
-			p.println("CheckForUpdates\t1");
-		}
-		else {
-			p.println("CheckForUpdates\t0");			
-		}
-		
+	
 		// Save the recently opened file list
 		Iterator<String> rof = recentlyOpenedFiles.iterator();
 		while (rof.hasNext()) {
@@ -368,32 +327,6 @@ public class BamQCPreferences {
 		return ! ignoredAnnotations.contains(type.toLowerCase());
 	}
 	
-	/**
-	 * Asks whether we should check for updated versions of BamQC
-	 * 
-	 * @return true, if we should check for updates
-	 */
-	public boolean checkForUpdates () {
-		return checkForUpdates;
-	}
-		
-	/**
-	 * Should seqmonk format output files be gzip compressed
-	 * 
-	 * @return true if output should be compressed
-	 */
-	public boolean compressOutput () {
-		return compressOutput;
-	}
-	
-	/**
-	 * Sets whether seqmonk output should be compressed
-	 * 
-	 * @param true if output should be compressed
-	 */
-	public void setCompressOutput (boolean compressOutput) {
-		this.compressOutput = compressOutput;
-	}
 		
 	/**
 	 * The location of the directory to use to cache data
@@ -402,15 +335,6 @@ public class BamQCPreferences {
 	 */
 	public File tempDirectory () {
 		return tempDirectory;
-	}
-	
-	/**
-	 * Sets the flag to say if we should check for updates
-	 * 
-	 * @param checkForUpdates
-	 */
-	public void setCheckForUpdates (boolean checkForUpdates) {
-		this.checkForUpdates = checkForUpdates;
 	}
 	
 	/**
@@ -470,14 +394,6 @@ public class BamQCPreferences {
 	 */
 	public void setTempDirectory (File f) {
 		tempDirectory = f;
-	}
-	
-	public String RLocation () {
-		return rExecutableLocation;
-	}
-	
-	public void setRLocation (String rExecutableLocation) {
-		this.rExecutableLocation = rExecutableLocation;
 	}
 	
 		

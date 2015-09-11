@@ -19,8 +19,10 @@
  */
 package uk.ac.babraham.BamQC.DataTypes.Genome;
 
+import java.io.Serializable;
 
-public class Chromosome implements Comparable<Chromosome> {
+
+public class Chromosome implements Comparable<Chromosome>, Serializable {
 
 	
 	public static int COVERAGE_BIN_SIZE = 1000000;
