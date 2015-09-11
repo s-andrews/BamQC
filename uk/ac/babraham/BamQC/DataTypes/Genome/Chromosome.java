@@ -24,7 +24,9 @@ import java.io.Serializable;
 
 public class Chromosome implements Comparable<Chromosome>, Serializable {
 
-	
+
+	private static final long serialVersionUID = 6553668167050794944L;
+
 	public static int COVERAGE_BIN_SIZE = 1000000;
 	
 	private String name;

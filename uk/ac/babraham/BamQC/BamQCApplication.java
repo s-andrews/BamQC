@@ -34,7 +34,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
@@ -367,7 +366,7 @@ public class BamQCApplication extends JFrame implements ProgressListener, DataCh
 			switch (answer){
 			case 0: 
 				shuttingDown = true;
-				saveProject();
+//				saveProject();
 				return;
 			case 1:
 				break;
@@ -461,73 +460,73 @@ public class BamQCApplication extends JFrame implements ProgressListener, DataCh
 		}
 	}
 		
-	/**
-	 * Launches a FileChooser to allow the user to select a new file name under which to save
-	 */
-	public void saveProjectAs() {
-		JFileChooser chooser = new JFileChooser(BamQCPreferences.getInstance().getSaveLocation());
-		chooser.setMultiSelectionEnabled(false);
-		chooser.setFileFilter(new FileFilter() {
-		
-			@Override
-			public String getDescription() {
-				return "BamQC files";
-			}
-		
-			@Override
-			public boolean accept(File f) {
-				if (f.isDirectory() || f.getName().toLowerCase().endsWith(".smk")) {
-					return true;
-				}
-				return false;
-			}
-		
-		});
-		
-		int result = chooser.showSaveDialog(this);
-		if (result == JFileChooser.CANCEL_OPTION) return;
-
-		File file = chooser.getSelectedFile();
-		if (! file.getPath().toLowerCase().endsWith(".smk")) {
-			file = new File(file.getPath()+".smk");
-		}
-
-		// Check if we're stepping on anyone's toes...
-		if (file.exists()) {
-			int answer = JOptionPane.showOptionDialog(this,file.getName()+" exists.  Do you want to overwrite the existing file?","Overwrite file?",0,JOptionPane.QUESTION_MESSAGE,null,new String [] {"Overwrite and Save","Cancel"},"Overwrite and Save");
-
-			if (answer > 0) {
-				saveProjectAs(); // Let them try again
-				return;
-			}
-		}
-		
-		currentFile = file;
-		saveProject(file);
-	}
-	
-	
-	
-	
-	/**
-	 * Saves the current project under the same name as it was loaded.  If
-	 * no file is associated with the project will call saveProjectAs
-	 */
-	public void saveProject () {
-		if (currentFile == null) {
-			saveProjectAs();
-		}
-		else {
-			saveProject(currentFile);
-		}
-	}
-	
-	/**
-	 * Saves the current project into the specified file.
-	 * 
-	 * @param file The file into which the project will be saved
-	 */
-	public void saveProject (File file) {
+//	/**
+//	 * Launches a FileChooser to allow the user to select a new file name under which to save
+//	 */
+//	public void saveProjectAs() {
+//		JFileChooser chooser = new JFileChooser(BamQCPreferences.getInstance().getSaveLocation());
+//		chooser.setMultiSelectionEnabled(false);
+//		chooser.setFileFilter(new FileFilter() {
+//		
+//			@Override
+//			public String getDescription() {
+//				return "BamQC files";
+//			}
+//		
+//			@Override
+//			public boolean accept(File f) {
+//				if (f.isDirectory() || f.getName().toLowerCase().endsWith(".smk")) {
+//					return true;
+//				}
+//				return false;
+//			}
+//		
+//		});
+//		
+//		int result = chooser.showSaveDialog(this);
+//		if (result == JFileChooser.CANCEL_OPTION) return;
+//
+//		File file = chooser.getSelectedFile();
+//		if (! file.getPath().toLowerCase().endsWith(".smk")) {
+//			file = new File(file.getPath()+".smk");
+//		}
+//
+//		// Check if we're stepping on anyone's toes...
+//		if (file.exists()) {
+//			int answer = JOptionPane.showOptionDialog(this,file.getName()+" exists.  Do you want to overwrite the existing file?","Overwrite file?",0,JOptionPane.QUESTION_MESSAGE,null,new String [] {"Overwrite and Save","Cancel"},"Overwrite and Save");
+//
+//			if (answer > 0) {
+//				saveProjectAs(); // Let them try again
+//				return;
+//			}
+//		}
+//		
+//		currentFile = file;
+//		saveProject(file);
+//	}
+//	
+//	
+//	
+//	
+//	/**
+//	 * Saves the current project under the same name as it was loaded.  If
+//	 * no file is associated with the project will call saveProjectAs
+//	 */
+//	public void saveProject () {
+//		if (currentFile == null) {
+//			saveProjectAs();
+//		}
+//		else {
+//			saveProject(currentFile);
+//		}
+//	}
+//	
+//	/**
+//	 * Saves the current project into the specified file.
+//	 * 
+//	 * @param file The file into which the project will be saved
+//	 */
+//	public void saveProject (File file) {
 //		
 //		BamQCDataWriter writer = new BamQCDataWriter();
 //		
@@ -538,12 +537,12 @@ public class BamQCApplication extends JFrame implements ProgressListener, DataCh
 //		
 //		setTitle("BamQC ["+file.getName()+"]");
 //		BamQCPreferences.getInstance().addRecentlyOpenedFile(file.getAbsolutePath());
-	}
-	
-	/**
-	 * Launches a FileChooser to select a project file to open
-	 */
-	public void loadProject () {
+//	}
+//	
+//	/**
+//	 * Launches a FileChooser to select a project file to open
+//	 */
+//	public void loadProject () {
 //		JFileChooser chooser = new JFileChooser(BamQCPreferences.getInstance().getSaveLocation());
 //		chooser.setMultiSelectionEnabled(false);
 //		BamQCPreviewPanel previewPanel = new BamQCPreviewPanel();
@@ -575,23 +574,23 @@ public class BamQCApplication extends JFrame implements ProgressListener, DataCh
 //		BamQCPreferences.getInstance().setLastUsedSaveLocation(file);
 //	
 //		loadProject(file);
-	}
-	
-	public String projectName () {
-		if (currentFile != null) {
-			return currentFile.getName();
-		}
-		return "[No project name yet]";
-	}
-	
-
-	/**
-	 * Loads an existing project from a file.  Will wipe all existing data and prompt to
-	 * save if the currently loaded project has changed.
-	 * 
-	 * @param file The file to load
-	 */
-	public void loadProject (File file) {
+//	}
+//	
+//	public String projectName () {
+//		if (currentFile != null) {
+//			return currentFile.getName();
+//		}
+//		return "[No project name yet]";
+//	}
+//	
+//
+//	/**
+//	 * Loads an existing project from a file.  Will wipe all existing data and prompt to
+//	 * save if the currently loaded project has changed.
+//	 * 
+//	 * @param file The file to load
+//	 */
+//	public void loadProject (File file) {
 //
 //		if (file == null) return;
 //		
@@ -632,8 +631,8 @@ public class BamQCApplication extends JFrame implements ProgressListener, DataCh
 //		setTitle("BamQC ["+file.getName()+"]");
 //		
 //		BamQCPreferences.getInstance().addRecentlyOpenedFile(file.getAbsolutePath());
-
-	}
+//
+//	}
 
 	
 	/**
@@ -900,7 +899,7 @@ public class BamQCApplication extends JFrame implements ProgressListener, DataCh
 //	public void setStatusText (String text) {
 //		statusPanel.setText(text);
 //	}
-	
+//	
 //	/**
 //	 * This updates the genome viewer to show the part of the chromosome currently
 //	 * being displayed in the chromosome view.  This DOES NOT allow you to set
@@ -1171,26 +1170,9 @@ public class BamQCApplication extends JFrame implements ProgressListener, DataCh
 			// We might have been called by a previous load operation
 			// in which case we need to resume this load
 			if (fileToLoad != null) {
-				loadProject(fileToLoad);
+//				loadProject(fileToLoad);
 				fileToLoad = null;
 			}
-		}
-		else if (command.equals("data_quantitation")) {
-			// At this point a repaint isn't sufficient - we need to do
-			// a tracks updated so the new probeset is recognised.
-//			chromosomeViewer.tracksUpdated();
-//			chromosomeViewer.autoScale();
-//			genomeViewer.repaint();
-			changesWereMade();
-		}
-		
-		else if (command.equals("pipeline_quantitation")) {
-			// At this point a repaint isn't sufficient - we need to do
-			// a tracks updated so the new probeset is recognised.
-//			chromosomeViewer.tracksUpdated();
-//			chromosomeViewer.autoScale();
-//			genomeViewer.repaint();
-			changesWereMade();
 		}
 		
 		else {
@@ -1359,7 +1341,7 @@ public class BamQCApplication extends JFrame implements ProgressListener, DataCh
 	}
 
 	
-	// End code from BamQC
+	// End code from SeqMonk
 
 	
 	
