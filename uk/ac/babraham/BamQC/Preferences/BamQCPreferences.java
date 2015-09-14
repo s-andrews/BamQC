@@ -44,16 +44,16 @@ public class BamQCPreferences {
 	private HashSet<String> ignoredAnnotations = new HashSet<String>();
 	
 	/** The directory under which to look for genome files */
-	private File genomeBase = new File(System.getProperty("user.home")); //null;
+	private File genomeBase = new File(System.getProperty("user.home") + File.separator + "BamQC_files" + File.separator + "genomes"); //null;
 	
 	/** The default data location. */
-	private File dataLocation = new File(System.getProperty("user.home"));
+	private File dataLocation = new File(System.getProperty("user.home") + File.separator + "BamQC_files" + File.separator + "data");
 	
 	/** The last used data location. */
 	private File lastUsedDataLocation = null;
 	
 	/** The default save location. */
-	private File saveLocation = new File(System.getProperty("user.home"));
+	private File saveLocation = new File(System.getProperty("user.home") + File.separator + "BamQC_files");
 	
 	/** The last used save location. */
 	private File lastUsedSaveLocation = null;
@@ -62,7 +62,7 @@ public class BamQCPreferences {
 	private File preferencesFile = null;
 	
 	/** The directory in which to save temporary cache files */
-	private File tempDirectory = new File(System.getProperty("user.home")); //null;
+	private File tempDirectory = new File(System.getProperty("user.home") + File.separator + "BamQC_files" + File.separator + "temp"); //null;
 		
 	/** The network address from where we can download new genomes */
 	private String genomeDownloadLocation = "http://www.bioinformatics.babraham.ac.uk/seqmonk/genomes/";
@@ -87,9 +87,13 @@ public class BamQCPreferences {
 	 * class.  External access is via the getInstnace() method.
 	 */
 	private BamQCPreferences () {
-				
+		new File(genomeBase.getAbsolutePath()).mkdirs();
+		new File(dataLocation.getAbsolutePath()).mkdirs();
+		new File(saveLocation.getAbsolutePath()).mkdirs();
+		new File(tempDirectory.getAbsolutePath()).mkdirs();
+		
 //		System.out.println("Looking for preferences at: "+System.getProperty("user.home")+"/chipmonk_prefs.txt");
-		preferencesFile= new File(System.getProperty("user.home")+"/bamqc_prefs.txt");
+		preferencesFile= new File(System.getProperty("user.home") + File.separator + "bamqc_prefs.txt");
 		
 		if (preferencesFile!=null && preferencesFile.exists()) {
 //			System.out.println("Loading preferences from file...");
