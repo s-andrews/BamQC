@@ -89,9 +89,6 @@ public class BAMFile implements SequenceFile {
 		SAMSequenceDictionary dict = header.getSequenceDictionary();
 		List<SAMSequenceRecord> records = dict.getSequences();
 		
-//		Iterator<SAMSequenceRecord> it = records.iterator();
-//		while (it.hasNext()) {
-//			SAMSequenceRecord record = it.next();		
 		int recordsSize = records.size(); 
 		for(int i=0; i<recordsSize; i++) {
 			SAMSequenceRecord record = records.get(i);

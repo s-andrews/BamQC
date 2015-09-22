@@ -194,7 +194,7 @@ public class GenomeSelector extends JDialog {
 				try {
 					new GenomeDownloadSelector(application);
 				} catch (Exception e) {
-					new CrashReporter(e);
+					e.printStackTrace();
 				}
 				setVisible(false);
 				dispose();

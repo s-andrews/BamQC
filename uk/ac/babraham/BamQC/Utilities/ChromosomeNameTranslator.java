@@ -66,7 +66,7 @@ public class ChromosomeNameTranslator {
 			nameMap.put(userSuppliedName,cwo);
 		}
 		else {
-			throw new IllegalArgumentException("Couldn't find a chromosome called"+chromosome+"' in this genome");
+			throw new IllegalArgumentException("Couldn't find a chromosome called '"+chromosome+"' in this genome");
 		}
 	}
 		

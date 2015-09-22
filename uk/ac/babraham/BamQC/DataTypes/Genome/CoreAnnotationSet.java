@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import uk.ac.babraham.BamQC.BamQCApplication;
-import uk.ac.babraham.BamQC.Dialogs.CrashReporter;
 import uk.ac.babraham.BamQC.Preferences.BamQCPreferences;
 
 /**
@@ -108,7 +107,7 @@ public class CoreAnnotationSet extends AnnotationSet {
 			pr.close();
 		}
 		catch (IOException ioe) {
-			new CrashReporter(ioe);
+			ioe.printStackTrace();
 		}
 		
 		
@@ -123,7 +122,7 @@ public class CoreAnnotationSet extends AnnotationSet {
 			pr.close();
 		}
 		catch (IOException ioe) {
-			new CrashReporter(ioe);
+			ioe.printStackTrace();
 		}
 	}
 	

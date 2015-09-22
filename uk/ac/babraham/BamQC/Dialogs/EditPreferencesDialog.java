@@ -47,7 +47,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import uk.ac.babraham.BamQC.BamQCApplication;
-import uk.ac.babraham.BamQC.DataTypes.DataCollection;
+import uk.ac.babraham.BamQC.DataTypes.Genome.Genome;
 import uk.ac.babraham.BamQC.Preferences.BamQCPreferences;
 
 /**
@@ -93,16 +93,16 @@ public class EditPreferencesDialog extends JDialog implements ActionListener,Lis
 	/** The remove. */
 	private JButton remove;
 	
-	private DataCollection collection;
+	private Genome genome;
 		
 	/**
 	 * Instantiates a new edits the preferences dialog.
 	 * 
 	 * @param application the application
 	 */
-	public EditPreferencesDialog (DataCollection collection) {
+	public EditPreferencesDialog (Genome genome) {
 		super(BamQCApplication.getInstance(),"Edit Preferences...");
-		this.collection = collection;
+		this.genome = genome;
 		setSize(600,280);
 		setLocationRelativeTo(BamQCApplication.getInstance());
 		setModal(true);
@@ -421,8 +421,7 @@ public class EditPreferencesDialog extends JDialog implements ActionListener,Lis
 			try {
 				p.savePreferences();
 			} catch (IOException e) {
-				new CrashReporter(e);
-				return;
+				e.printStackTrace();
 			}
 			setVisible(false);
 		}
@@ -480,8 +479,8 @@ public class EditPreferencesDialog extends JDialog implements ActionListener,Lis
 			getContentPane().setLayout(new BorderLayout());
 			getContentPane().add(topPanel,BorderLayout.NORTH);
 
-			if (collection != null) {
-				list = new JList (collection.genome().annotationCollection().listAvailableFeatureTypes());
+			if (genome != null) {
+				list = new JList (genome.annotationSet().getAvailableFeatureTypes());
 			}
 			else {
 				list = new JList ();

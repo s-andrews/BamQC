@@ -81,7 +81,11 @@ public class BasicStats extends AbstractQCModule {
 	public void processAnnotationSet(AnnotationSet annotation) {
 		if (annotation.hasFeatures()) {
 			hasAnnotation = true;
-			annotationFile = annotation.getFile().getName();
+			if(annotation.getFile() != null) {
+				annotationFile = annotation.getFile().getName();
+			} else {
+				annotationFile = "Annotation provided from network";
+			}
 		}		
 	}
 

@@ -45,7 +45,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import uk.ac.babraham.BamQC.BamQCException;
-import uk.ac.babraham.BamQC.Dialogs.CrashReporter;
 import uk.ac.babraham.BamQC.Dialogs.ProgressDialog;
 import uk.ac.babraham.BamQC.Preferences.BamQCPreferences;
 import uk.ac.babraham.BamQC.Utilities.NumberKeyListener;
@@ -53,6 +52,7 @@ import uk.ac.babraham.BamQC.Utilities.FileFilters.GFFFileFilter;
 
 public class ManualGenomeBuilderPanel extends JPanel implements ActionListener {
 
+	private static final long serialVersionUID = 8145496413278394947L;
 	private JTextField speciesField;
 	private JTextField assemblyField;
 
@@ -265,8 +265,7 @@ public class ManualGenomeBuilderPanel extends JPanel implements ActionListener {
 			}
 			}
 			catch (IOException ioe) {
-				new CrashReporter(ioe);
-				return;
+				ioe.printStackTrace();
 			}
 			
 			// Make the assembly folder and bail out if it exists
@@ -301,8 +300,7 @@ public class ManualGenomeBuilderPanel extends JPanel implements ActionListener {
 
 			}
 			catch (IOException ioe) {
-				new CrashReporter(ioe);
-				return;
+				ioe.printStackTrace();
 			}
 			
 			JOptionPane.showMessageDialog(this, "Successfully created new custom genome","Success",JOptionPane.INFORMATION_MESSAGE);

@@ -27,7 +27,7 @@ import net.sf.samtools.SAMRecord;
 import uk.ac.babraham.BamQC.BamQCConfig;
 import uk.ac.babraham.BamQC.AnnotationParsers.AnnotationParser;
 import uk.ac.babraham.BamQC.AnnotationParsers.GFF3AnnotationParser;
-import uk.ac.babraham.BamQC.AnnotationParsers.GTFParser;
+import uk.ac.babraham.BamQC.AnnotationParsers.GTFAnnotationParser;
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.Modules.QCModule;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
@@ -35,6 +35,7 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFormatException;
 
 public class AnalysisRunner implements Runnable {
 
+	public AnnotationSet annotationSet = null;
 	private SequenceFile file;
 	private QCModule [] modules;
 	private List<AnalysisListener> listeners = new ArrayList<AnalysisListener>();
@@ -42,6 +43,11 @@ public class AnalysisRunner implements Runnable {
 	
 	public AnalysisRunner (SequenceFile file) {
 		this.file = file;
+	}
+	
+	public AnalysisRunner (SequenceFile file, AnnotationSet annotationSet) {
+		this.file = file;
+		this.annotationSet = annotationSet;
 	}
 	
 	public void addAnalysisListener (AnalysisListener l) {
@@ -74,12 +80,19 @@ public class AnalysisRunner implements Runnable {
 		}
 		
 		AnnotationSet annotation = new AnnotationSet();
+		if (annotationSet != null) {
+			annotation = annotationSet;
+		} else {
+			annotation = new AnnotationSet();
+		}
+		
+		
 				
 		if (BamQCConfig.getInstance().gff_file != null) {
 			AnnotationParser parser;
 			
 			if (BamQCConfig.getInstance().gff_file.getName().toLowerCase().endsWith("gtf")) {
-				parser = new GTFParser();
+				parser = new GTFAnnotationParser();
 			}
 			else {
 				parser = new GFF3AnnotationParser();

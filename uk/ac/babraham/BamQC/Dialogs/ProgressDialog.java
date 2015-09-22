@@ -35,7 +35,6 @@ import javax.swing.JPanel;
 
 import uk.ac.babraham.BamQC.BamQCApplication;
 import uk.ac.babraham.BamQC.DataTypes.ProgressListener;
-import uk.ac.babraham.BamQC.Dialogs.CrashReporter;
 
 /**
  * The Class ProgressDialog is a generic progress dialog showing a progress
@@ -210,7 +209,7 @@ public class ProgressDialog extends JDialog implements Runnable, ProgressListene
 		setVisible(false);
 		dispose();
 		if (! ignoreExceptions) {
-			new CrashReporter(e);
+			e.printStackTrace();
 		}
 	}
 

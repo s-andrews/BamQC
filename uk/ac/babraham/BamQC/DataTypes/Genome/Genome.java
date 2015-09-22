@@ -49,8 +49,8 @@ public class Genome {
 	/** The translator. */
 	private ChromosomeNameTranslator translator;
 	
-	/** The annotation collection. */
-	private AnnotationCollection annotationCollection;
+	/** The annotation set. */
+	private AnnotationSet annotationSet;
 	
 	/**
 	 * Instantiates a new genome.
@@ -74,14 +74,14 @@ public class Genome {
 		species = sections[sections.length-2];
 		
 		translator = new ChromosomeNameTranslator(this);
-		annotationCollection = new AnnotationCollection(this);
+		annotationSet = new AnnotationSet(this);
 	}
 	
 	/**
-	 * Gets the exact chromsome name match.
+	 * Gets the exact chromosome name match.
 	 * 
 	 * @param name the name
-	 * @return the exact chromsome name match
+	 * @return the exact chromosome name match
 	 */
 	public Chromosome getExactChromsomeNameMatch (String name) {
 		/**
@@ -146,13 +146,23 @@ public class Genome {
 	}
 	
 	/**
-	 * Annotation collection.
+	 * Annotation set.
 	 * 
-	 * @return the annotation collection
+	 * @return the annotation set
 	 */
-	public AnnotationCollection annotationCollection () {
-		return annotationCollection;
+	public AnnotationSet annotationSet() {
+		return annotationSet;
 	}
+	
+	/**
+	 * Set an Annotation set.
+	 * 
+	 * @param annotationSet the new annotation set
+	 */
+	public void setAnnotationSet(AnnotationSet annotationSet) {
+		this.annotationSet = annotationSet;
+	}
+	
 	
 	/**
 	 * Gets the chromosome count.

@@ -36,7 +36,6 @@ import uk.ac.babraham.BamQC.DataTypes.Genome.CoreAnnotationSet;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Feature;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Genome;
 import uk.ac.babraham.BamQC.DataTypes.Genome.SplitLocation;
-import uk.ac.babraham.BamQC.Dialogs.CrashReporter;
 import uk.ac.babraham.BamQC.Preferences.BamQCPreferences;
 
 /**
@@ -111,7 +110,7 @@ public class GenomeParser implements Runnable {
 			}
 		}
 		
-		File cacheCompleteFile = new File(baseLocation.getAbsoluteFile()+"/cache/cache.complete");
+		File cacheCompleteFile = new File(baseLocation.getAbsoluteFile()+ File.separator + "cache" + File.separator + "cache.complete");
 		
 		if (cacheCompleteFile.exists()) {
 			
@@ -176,14 +175,14 @@ public class GenomeParser implements Runnable {
 			parseGenomeFiles(genome);
 		}
 		
-		File aliasesFile = new File(baseLocation.getAbsoluteFile()+"/aliases.txt");
+		File aliasesFile = new File(baseLocation.getAbsoluteFile()+ File.separator + "aliases.txt");
 		
 		if (aliasesFile.exists()) {
 			try {
 				readAliases(aliasesFile);
 			} 
 			catch (IOException e) {
-				new CrashReporter(e);
+				e.printStackTrace();
 			}
 		}
 		
@@ -216,7 +215,7 @@ public class GenomeParser implements Runnable {
 				}
 			} 
 			catch (Exception e) {
-				new CrashReporter(e);
+				e.printStackTrace();
 			}
 		}
 		
@@ -236,11 +235,11 @@ public class GenomeParser implements Runnable {
 		
 		CoreAnnotationSet coreAnnotation = new CoreAnnotationSet(genome);
 
-		File cacheDir = new File(baseLocation.getAbsoluteFile()+"/cache/");
+		File cacheDir = new File(baseLocation.getAbsoluteFile()+ File.separator + "cache" + File.separator);
 		
 		// First we need to get the list of chromosomes and set those
 		// up before we go on to add the actual feature sets.
-		File chrListFile = new File(baseLocation.getAbsoluteFile()+"/cache/chr_list");
+		File chrListFile = new File(baseLocation.getAbsoluteFile()+ File.separator + "cache" + File.separator + "chr_list");
 		
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(chrListFile));
@@ -255,7 +254,7 @@ public class GenomeParser implements Runnable {
 			br.close();
 		}
 		catch (Exception e) {
-			new CrashReporter(e);
+			e.printStackTrace();
 		}
 		
 		File [] cacheFiles = cacheDir.listFiles(new FileFilter() {
@@ -280,7 +279,7 @@ public class GenomeParser implements Runnable {
 
 		}
 
-		genome.annotationCollection().addAnnotationSets(new AnnotationSet [] {coreAnnotation});
+		genome.setAnnotationSet(coreAnnotation);
 		
 	}
 	
@@ -310,9 +309,7 @@ public class GenomeParser implements Runnable {
 				if (f.getName().toLowerCase().endsWith(".dat")) {
 					return true;
 				}
-				else {
-					return false;
-				}
+				return false;
 			}
 		
 		});
@@ -356,9 +353,7 @@ public class GenomeParser implements Runnable {
 				if (f.getName().toLowerCase().endsWith(".gff") || f.getName().toLowerCase().endsWith(".gtf")) {
 					return true;
 				}
-				else {
-					return false;
-				}
+				return false;
 			}
 		
 		});
@@ -374,12 +369,10 @@ public class GenomeParser implements Runnable {
 				e.nextElement().progressUpdated("Loading Genome File "+files[i].getName(),i,files.length);
 			}
 			try {
-				AnnotationSet [] newSets = gffParser.parseAnnotation(files[i], genome,"");
-				for (int s=0;s<newSets.length;s++) {
-					Feature [] features = newSets[s].getAllFeatures();
-					for (int f=0;f<features.length;f++) {
-						coreAnnotation.addFeature(features[f]);
-					}
+				AnnotationSet newSet = gffParser.parseAnnotation(files[i], genome);
+				Feature [] features = newSet.getAllFeatures();
+				for (int f=0;f<features.length;f++) {
+					coreAnnotation.addFeature(features[f]);
 				}
 			} 
 			catch (Exception ex) {
@@ -400,7 +393,7 @@ public class GenomeParser implements Runnable {
 		}
 		
 		
-		genome.annotationCollection().addAnnotationSets(new AnnotationSet[] {coreAnnotation});
+		genome.setAnnotationSet(coreAnnotation);
 		
 		// Debugging - put out some stats
 //		System.err.println("Made genome with "+genome.getAllChromosomes().length+" chromosomes");
@@ -417,7 +410,7 @@ public class GenomeParser implements Runnable {
 	}
 
 	private void parseChrListFile(Genome genome) throws Exception {
-		File chrListFile = new File(baseLocation.getAbsolutePath()+"/chr_list");
+		File chrListFile = new File(baseLocation.getAbsolutePath()+ File.separator + "chr_list");
 		if (chrListFile.exists()) {
 			BufferedReader br = new BufferedReader(new FileReader(chrListFile));
 			String line;
@@ -435,14 +428,14 @@ public class GenomeParser implements Runnable {
 			// dat or gff files.  We will end up re-adding these aliases a bit later
 			// which is unfortunate but won't slow things down much so it's not too bad.
 			
-			File aliasesFile = new File(baseLocation.getAbsoluteFile()+"/aliases.txt");
+			File aliasesFile = new File(baseLocation.getAbsoluteFile()+ File.separator + "aliases.txt");
 			
 			if (aliasesFile.exists()) {
 				try {
 					readAliases(aliasesFile);
 				} 
 				catch (IOException e) {
-					new CrashReporter(e);
+					e.printStackTrace();
 				}
 			}
 		
@@ -520,11 +513,9 @@ public class GenomeParser implements Runnable {
 						currentAttribute.append(line.substring(21).trim());
 						continue;
 					}
-					else {
-//						System.err.println("Skipping feature of type "+type);
-						genome.addUnloadedFeatureType(type);
-						skipping = true;
-					}
+					//	System.err.println("Skipping feature of type "+type);
+					genome.addUnloadedFeatureType(type);
+					skipping = true;
 					
 				}
 				

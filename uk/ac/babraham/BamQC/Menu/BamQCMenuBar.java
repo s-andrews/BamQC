@@ -36,7 +36,6 @@ import javax.swing.KeyStroke;
 import uk.ac.babraham.BamQC.BamQCApplication;
 import uk.ac.babraham.BamQC.BamQCException;
 import uk.ac.babraham.BamQC.Dialogs.AboutDialog;
-import uk.ac.babraham.BamQC.Dialogs.CrashReporter;
 import uk.ac.babraham.BamQC.Dialogs.EditPreferencesDialog;
 import uk.ac.babraham.BamQC.Dialogs.LicenseDialog;
 import uk.ac.babraham.BamQC.Help.HelpDialog;
@@ -198,7 +197,7 @@ public class BamQCMenuBar extends JMenuBar implements ActionListener {
 			application.closeAll();
 		}
 		else if (action.equals("edit_preferences")) {
-			new EditPreferencesDialog(application.dataCollection());
+			new EditPreferencesDialog(application.genome());
 		}
 		else if (action.equals("help_contents")) {
 			try {
@@ -220,7 +219,7 @@ public class BamQCMenuBar extends JMenuBar implements ActionListener {
 		}
 		else {
 			//JOptionPane.showMessageDialog(application, "Unknown menu command "+action, "Unknown command", JOptionPane.ERROR_MESSAGE);
-			new CrashReporter(new BamQCException("Unknown command '"+action+"' from main menu"));
+			new BamQCException("Unknown command '"+action+"' from main menu");
 		}
 	}
 	

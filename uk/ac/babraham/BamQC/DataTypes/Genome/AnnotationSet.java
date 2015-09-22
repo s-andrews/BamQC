@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.Vector;
 
 import uk.ac.babraham.BamQC.BamQCApplication;
-import uk.ac.babraham.BamQC.Dialogs.CrashReporter;
 import uk.ac.babraham.BamQC.Modules.ModuleConfig;
 import uk.ac.babraham.BamQC.Preferences.BamQCPreferences;
 import net.sf.samtools.SAMRecord;
@@ -63,7 +62,6 @@ public class AnnotationSet {
 	// imported from SeqMonk
 	protected Genome genome;
 	private String name;
-	private AnnotationCollection collection = null;
 	private boolean finalised = false;
 	/*
 	 * We store features by chromosome.  Within each chromosome we store
@@ -159,22 +157,23 @@ public class AnnotationSet {
 		}
 	}	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	
 	
 	
 	// imported from SeqMonk
 
 	public AnnotationSet() { }
+
+	
+	/**
+	 * Instantiates a new annotation set.
+	 * 
+	 * @param genome The base genome which this annotation applies to
+	 */
+	public AnnotationSet (Genome genome) {
+		this.genome = genome;
+	}
 	
 	/**
 	 * Instantiates a new annotation set.
@@ -186,8 +185,6 @@ public class AnnotationSet {
 		this.genome = genome;
 		this.name = name;		
 	}
-	
-
 
 	/**
 	 * Provides an enumeration to iterate through all chromosomes which have
@@ -213,39 +210,13 @@ public class AnnotationSet {
 	}
 	
 	/**
-	 * This is used to clean up the set when it is being removed from its
-	 * containing collection.  It will sever the links between this set
-	 * and the annotatoin collection as well as blanking its internal
-	 * data structures.  This will also trigger the notification of any
-	 * listeners that this set has been removed.
+	 * This is used to clean up the set when it is being removed.
 	 */
 	public void delete () {
-		if (collection != null) {
-			collection.removeAnnotationSet(this);
-			collection = null;
-			chromosomeFeatures = null;
+		chromosomeFeatures = null;
+		if(featureTypes != null) {
 			featureTypes.clear();
 		}
-	}
-	
-	/**
-	 * This method should only be called by an AnnotationCollection to
-	 * which this annotation set is being added.  An annotation set can
-	 * only be added to one collection.  In addition to creating a link
-	 * between the set and collection this also triggers the caching of
-	 * data in this set and consequently no more annotation can be added
-	 * to this set once this has been called.
-	 * 
-	 * @param collection The AnnotationCollection to which this set has been added
-	 */
-	protected void setCollection (AnnotationCollection collection) {
-		if (this.collection != null) {
-			throw new IllegalArgumentException("This annotation set is already part of a collection");
-		}
-		this.collection = collection;
-		
-		finalise();
-		
 	}
 	
 	/**
@@ -264,10 +235,6 @@ public class AnnotationSet {
 	 */
 	public void setName (String name) {
 		this.name = name;
-		// Inform the collection so we can tell any listeners
-		if (collection != null) {
-			collection.annotationSetRenamed(this);
-		}
 	}
 	
 	/**
@@ -308,8 +275,6 @@ public class AnnotationSet {
 
 		featureTypes.remove(oldName);
 		featureTypes.add(newName);
-
-		collection.annotationFeaturesRenamed(this,newName);
 
 	}
 	
@@ -680,7 +645,7 @@ public class AnnotationSet {
 					
 				}
 				catch (IOException ioe) {
-					new CrashReporter(ioe);
+					ioe.printStackTrace();
 				}
 			}
 
@@ -698,7 +663,7 @@ public class AnnotationSet {
 						Runtime.getRuntime().addShutdownHook(new Thread(this));
 					}
 					catch (IOException ioe) {
-						new CrashReporter(ioe);
+						ioe.printStackTrace();
 					}
 				}
 			}
@@ -734,7 +699,7 @@ public class AnnotationSet {
 					return returnedFeatures;
 				}
 				catch (Exception e) {
-					new CrashReporter(e);
+					e.printStackTrace();
 				}
 			}
 			return featureList;
