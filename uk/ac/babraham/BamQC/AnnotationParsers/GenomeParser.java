@@ -37,6 +37,8 @@ import uk.ac.babraham.BamQC.DataTypes.Genome.Feature;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Genome;
 import uk.ac.babraham.BamQC.DataTypes.Genome.SplitLocation;
 import uk.ac.babraham.BamQC.Preferences.BamQCPreferences;
+import uk.ac.babraham.BamQC.Utilities.FileFilters.DatSimpleFileFilter;
+import uk.ac.babraham.BamQC.Utilities.FileFilters.GFFSimpleFileFilter;
 
 /**
  * The Class GenomeParser loads all of the features for a CoreGenomeAnnotationSet.
@@ -302,17 +304,7 @@ public class GenomeParser implements Runnable {
 		
 		
 		// We need a list of all of the .dat files inside the baseLocation
-		File [] files = baseLocation.listFiles(new FileFilter() {
-		
-			@Override
-			public boolean accept(File f) {
-				if (f.getName().toLowerCase().endsWith(".dat")) {
-					return true;
-				}
-				return false;
-			}
-		
-		});
+		File [] files = baseLocation.listFiles(new DatSimpleFileFilter());
 		
 		AnnotationSet coreAnnotation = new CoreAnnotationSet(genome);
 		
@@ -348,17 +340,7 @@ public class GenomeParser implements Runnable {
 		// Now do the same thing for gff files.
 		
 		// We need a list of all of the .gff/gtf files inside the baseLocation
-		files = baseLocation.listFiles(new FileFilter() {
-		
-			@Override
-			public boolean accept(File f) {
-				if (f.getName().toLowerCase().endsWith(".gff") || f.getName().toLowerCase().endsWith(".gtf")) {
-					return true;
-				}
-				return false;
-			}
-		
-		});
+		files = baseLocation.listFiles(new GFFSimpleFileFilter());
 		
 		GFF3AnnotationParser gffParser = new GFF3AnnotationParser(genome);
 		

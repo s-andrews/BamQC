@@ -54,12 +54,6 @@ public abstract class AnnotationParser implements Cancellable, Runnable {
 	/*
 	 * These are the methods any implementing class must provide
 	 */
-	/**
-	 * File filter.
-	 * 
-	 * @return the file filter
-	 */
-	abstract public FileFilter fileFilter ();
 	
 	/**
 	 * Requires file.

@@ -22,27 +22,18 @@ package uk.ac.babraham.BamQC.AnnotationParsers;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Vector;
-
-import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileFilter;
 
 import org.apache.log4j.Logger;
 
-import uk.ac.babraham.BamQC.BamQCException;
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Feature;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Location;
 import uk.ac.babraham.BamQC.DataTypes.Genome.SplitLocation;
-import uk.ac.babraham.BamQC.BamQCApplication;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Genome;
-import uk.ac.babraham.BamQC.Utilities.ChromosomeWithOffset;
 
 /**
  * The Class GFFAnnotationParser reads sequence features from GFFv3 files
@@ -77,27 +68,6 @@ public class GFF3AnnotationParser extends AnnotationParser {
 		return true;
 	}
 
-	/* (non-Javadoc)
-	 * @see uk.ac.babraham.BamQC.AnnotationParsers.AnnotationParser#fileFilter()
-	 */
-	@Override
-	public FileFilter fileFilter() {
-		return new FileFilter() {
-			
-			@Override
-			public String getDescription() {
-				return "GFF Files";
-			}
-			
-			@Override
-			public boolean accept(File f) {
-				if (f.isDirectory() || f.getName().toLowerCase().endsWith(".gff") || f.getName().toLowerCase().endsWith(".gtf")) {
-					return true;
-				}
-				return false;
-			}
-		};
-	}
 
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.BamQC.AnnotationParsers.AnnotationParser#name()
@@ -106,12 +76,6 @@ public class GFF3AnnotationParser extends AnnotationParser {
 	public String name() {
 		return "GFF Parser";
 	}
-	
-	
-	
-	
-	
-	
 	
 	
 	@Override
@@ -348,13 +312,6 @@ public class GFF3AnnotationParser extends AnnotationParser {
 
 	}
 
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	/* (non-Javadoc)

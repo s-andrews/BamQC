@@ -25,8 +25,6 @@ import java.io.FileReader;
 import java.util.HashMap;
 import java.util.ArrayList;
 
-import javax.swing.filechooser.FileFilter;
-
 import org.apache.log4j.Logger;
 
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
@@ -66,27 +64,6 @@ public class GTFAnnotationParser extends AnnotationParser {
 		return true;
 	}
 
-	/* (non-Javadoc)
-	 * @see uk.ac.babraham.BamQC.AnnotationParsers.AnnotationParser#fileFilter()
-	 */
-	@Override
-	public FileFilter fileFilter() {
-		return new FileFilter() {
-			
-			@Override
-			public String getDescription() {
-				return "GTF Files";
-			}
-			
-			@Override
-			public boolean accept(File f) {
-				if (f.isDirectory() || f.getName().toLowerCase().endsWith(".gff") || f.getName().toLowerCase().endsWith(".gtf")) {
-					return true;
-				}
-				return false;
-			}
-		};
-	}
 
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.BamQC.AnnotationParsers.AnnotationParser#name()
@@ -95,15 +72,6 @@ public class GTFAnnotationParser extends AnnotationParser {
 	public String name() {
 		return "GTF Parser";
 	}	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	
