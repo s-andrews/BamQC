@@ -79,16 +79,11 @@ public class AnalysisRunner implements Runnable {
 			i.next().analysisStarted(file);
 		}
 		
-		AnnotationSet annotation = new AnnotationSet();
-		if (annotationSet != null) {
-			annotation = annotationSet;
-		} else {
-			annotation = new AnnotationSet();
-		}
-		
-		
-				
+		AnnotationSet annotation;			
 		if (BamQCConfig.getInstance().gff_file != null) {
+			
+			annotation = new AnnotationSet();
+			
 			AnnotationParser parser;
 			
 			if (BamQCConfig.getInstance().gff_file.getName().toLowerCase().endsWith("gtf")) {
@@ -106,8 +101,15 @@ public class AnalysisRunner implements Runnable {
 					i2.next().analysisExceptionReceived(file, e);
 					return;
 				}
-				
 			}
+		} else {
+			if (annotationSet != null) {
+				// reuse the previous AnnotationSet
+				annotation = annotationSet;
+			} else {
+				// use an empty AnnotationSet.
+				annotation = new AnnotationSet();
+			}			
 		}
 
 		for (int m=0;m<modules.length;m++) {

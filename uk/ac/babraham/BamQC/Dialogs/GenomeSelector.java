@@ -181,12 +181,7 @@ public class GenomeSelector extends JDialog {
 		@Override
 		public void actionPerformed(ActionEvent ae) {
 			if (ae.getActionCommand().equals("ok")) {
-				setVisible(false);
-				
-				// Remove any currently loaded data
-				application.wipeAllData();
-				
-				// Now load the new genome.
+				setVisible(false);			
 				application.loadGenome(((AssemblyNode)tree.getSelectionPath().getLastPathComponent()).file());
 				dispose();
 			}

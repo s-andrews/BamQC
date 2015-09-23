@@ -52,7 +52,6 @@ import uk.ac.babraham.BamQC.Utilities.FileFilters.GFFFileFilter;
 import uk.ac.babraham.BamQC.AnnotationParsers.GenomeParser;
 import uk.ac.babraham.BamQC.Dialogs.GenomeSelector;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Genome;
-import uk.ac.babraham.BamQC.Dialogs.ProgressDialog;
 import uk.ac.babraham.BamQC.Network.GenomeDownloader;
 import uk.ac.babraham.BamQC.DataTypes.CacheListener;
 import uk.ac.babraham.BamQC.DataTypes.ProgressListener;
@@ -193,6 +192,8 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 	}
 	
 	public void openGFF () {
+		wipeAllData();
+		
 		JFileChooser chooser;
 		
 		if (lastUsedDir == null) {
@@ -386,6 +387,7 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 	 * @param baseLocation The folder containing the requested genome.
 	 */
 	public void loadGenome (File baseLocation) {
+		wipeAllData ();
 		GenomeParser parser = new GenomeParser();
 		parser.addProgressListener(this);
 		
@@ -416,7 +418,7 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 		// chromosomes.  No idea how that happened but we can check that
 		// here.
 		if (g.getAllChromosomes() == null || g.getAllChromosomes().length == 0) {
-			JOptionPane.showMessageDialog(this, "No data was present in the imported genome", "Genome import error", JOptionPane.ERROR_MESSAGE);
+			System.err.println("No data was present in the imported genome");
 			return;
 		}
 		genome = g;
@@ -467,12 +469,6 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 	}
 
 
-		
-	
-	
-	
-	
-	
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.BamQC.DataTypes.ProgressListener#progressComplete(java.lang.String, java.lang.Object)
 	 */
@@ -483,9 +479,7 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 		// depend on who called us and what they sent.
 		
 		if (command == null) return;
-		
-		
-		
+
 		if (command.equals("load_genome")) {
 			addNewLoadedGenome((Genome)result);
 		}
