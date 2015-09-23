@@ -269,9 +269,9 @@ public class ManualGenomeBuilderPanel extends JPanel implements ActionListener {
 			}
 			
 			// Make the assembly folder and bail out if it exists
-			File assemblyFolder = new File(speciesFolder.getAbsolutePath()+"/"+assemblyName);
+			File assemblyFolder = new File(speciesFolder.getAbsolutePath()+ File.separator +assemblyName);
 			if (assemblyFolder.exists()) {
-				reportError("There is already an assembly called "+speciesName+"/"+assemblyName+" you need to delete this manually before creating a new genome of the same name");
+				reportError("There is already an assembly called "+speciesName+ File.separator +assemblyName+" you need to delete this manually before creating a new genome of the same name");
 				return;
 			}
 			if (!assemblyFolder.mkdir()) {
@@ -282,7 +282,7 @@ public class ManualGenomeBuilderPanel extends JPanel implements ActionListener {
 			// Copy over the gff files
 			try {
 				for (int f=0;f<gffFiles.size();f++) {
-					PrintWriter pr = new PrintWriter(new File(assemblyFolder.getAbsolutePath()+"/"+gffFiles.elementAt(f).getName()));
+					PrintWriter pr = new PrintWriter(new File(assemblyFolder.getAbsolutePath()+ File.separator +gffFiles.elementAt(f).getName()));
 				
 					BufferedReader br = new BufferedReader(new FileReader(gffFiles.elementAt(f)));
 				

@@ -338,10 +338,12 @@ public class GenomeParser implements Runnable {
 		
 		// Update the listeners
 		Enumeration<ProgressListener> e = listeners.elements();
-		
-		while (e.hasMoreElements()) {
-			e.nextElement().progressUpdated("Caching annotation data",1,1);
+		if(files.length > 0) {
+			while (e.hasMoreElements()) {
+				e.nextElement().progressUpdated("Caching annotation data for .dat files",1,1);
+			}
 		}
+		
 		
 		// Now do the same thing for gff files.
 		
@@ -384,12 +386,13 @@ public class GenomeParser implements Runnable {
 				return;
 			}			
 		}
-		
+
 		// Update the listeners
 		e = listeners.elements();
-		
-		while (e.hasMoreElements()) {
-			e.nextElement().progressUpdated("Caching annotation data",1,1);
+		if(files.length > 0) {
+			while (e.hasMoreElements()) {
+				e.nextElement().progressUpdated("Caching annotation data for .gff/.gtf files",1,1);
+			}
 		}
 		
 		

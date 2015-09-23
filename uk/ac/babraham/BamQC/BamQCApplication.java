@@ -37,6 +37,7 @@ import javax.swing.filechooser.FileFilter;
 
 import uk.ac.babraham.BamQC.Analysis.AnalysisRunner;
 import uk.ac.babraham.BamQC.Analysis.OfflineRunner;
+import uk.ac.babraham.BamQC.Dialogs.ProgressTextDialog;
 import uk.ac.babraham.BamQC.Dialogs.WelcomePanel;
 import uk.ac.babraham.BamQC.Menu.BamQCMenuBar;
 import uk.ac.babraham.BamQC.Modules.ModuleFactory;
@@ -72,8 +73,7 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 	private WelcomePanel welcomePanel;
 	private File lastUsedDir = null;
 	
-	/** The data collection is the main data model */
-//	private DataCollection dataCollection = null;
+	/** The Genome is the main data model */
 	private Genome genome = null;
 	
 	/** Flag to check if anything substantial has changed since the file was last loaded/saved. **/
@@ -364,10 +364,19 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 	public void downloadGenome (String species, String assembly, int size) {
 		GenomeDownloader d = new GenomeDownloader();
 		d.addProgressListener(this);
-		ProgressDialog pd = new ProgressDialog(this,"Downloading genome...");
-		d.addProgressListener(pd);
+
+//		// if using a text ProgressTextDialog
+		ProgressTextDialog ptd = new ProgressTextDialog("Downloading genome...");
+		d.addProgressListener(ptd);
+
+//		// if using a graphic ProgressDialog
+//		ProgressDialog pd = new ProgressDialog(this,"Downloading genome...");
+//		d.addProgressListener(pd);
+
 		d.downloadGenome(species,assembly,size,true);
-		pd.requestFocus();
+
+//		// if using a graphic ProgressDialog		
+//		pd.requestFocus();
 	}
 	
 	/**
@@ -378,11 +387,20 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 	 */
 	public void loadGenome (File baseLocation) {
 		GenomeParser parser = new GenomeParser();
-		ProgressDialog pd = new ProgressDialog(this,"Loading genome...");
-		parser.addProgressListener(pd);
 		parser.addProgressListener(this);
+		
+//		// if using a text ProgressTextDialog		
+		ProgressTextDialog ptd = new ProgressTextDialog("Loading genome...");
+		parser.addProgressListener(ptd);
+		
+//		// if using a graphic ProgressDialog
+//		ProgressDialog pd = new ProgressDialog(this,"Loading genome...");
+//		parser.addProgressListener(pd);
+
 		parser.parseGenome(baseLocation);
-		pd.requestFocus();
+
+//		// if using a graphic ProgressDialog
+//		pd.requestFocus();
 	}
 	
 

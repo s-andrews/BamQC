@@ -124,15 +124,22 @@ public class GenomeDownloader implements Runnable {
 			byte [] b = new byte [1024];
 			int totalBytes = 0;
 			int i;
+			
 			while ((i=d.read(b))>0){
 //				System.out.println("Read "+totalBytes+" bytes");
 				o.write(b,0,i);
 				totalBytes += i;
 				Enumeration<ProgressListener> en = listeners.elements();
 				
+//				while (en.hasMoreElements()) {
+//					en.nextElement().progressUpdated("Downloaded "+totalBytes/1048576+"Mb",totalBytes,size);
+//				}
+				if(totalBytes % 1000 == 0) {
 				while (en.hasMoreElements()) {
-					en.nextElement().progressUpdated("Downloaded "+totalBytes/1048576+"Mb",totalBytes,size);
+					en.nextElement().progressUpdated("Downloaded "+totalBytes/1000+"KB",totalBytes,size);
+				}				
 				}
+				
 			}
 
 			d.close();
