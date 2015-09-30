@@ -74,6 +74,7 @@ public class FeatureSubclass {
 		featuresRaw.get(f.chr()).add(f);
 	}
 	
+	
 	public void processSequence (ShortRead r) {
 		
 		if (features == null) {

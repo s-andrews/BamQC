@@ -384,7 +384,7 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 	
 
 	/**
-	 * Select a genome assembly.
+	 * Select a genome.
 	 * 
 	 * @param baseLocation The folder containing the requested genome.
 	 */

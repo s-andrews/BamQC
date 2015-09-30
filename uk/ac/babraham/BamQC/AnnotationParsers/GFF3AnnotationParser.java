@@ -33,7 +33,6 @@ import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Feature;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Location;
 import uk.ac.babraham.BamQC.DataTypes.Genome.SplitLocation;
-import uk.ac.babraham.BamQC.DataTypes.Genome.Genome;
 
 /**
  * The Class GFFAnnotationParser reads sequence features from GFFv3 files
@@ -51,15 +50,7 @@ public class GFF3AnnotationParser extends AnnotationParser {
 		super();
 	}
 	
-	/**
-	 * Instantiates a new GFF annotation parser.
-	 * 
-	 * @param genome the genome
-	 */
-	public GFF3AnnotationParser (Genome genome) {
-		super(genome);		
-	}
-
+	
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.BamQC.AnnotationParsers.AnnotationParser#requiresFile()
 	 */
@@ -80,7 +71,9 @@ public class GFF3AnnotationParser extends AnnotationParser {
 	
 	@Override
 	public void parseAnnotation(AnnotationSet annotationSet, File file) throws Exception {
-
+		// We also store this in order to return it if we need.
+		// Test whether this is necessary.
+		this.annotationSet = annotationSet;
 		annotationSet.setFile(file);
 		
 		HashMap<String, FeatureGroup> groupedFeatures = new HashMap<String, FeatureGroup>();
@@ -314,18 +307,6 @@ public class GFF3AnnotationParser extends AnnotationParser {
 
 	
 	
-	/* (non-Javadoc)
-	 * @see uk.ac.babraham.BamQC.AnnotationParsers.AnnotationParser#parseAnnotation(java.io.File, uk.ac.babraham.BamQC.DataTypes.Genome.Genome)
-	 */
-	@Override
-	public AnnotationSet parseAnnotation(File file, Genome genome) throws Exception {
-		AnnotationSet annotationSet = new AnnotationSet(genome, file.getName());
-		parseAnnotation(annotationSet, file);
-		return annotationSet;
-	}
-
-	
-	
 	/**
 	 * The Class featureGroup.
 	 */
@@ -383,3 +364,4 @@ public class GFF3AnnotationParser extends AnnotationParser {
 	}
 
 }
+

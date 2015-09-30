@@ -24,39 +24,28 @@ import java.io.File;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import javax.swing.filechooser.FileFilter;
 
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.DataTypes.ProgressListener;
-import uk.ac.babraham.BamQC.DataTypes.Genome.Genome;
 import uk.ac.babraham.BamQC.Dialogs.Cancellable;
 
 
 /**
  * The Class AnnotationParser provides the core methods which must be
  * implemented by a class wanting to be able to import features into
- * a BamQC genome.
+ * a BamQC AnnotationSet.
  */
-public abstract class AnnotationParser implements Cancellable, Runnable {
+public abstract class AnnotationParser implements Cancellable {
 	
 	/** The listeners. */
 	private Vector<ProgressListener> listeners = new Vector<ProgressListener>();
 	
 	/** The cancel. */
 	protected boolean cancel = false;
-	
-	// TODO
-	// In the future, genome and annotationSet should be merged in an unified annotationSet.
-	// GenomeParser will extend this class.
-	
-	/** The genome. */
-	private Genome genome;
-	
+		
 	/** The annotation Set */
 	protected AnnotationSet annotationSet;
 	
-	/** The file. */
-	private File file = null;
 
 	/*
 	 * These are the methods any implementing class must provide
@@ -72,15 +61,6 @@ public abstract class AnnotationParser implements Cancellable, Runnable {
 	
 	public abstract void parseAnnotation(AnnotationSet annotationSet, File file) throws Exception;
 	
-	/**
-	 * Parses the annotation.
-	 * 
-	 * @param file the file
-	 * @param genome the genome
-	 * @return the annotation set
-	 * @throws Exception the exception
-	 */
-	public abstract AnnotationSet parseAnnotation (File file, Genome genome) throws Exception;
 	
 	/**
 	 * Name.
@@ -91,23 +71,14 @@ public abstract class AnnotationParser implements Cancellable, Runnable {
 	
 	
 	public AnnotationParser() {	}
-	
+		
 	/**
-	 * Instantiates a new annotation parser.
+	 * Returns the annotation set.
 	 * 
-	 * @param genome the genome
+	 * @return the annotationSet
 	 */
-	public AnnotationParser (Genome genome) {
-		this.genome = genome;
-	}
-	
-	/**
-	 * Genome.
-	 * 
-	 * @return the genome
-	 */
-	protected Genome genome () {
-		return genome;
+	protected AnnotationSet getAnnotationSet() {
+		return annotationSet;
 	}
 	
 	/**
@@ -140,70 +111,12 @@ public abstract class AnnotationParser implements Cancellable, Runnable {
 		cancel = true;
 	}
 	
-	/**
-	 * Parses the file.
-	 * 
-	 * @param file the file
-	 */
-	public void parseFiles (File file) {
-		if (requiresFile() && file == null) {
-			progressExceptionReceived(new NullPointerException("File to parse cannot be null"));
-			return;
-		}
-		this.file = file;
-		Thread t = new Thread(this);
-		t.start();
-	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Runnable#run()
-	 */
-	@Override
-	public void run () {
-		AnnotationSet parsedSet = new AnnotationSet();
-		
-		try {
-			if (requiresFile()) {
-				parsedSet = parseAnnotation(file, genome);
-				if (parsedSet == null) {
-					// They cancelled or had an error which will be reported through the other methods here
-					return;
-				}
-			}
-			else {
-				parsedSet = parseAnnotation(null, genome);
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			progressExceptionReceived(e);
-			return;
-		}
-		
-		if (!cancel) {
-			genome.setAnnotationSet(parsedSet);
-			progressComplete("load_annotation", parsedSet);
-		}
-	}
-	
 	
 	/*
 	 * These are the methods we use to communicate with out listeners.
 	 * Some of these can be accessed by the implementing class directly
 	 * but the big ones need to go back through this class.
 	 */
-	
-	/**
-	 * Progress exception received.
-	 * 
-	 * @param e the e
-	 */
-	private void progressExceptionReceived (Exception e) {
-		Enumeration<ProgressListener>en = listeners.elements();
-		while (en.hasMoreElements()) {
-			en.nextElement().progressExceptionReceived(e);
-		}
-	}
 	
 	/**
 	 * Progress warning received.
@@ -239,20 +152,6 @@ public abstract class AnnotationParser implements Cancellable, Runnable {
 		while (en.hasMoreElements()) {
 			en.nextElement().progressCancelled();
 		}
-	}
-	
-	/**
-	 * Progress complete.
-	 * 
-	 * @param command the command
-	 * @param result the result
-	 */
-	private void progressComplete (String command, Object result) {
-		Enumeration<ProgressListener>en = listeners.elements();
-		while (en.hasMoreElements()) {
-			en.nextElement().progressComplete(command, result);
-		}
-
 	}
 	
 	

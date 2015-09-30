@@ -20,17 +20,11 @@
 package uk.ac.babraham.BamQC.DataTypes.Genome;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Vector;
 
 import uk.ac.babraham.BamQC.BamQCException;
-import uk.ac.babraham.BamQC.Utilities.ChromosomeNameTranslator;
-import uk.ac.babraham.BamQC.Utilities.ChromosomeWithOffset;
 
 /**
- * The Class Genome represents an entire annotated genome assembly
+ * The Class Genome represents a simple annotated genome assembly
  */
 public class Genome {
 
@@ -39,15 +33,6 @@ public class Genome {
 	
 	/** The assembly. */
 	private String assembly;
-	
-	/** The chromosomes. */
-	private HashSet<Chromosome> chromosomes = new HashSet<Chromosome>();	
-	
-	/** The un loaded feature types. */
-	private Vector<String> unLoadedFeatureTypes = new Vector<String>();
-	
-	/** The translator. */
-	private ChromosomeNameTranslator translator;
 	
 	/** The annotation set. */
 	private AnnotationSet annotationSet;
@@ -73,78 +58,7 @@ public class Genome {
 		assembly = sections[sections.length-1];
 		species = sections[sections.length-2];
 		
-		translator = new ChromosomeNameTranslator(this);
-		annotationSet = new AnnotationSet(this);
-	}
-	
-
-	
-	/**
-	 * Gets the exact chromosome name match.
-	 * 
-	 * @param name the name
-	 * @return the exact chromosome name match
-	 */
-	public Chromosome getExactChromsomeNameMatch (String name) {
-		/**
-		 * This method should not normally be used to retrieve chromosomes
-		 * since it is relatively slow.  Normally you'd use getChromosome(name)
-		 * instead.  This method is only normally used by the name translator
-		 * to tell when it's got a match.
-		 */
-		
-		Iterator<Chromosome> i = chromosomes.iterator();
-		while (i.hasNext()) {
-			Chromosome c = i.next();
-			if (c.name().equals(name)) {
-				return c;
-			}
-		}
-		
-		return null;
-	}
-	
-	/**
-	 * 
-	 * Adds a new alias to the name translator which may not be able
-	 * to be guessed by the standard algorithms.  Allows for unusual
-	 * mappings such as IX === 9
-	 * 
-	 * @param alias The name you want to be able to use for the chromosome
-	 * @param chrName An actual name of a current chromosome (will not be translated)
-	 * @throws BamQCException If a chromosome can't be found with your reference name
-	 */
-	public void addAlias (String alias, String chrName, int offset) throws BamQCException {
-		
-		Chromosome c = getExactChromsomeNameMatch(chrName);
-		
-		if (c == null) {
-			throw new BamQCException("No chromosome called "+chrName+" to match to alias "+alias);
-		}
-		
-		translator.addNameMap(alias, c, offset);
-		
-//		System.out.println("Added alias "+alias+" for chr "+chrName+" which matched "+c.name());
-
-	}
-	
-	/**
-	 * Adds the chromosome.
-	 * 
-	 * @param name the name
-	 * @return the chromosome
-	 */
-	public Chromosome addChromosome (String name) {
-		try {
-			// We add the second argument so we don't cache failed names since
-			// we expect to see names which fail here.
-			return translator.getChromosomeForName(name,false).chromosome();
-		}
-		catch (IllegalArgumentException e) {
-			Chromosome c = new Chromosome(name);
-			chromosomes.add(c);
-			return c;
-		}
+		annotationSet = new AnnotationSet();
 	}
 	
 	/**
@@ -164,98 +78,6 @@ public class Genome {
 	public void setAnnotationSet(AnnotationSet annotationSet) {
 		this.annotationSet = annotationSet;
 	}
-	
-	
-	/**
-	 * Gets the chromosome count.
-	 * 
-	 * @return the chromosome count
-	 */
-	public int getChromosomeCount (){
-		return chromosomes.size();
-	}
-
-	/**
-	 * Checks for chromosome.
-	 * 
-	 * @param c the c
-	 * @return true, if successful
-	 */
-	public boolean hasChromosome (Chromosome c) {
-		if (chromosomes.contains(c)) {
-			return true;
-		}
-		return false;
-	}
-	
-	/**
-	 * Gets the all chromosomes.
-	 * 
-	 * @return the all chromosomes
-	 */
-	public Chromosome [] getAllChromosomes () {
-		
-		Chromosome [] c = chromosomes.toArray(new Chromosome[0]);
-		
-		Arrays.sort(c);
-		
-		return c;
-	}
-	
-	/**
-	 * Gets the chromosome.
-	 * 
-	 * @param name the name
-	 * @return the chromosome
-	 * @throws BamQCException the seq monk exception
-	 */
-	public ChromosomeWithOffset getChromosome (String name) {
-		
-		/**
-		 * This is just a shortcut to the chromosome name
-		 * translator method to retrieve chromsomes based
-		 * on their name.
-		 */
-		
-		return translator.getChromosomeForName(name,true);
-	}
-	
-	/**
-	 * List unloaded feature types.
-	 * 
-	 * @return the string[]
-	 */
-	public String [] listUnloadedFeatureTypes () {
-		return unLoadedFeatureTypes.toArray(new String[0]);		
-	}
-	
-	/**
-	 * Adds the unloaded feature type.
-	 * 
-	 * @param name the name
-	 */
-	public void addUnloadedFeatureType (String name) {
-		if (! unLoadedFeatureTypes.contains(name)) {
-			unLoadedFeatureTypes.add(name);
-		}
-	}
-	
-	/**
-	 * Gets the total genome length.
-	 * 
-	 * @return the total genome length
-	 */
-	public long getTotalGenomeLength () {
-		Chromosome [] chroms = getAllChromosomes();
-		long length = 0;
-		for (int c=0;c<chroms.length;c++) {
-			length+=chroms[c].length();
-		}
-		
-		return length;
-	} 
-	
-
 	
 	/**
 	 * Species.
@@ -283,19 +105,5 @@ public class Genome {
 		return species+" "+assembly;
 	}
 
-	/**
-	 * Gets the longest chromosome length.
-	 * 
-	 * @return the longest chromosome length
-	 */
-	public int getLongestChromosomeLength () {
-		int l = 0;
-		Chromosome [] c = getAllChromosomes();
-		for (int i=0;i<c.length;i++) {
-			if (c[i].length() > l) {
-				l=c[i].length();
-			}
-		}
-		return l; 
-	}
 }
+

@@ -30,7 +30,6 @@ import org.apache.log4j.Logger;
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Feature;
-import uk.ac.babraham.BamQC.DataTypes.Genome.Genome;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Location;
 import uk.ac.babraham.BamQC.DataTypes.Genome.SplitLocation;
 
@@ -47,14 +46,6 @@ public class GTFAnnotationParser extends AnnotationParser {
 		super();
 	}
 	
-	/**
-	 * Instantiates a new GFF annotation parser.
-	 * 
-	 * @param genome the genome
-	 */
-	public GTFAnnotationParser (Genome genome) {
-		super(genome);		
-	}
 
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.BamQC.AnnotationParsers.AnnotationParser#requiresFile()
@@ -77,7 +68,9 @@ public class GTFAnnotationParser extends AnnotationParser {
 	
 	@Override
 	public void parseAnnotation(AnnotationSet annotationSet, File file) throws Exception {
-
+		// We also store this in order to return it if we need.
+		// Test whether this is necessary.
+		this.annotationSet = annotationSet;
 		annotationSet.setFile(file);
 		
 		HashMap<String, Transcript> groupedFeatures = new HashMap<String, Transcript>();
@@ -300,16 +293,6 @@ public class GTFAnnotationParser extends AnnotationParser {
 	}
 
 	
-	/* (non-Javadoc)
-	 * @see uk.ac.babraham.BamQC.AnnotationParsers.AnnotationParser#parseAnnotation(java.io.File, uk.ac.babraham.BamQC.DataTypes.Genome.Genome)
-	 */
-	@Override
-	public AnnotationSet parseAnnotation(File file, Genome genome) throws Exception {
-		AnnotationSet annotationSet = new AnnotationSet(genome, file.getName());
-		parseAnnotation(annotationSet, file);
-		return annotationSet;
-	}
-	
 	
 	/**
 	 * The Class featureGroup.
@@ -380,3 +363,5 @@ public class GTFAnnotationParser extends AnnotationParser {
 	}
 
 }
+
+
