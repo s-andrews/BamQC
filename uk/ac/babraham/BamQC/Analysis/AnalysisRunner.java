@@ -19,6 +19,7 @@
  */
 package uk.ac.babraham.BamQC.Analysis;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -28,14 +29,18 @@ import uk.ac.babraham.BamQC.BamQCConfig;
 import uk.ac.babraham.BamQC.AnnotationParsers.AnnotationParser;
 import uk.ac.babraham.BamQC.AnnotationParsers.GFF3AnnotationParser;
 import uk.ac.babraham.BamQC.AnnotationParsers.GTFAnnotationParser;
+import uk.ac.babraham.BamQC.AnnotationParsers.GenomeParser;
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
+import uk.ac.babraham.BamQC.Dialogs.ProgressTextDialog;
 import uk.ac.babraham.BamQC.Modules.QCModule;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 import uk.ac.babraham.BamQC.Sequence.SequenceFormatException;
 
 public class AnalysisRunner implements Runnable {
 
-	public AnnotationSet annotationSet = null;
+	private boolean annotationFromNetwork = false;
+	private AnnotationSet annotationSet = null;
+	private File genomeBaseLocation;
 	private SequenceFile file;
 	private QCModule [] modules;
 	private List<AnalysisListener> listeners = new ArrayList<AnalysisListener>();
@@ -45,9 +50,11 @@ public class AnalysisRunner implements Runnable {
 		this.file = file;
 	}
 	
-	public AnalysisRunner (SequenceFile file, AnnotationSet annotationSet) {
+	public AnalysisRunner (SequenceFile file, File genomeBaseLocation) {
 		this.file = file;
 		this.annotationSet = annotationSet;
+		this.genomeBaseLocation = genomeBaseLocation;
+		annotationFromNetwork = true;
 	}
 	
 	public void addAnalysisListener (AnalysisListener l) {
@@ -78,39 +85,85 @@ public class AnalysisRunner implements Runnable {
 		while (i.hasNext()) {
 			i.next().analysisStarted(file);
 		}
+
 		
-		AnnotationSet annotation;			
-		if (BamQCConfig.getInstance().gff_file != null) {
+		
+		
+		// TODO
+		// new code
+
+		if(annotationFromNetwork) {
+			GenomeParser parser = new GenomeParser();
+//			// if using a text ProgressTextDialog		
+			ProgressTextDialog ptd = new ProgressTextDialog("Loading genome...");
+			parser.addProgressListener(ptd);
 			
-			annotation = new AnnotationSet();
+			parser.parseGenome(genomeBaseLocation);
+			annotationSet = parser.genome().annotationSet();
 			
-			AnnotationParser parser;
-			
-			if (BamQCConfig.getInstance().gff_file.getName().toLowerCase().endsWith("gtf")) {
-				parser = new GTFAnnotationParser();
-			}
-			else {
-				parser = new GFF3AnnotationParser();
-			}
-			try {
-				parser.parseAnnotation(annotation, BamQCConfig.getInstance().gff_file);
-			}
-			catch (Exception e) {
-				Iterator<AnalysisListener> i2 = listeners.iterator();
-				while (i2.hasNext()) {
-					i2.next().analysisExceptionReceived(file, e);
-					return;
-				}
-			}
 		} else {
-			if (annotationSet != null) {
-				// reuse the previous AnnotationSet
-				annotation = annotationSet;
-			} else {
+			if (BamQCConfig.getInstance().gff_file != null) {	
+				annotationSet = new AnnotationSet();
+				AnnotationParser parser;
+				if (BamQCConfig.getInstance().gff_file.getName().toLowerCase().endsWith("gtf")) {
+					parser = new GTFAnnotationParser();
+				}
+				else {
+					parser = new GFF3AnnotationParser();
+				}
+				try {
+					parser.parseAnnotation(annotationSet, BamQCConfig.getInstance().gff_file);
+				}
+				catch (Exception e) {
+					Iterator<AnalysisListener> i2 = listeners.iterator();
+					while (i2.hasNext()) {
+						i2.next().analysisExceptionReceived(file, e);
+						return;
+					}
+				}
+			} else { 
 				// use an empty AnnotationSet.
-				annotation = new AnnotationSet();
-			}			
+				annotationSet = new AnnotationSet();
+			}
 		}
+		
+	
+		
+		
+		
+//		if (BamQCConfig.getInstance().gff_file != null) {
+//			
+//			annotationSet = new AnnotationSet();
+//			
+//			AnnotationParser parser;
+//			
+//			if (BamQCConfig.getInstance().gff_file.getName().toLowerCase().endsWith("gtf")) {
+//				parser = new GTFAnnotationParser();
+//			}
+//			else {
+//				parser = new GFF3AnnotationParser();
+//			}
+//			try {
+//				parser.parseAnnotation(annotationSet, BamQCConfig.getInstance().gff_file);
+//			}
+//			catch (Exception e) {
+//				Iterator<AnalysisListener> i2 = listeners.iterator();
+//				while (i2.hasNext()) {
+//					i2.next().analysisExceptionReceived(file, e);
+//					return;
+//				}
+//			}
+//		} else {
+//			if (annotationSet == null) {
+//				// use an empty AnnotationSet.
+//				annotationSet = new AnnotationSet();
+//			}			
+//		}
+		
+		
+		
+		
+		
 
 		for (int m=0;m<modules.length;m++) {
 			modules[m].processFile(file);
@@ -131,7 +184,7 @@ public class AnalysisRunner implements Runnable {
 				return;
 			}
 			
-			annotation.processSequence(seq);
+			annotationSet.processSequence(seq);
 			
 			for (int m=0;m<modules.length;m++) {
 				if (modules[m].needsToSeeSequences()) {
@@ -160,7 +213,7 @@ public class AnalysisRunner implements Runnable {
 		// need to see it
 		for (int m=0;m<modules.length;m++) {
 			if (modules[m].needsToSeeAnnotation()) {
-				modules[m].processAnnotationSet(annotation);
+				modules[m].processAnnotationSet(annotationSet);
 			}
 		}
 		

@@ -40,13 +40,20 @@ import uk.ac.babraham.BamQC.Dialogs.Cancellable;
 public abstract class AnnotationParser implements Cancellable, Runnable {
 	
 	/** The listeners. */
-	private Vector<ProgressListener>listeners = new Vector<ProgressListener>();
+	private Vector<ProgressListener> listeners = new Vector<ProgressListener>();
 	
 	/** The cancel. */
 	protected boolean cancel = false;
 	
+	// TODO
+	// In the future, genome and annotationSet should be merged in an unified annotationSet.
+	// GenomeParser will extend this class.
+	
 	/** The genome. */
 	private Genome genome;
+	
+	/** The annotation Set */
+	protected AnnotationSet annotationSet;
 	
 	/** The file. */
 	private File file = null;

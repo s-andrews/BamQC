@@ -182,7 +182,7 @@ public class GenomeSelector extends JDialog {
 		public void actionPerformed(ActionEvent ae) {
 			if (ae.getActionCommand().equals("ok")) {
 				setVisible(false);			
-				application.loadGenome(((AssemblyNode)tree.getSelectionPath().getLastPathComponent()).file());
+				application.selectGenome(((AssemblyNode)tree.getSelectionPath().getLastPathComponent()).file());
 				dispose();
 			}
 			else if (ae.getActionCommand().equals("import")) {

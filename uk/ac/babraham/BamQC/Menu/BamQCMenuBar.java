@@ -197,7 +197,7 @@ public class BamQCMenuBar extends JMenuBar implements ActionListener {
 			application.closeAll();
 		}
 		else if (action.equals("edit_preferences")) {
-			new EditPreferencesDialog(application.genome());
+			new EditPreferencesDialog();
 		}
 		else if (action.equals("help_contents")) {
 			try {

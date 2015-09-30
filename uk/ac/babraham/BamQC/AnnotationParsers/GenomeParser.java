@@ -24,8 +24,10 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 import uk.ac.babraham.BamQC.BamQCApplication;
 import uk.ac.babraham.BamQC.BamQCException;
@@ -35,6 +37,7 @@ import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.BamQC.DataTypes.Genome.CoreAnnotationSet;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Feature;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Genome;
+import uk.ac.babraham.BamQC.DataTypes.Genome.Location;
 import uk.ac.babraham.BamQC.DataTypes.Genome.SplitLocation;
 import uk.ac.babraham.BamQC.Preferences.BamQCPreferences;
 import uk.ac.babraham.BamQC.Utilities.FileFilters.DatSimpleFileFilter;
@@ -45,13 +48,13 @@ import uk.ac.babraham.BamQC.Utilities.FileFilters.GFFSimpleFileFilter;
  * It can either do a full parse of hte original EMBL format files, or take
  * a shortcut if there are pre-cached object files present.
  */
-public class GenomeParser implements Runnable {
+public class GenomeParser {
 
 	/** The listeners. */
 	private Vector<ProgressListener> listeners = new Vector<ProgressListener>();
 	
 	/** The genome. */
-	private Genome genome;
+	private Genome genome = null;
 	
 	/** The base location. */
 	private File baseLocation;
@@ -63,6 +66,14 @@ public class GenomeParser implements Runnable {
 	private BamQCPreferences prefs = BamQCPreferences.getInstance();
 	
 	
+	/** 
+	 * The parsed genome or null if no genome has been parsed.
+	 * @return the parsed genome or null
+	 */
+	public Genome genome() {
+		return genome;
+	}
+	
 	/**
 	 * Parses the genome.
 	 * 
@@ -71,35 +82,6 @@ public class GenomeParser implements Runnable {
 	public void parseGenome (File baseLocation) {
 		this.baseLocation = baseLocation;
 
-		Thread t = new Thread(this);
-		t.start();
-	}
-	
-	/**
-	 * Adds the progress listener.
-	 * 
-	 * @param pl the pl
-	 */
-	public void addProgressListener (ProgressListener pl) {
-		if (pl != null && ! listeners.contains(pl))
-			listeners.add(pl);
-	}
-	
-	/**
-	 * Removes the progress listener.
-	 * 
-	 * @param pl the pl
-	 */
-	public void removeProgressListener (ProgressListener pl) {
-		if (pl != null && listeners.contains(pl))
-				listeners.remove(pl);
-	}
-		
-	/* (non-Javadoc)
-	 * @see java.lang.Runnable#run()
-	 */
-	@Override
-	public void run() {
 		try {
 			genome = new Genome(baseLocation);
 			
@@ -188,12 +170,30 @@ public class GenomeParser implements Runnable {
 			}
 		}
 		
-		Enumeration<ProgressListener> en = listeners.elements();
-		while (en.hasMoreElements()) {
-			en.nextElement().progressComplete("load_genome", genome);
-		}
-		
 	}
+	
+	
+	/**
+	 * Adds the progress listener.
+	 * 
+	 * @param pl the pl
+	 */
+	public void addProgressListener (ProgressListener pl) {
+		if (pl != null && ! listeners.contains(pl))
+			listeners.add(pl);
+	}
+	
+	/**
+	 * Removes the progress listener.
+	 * 
+	 * @param pl the pl
+	 */
+	public void removeProgressListener (ProgressListener pl) {
+		if (pl != null && listeners.contains(pl))
+				listeners.remove(pl);
+	}
+	
+	
 	
 	private void readAliases (File file) throws IOException {
 		BufferedReader br = new BufferedReader(new FileReader(file));
@@ -457,7 +457,7 @@ public class GenomeParser implements Runnable {
 			}
 			
 			// We can now start reading the features one at a time by
-			// concatonating them and then passing them on for processing
+			// concatenating them and then passing them on for processing
 			StringBuffer currentAttribute = new StringBuffer();
 			boolean skipping = true;
 			Feature feature = null;
@@ -474,6 +474,8 @@ public class GenomeParser implements Runnable {
 				
 				String type = line.substring(5,18).trim();
 //				System.out.println("Type is "+type);
+				
+				
 				if (type.length()>0) {
 					//We're at the start of a new feature.
 					
@@ -495,10 +497,56 @@ public class GenomeParser implements Runnable {
 //						System.err.println("Creating new feature of type "+type);
 						feature = new Feature(type,c);
 						currentAttribute=new StringBuffer("location=");
-						currentAttribute.append(line.substring(21).trim());
+						currentAttribute.append(line.substring(21).trim());						
+										
+						
+						
+						// new code
+						// TODO SOLVE THIS
+						
+						
+						int strand = Location.UNKNOWN; // TODO is this correct?
+						String locationStr;
+						String[] locations;
+						String[] locationGroups;
+						ArrayList<Location> subLocations = new ArrayList<Location>();
+						if(type=="gene" || type=="pseudogene") {
+							locationStr = line.substring(21).trim().replace("complement(", "").replace(")","");
+							//System.out.println(locationStr);
+							locations = locationStr.split(Pattern.quote(".."));
+							//System.out.println("locations: " + locations[0] + " - " + locations[1]);
+							subLocations.add(new Location(Integer.valueOf(locations[0]), Integer.valueOf(locations[1]), strand));
+							// add additional locations if any
+						} else{
+							while((line=br.readLine())!=null && line.indexOf("/") == -1) {
+								locationStr = line.substring(21).trim().replace("join(", "").replace("complement(", "").replace(")","");
+								//System.out.println(locationStr);
+								locationGroups = locationStr.split(",");
+								for(int i=0; i<locationGroups.length; i++) {
+									locations = locationGroups[i].split(Pattern.quote(".."));
+									if(locations.length == 2) {
+										//System.out.println("locations: " + locations[0] + " - " + locations[1]);
+										subLocations.add(new Location(Integer.valueOf(locations[0]), Integer.valueOf(locations[1]), strand));
+									} else {
+										System.err.println("Found potentially wrong location annotation [" + line.substring(21).trim() + "]");
+									}
+								}
+							}
+						}
+						if (subLocations.size() == 0) {	}
+						else if (subLocations.size() == 1) {
+							feature.setLocation(subLocations.get(0));					
+						}
+						else {
+							feature.setLocation(new SplitLocation(subLocations.toArray(new Location[0])));
+						}
+						// end new code	
+					
+						
 						continue;
 					}
-					//	System.err.println("Skipping feature of type "+type);
+					
+//						System.err.println("Skipping feature of type "+type);
 					genome.addUnloadedFeatureType(type);
 					skipping = true;
 					
@@ -510,20 +558,19 @@ public class GenomeParser implements Runnable {
 
 				if (data.startsWith("/")) {
 					// We're at the start of a new attribute
-										
+
 					//Process the last attribute
 					skipping = processAttributeReturnSkip(currentAttribute.toString(), feature);
 					currentAttribute = new StringBuffer();
 				}
-				
+
 				// Our default action is just to append onto the existing information
 
 				// Descriptions which run on to multiple lines need a space adding
 				// before the next lot of text.
 				if (currentAttribute.indexOf("description=") >= 0) currentAttribute.append(" ");
 
-				currentAttribute.append(data);
-				
+				currentAttribute.append(data);			
 			}
 			
 			// We've finished, but we need to process the last feature
@@ -655,5 +702,7 @@ public class GenomeParser implements Runnable {
 				return;
 		}
 	}
+	
+
 	
 }

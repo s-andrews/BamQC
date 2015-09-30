@@ -20,10 +20,8 @@
 package uk.ac.babraham.BamQC.Dialogs;
 
 import java.awt.BorderLayout;
-import java.awt.Dialog;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -31,29 +29,22 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import uk.ac.babraham.BamQC.BamQCApplication;
-import uk.ac.babraham.BamQC.DataTypes.Genome.Genome;
 import uk.ac.babraham.BamQC.Preferences.BamQCPreferences;
 
 /**
  * A Dialog to allow the viewing and editing of all BamQC preferences.
  */
-public class EditPreferencesDialog extends JDialog implements ActionListener,ListSelectionListener {
+public class EditPreferencesDialog extends JDialog implements ActionListener {
 
 	/**
 	 * 
@@ -78,31 +69,16 @@ public class EditPreferencesDialog extends JDialog implements ActionListener,Lis
 	/** The download location. */
 	private JTextField downloadLocation;
 	
-	/** The ignored features. */
-	private JList ignoredFeatures;
-	
 	/** The temp directory. */
 	private JTextField tempDirectory;
-	
-	/** The ignored features model. */
-	private DefaultListModel ignoredFeaturesModel;
-	
-	/** The add. */
-	private JButton add;
-	
-	/** The remove. */
-	private JButton remove;
-	
-	private Genome genome;
 		
 	/**
 	 * Instantiates a new edits the preferences dialog.
 	 * 
 	 * @param application the application
 	 */
-	public EditPreferencesDialog (Genome genome) {
+	public EditPreferencesDialog () {
 		super(BamQCApplication.getInstance(),"Edit Preferences...");
-		this.genome = genome;
 		setSize(600,280);
 		setLocationRelativeTo(BamQCApplication.getInstance());
 		setModal(true);
@@ -192,31 +168,7 @@ public class EditPreferencesDialog extends JDialog implements ActionListener,Lis
 	
 		c.gridx=0;
 		c.gridy++;
-		
-		JPanel featureTypesPanel = new JPanel();
-		featureTypesPanel.setLayout(new BorderLayout());
-		ignoredFeaturesModel = new DefaultListModel();
-		String [] f = p.getIgnoredFeatures();
-		for (int i=0;i<f.length;i++) {
-//			System.out.println("Added "+f[i]);
-			ignoredFeaturesModel.addElement(f[i]);
-		}
-		ignoredFeatures = new JList(ignoredFeaturesModel);
-		ignoredFeatures.addListSelectionListener(this);
-		featureTypesPanel.add(new JScrollPane(ignoredFeatures),BorderLayout.CENTER);
-		JPanel featureTypesButtons = new JPanel();
-		featureTypesButtons.setLayout(new GridLayout(2,1));
-		add = new JButton("Add");
-		add.setActionCommand("addFeature");
-		add.addActionListener(this);
-		featureTypesButtons.add(add);
-		remove = new JButton("Remove");
-		remove.setActionCommand("removeFeature");
-		remove.addActionListener(this);
-		remove.setEnabled(false);
-		featureTypesButtons.add(remove);
-		featureTypesPanel.add(featureTypesButtons,BorderLayout.EAST);
-			
+				
 		
 		JPanel networkPanel = new JPanel();
 		networkPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
@@ -291,16 +243,6 @@ public class EditPreferencesDialog extends JDialog implements ActionListener,Lis
 	    }
 	}
 
-	private void getFile (JTextField f) {
-		JFileChooser chooser = new JFileChooser(); 
-	    chooser.setCurrentDirectory(new File(f.getText()));
-	    chooser.setDialogTitle("Select File");
-	    chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-	    if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-	    	f.setText(chooser.getSelectedFile().getAbsolutePath());
-	    }
-	}
-
 	
 	
 	/* (non-Javadoc)
@@ -322,29 +264,6 @@ public class EditPreferencesDialog extends JDialog implements ActionListener,Lis
 		else if (c.equals("tempDir")) {
 			getDir(tempDirectory);
 		}
-		else if (c.equals("removeFeature")) {
-			Object [] o = ignoredFeatures.getSelectedValues();
-			for (int i=0;i<o.length;i++) {
-				ignoredFeaturesModel.removeElement(o[i]);
-			}
-		}
-		else if (c.equals("addFeature")) {
-			String featureName=null;
-			FeatureSelector ufs = new FeatureSelector(this);
-			while (true) {
-				featureName = ufs.getFeatureName();
-				if (featureName == null)
-					return;  // They cancelled
-					
-					
-				if (featureName.length() == 0)
-					continue; // Try again
-				
-				break;
-			}
-			ufs.dispose();
-			ignoredFeaturesModel.addElement(featureName);
-		}
 		else if (c.equals("cancel")) {
 			setVisible(false);
 			dispose();
@@ -352,19 +271,19 @@ public class EditPreferencesDialog extends JDialog implements ActionListener,Lis
 		
 		else if (c.equals("ok")) {
 			File genomeBaseFile = new File(genomeBase.getText());
-			if (genomeBaseFile == null || (! genomeBaseFile.exists())) {
+			if (!genomeBaseFile.exists()) {
 				JOptionPane.showMessageDialog(this,"Invalid genome base location","Error",JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 
 			File dataLocationFile = new File(dataLocation.getText());
-			if (dataLocationFile == null || (! dataLocationFile.exists())) {
+			if (!dataLocationFile.exists()) {
 				JOptionPane.showMessageDialog(this,"Invalid data location","Error",JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 
 			File saveLocationFile = new File(saveLocation.getText());
-			if (saveLocationFile == null || (! saveLocationFile.exists())) {
+			if (!saveLocationFile.exists()) {
 				JOptionPane.showMessageDialog(this,"Invalid save location","Error",JOptionPane.ERROR_MESSAGE);
 				return;
 			}
@@ -411,12 +330,6 @@ public class EditPreferencesDialog extends JDialog implements ActionListener,Lis
 			p.setProxy(proxyHostValue,proxyPortValue);
 			p.setGenomeDownloadLocation(downloadLocation.getText());
 			p.setTempDirectory(tempDirFile);
-			Object [] o = ignoredFeaturesModel.toArray();
-			String [] s = new String[o.length];
-			for (int i=0;i<s.length;i++) {
-				s[i] = (String)o[i];
-			}
-			p.setIgnoredFeatures(s);
 			
 			try {
 				p.savePreferences();
@@ -426,126 +339,6 @@ public class EditPreferencesDialog extends JDialog implements ActionListener,Lis
 			setVisible(false);
 		}
 	}
-
-	/* (non-Javadoc)
-	 * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
-	 */
-	@Override
-	public void valueChanged(ListSelectionEvent arg0) {
-		if (ignoredFeatures.getSelectedIndices().length>0) {
-			remove.setEnabled(true);
-		}
-		else {
-			remove.setEnabled(false);
-		}
-	}
-	
-	/**
-	 * The Class FeatureSelector.
-	 */
-	private class FeatureSelector extends JDialog implements ListSelectionListener, ActionListener {
-		
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 2655517264575721041L;
-
-		/** The cancelled. */
-		private boolean cancelled = true;
-		
-		/** The input. */
-		private JTextField input;
-		
-		/** The list. */
-		private JList list;
-		
-		/**
-		 * Instantiates a new feature selector.
-		 * 
-		 * @param c the c
-		 */
-		public FeatureSelector (Dialog c) {
-			super(c);
-			setTitle("Select feature name");
-			setSize(250,250);
-			setModal(true);
-			setLocationRelativeTo(c);
-			
-			JPanel topPanel = new JPanel();
-			topPanel.setLayout(new BorderLayout());
-			input = new JTextField("[Enter feature name]");
-			topPanel.add(input,BorderLayout.CENTER);
-			topPanel.add(new JLabel("Currently loaded features"),BorderLayout.SOUTH);
-			getContentPane().setLayout(new BorderLayout());
-			getContentPane().add(topPanel,BorderLayout.NORTH);
-
-			if (genome != null) {
-				list = new JList (genome.annotationSet().getAvailableFeatureTypes());
-			}
-			else {
-				list = new JList ();
-			}
-			list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			list.addListSelectionListener(this);
-			getContentPane().add(new JScrollPane(list),BorderLayout.CENTER);
-			
-			JPanel buttonPanel = new JPanel();
-
-			JButton cancelButton = new JButton("Cancel");
-			cancelButton.setActionCommand("cancel");
-			cancelButton.addActionListener(this);
-			buttonPanel.add(cancelButton);
-			
-			JButton okButton = new JButton("OK");
-			okButton.setActionCommand("ok");
-			okButton.addActionListener(this);
-			buttonPanel.add(okButton);
-			
-			getContentPane().add(buttonPanel,BorderLayout.SOUTH);
-			
-			
-		}
-		
-		/**
-		 * Gets the feature name.
-		 * 
-		 * @return the feature name
-		 */
-		public String getFeatureName (){
-			cancelled = true;
-			input.setText("[Enter feature name]");
-			setVisible(true);
-			if (cancelled) {
-				return null;
-			}
-			return input.getText();
-		}
-
-		/* (non-Javadoc)
-		 * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
-		 */
-		@Override
-		public void valueChanged(ListSelectionEvent e) {
-			String s = (String)list.getSelectedValue();
-			if (s!=null) {
-				input.setText(s);
-			}
-		}
-
-		/* (non-Javadoc)
-		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-		 */
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (e.getActionCommand().equals("ok")) {
-				cancelled = false;
-			}
-			if (input.getText().equals("[Enter feature name]")){
-				input.setText("");
-			}
-			
-			setVisible(false);
-		}
-	}
 	
 }
+

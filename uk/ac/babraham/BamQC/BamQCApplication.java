@@ -49,9 +49,7 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 import uk.ac.babraham.BamQC.Sequence.SequenceFormatException;
 import uk.ac.babraham.BamQC.Utilities.FileFilters.BAMFileFilter;
 import uk.ac.babraham.BamQC.Utilities.FileFilters.GFFFileFilter;
-import uk.ac.babraham.BamQC.AnnotationParsers.GenomeParser;
 import uk.ac.babraham.BamQC.Dialogs.GenomeSelector;
-import uk.ac.babraham.BamQC.DataTypes.Genome.Genome;
 import uk.ac.babraham.BamQC.Network.GenomeDownloader;
 import uk.ac.babraham.BamQC.DataTypes.CacheListener;
 import uk.ac.babraham.BamQC.DataTypes.ProgressListener;
@@ -72,8 +70,8 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 	private WelcomePanel welcomePanel;
 	private File lastUsedDir = null;
 	
-	/** The Genome is the main data model */
-	private Genome genome = null;
+	private File genomeBaseLocation = null;
+	
 	
 	/** Flag to check if anything substantial has changed since the file was last loaded/saved. **/
 	private boolean changesWereMade = false;
@@ -175,8 +173,8 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 			}
 
 			AnalysisRunner runner;
-			if(genome != null) {
-				runner = new AnalysisRunner(sequenceFile, genome.annotationSet());
+			if(genomeBaseLocation != null) {
+				runner = new AnalysisRunner(sequenceFile, genomeBaseLocation);
 			} else {
 				runner = new AnalysisRunner(sequenceFile);
 			}
@@ -189,6 +187,21 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 	
 			runner.startAnalysis(module_list);
 		}
+	}
+	
+	
+	/**
+	 * Launches the genome selector to begin a new project.
+	 */
+	public void openGFFFromNetwork () {
+		new GenomeSelector(this);
+	}
+	
+	/**
+	 * Clears all stored data and blanks the UI.
+	 */
+	public void wipeAllData () {
+		genomeBaseLocation = null;
 	}
 	
 	public void openGFF () {
@@ -335,20 +348,7 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 		
 	}
 		
-	/**
-	 * Launches the genome selector to begin a new project.
-	 */
-	public void openGFFFromNetwork () {
-		new GenomeSelector(this);
-	}
-	
-	/**
-	 * Clears all stored data and blanks the UI.
-	 */
-	public void wipeAllData () {		
-		setTitle("BamQC");
-		genome = null;
-	}
+
 	
 	
 	
@@ -380,52 +380,21 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 //		pd.requestFocus();
 	}
 	
+	
+	
+
 	/**
-	 * Loads a genome assembly.  This will fail if the genome isn't currently
-	 * in the local cache and downloadGenome should be set first in this case.
+	 * Select a genome assembly.
 	 * 
 	 * @param baseLocation The folder containing the requested genome.
 	 */
-	public void loadGenome (File baseLocation) {
-		wipeAllData ();
-		GenomeParser parser = new GenomeParser();
-		parser.addProgressListener(this);
-		
-//		// if using a text ProgressTextDialog		
-		ProgressTextDialog ptd = new ProgressTextDialog("Loading genome...");
-		parser.addProgressListener(ptd);
-		
-//		// if using a graphic ProgressDialog
-//		ProgressDialog pd = new ProgressDialog(this,"Loading genome...");
-//		parser.addProgressListener(pd);
-
-		parser.parseGenome(baseLocation);
-
-//		// if using a graphic ProgressDialog
-//		pd.requestFocus();
+	public void selectGenome (File baseLocation) {
+		genomeBaseLocation = baseLocation;
 	}
 	
 
 
-//	/**
-//	 * Adds a loaded genome to the main display
-//	 * 
-//	 * @param g The Genome which has just been loaded.
-//	 */
-	private void addNewLoadedGenome(Genome g) {
 		
-		// We've had a trace where the imported genome contained no
-		// chromosomes.  No idea how that happened but we can check that
-		// here.
-		if (g.getAllChromosomes() == null || g.getAllChromosomes().length == 0) {
-			System.err.println("No data was present in the imported genome");
-			return;
-		}
-		genome = g;
-	}
-	
-	
-	
 	/**
 	 * Adds a cache listener.
 	 * 
@@ -458,15 +427,6 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 		}
 	}
 	
-	
-	/**
-	 * Genome.
-	 * 
-	 * @return The currently used genome.
-	 */
-	public Genome genome () {
-		return genome;
-	}
 
 
 	/* (non-Javadoc)
@@ -480,13 +440,10 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 		
 		if (command == null) return;
 
-		if (command.equals("load_genome")) {
-			addNewLoadedGenome((Genome)result);
-		}
-		else if (command.equals("genome_downloaded")) {
+		if (command.equals("genome_downloaded")) {
 			// No result is returned
 			openGFFFromNetwork();
-		}		
+		}
 		
 		else {
 			throw new IllegalArgumentException("Don't know how to handle progress command '"+command+"'");

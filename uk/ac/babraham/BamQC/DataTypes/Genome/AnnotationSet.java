@@ -655,7 +655,7 @@ public class AnnotationSet {
 			else {
 				if (featureList.length > 500) {
 					try {
-						cacheFile = File.createTempFile("seqmonk_anotation", ".temp", BamQCPreferences.getInstance().tempDirectory());
+						cacheFile = File.createTempFile("bamqc_annotation", ".temp", BamQCPreferences.getInstance().tempDirectory());
 						ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(cacheFile)));
 						oos.writeObject(featureList);
 						oos.close();
