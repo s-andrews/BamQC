@@ -140,6 +140,7 @@ public class SplitLocation extends Location {
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.BamQC.DataTypes.Genome.Location#locationString()
 	 */
+	@Override
 	public String locationString () {
 		
 		// We optimise by not storing subLocations if there is only one location

@@ -209,7 +209,7 @@ public class GFF3AnnotationParser extends AnnotationParser {
 						}
 
 						else {
-							//						progressWarningReceived(new BamQCException("No key value delimiter in "+attributes[a]));
+							// progressWarningReceived(new BamQCException("No key value delimiter in "+attributes[a]));
 						}
 
 					}
@@ -232,7 +232,7 @@ public class GFF3AnnotationParser extends AnnotationParser {
 
 						for (int p=0;p<parents.length;p++) {
 
-							//						System.out.println("Adding feature "+sections[2]+" to GFFv3 parent "+parents[p]);
+							// System.out.println("Adding feature "+sections[2]+" to GFFv3 parent "+parents[p]);
 
 							if (!groupedFeatures.containsKey(sections[2]+"_"+parents[p])) {
 								// Make a new feature to which we can add this
@@ -251,7 +251,7 @@ public class GFF3AnnotationParser extends AnnotationParser {
 
 						if (sections[2].equals("exon")) sections[2] = "mRNA";
 
-						//					System.out.println("Adding feature "+sections[2]+" to GTF parent "+keyValuePairs.get("trancript_id").elementAt(0));
+						// System.out.println("Adding feature "+sections[2]+" to GTF parent "+keyValuePairs.get("trancript_id").elementAt(0));
 
 						if (! groupedFeatures.containsKey(sections[2]+"_"+keyValuePairs.get("transcript_id").get(0))) {
 							Feature feature = new Feature(sections[2],c);

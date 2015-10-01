@@ -21,22 +21,17 @@ package uk.ac.babraham.BamQC.AnnotationParsers;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Vector;
-import java.util.regex.Pattern;
 
-import uk.ac.babraham.BamQC.BamQCApplication;
 import uk.ac.babraham.BamQC.BamQCException;
 import uk.ac.babraham.BamQC.DataTypes.ProgressListener;
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Feature;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Genome;
-import uk.ac.babraham.BamQC.DataTypes.Genome.Location;
 import uk.ac.babraham.BamQC.DataTypes.Genome.SplitLocation;
 import uk.ac.babraham.BamQC.Preferences.BamQCPreferences;
 import uk.ac.babraham.BamQC.Utilities.FileFilters.DatSimpleFileFilter;
@@ -92,86 +87,7 @@ public class GenomeParser {
 				return;
 			}
 		}
-		
-		
-		// TODO 
-		// remove cache system
-//		File cacheCompleteFile = new File(baseLocation.getAbsoluteFile()+ File.separator + "cache" + File.separator + "cache.complete");
-//		
-//		if (cacheCompleteFile.exists()) {
-//			
-//			boolean cacheFailed = false;
-//			
-//			try {
-//				// Check the version inside the cache.complete file
-//				BufferedReader br = new BufferedReader(new FileReader(cacheCompleteFile)); 
-//				String line = br.readLine();
-//				br.close();
-//				if (line == null || line.length() == 0) {
-//					// If there's no version in there then re-parse
-//					cacheFailed = true;
-//				}
-//				// We re-parse if the cache was made by a different version
-//				if (! BamQCApplication.VERSION.equals(line)) {
-//					System.err.println("Version mismatch between cache ('"+line+"') and current version ('"+BamQCApplication.VERSION+"') - reparsing");
-//					cacheFailed = true;
-//				}
-//			}
-//			catch (IOException ioe) {
-//				cacheFailed = true;
-//			}
-//						
-//			// Check to see if the .dat files have changed since the cache
-//			// file was saved
-//			
-//			File [] files = baseLocation.listFiles(new FileFilter() {
-//				
-//				@Override
-//				public boolean accept(File f) {
-//					if (f.getName().toLowerCase().endsWith(".dat")  || f.getName().toLowerCase().endsWith(".gff") || f.getName().toLowerCase().endsWith(".gtf") || f.getName().toLowerCase().endsWith(".gff3")) {
-//						return true;
-//					}
-//					return false;
-//				}
-//			
-//			});
-//			
-//			boolean datFilesUpdated = false;
-//			for (int f=0;f<files.length;f++) {
-//				if (files[f].lastModified() > cacheCompleteFile.lastModified()) {
-//					System.err.println("Modification on "+files[f]+" is newer than on "+cacheCompleteFile+" "+files[f].lastModified()+" vs "+cacheCompleteFile.lastModified());
-//					datFilesUpdated = true;
-//					break;
-//				}
-//			}
-//
-//			if (cacheFailed || datFilesUpdated) {
-//				if (! cacheCompleteFile.delete()) {
-//					System.err.println("Failed to delete the existing cache.complete file");
-//				}
-////				System.err.println("Dat files updated - reparsing");
-//				parseGenomeFiles(genome);
-//			}
-//			else {
-//				reloadCacheFiles(genome);
-//			}
-//		}
-//		else {
-//			System.err.println("File '"+cacheCompleteFile+"' doesn't exist - reparsing");
-			parseGenomeFiles(genome);
-//		}
-//		
-//		File aliasesFile = new File(baseLocation.getAbsoluteFile()+ File.separator + "aliases.txt");
-//		
-//		if (aliasesFile.exists()) {
-//			try {
-//				readAliases(aliasesFile);
-//			} 
-//			catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		}
-		
+		parseGenomeFiles(genome);
 	}
 	
 	
@@ -197,126 +113,12 @@ public class GenomeParser {
 	
 	
 	
-	
-	// TODO
-	// I THINK THIS CAN BE SAFELY REMOVED.
-//	private void readAliases (File file) throws IOException {
-//		BufferedReader br = new BufferedReader(new FileReader(file));
-//		
-//		String line;
-//		
-//		while ((line = br.readLine()) != null) {
-//			String [] splitLine = line.split("\t");
-//			
-//			if (splitLine.length < 2) {
-////				System.err.println("Skipping alias line "+line);
-//				continue;
-//			}
-//			
-//			try {
-//				if (splitLine.length >= 3) {
-//					genome.addAlias(splitLine[0], splitLine[1], Integer.parseInt(splitLine[2]));
-//				}
-//				else {
-//					genome.addAlias(splitLine[0], splitLine[1],0);
-//				}
-//			} 
-//			catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//		}
-//		
-//		br.close();
-//	}
-	
-	
-	
-	// TODO
-	// let's remove the cache system
-//	private void reloadCacheFiles (Genome genome) {
-//		
-//		
-//		Enumeration<ProgressListener> el = listeners.elements();
-//		
-//		while (el.hasMoreElements()) {
-//			el.nextElement().progressUpdated("Reloading cache files",0,1);
-//		}
-//
-//		
-//		CoreAnnotationSet coreAnnotation = new CoreAnnotationSet(genome);
-//
-//		File cacheDir = new File(baseLocation.getAbsoluteFile()+ File.separator + "cache" + File.separator);
-//		
-//		// First we need to get the list of chromosomes and set those
-//		// up before we go on to add the actual feature sets.
-//		File chrListFile = new File(baseLocation.getAbsoluteFile()+ File.separator + "cache" + File.separator + "chr_list");
-//		
-//		try {
-//			BufferedReader br = new BufferedReader(new FileReader(chrListFile));
-//			
-//			String line;
-//			while ((line = br.readLine()) != null) {
-//				String [] chrLen = line.split("\\t");
-//				Chromosome c = genome.addChromosome(chrLen[0]);
-//				c.setLength(Integer.parseInt(chrLen[1]));
-//			
-//			}
-//			br.close();
-//		}
-//		catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		
-//		File [] cacheFiles = cacheDir.listFiles(new FileFilter() {
-//			
-//			@Override
-//			public boolean accept(File pathname) {
-//				return pathname.getName().toLowerCase().endsWith(".cache");
-//			}
-//		});
-//		
-//		for (int i=0;i<cacheFiles.length;i++) {
-//			// Update the listeners
-//
-//			String name = cacheFiles[i].getName();
-//			name = name.replaceAll("\\.cache$", "");
-//			String [] chrType = name.split("%",2);
-//			if (chrType.length != 2) {
-//				throw new IllegalStateException("Cache name '"+name+"' didn't split into chr and type");
-//			}
-//			coreAnnotation.addPreCachedFile(chrType[1], chrType[0], cacheFiles[i]);
-//			
-//
-//		}
-//
-//		genome.setAnnotationSet(coreAnnotation);
-//		
-//	}
-	
-	
 	private void parseGenomeFiles (Genome genome) {
-
-		// TODO 
-		// let's remove this parser of chromosome list
-//		// We start by seeing whether there is a chr_list file in the top level
-//		// which defines the size and extent of the chromosomes
-//		try {
-//			parseChrListFile(genome);
-//		}
-//		catch (Exception ex) {
-//			Enumeration<ProgressListener> en = listeners.elements();
-//			
-//			while (en.hasMoreElements()) {
-//				en.nextElement().progressExceptionReceived(ex);
-//			}
-//			return;
-//		}		
-		
-		
+	
 		// We need a list of all of the .dat files inside the baseLocation
 		File [] files = baseLocation.listFiles(new DatSimpleFileFilter());
 		
-		AnnotationSet coreAnnotation = new AnnotationSet();
+		AnnotationSet annotationSet = new AnnotationSet();
 		
 		for (int i=0;i<files.length;i++) {
 			// Update the listeners
@@ -326,7 +128,7 @@ public class GenomeParser {
 				e.nextElement().progressUpdated("Loading Genome File "+files[i].getName(),i,files.length);
 			}
 			try {
-				processEMBLFile(files[i],coreAnnotation);
+				processEMBLFile(files[i],annotationSet);
 			} 
 			catch (Exception ex) {
 				Enumeration<ProgressListener> en = listeners.elements();
@@ -367,7 +169,7 @@ public class GenomeParser {
 				gffParser.parseAnnotation(newSet, files[i]);
 				Feature [] features = newSet.getAllFeatures();
 				for (int f=0;f<features.length;f++) {
-					coreAnnotation.addFeature(features[f]);
+					annotationSet.addFeature(features[f]);
 				}
 			} 
 			catch (Exception ex) {
@@ -388,13 +190,7 @@ public class GenomeParser {
 			}
 		}
 		
-		
-		genome.setAnnotationSet(coreAnnotation);
-		
-		// Debugging - put out some stats
-//		System.err.println("Made genome with "+genome.getAllChromosomes().length+" chromosomes");
-//		System.err.println("There are "+genome.annotationCollection().listAvailableFeatureTypes().length+" different feature types");
-		
+		genome.setAnnotationSet(annotationSet);		
 
 	}
 	
@@ -405,43 +201,9 @@ public class GenomeParser {
 		}
 	}
 
-//	private void parseChrListFile(Genome genome) throws Exception {
-//		File chrListFile = new File(baseLocation.getAbsolutePath()+ File.separator + "chr_list");
-//		if (chrListFile.exists()) {
-//			BufferedReader br = new BufferedReader(new FileReader(chrListFile));
-//			String line;
-//			
-//			while ((line = br.readLine()) != null) {
-//				String [] sections = line.split("\t");
-//				Chromosome c = genome.addChromosome(sections[0]);
-//				c.setLength(Integer.parseInt(sections[1]));
-//			}
-//
-//			br.close();
-//			
-//			// If we've loaded the chromosome list we also need to check at this point
-//			// whether there are any aliases defined since these might be used by the 
-//			// dat or gff files.  We will end up re-adding these aliases a bit later
-//			// which is unfortunate but won't slow things down much so it's not too bad.
-//			
-//			File aliasesFile = new File(baseLocation.getAbsoluteFile()+ File.separator + "aliases.txt");
-//			
-//			if (aliasesFile.exists()) {
-//				try {
-//					readAliases(aliasesFile);
-//				} 
-//				catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		
-//		}
-//		
-//
-//	}
 	
 	/**
-	 * Process embl file.
+	 * Process EMBL file.
 	 * 
 	 * @param f the f
 	 * @param annotation the annotation
@@ -485,8 +247,6 @@ public class GenomeParser {
 				
 				String type = line.substring(5,18).trim();
 //				System.out.println("Type is "+type);
-				
-				
 				if (type.length()>0) {
 					//We're at the start of a new feature.
 					
@@ -508,56 +268,10 @@ public class GenomeParser {
 //						System.err.println("Creating new feature of type "+type);
 						feature = new Feature(type,c);
 						currentAttribute=new StringBuffer("location=");
-						currentAttribute.append(line.substring(21).trim());						
-										
-						
-						
-						// new code
-						// TODO SOLVE THIS
-						
-						
-						int strand = Location.UNKNOWN; // TODO is this correct?
-						String locationStr;
-						String[] locations;
-						String[] locationGroups;
-						ArrayList<Location> subLocations = new ArrayList<Location>();
-						if(type=="gene" || type=="pseudogene") {
-							locationStr = line.substring(21).trim().replace("complement(", "").replace(")","");
-							//System.out.println(locationStr);
-							locations = locationStr.split(Pattern.quote(".."));
-							//System.out.println("locations: " + locations[0] + " - " + locations[1]);
-							subLocations.add(new Location(Integer.valueOf(locations[0]), Integer.valueOf(locations[1]), strand));
-							// add additional locations if any
-						} else{
-							while((line=br.readLine())!=null && line.indexOf("/") == -1) {
-								locationStr = line.substring(21).trim().replace("join(", "").replace("complement(", "").replace(")","");
-								//System.out.println(locationStr);
-								locationGroups = locationStr.split(",");
-								for(int i=0; i<locationGroups.length; i++) {
-									locations = locationGroups[i].split(Pattern.quote(".."));
-									if(locations.length == 2) {
-										//System.out.println("locations: " + locations[0] + " - " + locations[1]);
-										subLocations.add(new Location(Integer.valueOf(locations[0]), Integer.valueOf(locations[1]), strand));
-									} else {
-										System.err.println("Found potentially wrong location annotation [" + line.substring(21).trim() + "]");
-									}
-								}
-							}
-						}
-						if (subLocations.size() == 0) {	}
-						else if (subLocations.size() == 1) {
-							feature.setLocation(subLocations.get(0));					
-						}
-						else {
-							feature.setLocation(new SplitLocation(subLocations.toArray(new Location[0])));
-						}
-						// end new code	
-					
-						
+						currentAttribute.append(line.substring(21).trim());
+//						System.out.println(currentAttribute.toString());
 						continue;
 					}
-					
-//						System.err.println("Skipping feature of type "+type);
 					skipping = true;
 					
 				}
@@ -568,19 +282,20 @@ public class GenomeParser {
 
 				if (data.startsWith("/")) {
 					// We're at the start of a new attribute
-
-					//Process the last attribute
+										
+					//Process the last attribute (extract the location)
 					skipping = processAttributeReturnSkip(currentAttribute.toString(), feature);
 					currentAttribute = new StringBuffer();
 				}
-
+				
 				// Our default action is just to append onto the existing information
 
 				// Descriptions which run on to multiple lines need a space adding
 				// before the next lot of text.
 				if (currentAttribute.indexOf("description=") >= 0) currentAttribute.append(" ");
 
-				currentAttribute.append(data);			
+				currentAttribute.append(data);
+				
 			}
 			
 			// We've finished, but we need to process the last feature
@@ -593,7 +308,8 @@ public class GenomeParser {
 			}
 		}
 		br.close();
-	}
+	}	
+		
 	
 	/**
 	 * Process attribute return skip.
@@ -601,7 +317,7 @@ public class GenomeParser {
 	 * @param attribute the attribute
 	 * @param feature the feature
 	 * @return true, if successful
-	 * @throws BamQCException the seq monk exception
+	 * @throws BamQCException the bamqc exception
 	 */
 	private boolean processAttributeReturnSkip (String attribute, Feature feature) throws BamQCException {
 //		System.out.println("Adding feature - current attribute is "+attribute);
@@ -610,7 +326,7 @@ public class GenomeParser {
 		// We used to insist on key value pairs, but the EMBL spec
 		// allows a key without a value, so one value is OK.
 		
-		
+		// extract the location
 		if (nameValue[0].equals("location")) {
 			
 			// A location has to have a value
@@ -618,7 +334,9 @@ public class GenomeParser {
 				throw new BamQCException("Location didn't have an '=' delimiter");
 			}
 			
-//			System.out.println("Location is "+nameValue[1]);
+			// TODO just a checkpoint for a print showing that we are collecting the location correctly.
+			// Print the location for this feature type
+// 			System.out.println("Location is "+nameValue[1]);
 			//Check to see if this is a location we can support
 			
 			if (nameValue[1].indexOf(":")>=0) {
@@ -629,16 +347,6 @@ public class GenomeParser {
 			}
 
 			feature.setLocation(new SplitLocation(nameValue[1],currentOffset));
-		}
-		else {
-			// All other attributes just get added to the feature
-			if (nameValue.length == 2) {
-				feature.addAttribute(nameValue[0], nameValue[1]);
-			}
-			else {
-				feature.addAttribute(nameValue[0], null);
-			}
-			return false;
 		}
 
 		return false;
@@ -672,9 +380,7 @@ public class GenomeParser {
 					continue;
 				}
 			
-				// This will return the existing chromosome of this
-				// name if it exists already, but will create a new
-				// one if it doesn't.
+				// Add a new chromosome to the factory if this does not exist.
 				Chromosome c = genome.annotationSet().chromosomeFactory().getChromosome(sections[2]);
 
 								
@@ -713,6 +419,7 @@ public class GenomeParser {
 				return;
 		}
 	}
+	
 		
 }
 

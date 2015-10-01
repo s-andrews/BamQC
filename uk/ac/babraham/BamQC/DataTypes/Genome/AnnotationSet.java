@@ -20,28 +20,14 @@
 
 package uk.ac.babraham.BamQC.DataTypes.Genome;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
 
-import uk.ac.babraham.BamQC.BamQCApplication;
 import uk.ac.babraham.BamQC.Modules.ModuleConfig;
-import uk.ac.babraham.BamQC.Preferences.BamQCPreferences;
 import net.sf.samtools.SAMRecord;
 
 public class AnnotationSet {
