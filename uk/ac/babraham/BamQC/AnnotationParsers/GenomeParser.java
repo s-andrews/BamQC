@@ -211,8 +211,10 @@ public class GenomeParser {
 	 */
 	private void processEMBLFile (File f, AnnotationSet annotation) throws Exception {
 		
+		int processedLines = 0;
+		int processedFeatures = 0;
+		
 		BufferedReader br = new BufferedReader(new FileReader(f));
-
 		Chromosome c = null;
 		// We need to find and read the accession line to find out
 		// which chromosome and location we're dealing with.
@@ -221,9 +223,11 @@ public class GenomeParser {
 		// need to account for this in our processing.
 		
 		while ((c = parseChromosome(br)) != null) {
+			processedLines++;
 			String line;			
 			// We can now skip through to the start of the feature table
 			while ((line=br.readLine())!=null) {
+				processedLines++;
 				if (line.startsWith("FH") || line.startsWith("SQ")) {
 					break;
 				}
@@ -236,6 +240,11 @@ public class GenomeParser {
 			Feature feature = null;
 			while ((line=br.readLine())!=null) {
 				
+				if (processedLines % 100000 == 0) {
+					System.err.println ("Processed "+processedLines+" lines currently holding "+processedFeatures+" features");
+				}
+				
+				processedLines++;
 //				System.err.println("Read line '"+line+"'");
 				
 				if (line.startsWith("XX") || line.startsWith("SQ") || line.startsWith("//")) {
@@ -261,6 +270,7 @@ public class GenomeParser {
 						// old feature
 						processAttributeReturnSkip(currentAttribute.toString(), feature);
 						annotation.addFeature(feature);
+						processedFeatures++;
 					}
 					
 					// We can check to see if we're bothering to load this type of feature
@@ -305,9 +315,11 @@ public class GenomeParser {
 				// old feature
 				processAttributeReturnSkip(currentAttribute.toString(), feature);
 				annotation.addFeature(feature);
+				processedFeatures++;
 			}
 		}
 		br.close();
+		System.err.println ("Total processed features: "+processedFeatures);
 	}	
 		
 	

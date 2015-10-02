@@ -42,9 +42,6 @@ public abstract class AnnotationParser implements Cancellable {
 	
 	/** The cancel. */
 	protected boolean cancel = false;
-		
-	/** The annotation Set */
-	protected AnnotationSet annotationSet;
 	
 
 	/*
@@ -71,16 +68,7 @@ public abstract class AnnotationParser implements Cancellable {
 	
 	
 	public AnnotationParser() {	}
-		
-	/**
-	 * Returns the annotation set.
-	 * 
-	 * @return the annotationSet
-	 */
-	protected AnnotationSet getAnnotationSet() {
-		return annotationSet;
-	}
-	
+			
 	/**
 	 * Adds the progress listener.
 	 * 

@@ -42,10 +42,6 @@ public class GFF3AnnotationParser extends AnnotationParser {
 	private static Logger log = Logger.getLogger(GFF3AnnotationParser.class);
 
 	
-	
-	private String featurePrefix = "";
-
-	
 	public GFF3AnnotationParser () { 
 		super();
 	}
@@ -71,11 +67,12 @@ public class GFF3AnnotationParser extends AnnotationParser {
 	
 	@Override
 	public void parseAnnotation(AnnotationSet annotationSet, File file) throws Exception {
-		// We also store this in order to return it if we need.
-		// Test whether this is necessary.
-		this.annotationSet = annotationSet;
+		
+		System.out.println("Loading Annotation File "+file.getName());
+		
 		annotationSet.setFile(file);
 		
+		int processedLines = 0;
 		HashMap<String, FeatureGroup> groupedFeatures = new HashMap<String, FeatureGroup>();
 		BufferedReader br = null;
 
@@ -84,7 +81,6 @@ public class GFF3AnnotationParser extends AnnotationParser {
 
 			String line;
 
-			int count = 0;
 			while ((line = br.readLine())!= null) {
 
 				//			if (cancel) {
@@ -105,11 +101,11 @@ public class GFF3AnnotationParser extends AnnotationParser {
 				//			}
 
 
-				count++;
+				processedLines++;
 
-				if (count % 100000 == 0) {
-					System.out.println ("Processed "+count+" lines currently holding "+groupedFeatures.size()+" features");
-				}
+				if (processedLines % 100000 == 0) {
+					System.err.println ("Processed "+processedLines+" lines currently holding "+groupedFeatures.size()+" features");
+				}	
 
 
 				if (line.trim().length() == 0) continue;  //Ignore blank lines
@@ -300,6 +296,7 @@ public class GFF3AnnotationParser extends AnnotationParser {
 		} finally {
 			if(br != null) {
 				br.close();
+				System.err.println ("Total processed features: "+groupedFeatures.size());
 			}
 		}
 
