@@ -22,7 +22,6 @@ package uk.ac.babraham.BamQC;
 import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -51,7 +50,6 @@ import uk.ac.babraham.BamQC.Utilities.FileFilters.BAMFileFilter;
 import uk.ac.babraham.BamQC.Utilities.FileFilters.GFFFileFilter;
 import uk.ac.babraham.BamQC.Dialogs.GenomeSelector;
 import uk.ac.babraham.BamQC.Network.GenomeDownloader;
-import uk.ac.babraham.BamQC.DataTypes.CacheListener;
 import uk.ac.babraham.BamQC.DataTypes.ProgressListener;
 
 
@@ -75,10 +73,6 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 	
 	/** Flag to check if anything substantial has changed since the file was last loaded/saved. **/
 	private boolean changesWereMade = false;
-
-	
-	/** The cache listeners */
-	private Vector<CacheListener> cacheListeners = new Vector<CacheListener>();
 	
 	
 	public BamQCApplication () {
@@ -390,41 +384,6 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 	 */
 	public void selectGenome (File baseLocation) {
 		genomeBaseLocation = baseLocation;
-	}
-	
-
-
-		
-	/**
-	 * Adds a cache listener.
-	 * 
-	 * @param l the l
-	 */
-	public void addCacheListener (CacheListener l) {
-		if (l != null && ! cacheListeners.contains(l)) {
-			cacheListeners.add(l);
-		}
-	}
-	
-	/**
-	 * Removes a cache listener.
-	 * 
-	 * @param l the l
-	 */
-	public void removeCacheListener (CacheListener l) {
-		if (l != null && cacheListeners.contains(l)) {
-			cacheListeners.remove(l);
-		}
-	}
-	
-	/**
-	 * Notifies all listeners that the disk cache was used.
-	 */
-	public void cacheUsed () {
-		Enumeration<CacheListener>en = cacheListeners.elements();
-		while (en.hasMoreElements()) {
-			en.nextElement().cacheUsed();
-		}
 	}
 	
 
