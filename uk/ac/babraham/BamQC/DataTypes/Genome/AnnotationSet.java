@@ -48,6 +48,9 @@ public class AnnotationSet {
 	private List<ShortRead> readCache = new ArrayList<ShortRead>(cacheSize);
 
 	
+	public AnnotationSet() { }
+	
+	
 	public File getFile() {
 		return file;
 	}
@@ -128,7 +131,7 @@ public class AnnotationSet {
 		}
 	}	
 	
-	public AnnotationSet() { }
+
 		
 }
 

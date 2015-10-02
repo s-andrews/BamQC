@@ -31,6 +31,8 @@ import uk.ac.babraham.BamQC.AnnotationParsers.GFF3AnnotationParser;
 import uk.ac.babraham.BamQC.AnnotationParsers.GTFAnnotationParser;
 import uk.ac.babraham.BamQC.AnnotationParsers.GenomeParser;
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
+import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
+import uk.ac.babraham.BamQC.DataTypes.Genome.Feature;
 import uk.ac.babraham.BamQC.Dialogs.ProgressTextDialog;
 import uk.ac.babraham.BamQC.Modules.QCModule;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
@@ -39,8 +41,8 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFormatException;
 public class AnalysisRunner implements Runnable {
 
 	private boolean annotationFromNetwork = false;
-	private AnnotationSet annotationSet = null;
 	private File genomeBaseLocation;
+	
 	private SequenceFile file;
 	private QCModule [] modules;
 	private List<AnalysisListener> listeners = new ArrayList<AnalysisListener>();
@@ -52,7 +54,6 @@ public class AnalysisRunner implements Runnable {
 	
 	public AnalysisRunner (SequenceFile file, File genomeBaseLocation) {
 		this.file = file;
-		this.annotationSet = annotationSet;
 		this.genomeBaseLocation = genomeBaseLocation;
 		annotationFromNetwork = true;
 	}
@@ -87,10 +88,7 @@ public class AnalysisRunner implements Runnable {
 		}
 
 		
-		
-		
-		// TODO
-		// new code
+		AnnotationSet annotationSet = null;
 
 		if(annotationFromNetwork) {
 			GenomeParser parser = new GenomeParser();
@@ -101,8 +99,7 @@ public class AnalysisRunner implements Runnable {
 			parser.parseGenome(genomeBaseLocation);
 			annotationSet = parser.genome().annotationSet();
 			
-		} else {
-			if (BamQCConfig.getInstance().gff_file != null) {	
+		} else if (BamQCConfig.getInstance().gff_file != null) {	
 				annotationSet = new AnnotationSet();
 				AnnotationParser parser;
 				if (BamQCConfig.getInstance().gff_file.getName().toLowerCase().endsWith("gtf")) {
@@ -121,46 +118,24 @@ public class AnalysisRunner implements Runnable {
 						return;
 					}
 				}
-			} else { 
-				// use an empty AnnotationSet.
-				annotationSet = new AnnotationSet();
-			}
-		}
-		
-	
+		} else { 
+			// use an empty AnnotationSet.
+			annotationSet = new AnnotationSet();
+		}	
 		
 		
-		
-//		if (BamQCConfig.getInstance().gff_file != null) {
-//			
-//			annotationSet = new AnnotationSet();
-//			
-//			AnnotationParser parser;
-//			
-//			if (BamQCConfig.getInstance().gff_file.getName().toLowerCase().endsWith("gtf")) {
-//				parser = new GTFAnnotationParser();
-//			}
-//			else {
-//				parser = new GFF3AnnotationParser();
-//			}
-//			try {
-//				parser.parseAnnotation(annotationSet, BamQCConfig.getInstance().gff_file);
-//			}
-//			catch (Exception e) {
-//				Iterator<AnalysisListener> i2 = listeners.iterator();
-//				while (i2.hasNext()) {
-//					i2.next().analysisExceptionReceived(file, e);
-//					return;
-//				}
-//			}
-//		} else {
-//			if (annotationSet == null) {
-//				// use an empty AnnotationSet.
-//				annotationSet = new AnnotationSet();
-//			}			
+//		// TODO print the annotation set
+//		System.out.println("print chromosomes");
+//		Chromosome[] chrs = annotationSet.chromosomeFactory().getAllChromosomes();
+//		for(int j=0; j<chrs.length; j++) {
+//			System.out.println(chrs[j].name());
 //		}
-		
-		
+//		System.out.println("print features");
+//		Feature[] features = annotationSet.getAllFeatures();
+//		for(int j=0; j<features.length; j++) {
+//			System.out.println(features[j]);
+//		}
+//		// end TODO
 		
 		
 		

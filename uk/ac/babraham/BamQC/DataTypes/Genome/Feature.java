@@ -111,14 +111,6 @@ public class Feature implements Comparable<Feature>, Serializable {
 		idSource = ID_MANUAL; // This always wins!
 	}
 
-	/**
-	 * Chromosome.
-	 * 
-	 * @return the chromosome
-	 */
-	public Chromosome chromosome() {
-		return chr;
-	}
 	
 	/**
 	 * Gets the annotation tag values.
@@ -222,6 +214,11 @@ public class Feature implements Comparable<Feature>, Serializable {
 		return "";
 	}
 	
+	/**
+	 * Chromosome.
+	 * 
+	 * @return the chromosome
+	 */
 	public Chromosome chr () {
 		return chr;
 	}

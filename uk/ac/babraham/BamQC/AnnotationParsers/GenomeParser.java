@@ -118,8 +118,6 @@ public class GenomeParser {
 		// We need a list of all of the .dat files inside the baseLocation
 		File [] files = baseLocation.listFiles(new DatSimpleFileFilter());
 		
-		AnnotationSet annotationSet = new AnnotationSet();
-		
 		for (int i=0;i<files.length;i++) {
 			// Update the listeners
 			Enumeration<ProgressListener> e = listeners.elements();
@@ -128,7 +126,7 @@ public class GenomeParser {
 				e.nextElement().progressUpdated("Loading Genome File "+files[i].getName(),i,files.length);
 			}
 			try {
-				processEMBLFile(files[i],annotationSet);
+				processEMBLFile(files[i]);
 			} 
 			catch (Exception ex) {
 				Enumeration<ProgressListener> en = listeners.elements();
@@ -169,7 +167,7 @@ public class GenomeParser {
 				gffParser.parseAnnotation(newSet, files[i]);
 				Feature [] features = newSet.getAllFeatures();
 				for (int f=0;f<features.length;f++) {
-					annotationSet.addFeature(features[f]);
+					genome.annotationSet().addFeature(features[f]);
 				}
 			} 
 			catch (Exception ex) {
@@ -189,10 +187,9 @@ public class GenomeParser {
 				e.nextElement().progressUpdated("Parsed annotation data for .gff/.gtf files",1,1);
 			}
 		}
-		
-		genome.setAnnotationSet(annotationSet);		
 
 	}
+
 	
 	protected void progressWarningReceived (Exception e) {
 		Enumeration<ProgressListener>en = listeners.elements();
@@ -209,7 +206,7 @@ public class GenomeParser {
 	 * @param annotation the annotation
 	 * @throws Exception the exception
 	 */
-	private void processEMBLFile (File f, AnnotationSet annotation) throws Exception {
+	private void processEMBLFile (File f) throws Exception {
 		
 		int processedLines = 0;
 		int processedFeatures = 0;
@@ -269,7 +266,7 @@ public class GenomeParser {
 						// We need to process the last attribute from the
 						// old feature
 						processAttributeReturnSkip(currentAttribute.toString(), feature);
-						annotation.addFeature(feature);
+						genome.annotationSet().addFeature(feature);
 						processedFeatures++;
 					}
 					
@@ -314,7 +311,7 @@ public class GenomeParser {
 				// We need to process the last attribute from the
 				// old feature
 				processAttributeReturnSkip(currentAttribute.toString(), feature);
-				annotation.addFeature(feature);
+				genome.annotationSet().addFeature(feature);
 				processedFeatures++;
 			}
 		}
