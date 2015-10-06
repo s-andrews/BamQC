@@ -44,6 +44,7 @@ public class BasicStats extends AbstractQCModule {
 	private String command = "";
 	private boolean hasAnnotation = false;
 	private String annotationFile = "";
+	private long featureTypeCount = 0;
 	private long actualCount = 0;
 	private long primaryCount = 0;
 	private long pairedCount = 0;
@@ -86,6 +87,7 @@ public class BasicStats extends AbstractQCModule {
 			} else {
 				annotationFile = "Annotation provided from network";
 			}
+			featureTypeCount = annotation.getAllFeatures().length;
 		}		
 	}
 
@@ -227,6 +229,8 @@ public class BasicStats extends AbstractQCModule {
  				
  				rowNames.add("Annotation file name");
  				rowValues.add(annotationFile);
+ 				rowNames.add("Total feature types");
+ 				rowValues.add("" + featureTypeCount);
  			} 
  			else { 
  				rowValues.add("No");
@@ -340,6 +344,10 @@ public class BasicStats extends AbstractQCModule {
 
 	public String getAnnotationFile() {
 		return annotationFile;
+	}
+	
+	public long getFeatureTypeCount() {
+		return featureTypeCount;
 	}
 
 	public long getActualCount() {

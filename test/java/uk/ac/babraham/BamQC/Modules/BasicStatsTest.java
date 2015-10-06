@@ -94,6 +94,7 @@ public class BasicStatsTest {
 		assertEquals("ID:bwa VN:0.5.4 (header copied manually)\nID:GATK TableRecalibration VN:1.0.3471 CL:Covariates=[ReadGroupCovariate, QualityScoreCovariate, CycleCovariate, DinucCovariate, TileCovariate], default_read_group=null, default_platform=null, force_read_group=null, force_platform=null, solid_recal_mode=SET_Q_ZERO, window_size_nqs=5, homopolymer_nback=7, exception_if_no_tile=false, ignore_nocall_colorspace=false, pQ=5, maxQ=40, smoothing=1\n", basicStats.getCommand());
 		assertEquals(false, basicStats.isHasAnnotation());
 		assertEquals("", basicStats.getAnnotationFile());
+		assertEquals("", basicStats.getFeatureTypeCount());		
 		assertEquals(17, basicStats.getActualCount());
 		assertEquals(17, basicStats.getPrimaryCount());
 		assertEquals(17, basicStats.getPairedCount());
