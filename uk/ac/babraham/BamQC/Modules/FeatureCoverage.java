@@ -36,7 +36,10 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 public class FeatureCoverage extends AbstractQCModule {
 
 	private String [] featureNames = null;
+	
 	private double [] readCounts;
+	
+	private boolean datasetIsEmpty = true;
 	
 	@Override
 	public void processSequence(SAMRecord read) {}
@@ -73,6 +76,9 @@ public class FeatureCoverage extends AbstractQCModule {
 		readCounts = new double[featureNames.length];
 		for (int i=0;i<readCounts.length;i++) {
 			readCounts[i] = values.get(i);
+			if(readCounts[i] > 0.0) { 
+				datasetIsEmpty = false;
+			}
 		}
 		
 		
@@ -118,7 +124,7 @@ public class FeatureCoverage extends AbstractQCModule {
 
 	@Override
 	public boolean ignoreInReport() {
-		if(featureNames == null || featureNames.length == 0) { 
+		if(featureNames == null || featureNames.length == 0 || datasetIsEmpty) { 
 			return true;
 		}
 		return false;	

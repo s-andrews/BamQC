@@ -124,7 +124,7 @@ public class AnalysisRunner implements Runnable {
 		}	
 		
 		
-//		// TODO print the annotation set
+//		// this is used to test the imported annotation set
 //		System.out.println("print chromosomes");
 //		Chromosome[] chrs = annotationSet.chromosomeFactory().getAllChromosomes();
 //		for(int j=0; j<chrs.length; j++) {
@@ -135,7 +135,6 @@ public class AnalysisRunner implements Runnable {
 //		for(int j=0; j<features.length; j++) {
 //			System.out.println(features[j]);
 //		}
-//		// end TODO
 		
 		
 		

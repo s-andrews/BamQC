@@ -150,6 +150,16 @@ public class DownloadableGenomeSet {
 				System.out.println(updates[i].species().name()+"\t"+updates[i].assembly()+" from "+updates[i].date());
 			}
 			
+			System.out.println("List of species+assemblies:");
+			GenomeSpecies[] gs = dgs.species();
+			for(int i=0;i<gs.length;i++) {
+				System.out.println(gs[i].name());
+				GenomeAssembly[] ga = gs[i].assemblies();
+				for(int j=0;j<ga.length;j++) {
+					System.out.println("\t" + ga[j].assembly());
+				}
+			}
+			
 			
 			
 		} catch (IOException e) {
