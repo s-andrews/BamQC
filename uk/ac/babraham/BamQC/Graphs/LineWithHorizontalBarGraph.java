@@ -24,6 +24,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
+import java.awt.HeadlessException;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -61,7 +63,7 @@ public class LineWithHorizontalBarGraph extends JPanel {
 	// TOOL TIPS management
 	private List<Rectangle> rectangles = new ArrayList<Rectangle>();
 	private List<String> tips = new ArrayList<String>();
-    private JWindow toolTip = new JWindow();
+	private static JWindow toolTip = null;
     private JLabel label = new JLabel();
 	private Tipster tipster = null;
 	
@@ -93,7 +95,10 @@ public class LineWithHorizontalBarGraph extends JPanel {
         label.setOpaque(true);
         label.setBackground(UIManager.getColor("ToolTip.white"));
         label.setBorder(UIManager.getBorder("ToolTip.border"));
-        toolTip.add(label);
+        if(!GraphicsEnvironment.isHeadless()) {
+        	toolTip = new JWindow();
+        	toolTip.add(label);
+        }
         setOpaque(true);
 	}
 	
@@ -322,6 +327,9 @@ public class LineWithHorizontalBarGraph extends JPanel {
 	// TOOL TIPS management
     ///////////////////////
 	public void showToolTip(int index, Point p) {
+        if(GraphicsEnvironment.isHeadless()) {
+        	return;
+        }
     	p.setLocation(p.getX()+10, p.getY()+25);
         label.setText(tips.get(index));
         toolTip.pack();
@@ -330,10 +338,16 @@ public class LineWithHorizontalBarGraph extends JPanel {
     }
  
     public void hideToolTip() {
+        if(GraphicsEnvironment.isHeadless()) {
+        	return;
+        }
         toolTip.dispose();
     }
  
     public boolean isToolTipShowing() {
+        if(GraphicsEnvironment.isHeadless()) {
+        	return false;
+        }
         return toolTip.isShowing();
     }
      
@@ -346,6 +360,9 @@ public class LineWithHorizontalBarGraph extends JPanel {
      
         @Override
     	public void mouseMoved(MouseEvent e) {
+            if(GraphicsEnvironment.isHeadless()) {
+            	return;
+            }
             Point p = e.getPoint();
             boolean traversing = false;
             List<Rectangle> rects = toolTips.rectangles;
