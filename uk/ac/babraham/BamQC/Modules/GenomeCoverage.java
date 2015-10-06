@@ -109,7 +109,7 @@ public class GenomeCoverage extends AbstractQCModule {
 
 	@Override
 	public boolean ignoreInReport() {
-		if(chromosomes == null || chromosomes.length == 0 || noBinCountChromosomes == chromosomes.length) { 
+		if(chromosomes == null || chromosomes.length == 0 || maxCoverage == 0.0) { 
 			return true; 
 		}
 		return false;
@@ -217,6 +217,10 @@ public class GenomeCoverage extends AbstractQCModule {
 
 	@Override
 	public JPanel getResultsPanel() {
+// 		// use previous plot
+//		if(true) { 
+//			return getSeparateChromosomeResultsPanel();
+//		}
 		
 		/* Set up for separate line chart representing chromosome coverages. */
 		int[] scaffoldLengths = new int[binCounts.length];
