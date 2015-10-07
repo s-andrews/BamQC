@@ -73,6 +73,18 @@ public class GenomeDownloader implements Runnable {
 		this.size = size;
 		Thread t = new Thread(this);
 		t.start();
+		// if we are running in command mode, we do not want to leave the process until it has finished. 
+		// Otherwise we could start the analysis when it is still downloading..
+		if(System.getProperty("java.awt.headless") != null) {
+			try {
+				t.join();
+			} catch (Exception ex) {
+				ProgressListener [] en = listeners.toArray(new ProgressListener[0]);
+				for (int i=en.length-1;i>=0;i--) {
+					en[i].progressExceptionReceived(ex);
+				}
+			}
+		}
 	}
 	
 	/**
