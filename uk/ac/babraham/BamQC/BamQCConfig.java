@@ -28,18 +28,36 @@ public class BamQCConfig {
 	public boolean expgroup = false;
 	public boolean quiet = false;
 	public boolean show_version = false;
-	public Integer kmer_size = null;
+	public boolean available_genomes = false;
+	public boolean downloaded_genomes = false;	
 	public File gff_file = null;
-	public Integer threads = null;
+	public File genome = null;
+	public int threads = 1;
 	public boolean showUpdates = true;
 	public File output_dir = null;
-	public Boolean do_unzip = null;
+	public boolean do_unzip = false;
 	public String lineSeparator = System.getProperty("line.separator");
 	public String sequence_format = null;
 	public File limits_file = null;
 	public File biotype_mapping_file = null;
 
 	private BamQCConfig () {
+		
+		// Show version
+		if (System.getProperty("bamqc.show_version") != null && System.getProperty("bamqc.show_version").equals("true")) {
+			show_version = true;
+		}
+		
+		// Show available genomes
+		if (System.getProperty("bamqc.available_genomes") != null && System.getProperty("bamqc.available_genomes").equals("true")) {
+			available_genomes = true;
+		}
+		
+		// Show downloaded genomes
+		if (System.getProperty("bamqc.downloaded_genomes") != null && System.getProperty("bamqc.downloaded_genomes").equals("true")) {
+			downloaded_genomes = true;
+		}
+		
 		
 		// Output dir
 		if (System.getProperty("bamqc.output_dir") != null) {
@@ -54,6 +72,15 @@ public class BamQCConfig {
 			gff_file = new File(System.getProperty("bamqc.gff_file"));
 			if (!(gff_file.exists() && gff_file.canRead())) {
 				throw new IllegalArgumentException("GFF file "+gff_file+" doesn't exist or can't be read");
+			}
+		}
+		
+		// Genome (Species!Assembly) where ! will be replaced with File.Separator
+		if (System.getProperty("bamqc.genome") != null) {
+			String filename = System.getProperty("bamqc.genome").replace("!", File.pathSeparator);
+			genome = new File(filename);
+			if (!(genome.exists() && genome.canRead())) {
+				throw new IllegalArgumentException("Genome "+genome+" doesn't exist or can't be read");
 			}
 		}
 
@@ -80,11 +107,6 @@ public class BamQCConfig {
 			if (threads < 1) {
 				throw new IllegalArgumentException("Number of threads must be >= 1");
 			}
-		}
-		
-		// Threads
-		if (System.getProperty("bamqc.kmer_size") != null) {
-			kmer_size = Integer.parseInt(System.getProperty("bamqc.kmer_size"));
 		}
 		
 		// Quiet
