@@ -214,8 +214,8 @@ public class InsertLengthDistribution extends AbstractQCModule {
 	
 	@Override
 	public JPanel getResultsPanel() {
-		log.info("Number of inferred insert sizes above the maximum allowed = " + aboveMaxInsertLengthCount);
-		log.info("Number of unpaired reads = " + unpairedReads);
+		log.debug("Number of inferred insert sizes above the maximum allowed = " + aboveMaxInsertLengthCount);
+		log.debug("Number of unpaired reads = " + unpairedReads);
 		
 		if (!calculated) calculateDistribution();		
 
@@ -258,7 +258,7 @@ public class InsertLengthDistribution extends AbstractQCModule {
 			
 			if (Double.isNaN(percentageDeviation)) percentageDeviation = 100.0;
 			
-			log.info("percentageDeviation = " + percentageDeviation);
+			log.debug("percentageDeviation = " + percentageDeviation);
 			
 			percentageDeviationCalculated = true;
 		}

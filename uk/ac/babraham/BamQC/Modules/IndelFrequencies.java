@@ -141,9 +141,9 @@ public class IndelFrequencies extends AbstractQCModule {
 			 totDel = variantCallDetection.getTotalDeletions(), 
 			 totBases = variantCallDetection.getTotal();
 		
-		log.info("Total insertions: " + totIns + " ( " + totIns*100f/totBases + "% )");	
-		log.info("Total deletions: " + totDel + " ( " + totDel*100f/totBases + "% )");
-		log.info("Skipped reads: " + variantCallDetection.getSkippedReads() + " ( "+ (variantCallDetection.getSkippedReads()*100.0f)/variantCallDetection.getTotalReads() + "% )");
+		log.debug("Total insertions: " + totIns + " ( " + totIns*100f/totBases + "% )");	
+		log.debug("Total deletions: " + totDel + " ( " + totDel*100f/totBases + "% )");
+		log.debug("Skipped reads: " + variantCallDetection.getSkippedReads() + " ( "+ (variantCallDetection.getSkippedReads()*100.0f)/variantCallDetection.getTotalReads() + "% )");
 		
 		
 		JPanel resultsPanel = new JPanel();
