@@ -41,7 +41,7 @@ public class AnalysisQueue implements Runnable, AnalysisListener {
 	
 	private AnalysisQueue () {
 		
-		if (BamQCConfig.getInstance().threads != null) {
+		if (BamQCConfig.getInstance().threads != 1) {
 			availableSlots.set(BamQCConfig.getInstance().threads);			
 		}
 		
