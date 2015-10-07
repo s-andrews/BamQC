@@ -26,8 +26,6 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
-
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Feature;
@@ -38,8 +36,6 @@ import uk.ac.babraham.BamQC.DataTypes.Genome.SplitLocation;
  * The Class GFFAnnotationParser reads sequence features from GFFv3 files
  */
 public class GFF3AnnotationParser extends AnnotationParser {
-
-	private static Logger log = Logger.getLogger(GFF3AnnotationParser.class);
 
 	
 	public GFF3AnnotationParser () { 
@@ -283,8 +279,6 @@ public class GFF3AnnotationParser extends AnnotationParser {
 
 
 			}
-
-			log.info("Parsed " + groupedFeatures.size()+ " features");
 
 			// Now go through the grouped features adding them to the annotation set	
 			FeatureGroup[] fg = groupedFeatures.values().toArray(new FeatureGroup[0]);

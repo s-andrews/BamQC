@@ -25,8 +25,6 @@ import java.io.FileReader;
 import java.util.HashMap;
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
-
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Feature;
@@ -38,8 +36,6 @@ import uk.ac.babraham.BamQC.DataTypes.Genome.SplitLocation;
  * The Class GTFAnnotationParser reads sequence features from GTF files
  */
 public class GTFAnnotationParser extends AnnotationParser {
-
-	private static Logger log = Logger.getLogger(GTFAnnotationParser.class);
 
 	
 	public GTFAnnotationParser () { 
@@ -256,9 +252,6 @@ public class GTFAnnotationParser extends AnnotationParser {
 
 
 			}
-
-			log.info("Parsed " + groupedFeatures.size()+ " features");
-
 
 			// Now go through the grouped features adding them to the annotation set
 			Transcript[] t = groupedFeatures.values().toArray(new Transcript[0]);
