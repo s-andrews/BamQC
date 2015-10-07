@@ -35,6 +35,7 @@ import org.junit.Test;
 
 import uk.ac.babraham.BamQC.Modules.ReadFlagStatistics;
 
+@SuppressWarnings("deprecation")
 public class ReadFlagStatisticsTest {
 	
 	private static Logger log = Logger.getLogger(ReadFlagStatisticsTest.class);
