@@ -5,7 +5,7 @@ use FindBin qw($RealBin);
 use Getopt::Long;
 
 #####################################################################################
-# Copyright Copyright 2010-14 Simon Andrews                                         #
+# Copyright Copyright 2010-15 Simon Andrews                                         #
 #                                                                                   #
 #    This file is part of BamQC.                                                    #
 #                                                                                   #
@@ -55,11 +55,16 @@ my @files;
 # We now need to scan the command line for switches which we're going
 # to pass on to the main java program.
 
+
+
 my $version;
 my $help;
 my $outdir;
 my $unzip;
 my $gff;
+my $genome;
+my $available;
+my $saved;
 my $limits;
 my $threads;
 my $quiet;
@@ -69,18 +74,21 @@ my $temp_directory;
 my $java_bin = 'java';
 
 my $result = GetOptions('version' => \$version,
-						'help' => \$help,
-						'quiet' => \$quiet,
-						'nogroup' => \$nogroup,
-						'expgroup' => \$expgroup,
-						'outdir=s' => \$outdir,
-						'extract!' => \$unzip,
-						'threads=i' => \$threads,
-						'gff=s' => \$gff,
-						'limits=s' => \$limits,
-						'dir=s' => \$temp_directory,
-						'java=s' => \$java_bin,
-						 );
+			'help' => \$help,
+			'available' => \$available,
+			'saved' => \$saved,
+			'quiet' => \$quiet,
+			'nogroup' => \$nogroup,
+			'expgroup' => \$expgroup,
+			'outdir=s' => \$outdir,
+			'extract!' => \$unzip,
+			'threads=i' => \$threads,
+			'gff=s' => \$gff,
+			'genome=s' => \$genome,
+			'limits=s' => \$limits,
+			'dir=s' => \$temp_directory,
+			'java=s' => \$java_bin,
+);
 
 # Check the simple stuff first
 
@@ -93,6 +101,15 @@ if ($help) {
 if ($version) {
 	push @java_args ,"-Dbamqc.show_version=true";
 }
+
+if ($available) {
+	push @java_args ,"-Dbamqc.available_genomes=true";
+}
+
+if ($saved) {
+	push @java_args ,"-Dbamqc.saved_genomes=true";
+}
+
 
 # Now parse any additional options
 if ($outdir) {
@@ -128,6 +145,13 @@ if ($gff)  {
 	push @java_args ,"-Dbamqc.gff_file=$gff";
 }
 
+if ($genome)  {
+# We will download this later if this does not exist.
+#	unless (-e $genome and -r $genome) {
+#		die "Genome '$genome' did not exist, or could not be read\n";
+#	}
+	push @java_args ,"-Dbamqc.genome=$genome";
+}
 
 if ($limits)  {
 	unless (-e $limits and -r $limits) {
@@ -155,20 +179,6 @@ if ($threads) {
 }
 else {
 	unshift @java_args,'-Xmx250m';
-}
-
-our $kmer_size;
-
-if ($kmer_size) {
-	unless ($kmer_size =~ /^\d+$/) {
-		die "Kmer size '$kmer_size' was not a number";
-	}
-	
-	if ($kmer_size < 2 or $kmer_size > 10) {
-		die "Kmer size must be in the range 2-10";
-	}
-	
-	push @java_args,"-Dbamqc.kmer_size=$kmer_size";
 }
 
 if ($quiet) {
@@ -228,7 +238,7 @@ foreach (@ARGV) {
 # This is set internally as well, but on some JREs it doesn't
 # pick up the internally set value properly, so we'll set it
 # outside as well which should work.
-if (@files or $version or $help) {
+if (@files or $version or $help or $available or $saved) {
 	push @java_args, "-Djava.awt.headless=true";
 }
 
@@ -248,10 +258,14 @@ __DATA__
 
 SYNOPSIS
 
-	bamqc bamfile1 bamfile2 .. bamfileN
+    bamqc bamfile1 bamfile2 .. bamfileN
 
-    bamqc [-o output dir] [--(no)extract] [-g file.gtf] 
+    bamqc [-o output dir] [--(no)extract] [-f file.gtf] 
            bamfile1 .. bamfileN
+           
+    bamqc [-o output dir] [--(no)extract] [-g genome_dir] 
+           bamfile1 .. bamfileN           
+
 
 DESCRIPTION
 
@@ -267,6 +281,14 @@ DESCRIPTION
     analysis pipeline.
     
     The options for the program as as follows:
+
+    -f --gff        Use a specified annotation file as annotation set
+    
+    -g --genome     The directory specifying the species/assembly to use
+     
+    -a --available  List the genomes available on the Babraham Server
+    
+    -s --saved      List the saved genomes
     
     -h --help       Print this help file and exit
     
@@ -303,8 +325,8 @@ DESCRIPTION
                     available memory will cope with, and not more than
                     6 threads on a 32 bit machine
                                       
-    -l              Specifies a non-default file which contains a set of criteria
-    --limits        which will be used to determine the warn/error limits for the
+    -l --limits     Specifies a non-default file which contains a set of criteria
+                    which will be used to determine the warn/error limits for the
                     various modules.  This file can also be used to selectively 
                     remove some modules from the output all together.  The format
                     needs to mirror the default limits.txt file found in the
