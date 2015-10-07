@@ -67,10 +67,7 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 	private JTabbedPane fileTabs;
 	private WelcomePanel welcomePanel;
 	private File lastUsedDir = null;
-	
-	private File genomeBaseLocation = null;
-	
-	
+		
 	/** Flag to check if anything substantial has changed since the file was last loaded/saved. **/
 	private boolean changesWereMade = false;
 	
@@ -166,12 +163,8 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 				continue;
 			}
 
-			AnalysisRunner runner;
-			if(genomeBaseLocation != null) {
-				runner = new AnalysisRunner(sequenceFile, genomeBaseLocation);
-			} else {
-				runner = new AnalysisRunner(sequenceFile);
-			}
+			AnalysisRunner runner = new AnalysisRunner(sequenceFile);
+
 			ResultsPanel rp = new ResultsPanel(sequenceFile);
 			runner.addAnalysisListener(rp);
 			fileTabs.addTab(sequenceFile.name(), rp);
@@ -195,7 +188,7 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 	 * Clears all stored data and blanks the UI.
 	 */
 	public void wipeAllData () {
-		genomeBaseLocation = null;
+		// leave it for now in case we decide to wipe some data.
 	}
 	
 	public void openGFF () {
@@ -383,7 +376,7 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 	 * @param baseLocation The folder containing the requested genome.
 	 */
 	public void selectGenome (File baseLocation) {
-		genomeBaseLocation = baseLocation;
+		BamQCConfig.getInstance().genome = baseLocation;
 	}
 	
 
@@ -477,7 +470,7 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 			// report at the top level we no longer do this
 			// so unzip is false unless explicitly set to be true.
 						
-			if (BamQCConfig.getInstance().do_unzip == null) {
+			if (BamQCConfig.getInstance().do_unzip == false) {
 				BamQCConfig.getInstance().do_unzip = false;
 			}
 			
@@ -493,7 +486,7 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 	
 			// The interactive default is to not uncompress the
 			// reports after they have been generated
-			if (BamQCConfig.getInstance().do_unzip == null) {
+			if (BamQCConfig.getInstance().do_unzip == false) {
 				BamQCConfig.getInstance().do_unzip = false;
 			}
 	
