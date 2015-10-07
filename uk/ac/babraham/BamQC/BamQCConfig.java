@@ -20,6 +20,15 @@
 package uk.ac.babraham.BamQC;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import uk.ac.babraham.BamQC.Dialogs.ProgressTextDialog;
+import uk.ac.babraham.BamQC.Network.GenomeDownloader;
+import uk.ac.babraham.BamQC.Network.DownloadableGenomes.DownloadableGenomeSet;
+import uk.ac.babraham.BamQC.Network.DownloadableGenomes.GenomeAssembly;
+import uk.ac.babraham.BamQC.Network.DownloadableGenomes.GenomeSpecies;
+import uk.ac.babraham.BamQC.Preferences.BamQCPreferences;
 
 public class BamQCConfig {
 	
@@ -28,10 +37,12 @@ public class BamQCConfig {
 	public boolean expgroup = false;
 	public boolean quiet = false;
 	public boolean show_version = false;
-	public boolean available_genomes = false;
-	public boolean downloaded_genomes = false;	
+	public boolean show_available_genomes = false;
+	public boolean show_saved_genomes = false;	
 	public File gff_file = null;
-	public File genome = null;
+	public File genome = null;  // this is a directory
+	public String species = null;
+	public String assembly = null;
 	public int threads = 1;
 	public boolean showUpdates = true;
 	public File output_dir = null;
@@ -49,13 +60,13 @@ public class BamQCConfig {
 		}
 		
 		// Show available genomes
-		if (System.getProperty("bamqc.available_genomes") != null && System.getProperty("bamqc.available_genomes").equals("true")) {
-			available_genomes = true;
+		if (System.getProperty("bamqc.show_available_genomes") != null && System.getProperty("bamqc.show_available_genomes").equals("true")) {
+			show_available_genomes = true;
 		}
 		
-		// Show downloaded genomes
-		if (System.getProperty("bamqc.downloaded_genomes") != null && System.getProperty("bamqc.downloaded_genomes").equals("true")) {
-			downloaded_genomes = true;
+		// Show saved genomes
+		if (System.getProperty("bamqc.show_saved_genomes") != null && System.getProperty("bamqc.show_saved_genomes").equals("true")) {
+			show_saved_genomes = true;
 		}
 		
 		
@@ -75,12 +86,80 @@ public class BamQCConfig {
 			}
 		}
 		
-		// Genome (Species!Assembly) where ! will be replaced with File.Separator
 		if (System.getProperty("bamqc.genome") != null) {
-			String filename = System.getProperty("bamqc.genome").replace("!", File.pathSeparator);
-			genome = new File(filename);
+			genome = new File(System.getProperty("bamqc.genome"));
 			if (!(genome.exists() && genome.canRead())) {
-				throw new IllegalArgumentException("Genome "+genome+" doesn't exist or can't be read");
+				File f = new File (System.getProperty("bamqc.genome"));
+				String species = f.getParentFile().getName();
+				String assembly = f.getName();
+				System.setProperty("bamqc.species", species);
+				System.setProperty("bamqc.assembly", assembly);
+				// Instead of throwing an exception, we try the next step (to download it).
+				//throw new IllegalArgumentException("Genome "+genome+" doesn't exist or can't be read");
+			}
+		}
+		
+		// Genome configuration folder for command line only. If these do not exist, it will try to download them first.
+		if (System.getProperty("bamqc.species") != null && System.getProperty("bamqc.assembly") != null) {
+			File genomeBaseLocation;
+			try {
+				genomeBaseLocation = BamQCPreferences.getInstance().getGenomeBase();
+			} catch (FileNotFoundException e1) {
+				throw new IllegalArgumentException("Couldn't find your genome base location. Please check your file preference.");				
+			}
+			String species = System.getProperty("bamqc.species");
+			String assembly = System.getProperty("bamqc.assembly");
+			genome = new File(genomeBaseLocation.getAbsolutePath() + File.separator + 
+							 species + File.separator + 
+							 assembly);
+			if (!genome.exists()) {
+				System.out.println("The Genome "+genome+" does not exist locally.");
+				// try to retrieve before throwing an exception.
+
+				int genomeSize = 0;
+				
+				System.out.println("Checking if this exists on the server "+BamQCPreferences.getInstance().getGenomeDownloadLocation());				
+				DownloadableGenomeSet dgs;
+				try {
+					dgs = new DownloadableGenomeSet();
+				} catch (IOException e) {
+					throw new IllegalArgumentException("Genome "+genome+" doesn't exist or can't be read");
+				}
+				GenomeSpecies[] gs = dgs.species();
+				boolean found = false; 
+				for(int i=0; i<gs.length && !found; i++) {
+					if(gs[i].name().equals(species)) {
+						GenomeAssembly[] ga = gs[i].assemblies();
+						for(int j=0; j<ga.length && !found; j++) {
+							if(ga[j].assembly().equals(assembly)) {
+								genomeSize = ga[j].fileSize();
+								found = true;
+							}
+						}
+					}
+				}
+				if(!found) {
+					throw new IllegalArgumentException("Genome "+genome+" doesn't exist or can't be read");
+				}
+				System.out.println("Genome found!");
+												
+				GenomeDownloader d = new GenomeDownloader();
+				//d.addProgressListener();
+
+				ProgressTextDialog ptd = new ProgressTextDialog("Downloading genome ...");
+				d.addProgressListener(ptd);
+							
+				d.downloadGenome(species,assembly,genomeSize,true);
+				
+				// let's try again (note this requires the code
+				// t.join() code in the constructor of GenomeDownloader to work correctly.
+				System.setProperty("bamqc.genome", genomeBaseLocation.getAbsolutePath() + File.separator + 
+							 species + File.separator + 
+							 assembly);
+				genome = new File(System.getProperty("bamqc.genome"));
+				if(!genome.exists()) {
+					throw new IllegalArgumentException("Genome "+genome+" doesn't exist or can't be read");
+				}
 			}
 		}
 
