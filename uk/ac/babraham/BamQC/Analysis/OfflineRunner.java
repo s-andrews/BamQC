@@ -20,23 +20,14 @@
 package uk.ac.babraham.BamQC.Analysis;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.swing.JOptionPane;
 
 import uk.ac.babraham.BamQC.BamQCConfig;
-import uk.ac.babraham.BamQC.Dialogs.ProgressTextDialog;
 import uk.ac.babraham.BamQC.Modules.ModuleFactory;
 import uk.ac.babraham.BamQC.Modules.QCModule;
-import uk.ac.babraham.BamQC.Network.GenomeDownloader;
-import uk.ac.babraham.BamQC.Network.DownloadableGenomes.DownloadableGenomeSet;
-import uk.ac.babraham.BamQC.Network.DownloadableGenomes.GenomeAssembly;
-import uk.ac.babraham.BamQC.Network.DownloadableGenomes.GenomeSpecies;
-import uk.ac.babraham.BamQC.Preferences.BamQCPreferences;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFactory;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
@@ -46,9 +37,7 @@ public class OfflineRunner implements AnalysisListener {
 	private AtomicInteger filesRemaining;
 	private boolean showUpdates = true;
 	
-	private File genomeAnnotation = null;
-	
-	public OfflineRunner (String[] args) {	
+	public OfflineRunner (String[] filenames) {	
 		
 		// See if we need to show updates
 		showUpdates = !BamQCConfig.getInstance().quiet;
@@ -56,62 +45,25 @@ public class OfflineRunner implements AnalysisListener {
 		
 		// a simple parser
 		
-		String bamqcUsage = "How to use BamQC";
+		String bamqcUsageError = "The inserted parameters are not correct. Please use option -h (or --help) for help.";
 		
-		if(args.length == 0) { 
-			// no parameter
-			System.out.println(bamqcUsage);
-
-			
-		} else if(args[0].toLowerCase().endsWith(".sam") || args[0].toLowerCase().endsWith(".bam")) {
-			// we have one or more sam/bam files to parse without annotation.
-			runMappedFiles(args);
+		if(filenames.length == 0) { 
+			// no parameter. Just for completeness, as we will generally start the GUI if no parameter is passed.
+			System.out.println(bamqcUsageError);
 		
-			
-		} else if(args[0].equals("-a") || args[0].equals("--annotation-file")) {
-			if(args.length < 3 || 
-			   (!args[1].endsWith(".gtf") && !args[1].endsWith(".gff")) ||
-			   (!args[2].endsWith(".sam") && !args[2].endsWith(".bam"))) { 
-				// wrong parameters
-				System.out.println(bamqcUsage);
-			} else {
-				if(setAnnotationFile(args[1])) {
-					runMappedFiles(Arrays.copyOfRange(args, 2, args.length));
-				}
+		} else 
+			if(BamQCConfig.getInstance().gff_file != null) {
+				System.out.println("Annotation file: " + BamQCConfig.getInstance().gff_file.getAbsolutePath());
 			}
-			
-			
-		} else if(args[0].equals("-g") || args[0].equals("--genome")) {
-			if(args.length < 3 || 
-			   (!args[2].endsWith(".sam") && !args[2].endsWith(".bam"))) { 
-				// wrong parameters
-				System.out.println(bamqcUsage);
-			} else {
-				System.out.println("Use the provided genome declared as 'species|assembly'. If not downloaded, download it first");
-				if(setAnnotationGenome(args[1])) {
-					runMappedFiles(Arrays.copyOfRange(args, 2, args.length));
-				}
-				runMappedFiles(Arrays.copyOfRange(args, 2, args.length));
-			}			
-			
-			
-		} else if(args[0].equals("-n") || args[0].equals("--available-genomes")) {
-			listAvailableGenomes();
-			
-			
-		} else if(args[0].equals("-d") || args[0].equals("--downloaded-genomes")) {
-			listDownloadedGenomes();			
-		}		
+			if(BamQCConfig.getInstance().genome != null) {
+				System.out.println("Genome: " + BamQCConfig.getInstance().genome.getAbsolutePath());			
+			}
+			runMappedFiles(filenames);
 				
 	}
-				
-				
-				
-				
-				
-				
-				
-				
+	
+	
+	
 	public void runMappedFiles(String[] bamfiles) {		
 		
 		Vector<File> files = new Vector<File>();
@@ -127,7 +79,7 @@ public class OfflineRunner implements AnalysisListener {
 		else {
 			for (int f=0;f<bamfiles.length;f++) {
 				
-				if(!bamfiles[f].toLowerCase().endsWith(".sam") || !bamfiles[f].toLowerCase().endsWith(".bam")) {
+				if(!bamfiles[f].toLowerCase().endsWith(".sam") && !bamfiles[f].toLowerCase().endsWith(".bam")) {
 					System.err.println("Skipping '"+bamfiles[f]+"' as not a .sam or .bam file");
 					continue;
 				}
@@ -177,115 +129,14 @@ public class OfflineRunner implements AnalysisListener {
 		}
 		SequenceFile sequenceFile = SequenceFactory.getSequenceFile(file);			
 						
-		AnalysisRunner runner;
-		if(genomeAnnotation != null) 
-			runner = new AnalysisRunner(sequenceFile, genomeAnnotation);
-		else 
-			runner = new AnalysisRunner(sequenceFile);
+		AnalysisRunner runner = new AnalysisRunner(sequenceFile);
+		
 		runner.addAnalysisListener(this);
 			
 		QCModule [] module_list = ModuleFactory.getStandardModuleList();
 
 		runner.startAnalysis(module_list);
 
-	}	
-	
-	
-	
-	
-	public boolean setAnnotationFile(String filename) {
-		File file = new File(filename);
-		if (!(file.exists() && file.canRead())) {
-			System.out.println("GFF/GTF file " + file + " doesn't exist or can't be read");
-			return false;
-		}
-		BamQCConfig.getInstance().gff_file = file;
-		return true;
-	}
-	
-	
-	public boolean setAnnotationGenome(String filename) {
-		String[] genomeName = filename.split("|");
-		if(genomeName.length != 2) { return false;}
-		 // TODO check whether this is correct!
-		String species = genomeName[0].replaceAll(" ", "\u0020");
-		String assembly = genomeName[1];
-		File file = null;
-		try {
-			file = new File(BamQCPreferences.getInstance().getGenomeBase().getAbsolutePath() + File.pathSeparator + species + File.pathSeparator + assembly);
-		} catch (FileNotFoundException e) {
-			System.out.println("Couldn't find your file preference. Please check that this exists.");
-			return false;
-		}
-		
-		if (!(file.exists() && file.isDirectory())) {
-			System.out.println("The selected species|assembly " + species + "|" + assembly + " doesn't exist");
-			if(!downloadAnnotationGenome(species, assembly)) 
-				return false;
-		}
-		genomeAnnotation = file;
-		return true;
-	}	
-	
-	
-	
-	public boolean downloadAnnotationGenome(String species, String assembly) {
-		System.out.println("Downloading the assembly " + assembly + " for the species " + species + " ... ");
-		GenomeDownloader d = new GenomeDownloader();
-//		d.addProgressListener(this);
-
-		ProgressTextDialog ptd = new ProgressTextDialog("Downloading genome...");
-		d.addProgressListener(ptd);
-				
-		// TODO HOW TO RETRIEVE the genome size ?????
-		//d.downloadGenome(species,assembly,size,true);
-		d.downloadGenome(species,assembly,0,true);
-		
-		return true;		
-	}
-	
-	
-	
-	public void listDownloadedGenomes() {
-		File[] genomes;
-		try {
-			genomes = BamQCPreferences.getInstance().getGenomeBase().listFiles();
-			if (genomes == null) {
-				throw new FileNotFoundException();
-			}
-		} 
-		catch (FileNotFoundException e) {
-			System.out.println("Couldn't find the folder containing your genomes.  Please check your file preferences.");
-			return;
-		}
-		System.out.println("Downloaded genomes:");
-		for(int i=0; i<genomes.length; i++) {
-			System.out.println(genomes[i]);
-		}
-	}	
-	
-	
-	
-	public void listAvailableGenomes() {
-		System.out.println("Available genomes at the Babraham Servers:");
-		try {
-			DownloadableGenomeSet dgs = new DownloadableGenomeSet();		
-			System.out.println("List of species+assemblies:");
-			GenomeSpecies[] gs = dgs.species();
-			for(int i=0;i<gs.length;i++) {
-				System.out.print(gs[i].name() + " [ ");
-				GenomeAssembly[] ga = gs[i].assemblies();
-				for(int j=0;j<ga.length;j++) {
-					System.out.print(ga[j].assembly());
-					if(j < ga.length-1) {
-						System.out.println(" | ");
-					}
-				}
-				System.out.println(" ]");
-			}	
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	

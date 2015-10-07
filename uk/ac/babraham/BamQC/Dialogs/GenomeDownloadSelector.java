@@ -43,7 +43,10 @@ import uk.ac.babraham.BamQC.Network.DownloadableGenomes.GenomeAssembly;
  * assembly to download.
  */
 public class GenomeDownloadSelector extends JDialog {
+
 	
+	private static final long serialVersionUID = 2080239737014430525L;
+
 	/** The application. */
 	private BamQCApplication application;
 	
