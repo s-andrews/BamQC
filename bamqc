@@ -63,6 +63,8 @@ my $outdir;
 my $unzip;
 my $gff;
 my $genome;
+my $species;
+my $assembly;
 my $available;
 my $saved;
 my $limits;
@@ -75,16 +77,18 @@ my $java_bin = 'java';
 
 my $result = GetOptions('version' => \$version,
 			'help' => \$help,
-			'available' => \$available,
-			'saved' => \$saved,
+			'b|available' => \$available,
+			'e|saved' => \$saved,
 			'quiet' => \$quiet,
 			'nogroup' => \$nogroup,
 			'expgroup' => \$expgroup,
 			'outdir=s' => \$outdir,
 			'extract!' => \$unzip,
 			'threads=i' => \$threads,
-			'gff=s' => \$gff,
-			'genome=s' => \$genome,
+			'f|gff=s' => \$gff,
+			'g|genome=s' => \$genome,
+			's|species=s' => \$species,
+			'a|assembly=s' => \$assembly,
 			'limits=s' => \$limits,
 			'dir=s' => \$temp_directory,
 			'java=s' => \$java_bin,
@@ -146,11 +150,23 @@ if ($gff)  {
 }
 
 if ($genome)  {
-# We will download this later if this does not exist.
+# We will download this later if this does not exist. Let's not check anything here.
 #	unless (-e $genome and -r $genome) {
 #		die "Genome '$genome' did not exist, or could not be read\n";
 #	}
 	push @java_args ,"-Dbamqc.genome=$genome";
+}
+
+if ($genome)  {
+	push @java_args ,"-Dbamqc.genome=$genome";
+}
+
+if ($species)  {
+	push @java_args ,"-Dbamqc.species=$species";
+}
+
+if ($assembly)  {
+	push @java_args ,"-Dbamqc.assembly=$assembly";
 }
 
 if ($limits)  {
@@ -245,12 +261,27 @@ if (@files or $version or $help or $available or $saved) {
 #warn "Running 'exec $java_bin,@java_args, \"uk.ac.babraham.BamQC.BamQCApplication\", @files, CLASSPATH is $ENV{CLASSPATH}";
 
 
+
 if ($java_bin ne 'java') {
-	system $java_bin,@java_args, "uk.ac.babraham.BamQC.BamQCApplication", @files;
+  if ($available) {
+      system $java_bin,@java_args, "uk.ac.babraham.BamQC.Utilities.BamQCListGenomes", "--available-genomes";
+  } elsif ($saved) {
+      system $java_bin,@java_args, "uk.ac.babraham.BamQC.Utilities.BamQCListGenomes", "--saved-genomes";
+  } else {
+      system $java_bin,@java_args, "uk.ac.babraham.BamQC.BamQCApplication", @files;
+  }
+} else {
+  if ($available) {
+      exec $java_bin,@java_args, "uk.ac.babraham.BamQC.Utilities.BamQCListGenomes", "--available-genomes";
+  } elsif ($saved) {
+      exec $java_bin,@java_args, "uk.ac.babraham.BamQC.Utilities.BamQCListGenomes", "--saved-genomes";
+  } else {
+      exec $java_bin,@java_args, "uk.ac.babraham.BamQC.BamQCApplication", @files;
+  }
 }
-else {
-	exec $java_bin,@java_args, "uk.ac.babraham.BamQC.BamQCApplication", @files;
-}
+
+
+
 
 __DATA__
 
@@ -266,6 +297,8 @@ SYNOPSIS
     bamqc [-o output dir] [--(no)extract] [-g genome_dir] 
            bamfile1 .. bamfileN           
 
+    bamqc [-o output dir] [--(no)extract] [-p species -e assembly] 
+           bamfile1 .. bamfileN                  
 
 DESCRIPTION
 
@@ -284,11 +317,20 @@ DESCRIPTION
 
     -f --gff        Use a specified annotation file as annotation set
     
-    -g --genome     The directory specifying the species/assembly to use
-     
-    -a --available  List the genomes available on the Babraham Server
+    -g --genome     The directory containing species/assembly to use. If the 
+                    couple species assembly does not exist, BamQC will try to 
+                    download it.
     
-    -s --saved      List the saved genomes
+    -s --species    The genome species to use. If the couple species assembly
+                    does not exist, BamQC will try to download it.
+    
+    -a --assembly   The genome assembly associated to the species to use. 
+                    If the couple species assembly does not exist, BamQC 
+                    will try to download it.  
+     
+    -b --available  List the genomes available on the Babraham Server
+    
+    -e --saved      List the saved genomes
     
     -h --help       Print this help file and exit
     
