@@ -19,7 +19,6 @@
  */
 package uk.ac.babraham.BamQC.Analysis;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -31,8 +30,6 @@ import uk.ac.babraham.BamQC.AnnotationParsers.GFF3AnnotationParser;
 import uk.ac.babraham.BamQC.AnnotationParsers.GTFAnnotationParser;
 import uk.ac.babraham.BamQC.AnnotationParsers.GenomeParser;
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
-import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
-import uk.ac.babraham.BamQC.DataTypes.Genome.Feature;
 import uk.ac.babraham.BamQC.Dialogs.ProgressTextDialog;
 import uk.ac.babraham.BamQC.Modules.QCModule;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
@@ -40,9 +37,6 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFormatException;
 
 public class AnalysisRunner implements Runnable {
 
-	private boolean annotationFromNetwork = false;
-	private File genomeBaseLocation;
-	
 	private SequenceFile file;
 	private QCModule [] modules;
 	private List<AnalysisListener> listeners = new ArrayList<AnalysisListener>();
@@ -50,12 +44,6 @@ public class AnalysisRunner implements Runnable {
 	
 	public AnalysisRunner (SequenceFile file) {
 		this.file = file;
-	}
-	
-	public AnalysisRunner (SequenceFile file, File genomeBaseLocation) {
-		this.file = file;
-		this.genomeBaseLocation = genomeBaseLocation;
-		annotationFromNetwork = true;
 	}
 	
 	public void addAnalysisListener (AnalysisListener l) {
@@ -90,13 +78,13 @@ public class AnalysisRunner implements Runnable {
 		
 		AnnotationSet annotationSet = null;
 
-		if(annotationFromNetwork) {
+		if(BamQCConfig.getInstance().genome != null) {
 			GenomeParser parser = new GenomeParser();
 //			// if using a text ProgressTextDialog		
 			ProgressTextDialog ptd = new ProgressTextDialog("Loading genome...");
 			parser.addProgressListener(ptd);
 			
-			parser.parseGenome(genomeBaseLocation);
+			parser.parseGenome(BamQCConfig.getInstance().genome);
 			annotationSet = parser.genome().annotationSet();
 			
 		} else if (BamQCConfig.getInstance().gff_file != null) {	
