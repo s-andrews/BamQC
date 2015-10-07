@@ -269,7 +269,9 @@ public class BasicStats extends AbstractQCModule {
  			
  			rowNames.add("Percent indels");
  			if(totalBases > 0) { 
- 				rowValues.add(formatPercentage(totalInsertions+totalDeletions, totalBases)); 
+ 				rowValues.add(formatPercentage(totalInsertions+totalDeletions, totalBases) + 
+ 							  " (Ins:" + formatPercentage(totalInsertions, totalBases) +
+   							  "; Del:" + formatPercentage(totalDeletions, totalBases) + ")"); 
  			} else {
  				rowValues.add("NaN");
  			}
