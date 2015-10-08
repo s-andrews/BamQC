@@ -74,7 +74,7 @@ public class BamQCConfig {
 		if (System.getProperty("bamqc.output_dir") != null) {
 			output_dir = new File(System.getProperty("bamqc.output_dir"));
 			if (!(output_dir.exists() && output_dir.canWrite())) {
-				throw new IllegalArgumentException("Output dir "+output_dir+" doesn't exist or isn't writeable");
+				throw new IllegalArgumentException("Output dir "+output_dir+" does not exist or isn't writeable");
 			}
 		}
 		
@@ -82,7 +82,7 @@ public class BamQCConfig {
 		if (System.getProperty("bamqc.gff_file") != null) {
 			gff_file = new File(System.getProperty("bamqc.gff_file"));
 			if (!(gff_file.exists() && gff_file.canRead())) {
-				throw new IllegalArgumentException("GFF file "+gff_file+" doesn't exist or can't be read");
+				throw new IllegalArgumentException("\nGFF file "+gff_file+" does not exist or cannot be read");
 			}
 		}
 		
@@ -95,7 +95,7 @@ public class BamQCConfig {
 				System.setProperty("bamqc.species", species);
 				System.setProperty("bamqc.assembly", assembly);
 				// Instead of throwing an exception, we try the next step (to download it).
-				//throw new IllegalArgumentException("Genome "+genome+" doesn't exist or can't be read");
+				//throw new IllegalArgumentException("Genome "+genome+" does not exist or cannot be read");
 			}
 		}
 		
@@ -105,7 +105,7 @@ public class BamQCConfig {
 			try {
 				genomeBaseLocation = BamQCPreferences.getInstance().getGenomeBase();
 			} catch (FileNotFoundException e1) {
-				throw new IllegalArgumentException("Couldn't find your genome base location. Please check your file preference.");				
+				throw new IllegalArgumentException("\nCould not find your genome base location. Please check your file preference.");				
 			}
 			String species = System.getProperty("bamqc.species");
 			String assembly = System.getProperty("bamqc.assembly");
@@ -113,17 +113,17 @@ public class BamQCConfig {
 							 species + File.separator + 
 							 assembly);
 			if (!genome.exists()) {
-				System.out.println("The Genome "+genome+" does not exist locally.");
+				System.out.println("\nGenome '"+species+":"+assembly+"' does not exist locally");
 				// try to retrieve before throwing an exception.
 
 				int genomeSize = 0;
 				
-				System.out.println("Checking if this exists on the server "+BamQCPreferences.getInstance().getGenomeDownloadLocation());				
+				System.out.println("\nChecking whether this exists on the server "+BamQCPreferences.getInstance().getGenomeDownloadLocation()+"\n");				
 				DownloadableGenomeSet dgs;
 				try {
 					dgs = new DownloadableGenomeSet();
 				} catch (IOException e) {
-					throw new IllegalArgumentException("Genome "+genome+" doesn't exist or can't be read");
+					throw new IllegalArgumentException("\nImpossible to connect to the server. Please check your Internet connection");
 				}
 				GenomeSpecies[] gs = dgs.species();
 				boolean found = false; 
@@ -139,14 +139,14 @@ public class BamQCConfig {
 					}
 				}
 				if(!found) {
-					throw new IllegalArgumentException("Genome "+genome+" doesn't exist or can't be read");
+					throw new IllegalArgumentException("\nGenome '"+species+":"+assembly+"' does not exist remotely \nPlease use option -b for a list of the available genomes");
 				}
-				System.out.println("Genome found!");
+				System.out.println("Genome '"+species+":"+assembly+"' was found remotely");
 												
 				GenomeDownloader d = new GenomeDownloader();
 				//d.addProgressListener();
 
-				ProgressTextDialog ptd = new ProgressTextDialog("Downloading genome ...");
+				ProgressTextDialog ptd = new ProgressTextDialog("\nDownloading genome ...");
 				d.addProgressListener(ptd);
 							
 				d.downloadGenome(species,assembly,genomeSize,true);
@@ -158,7 +158,7 @@ public class BamQCConfig {
 							 assembly);
 				genome = new File(System.getProperty("bamqc.genome"));
 				if(!genome.exists()) {
-					throw new IllegalArgumentException("Genome "+genome+" doesn't exist or can't be read");
+					throw new IllegalArgumentException("\nGenome '"+genome+"' does not exist or cannot be read");
 				}
 			}
 		}
@@ -167,7 +167,7 @@ public class BamQCConfig {
 		if (System.getProperty("bamqc.limits_file") != null) {
 			limits_file = new File(System.getProperty("bamqc.limits_file"));
 			if (!(limits_file.exists() && limits_file.canRead())) {
-				throw new IllegalArgumentException("Limits file "+limits_file+" doesn't exist or can't be read");
+				throw new IllegalArgumentException("Limits file "+limits_file+" does not exist or cannot be read");
 			}
 		}
 
@@ -175,7 +175,7 @@ public class BamQCConfig {
 		if (System.getProperty("bamqc.biotype_mapping_file") != null) {
 			biotype_mapping_file = new File(System.getProperty("bamqc.biotype_mapping_file"));
 			if (!(biotype_mapping_file.exists() && biotype_mapping_file.canRead())) {
-				throw new IllegalArgumentException("Biotype mapping file "+biotype_mapping_file+" doesn't exist or can't be read");
+				throw new IllegalArgumentException("Biotype mapping file "+biotype_mapping_file+" does not exist or cannot be read");
 			}
 		}
 

@@ -161,12 +161,11 @@ if ($genome)  {
 	push @java_args ,"-Dbamqc.genome=$genome";
 }
 
-if ($species)  {
+if ($species and $assembly)  {
 	push @java_args ,"-Dbamqc.species=$species";
-}
-
-if ($assembly)  {
 	push @java_args ,"-Dbamqc.assembly=$assembly";
+} elsif ($species or $assembly)  {
+	die "If used, the parameters -s (--species) and -a (--assembly) must be specified together\n";  
 }
 
 if ($limits)  {
