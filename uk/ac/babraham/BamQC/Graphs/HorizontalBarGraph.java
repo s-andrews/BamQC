@@ -19,12 +19,19 @@
  */
 package uk.ac.babraham.BamQC.Graphs;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import uk.ac.babraham.BamQC.Utilities.AxisScale;
@@ -111,6 +118,10 @@ public class HorizontalBarGraph extends JPanel {
 		g.fillRect(0, 0, getWidth(), getHeight());
 		g.setColor(Color.BLACK);
 
+		if (g instanceof Graphics2D) {
+			((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		}
+		
 		// First we need to find the widest label
 		int widestLabel = 0;
 		for (int l=0;l<labels.length;l++) {
@@ -139,9 +150,6 @@ public class HorizontalBarGraph extends JPanel {
 		g.drawLine(widestLabel,getHeight()-(yLineHeight*2),getWidth()-20,getHeight()-(yLineHeight*2));
 
 		
-		
-		
-		// remove
 		// Add the scale to the x-axis
 		//AxisScale scale = new AxisScale(0, maxValue);
 		double currentValue = minX;
@@ -163,6 +171,7 @@ public class HorizontalBarGraph extends JPanel {
 			currentValue += xInterval;
 		}
 		
+			
 		// Now draw the data
 		for (int s=0;s<labels.length;s++) {
 			
@@ -191,5 +200,44 @@ public class HorizontalBarGraph extends JPanel {
 		return longestLabel+(int)(lengthToUse*proportion);
 		
 	}
+	
+	
+	public static void main(String[] argv) {
+		JFrame f = new JFrame();
+		f.setSize(600, 400);
+		double[] values = new double[4];
+		String[] names = new String[3];
+		values[0] = 2;
+		values[1] = 1;
+		values[2] = 10;
+		values[3] = 1;
+		names[0] = "Item 1";
+
+		values[0] = 4;
+		values[1] = 1;
+		values[2] = 8;
+		values[3] = 2;
+		names[1] = "Very long Item 2";
+
+		values[0] = 1;
+		values[1] = 7;
+		values[2] = 2;
+		values[3] = 6;
+		names[2] = "Item 3";
+		
+
+		f.getContentPane().add(new HorizontalBarGraph(names, values, "Stacked Horizontal Bar Graph Test"));
+
+		WindowListener wndCloser = new WindowAdapter() {
+		@Override
+		public void windowClosing(WindowEvent e) {
+		    System.exit(0);
+		   }
+		};
+	   f.addWindowListener(wndCloser);
+	   f.setVisible(true);
+	}
+	
+	
 	
 }

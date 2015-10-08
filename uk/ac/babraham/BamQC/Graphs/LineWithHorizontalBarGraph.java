@@ -160,6 +160,9 @@ public class LineWithHorizontalBarGraph extends JPanel {
 		g.fillRect(0, 0, getWidth(), getHeight());
 		g.setColor(Color.BLACK);
 		
+		if (g instanceof Graphics2D) {
+			((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		}
 		
 		int xOffsetLineGraph = 0;
 
@@ -189,11 +192,7 @@ public class LineWithHorizontalBarGraph extends JPanel {
 		int titleWidth = g.getFontMetrics().stringWidth(graphTitle);
 		g.drawString(graphTitle, (xOffsetLineGraph + ((getWidth()-(xOffsetLineGraph+10))/2)) - (titleWidth/2), 30);
 		
-		// Now draw the axes
-		// x axis
-		g.drawLine(xOffsetLineGraph, getHeight()-40, getWidth()-10,getHeight()-40);
-		// y axis
-		g.drawLine(xOffsetLineGraph, getHeight()-40, xOffsetLineGraph, 80);
+
 
 		// Draw the xLabel under the xAxis
 		g.drawString(xLabel, (getWidth()/2) - (g.getFontMetrics().stringWidth(xLabel)/2), getHeight()-5);
@@ -288,6 +287,12 @@ public class LineWithHorizontalBarGraph extends JPanel {
 		}
 		g.setColor(Color.BLACK);
 		
+		
+		// Now draw the axes
+		// x axis
+		g.drawLine(xOffsetLineGraph, getHeight()-40, getWidth()-10,getHeight()-40);
+		// y axis
+		g.drawLine(xOffsetLineGraph, getHeight()-40, xOffsetLineGraph, 80);
 	
 		// Now draw the datasets
 		if (g instanceof Graphics2D) {

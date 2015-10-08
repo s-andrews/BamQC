@@ -111,6 +111,10 @@ public class LineGraph extends JPanel {
 		g.fillRect(0, 0, getWidth(), getHeight());
 		g.setColor(Color.BLACK);
 		
+		if (g instanceof Graphics2D) {
+			((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		}
+		
 		int lastY = 0;
 		
 		double yStart;
@@ -123,6 +127,9 @@ public class LineGraph extends JPanel {
 		}
 		
 		int xOffset = 0;
+		
+		
+
 		
 		for (double i=yStart;i<=maxY;i+=yInterval) {
 			//String label = scale.format(currentValue);
@@ -141,17 +148,13 @@ public class LineGraph extends JPanel {
 		// Give the x axis a bit of breathing space
 		xOffset += 5;
 		
+		
 		// Draw the graph title
 		int titleWidth = g.getFontMetrics().stringWidth(graphTitle);
 		g.drawString(graphTitle, (xOffset + ((getWidth()-(xOffset+10))/2)) - (titleWidth/2), 30);
 		
 		
-		// Now draw the axes
-		g.drawLine(xOffset, getHeight()-40, getWidth()-10,getHeight()-40);
-		g.drawLine(xOffset, getHeight()-40, xOffset, 40);
-		
-		// Draw the xLabel under the xAxis
-		g.drawString(xLabel, (getWidth()/2) - (g.getFontMetrics().stringWidth(xLabel)/2), getHeight()-5);
+
 		
 		
 		// Now draw the data points
@@ -193,7 +196,7 @@ public class LineGraph extends JPanel {
 		
 		if (g instanceof Graphics2D) {
 			((Graphics2D)g).setStroke(new BasicStroke(2));
-			((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			//((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		}
 		
 		for (int d=0;d<data.length;d++) {
@@ -211,13 +214,24 @@ public class LineGraph extends JPanel {
 			
 		}
 		
+
+		
 		// Now draw the data legend
 
 		if (g instanceof Graphics2D) {
 			((Graphics2D)g).setStroke(new BasicStroke(1));
-			((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+			//((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 		}
 
+		g.setColor(Color.BLACK);
+		// Now draw the axes
+		g.drawLine(xOffset, getHeight()-40, getWidth()-10,getHeight()-40);
+		g.drawLine(xOffset, getHeight()-40, xOffset, 40);
+		
+		// Draw the xLabel under the xAxis
+		g.drawString(xLabel, (getWidth()/2) - (g.getFontMetrics().stringWidth(xLabel)/2), getHeight()-5);
+		
+		
 		
 		// First we need to find the widest label
 		int widestLabel = 0;

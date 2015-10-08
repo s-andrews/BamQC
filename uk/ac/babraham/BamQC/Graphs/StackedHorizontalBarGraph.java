@@ -22,6 +22,8 @@ package uk.ac.babraham.BamQC.Graphs;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -119,6 +121,10 @@ public class StackedHorizontalBarGraph extends JPanel {
 		g.fillRect(0, 0, getWidth(), getHeight());
 		g.setColor(Color.BLACK);
 
+		if (g instanceof Graphics2D) {
+			((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		}
+		
 		// First we need to find the widest label
 		int widestLabel = 0;
 		for (int l=0;l<labels.length;l++) {

@@ -23,6 +23,8 @@ package uk.ac.babraham.BamQC.Graphs;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -123,6 +125,10 @@ public class BarGraph extends JPanel {
 		g.fillRect(0, 0, getWidth(), getHeight());
 		g.setColor(Color.BLACK);
 
+		if (g instanceof Graphics2D) {
+			((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		}
+		
 		int lastY = 0;
 
 		double yStart;
@@ -155,9 +161,7 @@ public class BarGraph extends JPanel {
 		int titleWidth = g.getFontMetrics().stringWidth(graphTitle);
 		g.drawString(graphTitle, (xOffset + ((getWidth() - (xOffset + 10)) / 2)) - (titleWidth / 2), 30);
 
-		// Now draw the axes
-		g.drawLine(xOffset, getHeight() - 40, getWidth() - 10, getHeight() - 40);
-		g.drawLine(xOffset, getHeight() - 40, xOffset, 40);
+
 
 		// Draw the xLabel under the xAxis
 		g.drawString(xLabel, (getWidth() / 2) - (g.getFontMetrics().stringWidth(xLabel) / 2), getHeight() - 5);
@@ -189,6 +193,10 @@ public class BarGraph extends JPanel {
 		}
 		g.setColor(Color.BLACK);
 
+		// Now draw the axes
+		g.drawLine(xOffset, getHeight() - 40, getWidth() - 10, getHeight() - 40);
+		g.drawLine(xOffset, getHeight() - 40, xOffset, 40);
+		
 
 		for (int d = 0; d < data.length; d++) {
 			g.setColor(Color.BLUE);

@@ -130,7 +130,7 @@ public class ChromosomeDensity extends AbstractQCModule {
 	@Override
 	public JPanel getResultsPanel() {
 		// TODO REMOVE once replaced with new plot
-		// TODO remove return new HorizontalBarGraph(chromosomeNames, readDensities, "Per-chromosome read density");
+		// return new HorizontalBarGraph(chromosomeNames, readDensities, "Per-chromosome read density");
 
 		String title = "Chromosome Read Density (Log Read Number per Log Chromosome Length)";
 		String[] xCategories;
