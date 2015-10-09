@@ -39,7 +39,7 @@ public class ModuleConfig {
 
 		// Set the defaults to use if we don't have any overrides
 		// Please, use the following format: ClassName_field
-		params.put("AnnotationSet_annotation_cache_size:ignore", 100000d);
+		params.put("AnnotationSet_annotation_cache_capacity:ignore", 100000d);
 		
 		params.put("VariantCallPosition_array_length:ignore", 150d);
 		params.put("VariantCallPosition_indel_seqpercent_xaxis_threshold:ignore", 5d);

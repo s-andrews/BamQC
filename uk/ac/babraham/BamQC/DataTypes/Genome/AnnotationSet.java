@@ -44,8 +44,8 @@ public class AnnotationSet {
 	
 	private HashSet<Feature> allFeatures = new HashSet<Feature>();
 	
-	private final int cacheSize = ModuleConfig.getParam("AnnotationSet_annotation_cache_size", "ignore").intValue();
-	private List<ShortRead> readCache = new ArrayList<ShortRead>(cacheSize);
+	private final int cacheCapacity = ModuleConfig.getParam("AnnotationSet_annotation_cache_capacity", "ignore").intValue();
+	private List<ShortRead> readCache = new ArrayList<ShortRead>(cacheCapacity);
 
 	
 	public AnnotationSet() { }
@@ -101,22 +101,27 @@ public class AnnotationSet {
 	
 	
 	public void processSequence (SAMRecord r) {
-			
 		// implementation using ShortRead
-	    if(readCache.size() < cacheSize) {
+	    if(readCache.size() < cacheCapacity) {
 	    	readCache.add(new ShortRead(r.getReferenceName(), r.getAlignmentStart(), r.getAlignmentEnd()));
 	    } else {
-	    	// sort the cache
-	    	Collections.sort(readCache);
-	    	// now parse the sorted cache
-	    	for(int i=0; i < cacheSize; i++) {
-	    		processCachedSequence(readCache.get(i));
-	    	}
-	    	// let's clear and reuse the array for now, instead of reallocating a new one every time.
-	    	// Tricky to say what's the best is.. an O(n)remove vs allocation+GC ... 
-	    	readCache.clear();
+	    	flushCache();
 	    }       
 	}
+	
+
+	public void flushCache() {
+    	// sort the cache
+    	Collections.sort(readCache);
+    	// now parse the sorted cache
+    	for(int i=0; i < readCache.size(); i++) {
+    		processCachedSequence(readCache.get(i));
+    	}
+    	// let's clear and reuse the array for now, instead of reallocating a new one every time.
+    	// Tricky to say what's the best is.. an O(n)remove vs allocation+GC ... 
+    	readCache.clear();
+	}	
+
 	
 	private void processCachedSequence(ShortRead r) {	
 		if (!r.getReferenceName().equals("*")) {
@@ -129,7 +134,9 @@ public class AnnotationSet {
 		for (int i=0;i<featureArray.length;i++) {
 			featureArray[i].processSequence(r);
 		}
-	}	
+	}
+
+
 	
 
 		

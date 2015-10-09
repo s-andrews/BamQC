@@ -133,7 +133,7 @@ public class AnalysisRunner implements Runnable {
 		
 		int seqCount = 0;
 		while (file.hasNext()) {
-			++seqCount;
+			seqCount++;
 			SAMRecord seq;
 			try {
 				seq = file.next();
@@ -147,6 +147,11 @@ public class AnalysisRunner implements Runnable {
 			}
 			
 			annotationSet.processSequence(seq);
+			if(!file.hasNext()) {
+				// if this is the last sequence, we process the annotationSet cache so far collected.
+				annotationSet.flushCache();
+			}
+			
 			
 			for (int m=0;m<modules.length;m++) {
 				if (modules[m].needsToSeeSequences()) {
