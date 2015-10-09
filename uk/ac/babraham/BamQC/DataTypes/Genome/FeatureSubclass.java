@@ -23,6 +23,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
+
+
 
 
 /** 
@@ -33,6 +36,7 @@ import java.util.ArrayList;
  */
 public class FeatureSubclass {
 
+	private static Logger log = Logger.getLogger(FeatureSubclass.class);
 	
 	// TODO: Implement splitting
 	private static final int SEQUENCE_CHUNK_LENGTH = 100000;
@@ -97,7 +101,10 @@ public class FeatureSubclass {
 		if (currChromosome == null || currChromosomeFeatures == null) return;
 
 		if (binStart >= currChromosomeIndices.length) {
-			System.err.println("Tried to get bin " + binStart + " from position " + currRecordAlignmentStart
+			// TODO 
+			// This print can be very demanding in terms of performance in this place. It is better to 
+			// leave it as log.debug enabling on request.
+			log.debug("Tried to get bin " + binStart + " from position " + currRecordAlignmentStart
 					+ " for feature on " + currChromosome.name() + " but found only " + currChromosomeIndices.length
 					+ " bins from a length of " + currChromosome.length());
 			return;
