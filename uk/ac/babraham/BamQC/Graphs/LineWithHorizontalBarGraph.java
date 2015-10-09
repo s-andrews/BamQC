@@ -25,7 +25,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
-import java.awt.HeadlessException;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -63,7 +62,7 @@ public class LineWithHorizontalBarGraph extends JPanel {
 	// TOOL TIPS management
 	private List<Rectangle> rectangles = new ArrayList<Rectangle>();
 	private List<String> tips = new ArrayList<String>();
-	private static JWindow toolTip = null;
+	private JWindow toolTip = null;
     private JLabel label = new JLabel();
 	private Tipster tipster = null;
 	
