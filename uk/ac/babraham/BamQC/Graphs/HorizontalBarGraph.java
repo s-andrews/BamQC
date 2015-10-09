@@ -149,25 +149,27 @@ public class HorizontalBarGraph extends JPanel {
 		// X-axis
 		g.drawLine(widestLabel,getHeight()-(yLineHeight*2),getWidth()-20,getHeight()-(yLineHeight*2));
 
-		
-		// Add the scale to the x-axis
-		//AxisScale scale = new AxisScale(0, maxValue);
+	
+		// draw the scale for the x axis
 		double currentValue = minX;
-		//double currentValue = scale.getStartingValue();
-		
+		int currentPosition = 0;
+		int lastXLabelEnd = 0;
+
 		while (currentValue < maxX) {
 			int xPos = getX((float)currentValue, widestLabel);
-			g.drawLine(xPos, getHeight()-(yLineHeight*2), xPos, getHeight()-(yLineHeight*2)+3);
-			
-			//String label = scale.format(currentValue);
+
 			String label = "" + new BigDecimal(currentValue).setScale(
 					AxisScale.getFirstSignificantDecimalPosition(xInterval), RoundingMode.HALF_UP).doubleValue();	
 			label = label.replaceAll(".0$", ""); // Don't leave trailing .0s where we don't need them.
 						
 			int labelWidth = g.getFontMetrics().stringWidth(label);
-				
-			g.drawString(label, xPos-(labelWidth/2), getHeight()-(yLineHeight*2)+(g.getFontMetrics().getHeight()+3));
-			
+
+			currentPosition = xPos-(labelWidth/2);
+			if(currentPosition > lastXLabelEnd) {
+				g.drawLine(xPos, getHeight()-(yLineHeight*2), xPos, getHeight()-(yLineHeight*2)+3);
+				g.drawString(label, currentPosition, getHeight()-(yLineHeight*2)+(g.getFontMetrics().getHeight()+3));
+				lastXLabelEnd = currentPosition + labelWidth + 5;
+			}	
 			currentValue += xInterval;
 		}
 		
@@ -175,6 +177,7 @@ public class HorizontalBarGraph extends JPanel {
 		// Now draw the data
 		for (int s=0;s<labels.length;s++) {
 			
+			// vertical labels
 			String label = labels[s];
 			
 			int labelWidth = g.getFontMetrics().stringWidth(label);
@@ -207,23 +210,13 @@ public class HorizontalBarGraph extends JPanel {
 		f.setSize(600, 400);
 		double[] values = new double[4];
 		String[] names = new String[3];
-		values[0] = 2;
-		values[1] = 1;
-		values[2] = 10;
-		values[3] = 1;
 		names[0] = "Item 1";
-
-		values[0] = 4;
-		values[1] = 1;
-		values[2] = 8;
-		values[3] = 2;
+		values[0] = 100000;
 		names[1] = "Very long Item 2";
-
-		values[0] = 1;
-		values[1] = 7;
-		values[2] = 2;
-		values[3] = 6;
+		values[1] = 20000;
 		names[2] = "Item 3";
+		values[2] = 200000;
+
 		
 
 		f.getContentPane().add(new HorizontalBarGraph(names, values, "Stacked Horizontal Bar Graph Test"));
