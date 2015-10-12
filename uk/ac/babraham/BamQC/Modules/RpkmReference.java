@@ -14,6 +14,7 @@ import net.sf.samtools.SAMRecord;
 import net.sf.samtools.SAMSequenceDictionary;
 import net.sf.samtools.SAMSequenceRecord;
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
+import uk.ac.babraham.BamQC.Graphs.BarGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
@@ -36,6 +37,7 @@ public class RpkmReference extends AbstractQCModule {
 	private int errorReads = 0;
 	private double maxCoverage;
 	private boolean isBinNucleotidesSet = false;
+
 	
 	public RpkmReference() {
 		// TODO Auto-generated constructor stub
@@ -58,7 +60,7 @@ public class RpkmReference extends AbstractQCModule {
 
 			totalNucleotideNumber += samSequenceRecord.getSequenceLength();
 
-			log.info(String.format("%s sequence length = %d, total = %d", samSequenceRecord.getSequenceName(), samSequenceRecord.getSequenceLength(), totalNucleotideNumber));
+			log.debug(String.format("%s sequence length = %d, total = %d", samSequenceRecord.getSequenceName(), samSequenceRecord.getSequenceLength(), totalNucleotideNumber));
 		}
 		binNumber = (int) (totalNucleotideNumber / MEGABASE);
 
@@ -66,7 +68,7 @@ public class RpkmReference extends AbstractQCModule {
 		
 		coverage = new double[binNumber];
 		
-		log.info(String.format("%d / %d = %d", totalNucleotideNumber, binNumber, binNucleotides));
+		log.debug(String.format("%d / %d = %d", totalNucleotideNumber, binNumber, binNucleotides));
 
 		isBinNucleotidesSet = true;
 	}
@@ -85,8 +87,8 @@ public class RpkmReference extends AbstractQCModule {
 			long end = alignmentEndAbsolute > binEnd ? binEnd : alignmentEndAbsolute;
 			double length = end - start;
 
-			log.info(String.format("binStart %d binEnd %d, start = %d, end %d, length = %d", binStart, binEnd, start, end, (end - start)));
-			log.info("index = " + index);
+			log.debug(String.format("binStart %d binEnd %d, start = %d, end %d, length = %d", binStart, binEnd, start, end, (end - start)));
+			log.debug("index = " + index);
 			
 			double binCoverage = length / binNucleotides;
 
@@ -111,7 +113,7 @@ public class RpkmReference extends AbstractQCModule {
 		long alignmentEnd = read.getAlignmentEnd();
 
 		log.debug("header = " + header);
-		log.info("referenceIndex = " + referenceIndex);
+		log.debug("referenceIndex = " + referenceIndex);
 		
 		readNumber++;
 
@@ -150,8 +152,19 @@ public class RpkmReference extends AbstractQCModule {
 
 	@Override
 	public JPanel getResultsPanel() {
-		// TODO Auto-generated method stub
-		return null;
+
+		String title = String.format("Reads per Kilobase per Megabase");
+
+		double min=0, max=0;
+		int[] xCategories = new int[coverage.length];
+		for(int i=0; i<coverage.length; i++) {
+			if(min>coverage[i])
+				min = coverage[i];
+			else if(max<coverage[i]) 
+				max = coverage[i];
+			xCategories[i] = i;
+		}
+		return new BarGraph(coverage, min, max, "Bases bp", xCategories, title);
 	}
 
 	@Override
@@ -186,6 +199,8 @@ public class RpkmReference extends AbstractQCModule {
 
 	@Override
 	public boolean ignoreInReport() {
+		if(coverage == null || coverage.length==0) 
+			return true;
 		return false;
 	}
 

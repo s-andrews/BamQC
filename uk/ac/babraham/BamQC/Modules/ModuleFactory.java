@@ -29,14 +29,14 @@ public class ModuleFactory {
 				new BasicStats(variantCallDetection),
 				new ChromosomeDensity(),
 				new FeatureCoverage(),
+				new GenomeCoverage(),				
 				new SoftClipDistribution(), // this could also reuse varianCallDetection
 				new IndelFrequencies(variantCallDetection),
 				new SNPFrequencies(variantCallDetection),
 				new SNPFrequenciesByType(variantCallDetection),
 				new MappingQualityDistribution(),
-				new InsertLengthDistribution(),
-				new GenomeCoverage(),
-				//new RpkmReference(),
+				new InsertLengthDistribution() //,
+				//new RpkmReference()  // this module is not ready yet
 			};
 	
 		return (module_list);
