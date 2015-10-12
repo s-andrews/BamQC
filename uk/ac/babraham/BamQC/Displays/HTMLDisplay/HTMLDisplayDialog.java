@@ -27,6 +27,8 @@ import uk.ac.babraham.BamQC.BamQCApplication;
 
 public class HTMLDisplayDialog extends JDialog {
 
+	private static final long serialVersionUID = -665506733941526484L;
+
 	public HTMLDisplayDialog (String html) {
 		
 		super(BamQCApplication.getInstance(),"Crash Report Help");

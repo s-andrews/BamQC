@@ -214,6 +214,7 @@ public class HTMLReportArchive {
 			bos.close();
 			bis.close();
 		}
+		zipFile.close();
 	}
 
 	public XMLStreamWriter xhtmlStream ()

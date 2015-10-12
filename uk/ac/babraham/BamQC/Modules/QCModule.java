@@ -59,7 +59,7 @@ public interface QCModule {
 	 */
 	public boolean ignoreInReport();
 
-	public void makeReport(HTMLReportArchive report) throws XMLStreamException,IOException;
+	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException;
 	
 	
 }

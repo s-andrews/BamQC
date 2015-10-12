@@ -48,7 +48,7 @@ public class ResultsPanel extends JPanel implements ListSelectionListener, Analy
 
 	
 	private QCModule [] modules;
-	private JList moduleList;
+	private JList<?> moduleList;
 	private JPanel [] panels;
 	private JPanel currentPanel = null;
 	private JLabel progressLabel;
@@ -89,7 +89,7 @@ public class ResultsPanel extends JPanel implements ListSelectionListener, Analy
 		private static final long serialVersionUID = 3665918496548081577L;
 
 		@Override
-		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 			if (! (value instanceof QCModule)) {
 				return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 			}
@@ -137,7 +137,7 @@ public class ResultsPanel extends JPanel implements ListSelectionListener, Analy
 			panels[m] = modules[m].getResultsPanel();
 		}
 		
-		moduleList = new JList(modules);
+		moduleList = new JList<Object>(modules);
 		moduleList.setCellRenderer(new ModuleRenderer());
 		moduleList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		moduleList.setSelectedIndex(0);

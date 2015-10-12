@@ -19,7 +19,7 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
 public class RpkmReference extends AbstractQCModule {
 
-	private static final int MEAGBASE = 1000000;
+	private static final int MEGABASE = 1000000;
 	private static final int KILOBASE = 1000;
 	
 	private static Logger log = Logger.getLogger(RpkmReference.class);
@@ -30,7 +30,7 @@ public class RpkmReference extends AbstractQCModule {
 	private int binNumber = 0;
 	private double[] coverage;
 	private List<Long> sequenceStarts = new ArrayList<Long>();
-	private long binNucleotides = MEAGBASE;
+	private long binNucleotides = MEGABASE;
 	
 	private int readNumber = 0;
 	private int errorReads = 0;
@@ -60,7 +60,7 @@ public class RpkmReference extends AbstractQCModule {
 
 			log.info(String.format("%s sequence length = %d, total = %d", samSequenceRecord.getSequenceName(), samSequenceRecord.getSequenceLength(), totalNucleotideNumber));
 		}
-		binNumber = (int) (totalNucleotideNumber / MEAGBASE);
+		binNumber = (int) (totalNucleotideNumber / MEGABASE);
 
 		binNumber++;
 		

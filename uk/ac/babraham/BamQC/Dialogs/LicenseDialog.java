@@ -32,6 +32,8 @@ import uk.ac.babraham.BamQC.BamQCApplication;
  * The Class LicenseDialog shows a text representation of the GPL
  */
 public class LicenseDialog extends JDialog {
+
+	private static final long serialVersionUID = -8023870968821351252L;
 	
 	/** The html pane. */
 	public JEditorPane htmlPane;

@@ -189,7 +189,7 @@ public class Location implements Serializable, Comparable<Location> {
 		
 		// We need to remove the top sign bit from the end
 		// and pack it starting at bit 32
-		value += ((((long)end) & LAST_31_BIT_MASK) <<31);
+		value += (((end) & LAST_31_BIT_MASK) <<31);
 				
 		switch (strand) {
 			case FORWARD :

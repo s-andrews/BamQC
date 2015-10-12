@@ -19,7 +19,6 @@
  */
 package uk.ac.babraham.BamQC.Graphs;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;

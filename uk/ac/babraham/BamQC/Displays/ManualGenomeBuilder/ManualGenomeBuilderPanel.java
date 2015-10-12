@@ -256,16 +256,17 @@ public class ManualGenomeBuilderPanel extends JPanel implements ActionListener {
 			// See if the species folder exists already and make it if it doesn't
 			File speciesFolder = null;
 			try {
-			speciesFolder = new File(BamQCPreferences.getInstance().getGenomeBase().getAbsolutePath()+"/"+speciesName);
-			if (!speciesFolder.exists()) {
-				if (! speciesFolder.mkdir()) {
-					reportError("Failed to make "+speciesFolder+" folder");
-					return;
+				speciesFolder = new File(BamQCPreferences.getInstance().getGenomeBase().getAbsolutePath()+"/"+speciesName);
+				if (!speciesFolder.exists()) {
+					if (! speciesFolder.mkdir()) {
+						reportError("Failed to make "+speciesFolder+" folder");
+						return;
+					}
 				}
 			}
-			}
-			catch (IOException ioe) {
-				ioe.printStackTrace();
+			catch (Exception e) {
+				e.printStackTrace();
+				return;
 			}
 			
 			// Make the assembly folder and bail out if it exists

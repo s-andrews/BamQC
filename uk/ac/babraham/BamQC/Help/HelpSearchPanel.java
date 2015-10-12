@@ -23,6 +23,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.io.Serializable;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -49,10 +50,10 @@ public class HelpSearchPanel extends JPanel implements ActionListener, ListSelec
 	private JTextField queryField;
 	
 	/** The result list. */
-	private JList resultList;
+	private JList<Serializable> resultList;
 	
 	/** The list model. */
-	private DefaultListModel listModel;
+	private DefaultListModel<Serializable> listModel;
 	
 	/** The search button. */
 	private JButton searchButton;
@@ -88,9 +89,9 @@ public class HelpSearchPanel extends JPanel implements ActionListener, ListSelec
 		queryPanel.add(searchButton,BorderLayout.EAST);
 		add(queryPanel,BorderLayout.NORTH);
 		
-		listModel = new DefaultListModel();
+		listModel = new DefaultListModel<Serializable>();
 		listModel.addElement("[No search results]");
-		resultList = new JList(listModel);
+		resultList = new JList<Serializable>(listModel);
 		resultList.addListSelectionListener(this);
 		resultList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		resultsScrollPane = new JScrollPane(resultList);
@@ -153,7 +154,7 @@ public class HelpSearchPanel extends JPanel implements ActionListener, ListSelec
 		// to replace the entire JList.  Aaargh!
 		remove(resultsScrollPane);
 		revalidate();
-		resultList = new JList(listModel);
+		resultList = new JList<Serializable>(listModel);
 		resultList.addListSelectionListener(this);
 		resultsScrollPane = new JScrollPane(resultList);
 		add(resultsScrollPane,BorderLayout.CENTER);

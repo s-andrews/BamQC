@@ -25,6 +25,8 @@ import uk.ac.babraham.BamQC.BamQCApplication;
 
 public class ManualGenomeBuilderDialog extends JDialog {
 
+	private static final long serialVersionUID = -1341714200899218203L;
+
 	public ManualGenomeBuilderDialog () {
 		
 		super(BamQCApplication.getInstance(),"Manual Genome Builder");

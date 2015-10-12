@@ -22,7 +22,6 @@ package uk.ac.babraham.BamQC;
 import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
-import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;

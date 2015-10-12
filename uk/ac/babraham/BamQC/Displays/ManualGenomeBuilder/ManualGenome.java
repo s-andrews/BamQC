@@ -30,6 +30,7 @@ import javax.swing.table.AbstractTableModel;
 
 public class ManualGenome extends AbstractTableModel {
 
+	private static final long serialVersionUID = -6071303766615691939L;
 	private Vector<ManualGenomeChromosome> chrs = new Vector<ManualGenomeChromosome>();
 	private Hashtable<String, ManualGenomeChromosome> chrNames = new Hashtable<String, ManualGenomeChromosome>();
 	private ManualPseudoGenome pseudoGenome = null;
