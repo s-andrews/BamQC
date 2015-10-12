@@ -86,7 +86,7 @@ public class BasicStats extends AbstractQCModule {
 			if(annotation.getFile() != null) {
 				annotationFile = annotation.getFile().getName();
 			} else {
-				annotationFile = "Annotation from network. Genome: " + BamQCConfig.getInstance().genome;
+				annotationFile = "Annotation from network. \nGenome: " + BamQCConfig.getInstance().genome;
 			}
 			featureTypeCount = annotation.getAllFeatures().length;
 		}		
