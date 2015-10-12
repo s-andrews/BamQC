@@ -38,7 +38,6 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
 
 import uk.ac.babraham.BamQC.BamQCApplication;
-import uk.ac.babraham.BamQC.Displays.ManualGenomeBuilder.ManualGenomeBuilderDialog;
 import uk.ac.babraham.BamQC.Preferences.BamQCPreferences;
 
 /**
@@ -143,12 +142,7 @@ public class GenomeSelector extends JDialog {
 		importButton.addActionListener(l);
 		buttonPanel.add(importButton);
 
-		JButton customButton = new JButton("Build Custom Genome");
-		customButton.setActionCommand("custom");
-		customButton.addActionListener(l);
-		buttonPanel.add(customButton);
-
-		
+	
 		okButton = new JButton("OK");
 		okButton.setActionCommand("ok");
 		okButton.setEnabled(false);
@@ -191,11 +185,6 @@ public class GenomeSelector extends JDialog {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				setVisible(false);
-				dispose();
-			}
-			else if (ae.getActionCommand().equals("custom")) {
-				new ManualGenomeBuilderDialog();
 				setVisible(false);
 				dispose();
 			}

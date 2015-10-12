@@ -46,12 +46,6 @@ public class BamQCPreferences {
 	/** The directory under which to look for genome files */
 	private File genomeBase = new File(System.getProperty("user.home") + File.separator + "BamQC_files" + File.separator + "genomes"); //null;
 	
-	/** The default data location. */
-	private File dataLocation = new File(System.getProperty("user.home") + File.separator + "BamQC_files" + File.separator + "data");
-	
-	/** The last used data location. */
-	private File lastUsedDataLocation = null;
-	
 	/** The default save location. */
 	private File saveLocation = new File(System.getProperty("user.home") + File.separator + "BamQC_files");
 	
@@ -60,9 +54,6 @@ public class BamQCPreferences {
 	
 	/** The preferences file. */
 	private File preferencesFile = null;
-	
-	/** The directory in which to save temporary cache files */
-	private File tempDirectory = new File(System.getProperty("user.home") + File.separator + "BamQC_files" + File.separator + "temp"); //null;
 		
 	/** The network address from where we can download new genomes */
 	private String genomeDownloadLocation = "http://www.bioinformatics.babraham.ac.uk/seqmonk/genomes/";
@@ -76,9 +67,6 @@ public class BamQCPreferences {
 	/** The proxy port. */
 	private int proxyPort = 0;
 	
-	/** The email address we should attach to crash reports */
-	private String crashEmail = null;
-	
 	/** The recently opened files list */
 	private LinkedList<String> recentlyOpenedFiles = new LinkedList<String>();
 		
@@ -88,9 +76,8 @@ public class BamQCPreferences {
 	 */
 	private BamQCPreferences () {
 		new File(genomeBase.getAbsolutePath()).mkdirs();
-		new File(dataLocation.getAbsolutePath()).mkdirs();
 		new File(saveLocation.getAbsolutePath()).mkdirs();
-		new File(tempDirectory.getAbsolutePath()).mkdirs();
+		
 		
 //		System.out.println("Looking for preferences at: "+System.getProperty("user.home")+"/chipmonk_prefs.txt");
 		preferencesFile= new File(System.getProperty("user.home") + File.separator + "bamqc_prefs.txt");
@@ -149,21 +136,9 @@ public class BamQCPreferences {
 					}
 					
 				}
-				else if (sections[0].equals("DataLocation")) {
-					dataLocation = new File(sections[1]);
-				}
 				else if (sections[0].equals("SaveLocation")) {
 					saveLocation = new File(sections[1]);
 				}				
-				else if (sections[0].equals("TempDirectory")) {
-					tempDirectory = new File(sections[1]);
-				}
-				else if (sections[0].equals("UseTempDir")) {
-					// Old option, no longer required
-				}				
-				else if (sections[0].equals("CrashEmail")) {
-					crashEmail = sections[1];
-				}
 				else if (sections[0].equals("GenomeDownloadLocation")) {
 					if (sections[1].equals("http://www.bioinformatics.bbsrc.ac.uk/chipmonk/genomes/")) {
 						genomeDownloadLocation = "http://www.bioinformatics.babraham.ac.uk/seqmonk/genomes/";
@@ -230,31 +205,16 @@ public class BamQCPreferences {
 		if (genomeBase != null) {
 			p.println("GenomeBase\t"+genomeBase.getAbsolutePath());
 		}
-
-		// Then the dataLocation
-		p.println("DataLocation\t"+dataLocation.getAbsolutePath());
 		
 		// Then the saveLocation
 		p.println("SaveLocation\t"+saveLocation.getAbsolutePath());
 
-		
 		// Then the proxy information
 		p.println("Proxy\t"+proxyHost+"\t"+proxyPort);
 		
 		// The genome download URL
 		p.println("GenomeDownloadLocation\t"+genomeDownloadLocation);
-		
-		// The temp directory
-		if (tempDirectory != null) {
-			p.println("TempDirectory\t"+tempDirectory.getAbsolutePath());
-		}
-		
-		// The crash email
-		if (crashEmail != null) {
-			p.println("CrashEmail\t"+crashEmail);
-		}
-		
-	
+			
 		// Save the recently opened file list
 		Iterator<String> rof = recentlyOpenedFiles.iterator();
 		while (rof.hasNext()) {
@@ -331,15 +291,6 @@ public class BamQCPreferences {
 		return ! ignoredAnnotations.contains(type.toLowerCase());
 	}
 	
-		
-	/**
-	 * The location of the directory to use to cache data
-	 * 
-	 * @return A file representing the temp directory.  Null if none is set.
-	 */
-	public File tempDirectory () {
-		return tempDirectory;
-	}
 	
 	/**
 	 * Gets a list of feature types which will not be loaded
@@ -390,16 +341,6 @@ public class BamQCPreferences {
 		proxyPort = port;
 		updateProxyInfo();
 	}
-	
-	/**
-	 * Sets the temp directory.
-	 * 
-	 * @param f The new temp directory
-	 */
-	public void setTempDirectory (File f) {
-		tempDirectory = f;
-	}
-	
 		
 	/**
 	 * Sets the genome download location.
@@ -492,56 +433,6 @@ public class BamQCPreferences {
 	}
 	
 	/**
-	 * Gets the default data location.  This will initially be the data
-	 * location saved in the preferneces file, but will be updated during
-	 * use with the last actual location where data was imported.  If you
-	 * definitely want the location stored in the preferences file then use
-	 * getDataLocationPreference()
-	 * 
-	 * @return The default location to look for new data
-	 */
-	public File getDataLocation () {
-		if (lastUsedDataLocation != null) return lastUsedDataLocation;
-		return dataLocation;
-	}
-	
-	/**
-	 * Gets the data location saved in the preferences file.  This value
-	 * is not updated during use except by explicity changing the saved
-	 * preference.  To get the last used folder use getDataLocation().
-	 * 
-	 * @return The default data location
-	 */
-	public File getDataLocationPreference () {
-		return dataLocation;
-	}
-	
-	/**
-	 * Sets the default data location which will be saved in the preferences
-	 * file.
-	 * 
-	 * @param f The new data location
-	 */
-	public void setDataLocation (File f) {
-		dataLocation = f;
-	}
-	
-	/**
-	 * Sets the last used data location.  This value is only stored until the
-	 * program exits, and won't be saved in the preferences file.
-	 * 
-	 * @param f The new last used data location
-	 */
-	public void setLastUsedDataLocation (File f) {
-		if (f.isDirectory()) {
-			lastUsedDataLocation = f;
-		}
-		else {
-			lastUsedDataLocation = f.getParentFile();
-		}
-	}
-	
-	/**
 	 * Gets the default save location for projects / images / reports etc.
 	 * This will initially be the location in the preferences file but will
 	 * be updated during use to reflect the last actually used location.
@@ -602,29 +493,6 @@ public class BamQCPreferences {
 		for (int i=0;i<s.length;i++) {
 			ignoredAnnotations.add(s[i]);
 		}
-	}
-	
-	/**
-	 * Gets the stored email address which should be attached
-	 * to crash reports.
-	 * 
-	 * @return The stored email address, or an empty string
-	 */
-	public String getCrashEmail () {
-		if (crashEmail != null) return crashEmail;
-		return "";
-	}
-	
-	/**
-	 * Stores the email address used in a crash report so that
-	 * this is automatically added the next time a crash report
-	 * happens and they don't have to fill it out each time.
-	 * 
-	 * @param email The email address to store
-	 */
-	public void setCrashEmail (String email) {
-		// We're not even going to try to validate this
-		crashEmail = email;
 	}
 	
 			

@@ -54,9 +54,6 @@ public class EditPreferencesDialog extends JDialog implements ActionListener {
 	/** The genome base. */
 	private JTextField genomeBase;
 	
-	/** The data location. */
-	private JTextField dataLocation;
-	
 	/** The save location. */
 	private JTextField saveLocation;
 	
@@ -68,9 +65,6 @@ public class EditPreferencesDialog extends JDialog implements ActionListener {
 	
 	/** The download location. */
 	private JTextField downloadLocation;
-	
-	/** The temp directory. */
-	private JTextField tempDirectory;
 		
 	/**
 	 * Instantiates a new edits the preferences dialog.
@@ -117,26 +111,13 @@ public class EditPreferencesDialog extends JDialog implements ActionListener {
 		c.gridx=0;
 		c.gridy++;
 		c.weightx=0.1;
-		filePanel.add(new JLabel("Default Data Location"),c);
-		c.gridx=1;
-		c.weightx=0.5;
-		dataLocation = new JTextField(p.getDataLocationPreference().getAbsolutePath());
-		dataLocation.setEditable(false);
-		filePanel.add(dataLocation,c);
-		c.gridx=2;
-		c.weightx=0.1;
-		JButton dataButton = new JButton("Browse");
-		dataButton.setActionCommand("dataLocation");
-		dataButton.addActionListener(this);
-		filePanel.add(dataButton,c);
-
-		c.gridx=0;
-		c.gridy++;
-		c.weightx=0.1;
 		filePanel.add(new JLabel("Default Save Location"),c);
 		c.gridx=1;
 		c.weightx=0.5;
-		saveLocation = new JTextField(p.getSaveLocationPreference().getAbsolutePath());
+		saveLocation = new JTextField();
+		if(p.getSaveLocation() != null) { 
+			saveLocation.setText(p.getSaveLocationPreference().getAbsolutePath());
+		}
 		saveLocation.setEditable(false);
 		filePanel.add(saveLocation,c);
 		c.gridx=2;
@@ -149,26 +130,7 @@ public class EditPreferencesDialog extends JDialog implements ActionListener {
 		tabs.addTab("Files",filePanel);
 
 		
-		c.gridx=1;
-		c.weightx=0.5;
-		JPanel tempDirPanel = new JPanel();
-		tempDirPanel.setLayout(new BorderLayout());
-
-		tempDirectory = new JTextField();
-		if (p.tempDirectory() != null) {
-			tempDirectory.setText(p.tempDirectory().getAbsolutePath());
-		}
-		tempDirectory.setEditable(false);
-		tempDirPanel.add(tempDirectory,BorderLayout.CENTER);
-		JButton tempDirBrowseButton = new JButton("Browse");
-		tempDirBrowseButton.setActionCommand("tempDir");
-		tempDirBrowseButton.addActionListener(this);
-		tempDirPanel.add(tempDirBrowseButton,BorderLayout.EAST);
 		
-	
-		c.gridx=0;
-		c.gridy++;
-				
 		
 		JPanel networkPanel = new JPanel();
 		networkPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
@@ -182,12 +144,21 @@ public class EditPreferencesDialog extends JDialog implements ActionListener {
 		c.weighty=0.5;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		
+		networkPanel.add(new JLabel("Genome Download URL"),c);
+		c.gridx=1;
+		c.weightx=0.5;
+		downloadLocation = new JTextField(p.getGenomeDownloadLocation());
+		networkPanel.add(downloadLocation,c);
+
+		c.gridx=0;
+		c.gridy++;
+		c.weightx=0.1;
 		networkPanel.add(new JLabel("HTTP Proxy server"),c);
 		c.gridx=1;
 		c.weightx=0.5;
 		proxyHost = new JTextField(p.proxyHost());
 		networkPanel.add(proxyHost,c);
-
+		
 		c.gridx=0;
 		c.gridy++;
 		c.weightx=0.1;
@@ -196,15 +167,6 @@ public class EditPreferencesDialog extends JDialog implements ActionListener {
 		c.weightx=0.5;
 		proxyPort = new JTextField(""+p.proxyPort());
 		networkPanel.add(proxyPort,c);
-		
-		c.gridx=0;
-		c.gridy++;
-		c.weightx=0.1;
-		networkPanel.add(new JLabel("Genome Download URL"),c);
-		c.gridx=1;
-		c.weightx=0.5;
-		downloadLocation = new JTextField(p.getGenomeDownloadLocation());
-		networkPanel.add(downloadLocation,c);
 		tabs.addTab("Network",networkPanel);
 		
 		
@@ -255,14 +217,8 @@ public class EditPreferencesDialog extends JDialog implements ActionListener {
 		if (c.equals("genomeBase")) {
 			getDir(genomeBase);
 		}
-		else if (c.equals("dataLocation")) {
-			getDir(dataLocation);
-		}
 		else if (c.equals("saveLocation")) {
 			getDir(saveLocation);
-		}
-		else if (c.equals("tempDir")) {
-			getDir(tempDirectory);
 		}
 		else if (c.equals("cancel")) {
 			setVisible(false);
@@ -276,28 +232,9 @@ public class EditPreferencesDialog extends JDialog implements ActionListener {
 				return;
 			}
 
-			File dataLocationFile = new File(dataLocation.getText());
-			if (!dataLocationFile.exists()) {
-				JOptionPane.showMessageDialog(this,"Invalid data location","Error",JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-
 			File saveLocationFile = new File(saveLocation.getText());
 			if (!saveLocationFile.exists()) {
 				JOptionPane.showMessageDialog(this,"Invalid save location","Error",JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-
-			File tempDirFile = null;
-			if (tempDirectory.getText().length()>0) {
-				tempDirFile = new File(tempDirectory.getText());
-				if (! tempDirFile.exists()) {
-					JOptionPane.showMessageDialog(this,"Invalid temp dir","Error",JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-			}
-			else {
-				JOptionPane.showMessageDialog(this,"No temp dir specified","Error",JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 			
@@ -324,12 +261,10 @@ public class EditPreferencesDialog extends JDialog implements ActionListener {
 			
 			BamQCPreferences p = BamQCPreferences.getInstance();
 			
-			p.setDataLocation(dataLocationFile);
 			p.setSaveLocation(saveLocationFile);
 			p.setGenomeBase(genomeBaseFile);
 			p.setProxy(proxyHostValue,proxyPortValue);
 			p.setGenomeDownloadLocation(downloadLocation.getText());
-			p.setTempDirectory(tempDirFile);
 			
 			try {
 				p.savePreferences();
