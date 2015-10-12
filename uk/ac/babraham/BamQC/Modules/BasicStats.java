@@ -32,6 +32,7 @@ import javax.swing.table.TableModel;
 import javax.xml.stream.XMLStreamException;
 
 import net.sf.samtools.SAMRecord;
+import uk.ac.babraham.BamQC.BamQCConfig;
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
@@ -85,7 +86,7 @@ public class BasicStats extends AbstractQCModule {
 			if(annotation.getFile() != null) {
 				annotationFile = annotation.getFile().getName();
 			} else {
-				annotationFile = "Annotation provided from network";
+				annotationFile = "Annotation from network. Genome: " + BamQCConfig.getInstance().genome;
 			}
 			featureTypeCount = annotation.getAllFeatures().length;
 		}		
