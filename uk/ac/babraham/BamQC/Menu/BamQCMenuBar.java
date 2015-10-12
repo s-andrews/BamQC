@@ -72,23 +72,21 @@ public class BamQCMenuBar extends JMenuBar implements ActionListener {
 		fileMenu = new JMenu("File");
 		fileMenu.setMnemonic(KeyEvent.VK_F);
 		
-		fileGFFOpenNetwork = new JMenuItem("Set GFF from Network");
+		fileGFFOpenNetwork = new JMenuItem("Set Annotation from Network");
 		fileGFFOpenNetwork.setMnemonic(KeyEvent.VK_N);
 		fileGFFOpenNetwork.setAccelerator(KeyStroke.getKeyStroke('N', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		fileGFFOpenNetwork.setActionCommand("open_gff_from_network");
 		fileGFFOpenNetwork.addActionListener(this);
 		fileMenu.add(fileGFFOpenNetwork);
 		
-		
-		fileGFFOpen = new JMenuItem("Set GFF...");
-		fileGFFOpen.setMnemonic(KeyEvent.VK_G);
-		fileGFFOpen.setAccelerator(KeyStroke.getKeyStroke('G', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		fileGFFOpen = new JMenuItem("Set GFF/GTF Annotation File ...");
+		fileGFFOpen.setMnemonic(KeyEvent.VK_A);
+		fileGFFOpen.setAccelerator(KeyStroke.getKeyStroke('A', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		fileGFFOpen.setActionCommand("open_gff");
 		fileGFFOpen.addActionListener(this);
 		fileMenu.add(fileGFFOpen);
 
-		
-		fileBAMOpen = new JMenuItem("Open SAM/BAM...");
+		fileBAMOpen = new JMenuItem("Open SAM/BAM File...");
 		fileBAMOpen.setMnemonic(KeyEvent.VK_O);
 		fileBAMOpen.setAccelerator(KeyStroke.getKeyStroke('O', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		fileBAMOpen.setActionCommand("open");
@@ -97,9 +95,9 @@ public class BamQCMenuBar extends JMenuBar implements ActionListener {
 		
 		fileMenu.addSeparator();
 		
-		fileSave = new JMenuItem("Save report...");
-		fileSave.setMnemonic(KeyEvent.VK_S);
-		fileSave.setAccelerator(KeyStroke.getKeyStroke('S', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		fileSave = new JMenuItem("Save Report...");
+		fileSave.setMnemonic(KeyEvent.VK_R);
+		fileSave.setAccelerator(KeyStroke.getKeyStroke('R', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		fileSave.setActionCommand("save");
 		fileSave.addActionListener(this);
 		fileMenu.add(fileSave);
@@ -108,23 +106,23 @@ public class BamQCMenuBar extends JMenuBar implements ActionListener {
 		
 		fileClose = new JMenuItem("Close");
 		fileClose.setMnemonic(KeyEvent.VK_C);
-		fileClose.setAccelerator(KeyStroke.getKeyStroke('W', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		fileClose.setAccelerator(KeyStroke.getKeyStroke('C', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		fileClose.setActionCommand("close");
 		fileClose.addActionListener(this);
 		fileMenu.add(fileClose);
 		
-
 		fileCloseAll = new JMenuItem("Close All");
 		fileCloseAll.setMnemonic(KeyEvent.VK_A);
+		fileCloseAll.setAccelerator(KeyStroke.getKeyStroke('A', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		fileCloseAll.setActionCommand("close_all");
 		fileCloseAll.addActionListener(this);
 		fileMenu.add(fileCloseAll);
-
 		
 		fileMenu.addSeparator();
 		
 		fileExit = new JMenuItem("Exit");
-		fileExit.setMnemonic(KeyEvent.VK_X);
+		fileExit.setMnemonic(KeyEvent.VK_Q);
+		fileExit.setAccelerator(KeyStroke.getKeyStroke('Q', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		fileExit.setActionCommand("exit");
 		fileExit.addActionListener(this);
 		fileMenu.add(fileExit);
@@ -133,9 +131,12 @@ public class BamQCMenuBar extends JMenuBar implements ActionListener {
 		
 		
 		editMenu = new JMenu("Edit");
+		editMenu.setMnemonic(KeyEvent.VK_E);
+		
 		editPreferences = new JMenuItem("Preferences...");
 		editPreferences.setActionCommand("edit_preferences");
-		editPreferences.setMnemonic(KeyEvent.VK_R);
+		editPreferences.setMnemonic(KeyEvent.VK_P);
+		editPreferences.setAccelerator(KeyStroke.getKeyStroke('P', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		editPreferences.addActionListener(this);
 		editMenu.add(editPreferences);
 		
@@ -146,7 +147,8 @@ public class BamQCMenuBar extends JMenuBar implements ActionListener {
 		helpMenu.setMnemonic(KeyEvent.VK_H);
 		
 		helpContents = new JMenuItem("Contents...");
-		helpContents.setMnemonic(KeyEvent.VK_C);
+		helpContents.setMnemonic(KeyEvent.VK_T);
+		helpContents.setAccelerator(KeyStroke.getKeyStroke('T', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		helpContents.setActionCommand("help_contents");
 		helpContents.addActionListener(this);
 		helpMenu.add(helpContents);
@@ -156,14 +158,15 @@ public class BamQCMenuBar extends JMenuBar implements ActionListener {
 		helpLicense = new JMenuItem("License...");
 		helpLicense.setActionCommand("help_license");
 		helpLicense.setMnemonic(KeyEvent.VK_L);
+		helpLicense.setAccelerator(KeyStroke.getKeyStroke('L', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		helpLicense.addActionListener(this);
 		helpMenu.add(helpLicense);
 		
 		helpAbout = new JMenuItem("About BamQC");
 		helpAbout.setMnemonic(KeyEvent.VK_A);
+		helpAbout.setAccelerator(KeyStroke.getKeyStroke('A', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		helpAbout.setActionCommand("about");
 		helpAbout.addActionListener(this);
-		
 		helpMenu.add(helpAbout);
 		
 		add(helpMenu);
