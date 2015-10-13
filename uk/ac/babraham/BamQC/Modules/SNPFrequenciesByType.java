@@ -95,10 +95,6 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 
 	@Override	
 	public JPanel getResultsPanel() {
-		if(variantCallDetection == null) { 
-			String title = String.format("Read SNP frequencies by Type ( total SNPs: 0 (0.000 %) )");
-			return new HorizontalBarGraph(snpTypeNames, new double[12], title, 0, 1);
-		}		
 		//variantCallDetection.computeTotals();
 		
 		JPanel resultsPanel = new JPanel();
@@ -167,17 +163,17 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 			
 			String title = String.format("First Read SNP frequencies by Type ( total SNPs: %.3f %% )", totSNPs*100.0f/totBases);
 			// add 10% to the top for improving the visualisation of the plot.
-			resultsPanel.add(new HorizontalBarGraph(snpTypeNames, dFirstSNPFrequenciesByType, title, 0d, firstMaxX+firstMaxX*0.1d));
+			resultsPanel.add(new HorizontalBarGraph(snpTypeNames, dFirstSNPFrequenciesByType, "", title, 0d, firstMaxX+firstMaxX*0.1d));
 			
 			String title2 = "Second Read SNP frequencies by Type";
 			// add 10% to the top for improving the visualisation of the plot.
-			resultsPanel.add(new HorizontalBarGraph(snpTypeNames, dSecondSNPFrequenciesByType, title2, 0d, secondMaxX+secondMaxX*0.1d));
+			resultsPanel.add(new HorizontalBarGraph(snpTypeNames, dSecondSNPFrequenciesByType, "Frequence (%)", title2, 0d, secondMaxX+secondMaxX*0.1d));
 			
 		} else {
 			resultsPanel.setLayout(new GridLayout(1,1));
 			String title = String.format("Read SNP frequencies by Type ( total SNPs: %.3f %% )", totSNPs*100.0f/totBases);
 			// add 10% to the top for improving the visualisation of the plot.
-			resultsPanel.add(new HorizontalBarGraph(snpTypeNames, dFirstSNPFrequenciesByType, title, 0d, firstMaxX+firstMaxX*0.1d));			
+			resultsPanel.add(new HorizontalBarGraph(snpTypeNames, dFirstSNPFrequenciesByType, "Frequence (%)", title, 0d, firstMaxX+firstMaxX*0.1d));			
 		}
 		return resultsPanel;
 	}

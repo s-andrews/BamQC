@@ -46,12 +46,12 @@ public class IndelFrequencies extends AbstractQCModule {
 
 	private static Logger log = Logger.getLogger(IndelFrequencies.class);	
 	
-	private String[] indelNames = {"Insertions", "Deletions"};
+	private String[] indelNames = {"Deletions", "Insertions"};
 	
-	double[] dFirstInsertionPos = null;
 	double[] dFirstDeletionPos = null;		
-	double[] dSecondInsertionPos = null;
+	double[] dFirstInsertionPos = null;
 	double[] dSecondDeletionPos = null;		
+	double[] dSecondInsertionPos = null;
 	
 	// threshold for the plot y axis.
 	private double firstMaxY=0.0d;
@@ -126,23 +126,13 @@ public class IndelFrequencies extends AbstractQCModule {
 	@Override	
 	public JPanel getResultsPanel() {
 		
-		if(variantCallDetection == null) { 
-			return new LineGraph(new double [][]{
-					new double[ModuleConfig.getParam("VariantCallPosition_array_length", "ignore").intValue()],
-					new double[ModuleConfig.getParam("VariantCallPosition_array_length", "ignore").intValue()]},
-					0d, 100d, "Position in read (bp)", indelNames, 
-					new String[ModuleConfig.getParam("VariantCallPosition_array_length", "ignore").intValue()], 
-					"Read Indel Frequencies ( total insertions: 0.000 %, total deletions: 0.000 % )");
-		}
-		//variantCallDetection.computeTotals();
 		
-		
-		long totIns = variantCallDetection.getTotalInsertions(),
-			 totDel = variantCallDetection.getTotalDeletions(), 
+		long totDel = variantCallDetection.getTotalDeletions(), 
+			 totIns = variantCallDetection.getTotalInsertions(),
 			 totBases = variantCallDetection.getTotal();
 		
-		log.debug("Total insertions: " + totIns + " ( " + totIns*100f/totBases + "% )");	
 		log.debug("Total deletions: " + totDel + " ( " + totDel*100f/totBases + "% )");
+		log.debug("Total insertions: " + totIns + " ( " + totIns*100f/totBases + "% )");	
 		log.debug("Skipped reads: " + variantCallDetection.getSkippedReads() + " ( "+ (variantCallDetection.getSkippedReads()*100.0f)/variantCallDetection.getTotalReads() + "% )");
 		
 		
@@ -159,48 +149,48 @@ public class IndelFrequencies extends AbstractQCModule {
 		
 		
 		// compute statistics from the FIRST segment data
-		long[] firstInsertionPos = variantCallDetection.getFirstInsertionPos();
 		long[] firstDeletionPos = variantCallDetection.getFirstDeletionPos();		
-		dFirstInsertionPos = new double[maxX];
+		long[] firstInsertionPos = variantCallDetection.getFirstInsertionPos();
 		dFirstDeletionPos = new double[maxX];		
-		for(int i=0; i<maxX && i<firstInsertionPos.length; i++) {
-			dFirstInsertionPos[i]= (firstInsertionPos[i] * 100d) / totalPos[i];
+		dFirstInsertionPos = new double[maxX];
+		for(int i=0; i<maxX && i<firstDeletionPos.length; i++) {
 			dFirstDeletionPos[i]= (firstDeletionPos[i] * 100d) / totalPos[i];
-			if(dFirstInsertionPos[i] > firstMaxY) { firstMaxY = dFirstInsertionPos[i]; }
+			dFirstInsertionPos[i]= (firstInsertionPos[i] * 100d) / totalPos[i];
 			if(dFirstDeletionPos[i] > firstMaxY) { firstMaxY = dFirstDeletionPos[i]; }
+			if(dFirstInsertionPos[i] > firstMaxY) { firstMaxY = dFirstInsertionPos[i]; }
 			xCategories[i] = String.valueOf(i+1);
 		}
-		double[][] firstIndelData = new double [][] {dFirstInsertionPos,dFirstDeletionPos};
+		double[][] firstIndelData = new double [][] {dFirstDeletionPos, dFirstInsertionPos};
 
 		// compute statistics from the SECOND segment data if there are paired reads.
 		if(variantCallDetection.existPairedReads()) {
 			resultsPanel.setLayout(new GridLayout(2,1));
-			long[] secondInsertionPos = variantCallDetection.getSecondInsertionPos();
 			long[] secondDeletionPos = variantCallDetection.getSecondDeletionPos();
+			long[] secondInsertionPos = variantCallDetection.getSecondInsertionPos();
+			dSecondDeletionPos = new double[maxX];
 			dSecondInsertionPos = new double[maxX];
-			dSecondDeletionPos = new double[maxX];		
-			for(int i=0; i<maxX && i<secondInsertionPos.length; i++) {
-				dSecondInsertionPos[i]= (secondInsertionPos[i] * 100d) / totalPos[i];
+			for(int i=0; i<maxX && i<secondDeletionPos.length; i++) {
 				dSecondDeletionPos[i]= (secondDeletionPos[i] * 100d) / totalPos[i];			
+				dSecondInsertionPos[i]= (secondInsertionPos[i] * 100d) / totalPos[i];
+				if(dSecondDeletionPos[i] > secondMaxY) { secondMaxY = dSecondDeletionPos[i]; }
 				if(dSecondInsertionPos[i] > secondMaxY) { secondMaxY = dSecondInsertionPos[i]; }			
-				if(dSecondDeletionPos[i] > secondMaxY) { secondMaxY = dSecondDeletionPos[i]; }			
 			}
-			double[][] secondIndelData = new double [][] {dSecondInsertionPos,dSecondDeletionPos};
+			double[][] secondIndelData = new double [][] {dSecondDeletionPos, dSecondInsertionPos};
 			
-			String title = String.format("First Read Indel Frequencies ( total insertions: %.3f %%, total deletions: %.3f %% )", 
-					totIns*100.0f/totBases,totDel*100.0f/totBases);	
+			String title = String.format("First Read Indel Frequencies ( total deletions: %.3f %%, total insertions: %.3f %% )", 
+					totDel*100.0f/totBases, totIns*100.0f/totBases);	
 			// add 10% to the top for improving the visualisation of the plot.
-			resultsPanel.add(new LineGraph(firstIndelData, 0d, firstMaxY+firstMaxY*0.1, "Position in read (bp)", indelNames, xCategories, title));	
+			resultsPanel.add(new LineGraph(firstIndelData, 0d, firstMaxY+firstMaxY*0.1, "", indelNames, xCategories, title));	
 			
 			String title2 = "Second Read Indel Frequencies";	
 			// add 10% to the top for improving the visualisation of the plot.
-			resultsPanel.add(new LineGraph(secondIndelData, 0d, secondMaxY+secondMaxY*0.1, "Position in read (bp)", indelNames, xCategories, title2));
+			resultsPanel.add(new LineGraph(secondIndelData, 0d, secondMaxY+secondMaxY*0.1, "Position in Read (bp)", indelNames, xCategories, title2));
 		} else {
 			resultsPanel.setLayout(new GridLayout(1,1));
-			String title = String.format("Read Indel Frequencies ( total insertions: %.3f %%, total deletions: %.3f %% )", 
-					totIns*100.0f/totBases,totDel*100.0f/totBases);	
+			String title = String.format("Read Indel Frequencies ( total deletions: %.3f %%, total insertions: %.3f %% )", 
+					totDel*100.0f/totBases, totIns*100.0f/totBases);	
 			// add 10% to the top for improving the visualisation of the plot.
-			resultsPanel.add(new LineGraph(firstIndelData, 0d, firstMaxY+firstMaxY*0.1, "Position in read (bp)", indelNames, xCategories, title));	
+			resultsPanel.add(new LineGraph(firstIndelData, 0d, firstMaxY+firstMaxY*0.1, "Position in Read (bp)", indelNames, xCategories, title));	
 		}
 
 		return resultsPanel;
@@ -246,7 +236,7 @@ public class IndelFrequencies extends AbstractQCModule {
 	@Override	
 	public boolean ignoreInReport() {
 		if(variantCallDetection == null || 
-		   (variantCallDetection.getTotalInsertions() == 0 && variantCallDetection.getTotalDeletions() == 0)) 
+		   (variantCallDetection.getTotalDeletions() == 0 && variantCallDetection.getTotalInsertions() == 0)) 
 			return true; 
 		return false;
 	}
@@ -256,31 +246,31 @@ public class IndelFrequencies extends AbstractQCModule {
 		super.writeDefaultImage(report, "indel_frequencies.png", "Indel Frequencies", 800, 600);
 		
 		// write raw data in a report
-		if(dFirstInsertionPos == null) { return; }
+		if(dFirstDeletionPos == null) { return; }
 		
 		StringBuffer sb = report.dataDocument();
 		if(dSecondInsertionPos != null) {
-			sb.append("Position\t1st_read_ins_freq\t1st_read_del_freq\t2nd_read_ins_freq\t2nd_read_del_freq\n");
+			sb.append("Position\t1st_read_del_freq\t1st_read_ins_freq\t2nd_read_del_freq\t2nd_read_ins_freq\n");
 			for (int i=0;i<dFirstInsertionPos.length;i++) {
 				sb.append((i+1));
 				sb.append("\t");
-				sb.append(dFirstInsertionPos[i]);
-				sb.append("\t");
 				sb.append(dFirstDeletionPos[i]);
 				sb.append("\t");
-				sb.append(dSecondInsertionPos[i]);
+				sb.append(dFirstInsertionPos[i]);
 				sb.append("\t");
 				sb.append(dSecondDeletionPos[i]);
+				sb.append("\t");
+				sb.append(dSecondInsertionPos[i]);
 				sb.append("\n");
 			}
 		} else {
-			sb.append("Position\tRead_ins_freq\tRead_del_freq\n");
+			sb.append("Position\tRead_del_freq\tRead_ins_freq\n");
 			for (int i=0;i<dFirstInsertionPos.length;i++) {
 				sb.append((i+1));
 				sb.append("\t");
-				sb.append(dFirstInsertionPos[i]);
-				sb.append("\t");
 				sb.append(dFirstDeletionPos[i]);
+				sb.append("\t");
+				sb.append(dFirstInsertionPos[i]);
 				sb.append("\n");
 			}
 		}

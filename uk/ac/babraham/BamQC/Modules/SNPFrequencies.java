@@ -122,17 +122,6 @@ public class SNPFrequencies extends AbstractQCModule {
 
 	@Override	
 	public JPanel getResultsPanel() {
-		
-		if(variantCallDetection == null) { 
-			return new LineGraph(new double [][]{
-					new double[ModuleConfig.getParam("VariantCallPosition_array_length", "ignore").intValue()],
-					new double[ModuleConfig.getParam("VariantCallPosition_array_length", "ignore").intValue()]},
-					0d, 100d, "Position in read (bp)", snpName, 
-					new String[ModuleConfig.getParam("VariantCallPosition_array_length", "ignore").intValue()], 
-					"Read SNP Frequencies ( total SNPs: 0.000 % )");
-		}		
-		//variantCallDetection.computeTotals();
-		
 
 		long totSNPs = variantCallDetection.getTotalMutations(),
 			 totBases = variantCallDetection.getTotal();
@@ -178,16 +167,16 @@ public class SNPFrequencies extends AbstractQCModule {
 			
 			String title = String.format("First Read SNP frequencies ( total SNPs: %.3f %% )", totSNPs*100.0f/totBases);
 			// add 10% to the top for improving the visualisation of the plot.
-			resultsPanel.add(new LineGraph(firstSNPData, 0d, firstMaxY+firstMaxY*0.1, "Position in read (bp)", snpName, xCategories, title));
+			resultsPanel.add(new LineGraph(firstSNPData, 0d, firstMaxY+firstMaxY*0.1, "", snpName, xCategories, title));
 			
 			String title2 = "Second Read SNP frequencies";
 			// add 10% to the top for improving the visualisation of the plot.
-			resultsPanel.add(new LineGraph(secondSNPData, 0d, secondMaxY+secondMaxY*0.1, "Position in read (bp)", snpName, xCategories, title2));
+			resultsPanel.add(new LineGraph(secondSNPData, 0d, secondMaxY+secondMaxY*0.1, "Position in Read (bp)", snpName, xCategories, title2));
 		} else {
 			resultsPanel.setLayout(new GridLayout(1,1));
 			String title = String.format("Read SNP frequencies ( total SNPs: %.3f %% )", totSNPs*100.0f/totBases);
 			// add 10% to the top for improving the visualisation of the plot.
-			resultsPanel.add(new LineGraph(firstSNPData, 0d, firstMaxY+firstMaxY*0.1, "Position in read (bp)", snpName, xCategories, title));
+			resultsPanel.add(new LineGraph(firstSNPData, 0d, firstMaxY+firstMaxY*0.1, "Position in Read (bp)", snpName, xCategories, title));
 		}
 		
 		return resultsPanel;
