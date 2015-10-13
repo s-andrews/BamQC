@@ -219,7 +219,7 @@ public class InsertLengthDistribution extends AbstractQCModule {
 		
 		if (!calculated) calculateDistribution();		
 
-		String title = String.format("Paired read insert length distrib, a %d bp max size and %.3f %% unpaired reads", MAX_INSERT_SIZE, (((double) unpairedReads / reads) * 100.0));
+		String title = String.format("Paired Read Insert Length Distrib ( %d bp max size and %.3f %% unpaired reads )", MAX_INSERT_SIZE, (((double) unpairedReads / reads) * 100.0));
 		return new BarGraph(graphCounts, 0.0d, max, "Inferred Insert Length bp", xCategories, title);
 	}
 	
@@ -300,7 +300,7 @@ public class InsertLengthDistribution extends AbstractQCModule {
 	
 	@Override
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
-		String title = String.format("Paired read insert length Distribution (Max %d bp), %d unpaired reads ", MAX_INSERT_SIZE, unpairedReads);
+		String title = String.format("Paired Read Insert Length Distribution ( %d bp max size and %.3f %% unpaired reads )", MAX_INSERT_SIZE, (((double) unpairedReads / reads) * 100.0));
 		super.writeDefaultImage(report, "InsertLengthDistribution.png", title, 800, 600);
 		
 		if(insertLengthCounts == null) { return; }
@@ -309,7 +309,7 @@ public class InsertLengthDistribution extends AbstractQCModule {
 		String[] label = buildLabels(binNumber);
 		
 		StringBuffer sb = report.dataDocument();
-		sb.append("InferredInsertLength(bp)\tPairedReadInsertLengthDistribution\n");
+		sb.append("Inferred_insert_length(bp)\tPaired_read_insert_length_distribution\n");
 		for (int i=0;i<distributionDouble.length;i++) {
 			sb.append(label[i]).append("\t").append(distributionDouble[i]).append("\n");
 		}

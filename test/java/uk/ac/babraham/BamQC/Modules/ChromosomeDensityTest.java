@@ -35,7 +35,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import uk.ac.babraham.BamQC.Modules.ChromosomeDensity;
+import uk.ac.babraham.BamQC.Modules.ChromosomeReadDensity;
 
 
 
@@ -44,7 +44,7 @@ public class ChromosomeDensityTest {
 	private static Logger log = Logger.getLogger(ChromosomeDensityTest.class);
 	
 	private List<SAMRecord> samRecords = null;
-	private ChromosomeDensity chromosomeDensity = null;
+	private ChromosomeReadDensity chromosomeDensity = null;
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -58,7 +58,7 @@ public class ChromosomeDensityTest {
 
 	@Before
 	public void setUp() throws Exception {	
-		chromosomeDensity = new ChromosomeDensity();
+		chromosomeDensity = new ChromosomeReadDensity();
 	}
 
 	@After

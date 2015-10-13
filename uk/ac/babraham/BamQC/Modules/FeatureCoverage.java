@@ -86,7 +86,7 @@ public class FeatureCoverage extends AbstractQCModule {
 
 	@Override
 	public JPanel getResultsPanel() {
-		return new HorizontalBarGraph(featureNames, readCounts, "Feature read counts");
+		return new HorizontalBarGraph(featureNames, readCounts, "Feature Type Read Counts");
 	}
 
 	@Override
@@ -139,7 +139,7 @@ public class FeatureCoverage extends AbstractQCModule {
 		if(featureNames == null) { return; }
 	
 		StringBuffer sb = report.dataDocument();
-		sb.append("FeatureName\tFeatureReadCounts\n");
+		sb.append("Feature_name\tFeature_type_read_counts\n");
 		for (int i=0;i<featureNames.length;i++) {
 			sb.append(featureNames[i]);
 			sb.append("\t");

@@ -213,7 +213,7 @@ public class IndelFrequencies extends AbstractQCModule {
 
 	@Override	
 	public String description() {
-		return "Looks at the Indel frequencies in the data";
+		return "Looks at the indel frequencies in the data";
 	}
 
 	@Override	
@@ -260,7 +260,7 @@ public class IndelFrequencies extends AbstractQCModule {
 		
 		StringBuffer sb = report.dataDocument();
 		if(dSecondInsertionPos != null) {
-			sb.append("Position\t1stReadInsFreq\t1stReadDelFreq\t2ndReadInsFreq\t2ndReadDelFreq\n");
+			sb.append("Position\t1st_read_ins_freq\t1st_read_del_freq\t2nd_read_ins_freq\t2nd_read_del_freq\n");
 			for (int i=0;i<dFirstInsertionPos.length;i++) {
 				sb.append((i+1));
 				sb.append("\t");
@@ -274,7 +274,7 @@ public class IndelFrequencies extends AbstractQCModule {
 				sb.append("\n");
 			}
 		} else {
-			sb.append("Position\tReadInsFreq\tReadDelFreq\n");
+			sb.append("Position\tRead_ins_freq\tRead_del_freq\n");
 			for (int i=0;i<dFirstInsertionPos.length;i++) {
 				sb.append((i+1));
 				sb.append("\t");

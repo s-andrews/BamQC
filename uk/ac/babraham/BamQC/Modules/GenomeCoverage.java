@@ -253,8 +253,7 @@ public class GenomeCoverage extends AbstractQCModule {
 		}
 		
 		
-		/* Set up for stacked row chart representing chromosome coverages. */
-		
+		/* Set up of a stacked row chart representing chromosome coverages. */
 		double maxLimit = maxCoverage*(1.5*maxCoverage);
 		String title = "Genome Coverage";
 		
@@ -328,12 +327,12 @@ public class GenomeCoverage extends AbstractQCModule {
 	
 	@Override
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
-		super.writeDefaultImage(report, "GenomeCoverage.png", "Reference Sequence(s) Coverage", 800, 600);
+		super.writeDefaultImage(report, "genome_coverage.png", "Reference Sequence(s) Coverage", 800, 600);
 
 		if(chromosomeNames == null || binCounts == null || binCounts.length == 0) { return; }
 	
 		StringBuffer sb = report.dataDocument();
-		sb.append("ChromosomeName\tGenomePosition\n");
+		sb.append("Chromosome_name\tGenome_position\n");
 		sb.append("Name\t");
 		for (int i=0;i<binCounts[0].length;i++) {
 			sb.append(i*Chromosome.COVERAGE_BIN_SIZE).append("\t");			

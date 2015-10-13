@@ -169,12 +169,12 @@ public class RpkmReference extends AbstractQCModule {
 
 	@Override
 	public String name() {
-		return "Reads per kilobase per Megabase";
+		return "Reads per Kilobase per Megabase";
 	}
 
 	@Override
 	public String description() {
-		return "Reads per kilobase per Megabase";
+		return "Reads per kilobase per megabase";
 	}
 
 	@Override

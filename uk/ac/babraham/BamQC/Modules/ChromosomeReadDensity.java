@@ -39,7 +39,7 @@ import uk.ac.babraham.BamQC.Graphs.BarGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
-public class ChromosomeDensity extends AbstractQCModule {
+public class ChromosomeReadDensity extends AbstractQCModule {
 
 	private String [] chromosomeNames;
 	@Deprecated // TODO remove after testing new plot
@@ -205,7 +205,7 @@ public class ChromosomeDensity extends AbstractQCModule {
 				
 		StringBuffer sb = report.dataDocument();
 		
-		sb.append("ChromosomeName\tChromosomeLength(log)\tReadNumber(log)\n");
+		sb.append("Chromosome_name\tChromosome_length_(log)\tRead_number_(log)\n");
 		for (int i=0;i<chromosomeNames.length;i++) {
 			sb.append(chromosomeNames[i]);
 			sb.append("\t");

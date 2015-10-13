@@ -27,9 +27,9 @@ public class ModuleFactory {
 		QCModule [] module_list = new QCModule [] {
 				variantCallDetection,
 				new BasicStats(variantCallDetection),
-				new ChromosomeDensity(),
-				new FeatureCoverage(),
-				new GenomeCoverage(),				
+				new GenomeCoverage(),
+				new ChromosomeReadDensity(),
+				new FeatureCoverage(),				
 				new SoftClipDistribution(), // this could also reuse varianCallDetection
 				new IndelFrequencies(variantCallDetection),
 				new SNPFrequencies(variantCallDetection),

@@ -106,16 +106,18 @@ public class BasicStats extends AbstractQCModule {
 	public JPanel getResultsPanel() {
 		JPanel returnPanel = new JPanel();
 		returnPanel.setLayout(new BorderLayout());
-		returnPanel.add(new JLabel("Basic sequence stats",JLabel.CENTER),BorderLayout.NORTH);
+		returnPanel.add(new JLabel("Basic Statistics",JLabel.CENTER),BorderLayout.NORTH);
 		
 		// extract these results
-		totalSplicedReads = vcd.getTotalSplicedReads();
-		totalSkippedReads = vcd.getSkippedReads();
-		variantCallDetectionTotalReads = vcd.getTotalReads();
-		totalInsertions = vcd.getTotalInsertions();
-		totalDeletions = vcd.getTotalDeletions();
-		totalMutations = vcd.getTotalMutations();
-		totalBases = vcd.getTotal();
+		if(vcd != null) {
+			totalSplicedReads = vcd.getTotalSplicedReads();
+			totalSkippedReads = vcd.getSkippedReads();
+			variantCallDetectionTotalReads = vcd.getTotalReads();
+			totalInsertions = vcd.getTotalInsertions();
+			totalDeletions = vcd.getTotalDeletions();
+			totalMutations = vcd.getTotalMutations();
+			totalBases = vcd.getTotal();
+		}
 		
 		TableModel model = new ResultsTable();
 		JTable table = new JTable(model);

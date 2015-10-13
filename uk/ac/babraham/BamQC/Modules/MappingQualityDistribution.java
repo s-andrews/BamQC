@@ -168,7 +168,7 @@ public class MappingQualityDistribution extends AbstractQCModule {
 	@Override
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
 
-		super.writeDefaultImage(report, "mapq_distribtion.png", "Mapping quality value distribtion", 800, 600);
+		super.writeDefaultImage(report, "mapq_distribution.png", "Mapping Quality Value Distribution", 800, 600);
 			
 		StringBuffer sb = report.dataDocument();
 		

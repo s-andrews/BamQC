@@ -247,7 +247,7 @@ public class SNPFrequencies extends AbstractQCModule {
 		
 		StringBuffer sb = report.dataDocument();
 		if(dSecondSNPPos != null) {
-			sb.append("Position\t1stReadSNPFreq\t1stReadSNPFreq\n");
+			sb.append("Position\t1st_read_SNP_freq\t2nd_read_SNP_freq\n");
 			for (int i=0;i<dFirstSNPPos.length;i++) {
 				sb.append((i+1));
 				sb.append("\t");
@@ -257,7 +257,7 @@ public class SNPFrequencies extends AbstractQCModule {
 				sb.append("\n");
 			}
 		} else {
-			sb.append("Position\tReadSNPFreq\n");
+			sb.append("Position\tRead_SNP_freq\n");
 			for (int i=0;i<dFirstSNPPos.length;i++) {
 				sb.append((i+1));
 				sb.append("\t");

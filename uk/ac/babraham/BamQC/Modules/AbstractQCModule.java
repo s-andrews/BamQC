@@ -37,7 +37,7 @@ import uk.ac.babraham.BamQC.Utilities.ImageToBase64;
 
 public abstract class AbstractQCModule implements QCModule {
 
-	protected 	void simpleXhtmlReport(HTMLReportArchive report,BufferedImage img,String alt) throws XMLStreamException {
+	protected void simpleXhtmlReport(HTMLReportArchive report,BufferedImage img,String alt) throws XMLStreamException {
 		XMLStreamWriter xhtml = report.xhtmlStream();
 		xhtml.writeStartElement("p");
 		xhtml.writeEmptyElement("img");

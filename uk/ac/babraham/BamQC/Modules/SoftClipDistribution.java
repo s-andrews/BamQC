@@ -122,15 +122,15 @@ public class SoftClipDistribution extends AbstractQCModule {
 		}
 		
 		
-		resultsPanel.add(new LineGraph(leftData, 0, maxLeft, "Clip Length", new String[]{"Left (5') clips"}, labels,"Soft clip distribution at the left (5') end"));
-		resultsPanel.add(new LineGraph(rightData, 0, maxRight, "Clip Length", new String[]{"Right (3') clips"},labels, "Soft clip distribution at the right (3') end"));
+		resultsPanel.add(new LineGraph(leftData, 0, maxLeft, "Clip Length", new String[]{"Left (5') clips"}, labels,"Soft Clip Distribution at the Left (5') End"));
+		resultsPanel.add(new LineGraph(rightData, 0, maxRight, "Clip Length", new String[]{"Right (3') clips"},labels, "Soft Clip Distribution at the Right (3') End"));
 		
 		return (resultsPanel);
 	}
 
 	@Override
 	public String name() {
-		return "Soft clip length distributions";
+		return "Soft Clip Length Distributions";
 	}
 
 	@Override
@@ -172,7 +172,7 @@ public class SoftClipDistribution extends AbstractQCModule {
 
 	@Override
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
-		super.writeDefaultImage(report, "soft_clip_distribution_graph.png","Soft clipping distribution graph", 800, 600);
+		super.writeDefaultImage(report, "soft_clip_distribution_graph.png","Soft Clipping Distribution Graph", 800, 600);
 				
 		StringBuffer sb = report.dataDocument();
 				
