@@ -1,8 +1,14 @@
 RELEASE NOTES FOR BamQC v0.1
 ----------------------------
 
+FastQC v0.1 is a beta release it should work in its present state but
+we are keen to get feedback on the program.  In particular we are
+interested to hear if anyone has:
 
+1) Suggestions for other checks we could be performing.
 
+2) Comments about the criteria we set for issuing warnings or errors and
+suggestions for how these could be improved.
 
 You can report feedback either though our bug reporting tool at:
 

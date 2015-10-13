@@ -75,23 +75,23 @@ my $expgroup;
 my $temp_directory;
 my $java_bin = 'java';
 
-my $result = GetOptions('version' => \$version,
-			'help' => \$help,
+my $result = GetOptions('v|version' => \$version,
+			'h|help' => \$help,
 			'b|available' => \$available,
 			'e|saved' => \$saved,
-			'quiet' => \$quiet,
+			'q|quiet' => \$quiet,
 			'nogroup' => \$nogroup,
 			'expgroup' => \$expgroup,
-			'outdir=s' => \$outdir,
+			'o|outdir=s' => \$outdir,
 			'extract!' => \$unzip,
-			'threads=i' => \$threads,
+			't|threads=i' => \$threads,
 			'f|gff=s' => \$gff,
 			'g|genome=s' => \$genome,
 			's|species=s' => \$species,
 			'a|assembly=s' => \$assembly,
-			'limits=s' => \$limits,
-			'dir=s' => \$temp_directory,
-			'java=s' => \$java_bin,
+			'l|limits=s' => \$limits,
+			'd|dir=s' => \$temp_directory,
+			'j|java=s' => \$java_bin,
 );
 
 # Check the simple stuff first
@@ -343,7 +343,7 @@ DESCRIPTION
                                        
     --extract       If set then the zipped output file will be uncompressed in
                     the same directory after it has been created.  By default
-                    this option will be set if fastqc is run in non-interactive
+                    this option will be set if bamqc is run in non-interactive
                     mode.
                     
     -j --java       Provides the full path to the java binary you want to use to

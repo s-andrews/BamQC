@@ -36,7 +36,7 @@ Install
 =
 Check out of GitHug and using git:
 
-    git clone git@github.com:s-andrews/BamQC.gi
+    git clone https://github.com/s-andrews/BamQC.git
 
 and then follow the instructions in the INSTALL.txt file. 
 
