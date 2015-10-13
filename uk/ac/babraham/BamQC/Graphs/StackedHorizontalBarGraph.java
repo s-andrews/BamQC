@@ -40,6 +40,7 @@ public class StackedHorizontalBarGraph extends JPanel {
 	private static final long serialVersionUID = -5947375412672203276L;
 	protected String [] labels;
 	protected double [][] values;
+	protected String xLabel;
 	protected String title;
 	protected double maxX = 0.0d;
 	protected double minX = 0.0d;
@@ -48,19 +49,21 @@ public class StackedHorizontalBarGraph extends JPanel {
 	protected int width = -1;
 		
 
-	public StackedHorizontalBarGraph (String [] labels, double [][] values, String title, double minX, double maxX) {
+	public StackedHorizontalBarGraph (String [] labels, double [][] values, String xLabel, String title, double minX, double maxX) {
 		this.labels = labels;
 		this.values = values;
+		this.xLabel = xLabel;
 		this.title = title;
 		this.minX = minX;		
 		this.maxX = maxX;
 		this.xInterval = new AxisScale (minX, maxX).getInterval();
 	}
 	
-	public StackedHorizontalBarGraph (String [] labels, double [][] values, String title) {
+	public StackedHorizontalBarGraph (String [] labels, double [][] values, String xLabel, String title) {
 
 		this.labels = labels;
 		this.values = values;
+		this.xLabel = xLabel;
 		this.title = title;
 
 		double tempSum;
@@ -152,6 +155,8 @@ public class StackedHorizontalBarGraph extends JPanel {
 		// x axis
 		g.drawLine(widestLabel, getHeight()-(yLineHeight*2), getWidth()-20, getHeight()-(yLineHeight*2));
 		
+		// Draw the xLabel under the xAxis
+		g.drawString(xLabel, (getWidth()/2) - (g.getFontMetrics().stringWidth(xLabel)/2), getHeight()-5);
 
 		// draw the scale for the x axis
 		double currentValue = minX;
@@ -223,7 +228,7 @@ public class StackedHorizontalBarGraph extends JPanel {
 	
 	public static void main(String[] argv) {
 		JFrame f = new JFrame();
-		f.setSize(600, 400);
+		f.setSize(600, 300);
 		double[][] values = new double[3][4];
 		String[] names = new String[3];
 		values[0][0] = 2;
@@ -245,7 +250,7 @@ public class StackedHorizontalBarGraph extends JPanel {
 		names[2] = "Item 3";
 		
 
-		f.getContentPane().add(new StackedHorizontalBarGraph(names, values, "Stacked Horizontal Bar Graph Test"));
+		f.getContentPane().add(new StackedHorizontalBarGraph(names, values, "count", "Stacked Horizontal Bar Graph Test"));
 
 		WindowListener wndCloser = new WindowAdapter() {
 		@Override

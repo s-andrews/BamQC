@@ -40,6 +40,7 @@ public class HorizontalBarGraph extends JPanel {
 	private static final long serialVersionUID = -4964032131806305960L;
 	private String [] labels;
 	private double [] values;
+	private String xLabel;
 	private String title;
 	private double maxX = 0f;
 	private double minX = 0f;
@@ -48,19 +49,21 @@ public class HorizontalBarGraph extends JPanel {
 	private int width = -1;
 		
 
-	public HorizontalBarGraph (String [] labels, double [] values, String title, double minX, double maxX) {
+	public HorizontalBarGraph (String [] labels, double [] values, String xLabel, String title, double minX, double maxX) {
 		this.labels = labels;
 		this.values = values;
+		this.xLabel = xLabel;
 		this.title = title;
 		this.minX = minX;		
 		this.maxX = maxX;
 		this.xInterval = new AxisScale (minX, maxX).getInterval();
 	}
 	
-	public HorizontalBarGraph (String [] labels, double [] values, String title) {
+	public HorizontalBarGraph (String [] labels, double [] values, String xLabel, String title) {
 
 		this.labels = labels;
 		this.values = values;
+		this.xLabel = xLabel;
 		this.title = title;
 		
 		for (int v=0;v<values.length;v++) {
@@ -148,6 +151,9 @@ public class HorizontalBarGraph extends JPanel {
 		// X-axis
 		g.drawLine(widestLabel,getHeight()-(yLineHeight*2),getWidth()-20,getHeight()-(yLineHeight*2));
 
+		// Draw the xLabel under the xAxis
+		g.drawString(xLabel, (getWidth()/2) - (g.getFontMetrics().stringWidth(xLabel)/2), getHeight()-5);
+		
 	
 		// draw the scale for the x axis
 		double currentValue = minX;
@@ -218,7 +224,7 @@ public class HorizontalBarGraph extends JPanel {
 
 		
 
-		f.getContentPane().add(new HorizontalBarGraph(names, values, "Stacked Horizontal Bar Graph Test"));
+		f.getContentPane().add(new HorizontalBarGraph(names, values, "Counts", "Stacked Horizontal Bar Graph Test"));
 
 		WindowListener wndCloser = new WindowAdapter() {
 		@Override
