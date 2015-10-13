@@ -1,7 +1,7 @@
 <html>
 
 <head>
-<title>Opening a FastQ file</title>
+<title>Opening a SAM/BAM file</title>
 <style type="text/css">
 	body {
 		font-family: sans-serif;
@@ -26,20 +26,20 @@ you want to analyse.
  BamQC supports files in the following formats
  </p>
  <ul>
- <li>FastQ (all quality encoding variants)</li>
- <li>Casava FastQ files*</li>
- <li>Colorspace FastQ</li>
- <li>GZip compressed FastQ</li>
+ <li>SAM/BAM (all quality encoding variants)</li>
+ <li>Casava SAM/BAM files*</li>
+ <li>Colorspace SAM/BAM</li>
+ <li>GZip compressed SAM/BAM</li>
  <li>SAM</li>
  <li>BAM</li>
  <li>SAM/BAM Mapped only (normally used for colorspace data)</li>
  </ul>
  
  <p>
- * Casava fastq format is the same as regular fastq except that
+ * Casava SAM/BAM format is the same as regular SAM/BAM except that
  the data is usually split across multiple files for a single sample.
  In this mode the program will merge the files in a sample group and
- present a single report for each sample. Also Casava fastq files
+ present a single report for each sample. Also Casava SAM/BAM files
  contain poor quality sequences which have been flagged to be remove.
  In Casava mode the program will exclude these flagged sequences from
  the report.
@@ -48,8 +48,8 @@ you want to analyse.
  <p>
  By default BamQC will try to guess the file format from the name
  of the input file.  Anything ending in .sam or .bam will be 
- opened as a SAM/BAM file (using all sequences, mapped and unmapped)
- , and everything else will be treated as FastQ format.  If you want 
+ opened as a SAM/BAM file (using all sequences, mapped and unmapped), 
+ and everything else will be treated as SAM/BAM format.  If you want 
  to override this detection and specify the file format manually
  then you can use the drop down file filter in the file chooser to
  select the type of file you're going to load. You need to use the 
