@@ -17,9 +17,12 @@ import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.Graphs.BarGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
+import uk.ac.babraham.BamQC.Utilities.CalculateDistribution;
 
 public class RpkmReference extends AbstractQCModule {
 
+	public final static int BIN_SIZE = ModuleConfig.getParam("RpkmReference_bin_size", "ignore").intValue();
+	
 	private static final int MEGABASE = 1000000;
 	private static final int KILOBASE = 1000;
 	
@@ -30,7 +33,13 @@ public class RpkmReference extends AbstractQCModule {
 
 	private int binNumber = 0;
 	private double[] coverage;
-	private List<Long> sequenceStarts = new ArrayList<Long>();
+	
+	private double[] distributionDouble = null;
+	private double aboveMaxThreshold = ModuleConfig.getParam("RpkmReference_max_size", "ignore").intValue();
+	private double [] graphCounts = null;
+	private String [] xCategories = null;
+	
+	private ArrayList<Long> sequenceStarts = new ArrayList<Long>();
 	private long binNucleotides = MEGABASE;
 	
 	private int readNumber = 0;
@@ -152,9 +161,18 @@ public class RpkmReference extends AbstractQCModule {
 
 	@Override
 	public JPanel getResultsPanel() {
+		
+		CalculateDistribution cd = new CalculateDistribution(coverage, aboveMaxThreshold, BIN_SIZE);
+		graphCounts = cd.getGraphCounts();
+		xCategories = cd.getXCategories();
+		//double max = cd.getMax();
+		distributionDouble = cd.getDistributionDouble();
+		
 
-		String title = String.format("Reads per Kilobase per Megabase");
+		String title = String.format("Reads per KB per MB");
 
+		//return new BarGraph(graphCounts, 0.0, max, "Bases bp", xCategories, title);
+		
 		double min=0, max=0;
 		int[] xCategories = new int[coverage.length];
 		for(int i=0; i<coverage.length; i++) {
@@ -162,14 +180,14 @@ public class RpkmReference extends AbstractQCModule {
 				min = coverage[i];
 			else if(max<coverage[i]) 
 				max = coverage[i];
-			xCategories[i] = i;
-		}
+			xCategories[i] = i;	
+		}	
 		return new BarGraph(coverage, min, max, "Bases bp", xCategories, title);
 	}
 
 	@Override
 	public String name() {
-		return "Reads per Kilobase per Megabase";
+		return "Reads per KB per MB";
 	}
 
 	@Override

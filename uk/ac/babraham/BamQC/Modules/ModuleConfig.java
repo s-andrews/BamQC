@@ -62,6 +62,9 @@ public class ModuleConfig {
 		params.put("InsertLengthDistribution_bin_size:ignore", 25.0d);
 		params.put("InsertLengthDistribution_percentage_deviation:error", 50.0d);
 		params.put("InsertLengthDistribution_percentage_deviation:warn", 75.0d);
+
+		params.put("RpkmReference_max_size:ignore", 5000.0d);
+		params.put("RpkmReference_bin_size:ignore", 400.0d);
 		
 		params.put("MappingQualityDistribution_fraction:error", 0.50d);
 		params.put("MappingQualityDistribution_fraction:warn", 0.75d);

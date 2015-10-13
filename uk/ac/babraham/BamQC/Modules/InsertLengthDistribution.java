@@ -34,8 +34,7 @@ import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.Graphs.BarGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
-
-
+import uk.ac.babraham.BamQC.Utilities.CalculateDistribution;
 
 
 public class InsertLengthDistribution extends AbstractQCModule {
@@ -49,10 +48,10 @@ public class InsertLengthDistribution extends AbstractQCModule {
 
 	private ArrayList<Long> insertLengthCounts = new ArrayList<Long>();
 	private double[] distributionDouble = null;
-	private long aboveMaxInsertLengthCount = 0;
+	private double aboveMaxInsertLengthCount = 0L;
 	private double [] graphCounts = null;
-	private String [] xCategories = new String[0];
-	private double max = 0;
+	private String [] xCategories = null;
+	private double max = 0.0d;
 	private boolean calculated = false;
 	
 	private long unpairedReads = 0;
@@ -104,121 +103,24 @@ public class InsertLengthDistribution extends AbstractQCModule {
 	}
 	
 	
-	
-	private double percent(long value, long total) {
-		return ((double) value / total) * 100.0;
-	}
-	
-	private void prepareDistribution() {
-		// +2 = fraction and exceeding max values N
-		int binNumber = (insertLengthCounts.size() / BIN_SIZE) + 2;
-		distributionDouble = new double[binNumber];
-		long total = aboveMaxInsertLengthCount;
-		
-		for (long count : insertLengthCounts) {
-			total += count;
-		}
-		distributionDouble[binNumber - 1] = percent(aboveMaxInsertLengthCount, total);
-
-		for (int i = 0; i < insertLengthCounts.size(); i++) {
-			int index = (i / BIN_SIZE);
-			distributionDouble[index] += percent(insertLengthCounts.get(i), total);
-		}
-	}
-	
-	private int [] getSizeDistribution(int min, int max) {
-		int base = 1;
-		while (base > (max-min)) {
-			base /= 10;
-		}
-		int interval;
-		int starting;
-		int [] divisions = new int [] {1,2,5};
-		OUTER: while (true) {
-			for (int d=0;d<divisions.length;d++) {
-				int tester = base * divisions[d];
-				if (((max-min) / tester) <= 50) {
-					interval = tester;
-					break OUTER;
-				}
-			}
-			base *=10;
-		}
-		// Now we work out the first value to be plotted
-		int basicDivision = min/interval;	
-		int testStart = basicDivision * interval;	
-		starting = testStart;
-		return new int[] {starting,interval};
-		
-	}	
-	
-	private void calculateDistribution() {
-		int maxLen = 0;
-		int minLen = -1;
-		max = 0;
-		
-		prepareDistribution();	
-		
-		// Find the min and max lengths		
-		for (int i=0;i<distributionDouble.length;i++) {
-			if (distributionDouble[i] > 0.0d) {
-				if (minLen < 0) {
-					minLen = i;
-				}
-				maxLen = i;
-			}
-		}
-		
-		// We put one extra category either side of the actual size
-		if (minLen>0) minLen--;
-		maxLen++;
-		
-		int [] startAndInterval = getSizeDistribution(minLen, maxLen);
-				
-		// Work out how many categories we need
-		int categories = 0;
-		int currentValue = startAndInterval[0];
-		while (currentValue<= maxLen) {
-			++categories;
-			currentValue+= startAndInterval[1];
-		}
-		
-		graphCounts = new double[categories];
-		xCategories = new String[categories];
-		
-		for (int i=0;i<graphCounts.length;i++) {
-			
-			int minValue = startAndInterval[0]+(startAndInterval[1]*i);
-			int maxValue = (startAndInterval[0]+(startAndInterval[1]*(i+1)))-1;
-
-			if (maxValue > maxLen) {
-				maxValue = maxLen;
-			}
-			
-			for (int bp=minValue;bp<=maxValue;bp++) {
-				if (bp < distributionDouble.length) {
-					graphCounts[i] += distributionDouble[bp];
-				}
-			}
-			
-			if (startAndInterval[1] == 1) {
-				xCategories[i] = ""+Integer.toString(minValue * 10);
-			}
-			else {
-				xCategories[i] = Integer.toString(minValue * 10)+"-"+Integer.toString(maxValue * 10);
-			}
-			if (graphCounts[i] > max) max = graphCounts[i];
-		}
-	}
-	
-	
 	@Override
 	public JPanel getResultsPanel() {
 		log.debug("Number of inferred insert sizes above the maximum allowed = " + aboveMaxInsertLengthCount);
 		log.debug("Number of unpaired reads = " + unpairedReads);
 		
-		if (!calculated) calculateDistribution();		
-
+		if (!calculated) {
+			double[] rawCounts = new double[insertLengthCounts.size()];
+			for(int i=0; i<rawCounts.length; i++) {
+				rawCounts[i] = insertLengthCounts.get(i);
+			}
+			CalculateDistribution cd = new CalculateDistribution(rawCounts, aboveMaxInsertLengthCount, BIN_SIZE);
+			graphCounts = cd.getGraphCounts();
+			xCategories = cd.getXCategories();
+			max = cd.getMax();
+			distributionDouble = cd.getDistributionDouble();
+			calculated = true;
+		}
+				
 		String title = String.format("Paired Read Insert Length Distrib ( %d bp max size and %.3f %% unpaired reads )", MAX_INSERT_SIZE, (((double) unpairedReads / reads) * 100.0));
 		return new BarGraph(graphCounts, 0.0d, max, "Inferred Insert Length bp", xCategories, title);
 	}
@@ -238,7 +140,7 @@ public class InsertLengthDistribution extends AbstractQCModule {
 	@Override
 	public void reset() {
 		insertLengthCounts = new ArrayList<Long>();
-		aboveMaxInsertLengthCount = 0;
+		aboveMaxInsertLengthCount = 0L;
 		percentageDeviationCalculated = false;
 		percentageDeviation = 0.0;
 	}
@@ -323,5 +225,6 @@ public class InsertLengthDistribution extends AbstractQCModule {
 	public long getUnpairedReads() {
 		return unpairedReads;
 	}
-
+	
+	
 }
