@@ -97,7 +97,7 @@ public class ProgressTextDialog implements Runnable, ProgressListener {
 	 */
 	@Override
 	public void progressComplete(String command, Object result) {
-		System.out.println("Operation completed!");
+		System.out.println(command);
 	}
 
 	/* (non-Javadoc)
