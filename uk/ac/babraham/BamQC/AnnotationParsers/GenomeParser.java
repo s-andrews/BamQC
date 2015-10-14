@@ -171,7 +171,7 @@ public class GenomeParser extends AnnotationParser {
 			while (e.hasMoreElements()) {
 				// Update the listeners
 				e.nextElement().progressComplete("Processed features: "+importedFeatures + "\n" + 
-												 "Parsed annotation .dat files for genome " + BamQCConfig.getInstance().genome.getAbsolutePath(), null);
+												 "Parsed annotation .dat files for genome " + genome.toString(), null);
 			}
 		}
 		
@@ -230,7 +230,7 @@ public class GenomeParser extends AnnotationParser {
 			// Update the listeners
 			e = listeners.elements();
 			while (e.hasMoreElements()) {
-				e.nextElement().progressComplete("Parsed annotation .gff/.gtf files for genome "+ BamQCConfig.getInstance().genome.getAbsolutePath(), null);
+				e.nextElement().progressComplete("Parsed annotation .gff/.gtf files for genome "+ genome.toString(), null);
 			}
 		}
 
