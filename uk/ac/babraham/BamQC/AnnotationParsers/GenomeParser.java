@@ -38,14 +38,11 @@ import uk.ac.babraham.BamQC.Utilities.FileFilters.DatSimpleFileFilter;
 import uk.ac.babraham.BamQC.Utilities.FileFilters.GFFSimpleFileFilter;
 
 /**
- * The Class GenomeParser loads all of the features for a CoreGenomeAnnotationSet.
- * It can either do a full parse of the original EMBL format files, or take
- * a shortcut if there are pre-cached object files present.
+ * The Class can either do a full parse of the original EMBL format files, or parse 
+ * included gff / gtf files if present.
  */
-public class GenomeParser {
+public class GenomeParser extends AnnotationParser {
 
-	/** The listeners. */
-	private Vector<ProgressListener> listeners = new Vector<ProgressListener>();
 	
 	/** The genome. */
 	private Genome genome = null;
@@ -60,6 +57,11 @@ public class GenomeParser {
 	private BamQCPreferences prefs = BamQCPreferences.getInstance();
 	
 	
+	
+	public GenomeParser () { 
+		super();
+	}
+	
 	/** 
 	 * The parsed genome or null if no genome has been parsed.
 	 * @return the parsed genome or null
@@ -68,11 +70,35 @@ public class GenomeParser {
 		return genome;
 	}
 	
-	/**
-	 * Parses the genome.
-	 * 
-	 * @param baseLocation the base location
+	/* (non-Javadoc)
+	 * @see uk.ac.babraham.BamQC.AnnotationParsers.AnnotationParser#requiresFile()
 	 */
+	@Override
+	public boolean requiresFile() {
+		return true;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see uk.ac.babraham.BamQC.AnnotationParsers.AnnotationParser#name()
+	 */
+	@Override
+	public String name() {
+		return "Genome Parser";
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see uk.ac.babraham.BamQC.AnnotationParsers.AnnotationParser#parseAnnotation(uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet, java.io.File)
+	 */
+	@Override
+	public void parseAnnotation(AnnotationSet annotationSet, File file) throws Exception {}	
+	
+	/*
+	 * (non-Javadoc)
+	 * @see uk.ac.babraham.BamQC.AnnotationParsers.AnnotationParser#parseGenome(java.io.File)
+	 */
+	@Override
 	public void parseGenome (File baseLocation) {
 		this.baseLocation = baseLocation;
 
@@ -87,50 +113,35 @@ public class GenomeParser {
 				return;
 			}
 		}
+		// Update the listeners
+		Enumeration<ProgressListener> e = listeners.elements();
+		while (e.hasMoreElements()) {
+			e.nextElement().progressUpdated("Loading files for genome "+baseLocation,0,0);
+		}
 		parseGenomeFiles(genome);
 	}
 	
-	
-	/**
-	 * Adds the progress listener.
-	 * 
-	 * @param pl the pl
-	 */
-	public void addProgressListener (ProgressListener pl) {
-		if (pl != null && ! listeners.contains(pl))
-			listeners.add(pl);
-	}
-	
-	/**
-	 * Removes the progress listener.
-	 * 
-	 * @param pl the pl
-	 */
-	public void removeProgressListener (ProgressListener pl) {
-		if (pl != null && listeners.contains(pl))
-				listeners.remove(pl);
-	}
-	
+		
 	
 	
 	private void parseGenomeFiles (Genome genome) {
-	
+		
 		// We need a list of all of the .dat files inside the baseLocation
 		File [] files = baseLocation.listFiles(new DatSimpleFileFilter());
+		
+		int importedFeatures = 0;
 		
 		for (int i=0;i<files.length;i++) {
 			// Update the listeners
 			Enumeration<ProgressListener> e = listeners.elements();
-			
 			while (e.hasMoreElements()) {
-				e.nextElement().progressUpdated("Loading Genome File "+files[i].getName(),i,files.length);
+				e.nextElement().progressUpdated("Loading genome file "+files[i].getName(),i,files.length);
 			}
 			try {
-				processEMBLFile(files[i]);
+				importedFeatures += processEMBLFile(files[i]);
 			} 
 			catch (Exception ex) {
 				Enumeration<ProgressListener> en = listeners.elements();
-				
 				while (en.hasMoreElements()) {
 					en.nextElement().progressExceptionReceived(ex);
 				}
@@ -142,7 +153,9 @@ public class GenomeParser {
 		Enumeration<ProgressListener> e = listeners.elements();
 		if(files.length > 0) {
 			while (e.hasMoreElements()) {
-				e.nextElement().progressUpdated("Parsed annotation data for .dat files",1,1);
+				// Update the listeners
+				e.nextElement().progressComplete("Processed features: "+importedFeatures + "\n" + 
+												 "Parsed annotation data for .dat files", null);
 			}
 		}
 		
@@ -158,9 +171,8 @@ public class GenomeParser {
 //			System.err.println("Parsing "+files[i]);
 			// Update the listeners
 			e = listeners.elements();
-			
 			while (e.hasMoreElements()) {
-				e.nextElement().progressUpdated("Loading Genome File "+files[i].getName(),i,files.length);
+				e.nextElement().progressUpdated("Loading genome file "+files[i].getName(),i,files.length);
 			}
 			try {
 				AnnotationSet newSet = new AnnotationSet(); 
@@ -180,22 +192,15 @@ public class GenomeParser {
 			}			
 		}
 
-		// Update the listeners
-		e = listeners.elements();
+
 		if(files.length > 0) {
+			// Update the listeners
+			e = listeners.elements();
 			while (e.hasMoreElements()) {
-				e.nextElement().progressUpdated("Parsed annotation data for .gff/.gtf files",1,1);
+				e.nextElement().progressComplete("Parsed annotation data for .gff/.gtf files", null);
 			}
 		}
 
-	}
-
-	
-	protected void progressWarningReceived (Exception e) {
-		Enumeration<ProgressListener>en = listeners.elements();
-		while (en.hasMoreElements()) {
-			en.nextElement().progressWarningReceived(e);
-		}
 	}
 
 	
@@ -205,8 +210,9 @@ public class GenomeParser {
 	 * @param f the f
 	 * @param annotation the annotation
 	 * @throws Exception the exception
+	 * @return the number of imported features
 	 */
-	private void processEMBLFile (File f) throws Exception {
+	private int processEMBLFile (File f) throws Exception {
 		
 		int processedLines = 0;
 		int processedFeatures = 0;
@@ -237,9 +243,9 @@ public class GenomeParser {
 			Feature feature = null;
 			while ((line=br.readLine())!=null) {
 				
-				if (processedLines % 100000 == 0) {
-					System.err.println ("Processed "+processedLines+" lines currently holding "+processedFeatures+" features");
-				}
+//				if (processedLines % 100000 == 0) {
+//					System.err.println ("Processed "+processedLines+" lines currently holding "+processedFeatures+" features");
+//				}
 				
 				processedLines++;
 //				System.err.println("Read line '"+line+"'");
@@ -316,7 +322,7 @@ public class GenomeParser {
 			}
 		}
 		br.close();
-		System.err.println ("Total processed features: "+processedFeatures);
+		return processedFeatures;
 	}	
 		
 	

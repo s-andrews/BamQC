@@ -24,7 +24,6 @@ import java.io.File;
 import java.util.Enumeration;
 import java.util.Vector;
 
-
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.DataTypes.ProgressListener;
 import uk.ac.babraham.BamQC.Dialogs.Cancellable;
@@ -35,10 +34,10 @@ import uk.ac.babraham.BamQC.Dialogs.Cancellable;
  * implemented by a class wanting to be able to import features into
  * a BamQC AnnotationSet.
  */
-public abstract class AnnotationParser implements Cancellable {
+public abstract class AnnotationParser implements Cancellable, ProgressListener {
 	
 	/** The listeners. */
-	private Vector<ProgressListener> listeners = new Vector<ProgressListener>();
+	protected Vector<ProgressListener> listeners = new Vector<ProgressListener>();
 	
 	/** The cancel. */
 	protected boolean cancel = false;
@@ -53,10 +52,22 @@ public abstract class AnnotationParser implements Cancellable {
 	 * 
 	 * @return true, if successful
 	 */
-	abstract public boolean requiresFile ();
+	public abstract boolean requiresFile ();
 	
-	
+	/**
+	 * Parses a file containing an annotation.
+	 * 
+	 * @param annotationSet the calculated annotationSet to be returned
+	 * @param File the file containing the annotation to parse
+	 */
 	public abstract void parseAnnotation(AnnotationSet annotationSet, File file) throws Exception;
+	
+	/**
+	 * Parses the genome.
+	 * 
+	 * @param baseLocation the base location
+	 */
+	public abstract void parseGenome (File baseLocation);
 	
 	
 	/**
@@ -111,12 +122,34 @@ public abstract class AnnotationParser implements Cancellable {
 	 * 
 	 * @param e the e
 	 */
-	protected void progressWarningReceived (Exception e) {
+	@Override
+	public void progressWarningReceived (Exception e) {
 		Enumeration<ProgressListener>en = listeners.elements();
 		while (en.hasMoreElements()) {
 			en.nextElement().progressWarningReceived(e);
 		}
 	}
+	
+	
+	/*
+	 * These are the methods we use to communicate with out listeners.
+	 * Some of these can be accessed by the implementing class directly
+	 * but the big ones need to go back through this class.
+	 */
+	
+	/**
+	 * Progress exception received.
+	 * 
+	 * @param e the e
+	 */
+	@Override
+	public void progressExceptionReceived (Exception e) {
+		Enumeration<ProgressListener>en = listeners.elements();
+		while (en.hasMoreElements()) {
+			en.nextElement().progressExceptionReceived(e);
+		}
+	}
+	
 	
 	/**
 	 * Progress updated.
@@ -125,17 +158,34 @@ public abstract class AnnotationParser implements Cancellable {
 	 * @param current the current
 	 * @param max the max
 	 */
-	protected void progressUpdated (String message, int current, int max) {
+	@Override
+	public void progressUpdated (String message, int current, int max) {
 		Enumeration<ProgressListener>en = listeners.elements();
 		while (en.hasMoreElements()) {
 			en.nextElement().progressUpdated(message, current, max);
 		}
 	}
+	
+	/**
+	 * Progress completed.
+	 * 
+	 * @param message the message
+	 * @param return object
+	 */
+	@Override
+	public void progressComplete (String message, Object result) {
+		Enumeration<ProgressListener>en = listeners.elements();
+		while (en.hasMoreElements()) {
+			en.nextElement().progressComplete(message, result);
+		}
+	}
+	
 
 	/**
 	 * Progress cancelled.
 	 */
-	protected void progressCancelled () {
+	@Override
+	public void progressCancelled () {
 		Enumeration<ProgressListener>en = listeners.elements();
 		while (en.hasMoreElements()) {
 			en.nextElement().progressCancelled();

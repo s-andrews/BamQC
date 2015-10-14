@@ -22,10 +22,12 @@ package uk.ac.babraham.BamQC.AnnotationParsers;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import uk.ac.babraham.BamQC.DataTypes.ProgressListener;
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Feature;
@@ -51,6 +53,13 @@ public class GFF3AnnotationParser extends AnnotationParser {
 		return true;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see uk.ac.babraham.BamQC.AnnotationParsers.AnnotationParser#parseGenome(java.io.File)
+	 */
+	@Override
+	public void parseGenome (File baseLocation) {}
+	
 
 	/* (non-Javadoc)
 	 * @see uk.ac.babraham.BamQC.AnnotationParsers.AnnotationParser#name()
@@ -60,48 +69,50 @@ public class GFF3AnnotationParser extends AnnotationParser {
 		return "GFF Parser";
 	}
 	
-	
+	/*
+	 * (non-Javadoc)
+	 * @see uk.ac.babraham.BamQC.AnnotationParsers.AnnotationParser#parseAnnotation(uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet, java.io.File)
+	 */
 	@Override
 	public void parseAnnotation(AnnotationSet annotationSet, File file) throws Exception {
+
+		// Update the listeners
+		Enumeration<ProgressListener> e = listeners.elements();
+		while (e.hasMoreElements()) {
+			e.nextElement().progressUpdated("Loading annotation file "+file.getName(), 0, 1);
+		}
 		
-		System.out.println("Loading Annotation File "+file.getName());
 		
 		annotationSet.setFile(file);
 		
-		int processedLines = 0;
 		HashMap<String, FeatureGroup> groupedFeatures = new HashMap<String, FeatureGroup>();
 		BufferedReader br = null;
+		
+		
+        long totalBytes = file.length();                    
+        long bytesRead = 0;
+        int previousPercent = 0;
+		
 
 		try { 
+			
 			br = new BufferedReader(new FileReader(file));
 
 			String line;
 
 			while ((line = br.readLine())!= null) {
 
-				//			if (cancel) {
-				//				progressCancelled();
-				//				br.close();
-				//				return null;
-				//			}
-				//			
-				//			if (count % 1000 == 0) {
-				//				progressUpdated("Read "+count+" lines from "+file.getName(), 0, 1);
-				//			}
-				//			
-				//			if (count>1000000 && count%1000000 == 0) {
-				//				progressUpdated("Caching...",0,1);
-				//				annotationSet.finalise();
-				//				annotationSet = new GenomeAnnotationSet(genome, file.getName()+"["+annotationSets.size()+"]");
-				//				annotationSets.add(annotationSet);
-				//			}
 
-
-				processedLines++;
-
-				if (processedLines % 100000 == 0) {
-					System.err.println ("Processed "+processedLines+" lines currently holding "+groupedFeatures.size()+" features");
-				}	
+	            bytesRead += line.length();
+	            int percent = (int)(bytesRead * 100 / totalBytes);          
+	            if (previousPercent < percent && percent%5 == 0){
+	        		// Update the listeners
+	        		e = listeners.elements();
+	        		while (e.hasMoreElements()) {
+	        			e.nextElement().progressUpdated("Approx "+percent+"% complete for "+file.getName(), percent, 100);
+	        		}
+	                previousPercent = percent;
+	            }
 
 
 				if (line.trim().length() == 0) continue;  //Ignore blank lines
@@ -160,7 +171,7 @@ public class GFF3AnnotationParser extends AnnotationParser {
 						strand = Location.UNKNOWN;
 					}
 				}
-				catch (NumberFormatException e) {
+				catch (NumberFormatException ex) {
 					//				progressWarningReceived(new BamQCException("Location "+sections[3]+"-"+sections[4]+" was not an integer"));
 					continue;
 				}
@@ -285,12 +296,19 @@ public class GFF3AnnotationParser extends AnnotationParser {
 			for(int j=0; j<fg.length; j++) {
 				annotationSet.addFeature(fg[j].feature());
 			}
-		} catch(Exception e) {
-			throw e;
+			
+		} catch(Exception ex) {
+			throw ex;
 		} finally {
 			if(br != null) {
 				br.close();
-				System.err.println ("Total processed features: "+groupedFeatures.size());
+				// Update the listeners
+				e = listeners.elements();
+				while (e.hasMoreElements()) {
+	    			e.nextElement().progressComplete("Approx 100% complete for "+file.getName() + "\n" +
+	    											 "Processed features: "+groupedFeatures.size() + "\n" +
+	    											 "Parsed annotation file " + file.getName() + "\n", null);
+				}
 			}
 		}
 
