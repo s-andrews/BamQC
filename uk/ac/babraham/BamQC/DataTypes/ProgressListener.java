@@ -90,4 +90,5 @@ public interface ProgressListener {
 	 * @param result the result
 	 */
 	public void progressComplete (String command, Object result);
+
 }

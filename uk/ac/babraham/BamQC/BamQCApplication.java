@@ -187,7 +187,10 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 	 * Clears all stored data and blanks the UI.
 	 */
 	public void wipeAllData () {
-		// leave it for now in case we decide to wipe some data.
+		BamQCConfig.getInstance().genome = null;
+		BamQCConfig.getInstance().species = null;
+		BamQCConfig.getInstance().assembly = null;
+		BamQCConfig.getInstance().gff_file = null;
 	}
 	
 	public void openGFF () {
@@ -352,18 +355,11 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 		GenomeDownloader d = new GenomeDownloader();
 		d.addProgressListener(this);
 
-//		// if using a text ProgressTextDialog
+//		// using a text ProgressTextDialog
 		ProgressTextDialog ptd = new ProgressTextDialog("Downloading genome...");
 		d.addProgressListener(ptd);
 
-//		// if using a graphic ProgressDialog
-//		ProgressDialog pd = new ProgressDialog(this,"Downloading genome...");
-//		d.addProgressListener(pd);
-
 		d.downloadGenome(species,assembly,size,true);
-
-//		// if using a graphic ProgressDialog		
-//		pd.requestFocus();
 	}
 	
 	
