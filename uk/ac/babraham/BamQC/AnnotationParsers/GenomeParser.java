@@ -24,8 +24,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.Vector;
 
+import uk.ac.babraham.BamQC.BamQCConfig;
 import uk.ac.babraham.BamQC.BamQCException;
 import uk.ac.babraham.BamQC.DataTypes.ProgressListener;
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
@@ -55,7 +55,6 @@ public class GenomeParser extends AnnotationParser {
 	
 	/** The prefs. */
 	private BamQCPreferences prefs = BamQCPreferences.getInstance();
-	
 	
 	
 	public GenomeParser () { 
@@ -131,33 +130,52 @@ public class GenomeParser extends AnnotationParser {
 		
 		int importedFeatures = 0;
 		
-		for (int i=0;i<files.length;i++) {
+	    int totalFiles = files.length;                    
+	    int filesRead = 0;
+	    int previousPercent = 0;
+	    
+	    Enumeration<ProgressListener> e = null;
+		
+		for (int i=0;i<totalFiles;i++) {
 			// Update the listeners
-			Enumeration<ProgressListener> e = listeners.elements();
-			while (e.hasMoreElements()) {
-				e.nextElement().progressUpdated("Loading genome file "+files[i].getName(),i,files.length);
-			}
+//			Enumeration<ProgressListener> e = listeners.elements();
+//			while (e.hasMoreElements()) {
+//				e.nextElement().progressUpdated("Loading genome file "+files[i].getName(),i,files.length);
+//			}
 			try {
 				importedFeatures += processEMBLFile(files[i]);
+				
+	            filesRead = i+1;
+	            int percent = Math.round(filesRead * 100.0f / totalFiles);          
+	            if (previousPercent < percent) {
+	        		// Update the listeners
+	        		e = listeners.elements();
+	        		while (e.hasMoreElements()) {
+	        			e.nextElement().progressUpdated("Approx "+percent+"% complete", percent, 100);
+	        		}
+	                previousPercent = percent;
+	            }
 			} 
 			catch (Exception ex) {
-				Enumeration<ProgressListener> en = listeners.elements();
-				while (en.hasMoreElements()) {
-					en.nextElement().progressExceptionReceived(ex);
+				e = listeners.elements();
+				while (e.hasMoreElements()) {
+					e.nextElement().progressExceptionReceived(ex);
 				}
 				return;
 			}			
 		}
 		
 		// Update the listeners
-		Enumeration<ProgressListener> e = listeners.elements();
+		e = listeners.elements();
 		if(files.length > 0) {
 			while (e.hasMoreElements()) {
 				// Update the listeners
 				e.nextElement().progressComplete("Processed features: "+importedFeatures + "\n" + 
-												 "Parsed annotation data for .dat files", null);
+												 "Parsed annotation .dat files for genome " + BamQCConfig.getInstance().genome.getAbsolutePath(), null);
 			}
 		}
+		
+		
 		
 		
 		// Now do the same thing for gff files.
@@ -165,15 +183,19 @@ public class GenomeParser extends AnnotationParser {
 		// We need a list of all of the .gff/gtf files inside the baseLocation
 		files = baseLocation.listFiles(new GFFSimpleFileFilter());
 		
+		
+	    totalFiles = files.length;                    
+	    filesRead = 0;
+	    previousPercent = 0;
+		
 		GFF3AnnotationParser gffParser = new GFF3AnnotationParser();
 		
-		for (int i=0;i<files.length;i++) {
-//			System.err.println("Parsing "+files[i]);
+		for (int i=0;i<totalFiles;i++) {
 			// Update the listeners
-			e = listeners.elements();
-			while (e.hasMoreElements()) {
-				e.nextElement().progressUpdated("Loading genome file "+files[i].getName(),i,files.length);
-			}
+//			e = listeners.elements();
+//			while (e.hasMoreElements()) {
+//				e.nextElement().progressUpdated("Loading genome file "+files[i].getName(),i,files.length);
+//			}
 			try {
 				AnnotationSet newSet = new AnnotationSet(); 
 				gffParser.parseAnnotation(newSet, files[i]);
@@ -181,12 +203,23 @@ public class GenomeParser extends AnnotationParser {
 				for (int f=0;f<features.length;f++) {
 					genome.annotationSet().addFeature(features[f]);
 				}
+				
+	            filesRead = i+1;
+	            int percent = filesRead * 100 / totalFiles;          
+	            if (previousPercent < percent && percent%5 == 0){
+	        		// Update the listeners
+	        		e = listeners.elements();
+	        		while (e.hasMoreElements()) {
+	        			e.nextElement().progressUpdated("Approx "+percent+"% complete", percent, 100);
+	        		}
+	                previousPercent = percent;
+	            }
 			} 
 			catch (Exception ex) {
-				Enumeration<ProgressListener> en = listeners.elements();
+				e = listeners.elements();
 				
-				while (en.hasMoreElements()) {
-					en.nextElement().progressExceptionReceived(ex);
+				while (e.hasMoreElements()) {
+					e.nextElement().progressExceptionReceived(ex);
 				}
 				return;
 			}			
@@ -197,7 +230,7 @@ public class GenomeParser extends AnnotationParser {
 			// Update the listeners
 			e = listeners.elements();
 			while (e.hasMoreElements()) {
-				e.nextElement().progressComplete("Parsed annotation data for .gff/.gtf files", null);
+				e.nextElement().progressComplete("Parsed annotation .gff/.gtf files for genome "+ BamQCConfig.getInstance().genome.getAbsolutePath(), null);
 			}
 		}
 

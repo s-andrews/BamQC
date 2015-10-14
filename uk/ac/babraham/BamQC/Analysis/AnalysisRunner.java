@@ -77,16 +77,15 @@ public class AnalysisRunner implements Runnable {
 
 		
 		AnnotationSet annotationSet = null;
+		ProgressTextDialog ptd = new ProgressTextDialog("\nAnnotation parsing started ...");
 
 		if(BamQCConfig.getInstance().genome != null) {
 			GenomeParser parser = new GenomeParser();
-//			// if using a text ProgressTextDialog		
-			ProgressTextDialog ptd = new ProgressTextDialog("Loading genome...");
 			parser.addProgressListener(ptd);
 			
 			parser.parseGenome(BamQCConfig.getInstance().genome);
 			annotationSet = parser.genome().annotationSet();
-			
+
 		} else if (BamQCConfig.getInstance().gff_file != null) {	
 				annotationSet = new AnnotationSet();
 				AnnotationParser parser;
@@ -96,6 +95,8 @@ public class AnalysisRunner implements Runnable {
 				else {
 					parser = new GFF3AnnotationParser();
 				}
+				parser.addProgressListener(ptd);
+				
 				try {
 					parser.parseAnnotation(annotationSet, BamQCConfig.getInstance().gff_file);
 				}
@@ -160,19 +161,18 @@ public class AnalysisRunner implements Runnable {
 			}
 			
 			if (seqCount % 1000 == 0) {
-			if (file.getPercentComplete() >= percentComplete+5) {
-			
-				percentComplete = file.getPercentComplete();
-				
-				i = listeners.iterator();
+				int percent = file.getPercentComplete();
+				if (percent >= percentComplete+5) {
+					percentComplete = percent;
+					i = listeners.iterator();
 					while (i.hasNext()) {
-						i.next().analysisUpdated(file,seqCount,percentComplete);
+						i.next().analysisUpdated(file, seqCount, percentComplete);
 					}
 					try {
 						Thread.sleep(10);
 					} 
 					catch (InterruptedException e) {}
-			}
+				}
 			}
 		}
 		
