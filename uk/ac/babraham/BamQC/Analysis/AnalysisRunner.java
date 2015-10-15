@@ -77,7 +77,7 @@ public class AnalysisRunner implements Runnable {
 
 		
 		AnnotationSet annotationSet = null;
-		ProgressTextDialog ptd = new ProgressTextDialog("\nAnnotation parsing started ...");
+		ProgressTextDialog ptd = new ProgressTextDialog("");
 
 		if(BamQCConfig.getInstance().genome != null) {
 			GenomeParser parser = new GenomeParser();
