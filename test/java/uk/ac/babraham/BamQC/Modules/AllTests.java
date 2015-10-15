@@ -26,7 +26,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	BasicStatsTest.class,
+	BasicStatisticsTest.class,
 	ChromosomeDensityTest.class,
 	FeatureCoverageTest.class,
 	GenomeCoverageTest.class,
