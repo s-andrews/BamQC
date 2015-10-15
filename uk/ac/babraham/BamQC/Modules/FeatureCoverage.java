@@ -149,4 +149,12 @@ public class FeatureCoverage extends AbstractQCModule {
 
 	}
 
+	public String[] getFeatureNames() {
+		return featureNames;
+	}
+
+	public double[] getReadCounts() {
+		return readCounts;
+	}
+
 }

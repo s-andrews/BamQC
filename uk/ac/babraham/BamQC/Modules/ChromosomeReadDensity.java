@@ -217,4 +217,21 @@ public class ChromosomeReadDensity extends AbstractQCModule {
 				
 	}
 
+	public String[] getChromosomeNames() {
+		return chromosomeNames;
+	}
+
+	@Deprecated
+	public double[] getReadDensities() {
+		return readDensities;
+	}
+
+	public double[] getLogReadNumber() {
+		return logReadNumber;
+	}
+
+	public double[] getLogChromosomeLength() {
+		return logChromosomeLength;
+	}
+
 }
