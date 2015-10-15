@@ -469,11 +469,14 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 				BamQCConfig.getInstance().do_unzip = false;
 			}
 			
+//			// uncomment this if you need to run a profiler
+//			try { Thread.sleep(10000); } 
+//			catch (InterruptedException e) {}
+			
 			new OfflineRunner(args);
-			System.exit(0);
-		}
 		
-		else {
+		} else {
+			
 			try {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			} catch (Exception e) {}
