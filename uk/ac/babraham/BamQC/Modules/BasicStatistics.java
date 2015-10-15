@@ -38,7 +38,7 @@ import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 import uk.ac.babraham.BamQC.Utilities.MultiLineTableCellRenderer;
 
-public class BasicStats extends AbstractQCModule {
+public class BasicStatistics extends AbstractQCModule {
 
 	private String filename = "";
 	private boolean headerParsed = false;
@@ -69,7 +69,7 @@ public class BasicStats extends AbstractQCModule {
 	/**
 	 * Constructor. Reuse of the computation provided by VariantCallDetection analysis.
 	 */
-	public BasicStats(VariantCallDetection vcd) {
+	public BasicStatistics(VariantCallDetection vcd) {
 		super();
 		this.vcd = vcd;
 	}
