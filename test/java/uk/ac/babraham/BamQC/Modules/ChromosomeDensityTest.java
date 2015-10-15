@@ -35,6 +35,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import uk.ac.babraham.BamQC.AnnotationParsers.AnnotationParser;
+import uk.ac.babraham.BamQC.AnnotationParsers.GTFAnnotationParser;
+import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.Modules.ChromosomeReadDensity;
 
 
@@ -44,32 +47,77 @@ public class ChromosomeDensityTest {
 	private static Logger log = Logger.getLogger(ChromosomeDensityTest.class);
 	
 	private List<SAMRecord> samRecords = null;
-	private ChromosomeReadDensity chromosomeDensity = null;
+	private AnnotationSet annotationSet = null;
+	private ChromosomeReadDensity chromosomeReadDensity = null;
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		System.out.println("Set up : ChromosomeDensityTest");	
+		System.out.println("Set up : ChromosomeReadDensityTest");	
 	}
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-		System.out.println("Tear down : ChromosomeDensityTest");
+		System.out.println("Tear down : ChromosomeReadDensityTest");
 	}
 
 	@Before
 	public void setUp() throws Exception {	
-		chromosomeDensity = new ChromosomeReadDensity();
+		chromosomeReadDensity = new ChromosomeReadDensity();
+		annotationSet = new AnnotationSet();
 	}
 
 	@After
 	public void tearDown() throws Exception { 
 		samRecords = null;
-		chromosomeDensity = null;
+		chromosomeReadDensity = null;
 	}
 
 	@Test
 	public void testChromosomeDensity() {
-		log.info("testChromosomeDensity - NOT YET DEFINED");
+		log.info("testChromosomeReadDensity");
+
+		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_annot.sam");
+		String annotationFile = new String(new File("").getAbsolutePath() + "/test/resources/example_annot.gtf");
+		samRecords = SAMRecordLoader.loadSAMFile(filename);		
+		if(samRecords.isEmpty()) { 
+			log.warn("Impossible to run the test as " + filename + " seems empty");
+			return; 
+		}
+	
+		AnnotationParser parser = new GTFAnnotationParser();
+		try {
+			parser.parseAnnotation(annotationSet, new File(annotationFile));
+		}
+		catch (Exception e) {
+			System.out.println("Annotation not parsed correctly!! Sort it out please..!");
+			return;
+		}
+
+
+		for(SAMRecord read : samRecords) {
+			annotationSet.processSequenceNoCache(read);
+			chromosomeReadDensity.processSequence(read);
+		}
+		
+		chromosomeReadDensity.processAnnotationSet(annotationSet);
+
+		
+		
+		String[] chromosomeNames = chromosomeReadDensity.getChromosomeNames();
+		double[] logReadNumber = chromosomeReadDensity.getLogReadNumber();
+		double[] logChromosomeLength = chromosomeReadDensity.getLogChromosomeLength();
+		
+//		for(int i=0; i<chromosomeNames.length; i++) {
+//			System.out.println(chromosomeNames[i]);
+//			System.out.println(logReadNumber[i]);
+//			System.out.println(logChromosomeLength[i]);
+//		}
+		
+		assertEquals(4, chromosomeNames.length);		
+		assertEquals("1", chromosomeNames[3]);
+		assertEquals(2.4, logReadNumber[3], 0.01);
+		assertEquals(18.41, logChromosomeLength[3], 0.01);
+		
 	}
 
 }
