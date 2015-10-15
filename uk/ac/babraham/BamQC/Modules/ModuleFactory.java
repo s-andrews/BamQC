@@ -26,7 +26,7 @@ public class ModuleFactory {
 		VariantCallDetection variantCallDetection = new VariantCallDetection();
 		QCModule [] module_list = new QCModule [] {
 				variantCallDetection,
-				new BasicStats(variantCallDetection),
+				new BasicStatistics(variantCallDetection),
 				new GenomeCoverage(),
 				new ChromosomeReadDensity(),
 				new FeatureCoverage(),				
