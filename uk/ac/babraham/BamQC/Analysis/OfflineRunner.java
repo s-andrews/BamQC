@@ -31,6 +31,7 @@ import uk.ac.babraham.BamQC.Modules.QCModule;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFactory;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
+import uk.ac.babraham.BamQC.Sequence.SequenceFormatException;
 
 public class OfflineRunner implements AnalysisListener {
 	
@@ -54,14 +55,19 @@ public class OfflineRunner implements AnalysisListener {
 		} else 
 			if(BamQCConfig.getInstance().gff_file != null) {
 				System.out.println("Annotation file: " + BamQCConfig.getInstance().gff_file.getAbsolutePath());
-			}
-			if(BamQCConfig.getInstance().genome != null) {
+			} else if(BamQCConfig.getInstance().genome != null) {
 				System.out.println("Genome: " + BamQCConfig.getInstance().genome.getAbsolutePath());			
 			}
 			runMappedFiles(filenames);
 				
 	}
 	
+	public boolean isMappedFile(String bamFile) {
+		if(bamFile.toLowerCase().endsWith(".sam") || bamFile.toLowerCase().endsWith(".bam")) {
+			return true;
+		} 
+		return false;
+	}
 	
 	
 	public void runMappedFiles(String[] bamfiles) {		
@@ -77,22 +83,44 @@ public class OfflineRunner implements AnalysisListener {
 			files.add(new File("stdin"));
 		}
 		else {
-			for (int f=0;f<bamfiles.length;f++) {
+			for (int i=0;i<bamfiles.length;i++) {
 				
-				if(!bamfiles[f].toLowerCase().endsWith(".sam") && !bamfiles[f].toLowerCase().endsWith(".bam")) {
-					System.err.println("Skipping '"+bamfiles[f]+"' as not a .sam or .bam file");
-					continue;
-				}
-				
-				File file = new File(bamfiles[f]);
+				// first control
+				File file = new File(bamfiles[i]);
 				if (!file.exists() || ! file.canRead()) {
-					System.err.println("Skipping '"+bamfiles[f]+"' which didn't exist, or couldn't be read");
+					System.err.println("Skipping '"+file.getAbsolutePath()+"' which didn't exist, or couldn't be read");
 					continue;
 				}
-
-				files.add(file);
+				
+				// if we have a directory, let's see whether we have mapped files inside. If so, load them
+				if(file.isDirectory()) {
+					File[] subdirFiles = file.listFiles();
+					for(int j=0; j<subdirFiles.length; j++) {
+						if(!isMappedFile(subdirFiles[j].getName())) {
+							System.err.println("Skipping '"+subdirFiles[j].getAbsolutePath()+"' as not a .sam or .bam file");
+							continue;
+						}
+						files.add(subdirFiles[j]);
+					}
+				}
+				// we have a file. if this is a mapped file, load it.
+				else { 
+					if(!isMappedFile(file.getName())) {
+						System.err.println("Skipping '"+file.getAbsolutePath()+"' as not a .sam or .bam file");
+						continue;
+					}
+					files.add(file);
+				}
 			}
 		}
+		
+		
+		// NOTE: As this class is executed in batch mode, the operating system may change the priorities of the running 
+		// threads after a while. If this happens, it works as a drop in performance after a certain time the main bamqc 
+		// process was started. This behaviour is due to the nature of this bamqc process (batch mode) and does not 
+		// happen when bamqc is run via GUI, because in this case the bamqc process is executed in interactive mode.
+		// The code below is fine, although the poll "Thread.sleep(1500)" could be replaced by a join(). This requires the 
+		// references of the created threads explicitly.
 		
 				
 		// See if we need to group together files from a casava group
@@ -104,8 +132,13 @@ public class OfflineRunner implements AnalysisListener {
 			try {
 				processFile(files.elementAt(i));
 			}
-			catch (Exception e) {
-				System.err.println("Failed to process "+files.elementAt(i));
+			catch (SequenceFormatException e) {
+				System.err.println("Format error in "+files.elementAt(i) + " : " + e.getLocalizedMessage());
+				e.printStackTrace();
+				filesRemaining.decrementAndGet();
+			}
+			catch (IOException e) {
+				System.err.println("File "+files.elementAt(i) + " broken : "  + e.getLocalizedMessage());
 				e.printStackTrace();
 				filesRemaining.decrementAndGet();
 			}
@@ -115,7 +148,7 @@ public class OfflineRunner implements AnalysisListener {
 		// exits when it's finished.
 		while (filesRemaining.intValue() > 0) {
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(1500);
 			} 
 			catch (InterruptedException e) {}
 		}
@@ -123,7 +156,7 @@ public class OfflineRunner implements AnalysisListener {
 		
 	}
 	
-	public void processFile (File file) throws Exception {
+	public void processFile (File file) throws SequenceFormatException, IOException {
 		if (!file.getName().equals("stdin") && !file.exists()) {
 			throw new IOException(file.getName()+" doesn't exist");
 		}
