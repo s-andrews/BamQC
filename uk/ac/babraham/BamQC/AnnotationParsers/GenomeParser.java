@@ -25,7 +25,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Enumeration;
 
-import uk.ac.babraham.BamQC.BamQCConfig;
 import uk.ac.babraham.BamQC.BamQCException;
 import uk.ac.babraham.BamQC.DataTypes.ProgressListener;
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
@@ -74,7 +73,7 @@ public class GenomeParser extends AnnotationParser {
 	 */
 	@Override
 	public boolean requiresFile() {
-		return true;
+		return false;
 	}
 
 
