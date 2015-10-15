@@ -25,7 +25,6 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.util.List;
 
-import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
 
 import org.apache.log4j.Logger;
