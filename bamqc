@@ -288,16 +288,16 @@ __DATA__
 
 SYNOPSIS
 
-    bamqc bamfile1 bamfile2 .. bamfileN
+    bamqc bamfile1 .. bamfileN | <folder containing SAM/BAM mapped files> 
 
     bamqc [-o output dir] [--(no)extract] [-f file.gtf] 
-           bamfile1 .. bamfileN
+           bamfile1 .. bamfileN | <folder containing SAM/BAM mapped files> 
            
     bamqc [-o output dir] [--(no)extract] [-g genome_dir] 
-           bamfile1 .. bamfileN           
+           bamfile1 .. bamfileN | <folder containing SAM/BAM mapped files>          
 
     bamqc [-o output dir] [--(no)extract] [-p species -e assembly] 
-           bamfile1 .. bamfileN                  
+           bamfile1 .. bamfileN | <folder containing SAM/BAM mapped files>                 
 
 DESCRIPTION
 
