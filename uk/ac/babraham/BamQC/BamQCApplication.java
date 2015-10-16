@@ -89,7 +89,7 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 			
 		}
 
-	public void close () {
+	public int close () {
 		if (fileTabs.getSelectedIndex() >=0) {
 			fileTabs.remove(fileTabs.getSelectedIndex());
 		}
@@ -98,16 +98,18 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 			validate();
 			repaint();
 		}
+		return fileTabs.getTabCount();
 	}
 	
 	public void closeAll () {
+		unsetAnnotation();
 		fileTabs.removeAll();
 		setContentPane(welcomePanel);
 		validate();
 		repaint();
 	}
 	
-	public void openFile () {
+	public boolean openFile () {
 		JFileChooser chooser;
 		
 		if (lastUsedDir == null) {
@@ -118,10 +120,12 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 		}
 		chooser.setMultiSelectionEnabled(true);
 		BAMFileFilter bff = new BAMFileFilter();
+		// remove default "All Files" filter
+		chooser.removeChoosableFileFilter(chooser.getFileFilter());
 		chooser.addChoosableFileFilter(bff);
 		chooser.setFileFilter(bff);
 		int result = chooser.showOpenDialog(this);
-		if (result == JFileChooser.CANCEL_OPTION) return;
+		if (result == JFileChooser.CANCEL_OPTION) return false;
 	
 		// See if they forced a file format
 		FileFilter chosenFilter = chooser.getFileFilter();
@@ -173,28 +177,23 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 	
 			runner.startAnalysis(module_list);
 		}
+		return true;
 	}
 	
 	
 	/**
 	 * Launches the genome selector to begin a new project.
 	 */
-	public void openGFFFromNetwork () {
+	public boolean openGFFFromNetwork () {
+		unsetAnnotation();
 		new GenomeSelector(this);
+		if(BamQCConfig.getInstance().genome == null) 
+			return false;
+		return true;
 	}
 	
-	/**
-	 * Clears all stored data and blanks the UI.
-	 */
-	public void wipeAllData () {
-		BamQCConfig.getInstance().genome = null;
-		BamQCConfig.getInstance().species = null;
-		BamQCConfig.getInstance().assembly = null;
-		BamQCConfig.getInstance().gff_file = null;
-	}
-	
-	public void openGFF () {
-		wipeAllData();
+	public boolean openGFF () {
+		unsetAnnotation();
 		
 		JFileChooser chooser;
 		
@@ -206,22 +205,33 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 		}
 		chooser.setMultiSelectionEnabled(false);
 		GFFFileFilter gff = new GFFFileFilter();
+		// remove default "All Files" filter
+		chooser.removeChoosableFileFilter(chooser.getFileFilter());
 		chooser.addChoosableFileFilter(gff);
 		chooser.setFileFilter(gff);
 		int result = chooser.showOpenDialog(this);
-		if (result == JFileChooser.CANCEL_OPTION) return;
+		if (result == JFileChooser.CANCEL_OPTION) return false;
 	
 		
 		File gff_file = chooser.getSelectedFile();
 
 		if (!(gff_file.exists() && gff_file.canRead())) {
 			JOptionPane.showMessageDialog(this, "GFF file "+gff_file+" doesn't exist or can't be read", "Invalid GFF file", JOptionPane.ERROR_MESSAGE);
+			return false;
 		}
-		else {
-			BamQCConfig.getInstance().gff_file = gff_file;
-		}
+		BamQCConfig.getInstance().gff_file = gff_file;
+		return true;
 	}
 
+	/**
+	 * Unset the current annotation.
+	 */
+	public void unsetAnnotation () {
+		BamQCConfig.getInstance().genome = null;
+		BamQCConfig.getInstance().species = null;
+		BamQCConfig.getInstance().assembly = null;
+		BamQCConfig.getInstance().gff_file = null;
+	}
 
 	public void saveReport () {
 		JFileChooser chooser;

@@ -49,7 +49,8 @@ public class BamQCMenuBar extends JMenuBar implements ActionListener {
 
 	private JMenu fileMenu;
 	private JMenuItem fileGFFOpen;
-	private JMenuItem fileGFFOpenNetwork;	
+	private JMenuItem fileGFFOpenNetwork;
+	private JMenuItem fileUnsetAnnotation;	
 	private JMenuItem fileBAMOpen;
 	private JMenuItem fileSave;
 	private JMenuItem fileClose;
@@ -85,7 +86,17 @@ public class BamQCMenuBar extends JMenuBar implements ActionListener {
 		fileGFFOpen.setActionCommand("open_gff");
 		fileGFFOpen.addActionListener(this);
 		fileMenu.add(fileGFFOpen);
+		
+		fileUnsetAnnotation = new JMenuItem("Unset Annotation");
+		fileUnsetAnnotation.setMnemonic(KeyEvent.VK_U);
+		fileUnsetAnnotation.setAccelerator(KeyStroke.getKeyStroke('U', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		fileUnsetAnnotation.setActionCommand("unset_annotation");
+		fileUnsetAnnotation.addActionListener(this);
+		fileUnsetAnnotation.setEnabled(false);
+		fileMenu.add(fileUnsetAnnotation);
 
+		fileMenu.addSeparator();
+		
 		fileBAMOpen = new JMenuItem("Open SAM/BAM File...");
 		fileBAMOpen.setMnemonic(KeyEvent.VK_O);
 		fileBAMOpen.setAccelerator(KeyStroke.getKeyStroke('O', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
@@ -93,13 +104,12 @@ public class BamQCMenuBar extends JMenuBar implements ActionListener {
 		fileBAMOpen.addActionListener(this);
 		fileMenu.add(fileBAMOpen);
 		
-		fileMenu.addSeparator();
-		
 		fileSave = new JMenuItem("Save Report...");
 		fileSave.setMnemonic(KeyEvent.VK_R);
 		fileSave.setAccelerator(KeyStroke.getKeyStroke('R', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		fileSave.setActionCommand("save");
 		fileSave.addActionListener(this);
+		fileSave.setEnabled(false);
 		fileMenu.add(fileSave);
 		
 		fileMenu.addSeparator();
@@ -109,6 +119,7 @@ public class BamQCMenuBar extends JMenuBar implements ActionListener {
 		fileClose.setAccelerator(KeyStroke.getKeyStroke('C', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		fileClose.setActionCommand("close");
 		fileClose.addActionListener(this);
+		fileClose.setEnabled(false);
 		fileMenu.add(fileClose);
 		
 		fileCloseAll = new JMenuItem("Close All");
@@ -116,6 +127,7 @@ public class BamQCMenuBar extends JMenuBar implements ActionListener {
 		fileCloseAll.setAccelerator(KeyStroke.getKeyStroke('A', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		fileCloseAll.setActionCommand("close_all");
 		fileCloseAll.addActionListener(this);
+		fileCloseAll.setEnabled(false);
 		fileMenu.add(fileCloseAll);
 		
 		fileMenu.addSeparator();
@@ -182,22 +194,37 @@ public class BamQCMenuBar extends JMenuBar implements ActionListener {
 			application.dispose();
 		}
 		else if (action.equals("open")) {
-			application.openFile();
+			if(application.openFile()) {
+				fileClose.setEnabled(true);
+				fileCloseAll.setEnabled(true);
+			}
 		}
 		else if (action.equals("open_gff")) {
-			application.openGFF();
+			if(application.openGFF())
+				fileUnsetAnnotation.setEnabled(true);
 		}
 		else if (action.equals("open_gff_from_network")) {
-			application.openGFFFromNetwork();
+			if(application.openGFFFromNetwork())
+				fileUnsetAnnotation.setEnabled(true);
+		}
+		else if (action.equals("unset_annotation")) {
+			application.unsetAnnotation();
+			fileUnsetAnnotation.setEnabled(false);
 		}
 		else if (action.equals("save")) {
 			application.saveReport();
 		}
 		else if (action.equals("close")) {
-			application.close();
+			if(application.close() == 0) {
+				fileClose.setEnabled(false);
+				fileCloseAll.setEnabled(false);
+			}
 		}
 		else if (action.equals("close_all")) {
 			application.closeAll();
+			fileUnsetAnnotation.setEnabled(false);
+			fileClose.setEnabled(false);
+			fileCloseAll.setEnabled(false);
 		}
 		else if (action.equals("edit_preferences")) {
 			new EditPreferencesDialog();
