@@ -34,6 +34,8 @@ import javax.xml.stream.XMLStreamException;
 import net.sf.samtools.SAMRecord;
 import uk.ac.babraham.BamQC.BamQCConfig;
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
+import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
+import uk.ac.babraham.BamQC.DataTypes.Genome.ChromosomeFactory;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 import uk.ac.babraham.BamQC.Utilities.MultiLineTableCellRenderer;
@@ -46,6 +48,7 @@ public class BasicStatistics extends AbstractQCModule {
 	private boolean hasAnnotation = false;
 	private String annotationFile = "";
 	private long featureTypeCount = 0;
+	private int chromosomeCount = 0;
 	private long actualCount = 0;
 	private long primaryCount = 0;
 	private long pairedCount = 0;
@@ -89,7 +92,8 @@ public class BasicStatistics extends AbstractQCModule {
 				annotationFile = "Annotation from network. \nGenome: " + BamQCConfig.getInstance().genome;
 			}
 			featureTypeCount = annotation.getAllFeatures().length;
-		}		
+		}
+		chromosomeCount = annotation.chromosomeFactory().getAllChromosomes().length;
 	}
 
 	@Override
@@ -238,6 +242,9 @@ public class BasicStatistics extends AbstractQCModule {
  			else { 
  				rowValues.add("No");
  			}
+
+ 			rowNames.add("Total chromosomes");
+ 			rowValues.add("" + chromosomeCount);
  			
  			rowNames.add("Total sequences");
  			rowValues.add("" + actualCount);
@@ -353,6 +360,10 @@ public class BasicStatistics extends AbstractQCModule {
 	
 	public long getFeatureTypeCount() {
 		return featureTypeCount;
+	}
+	
+	public int getChromosomeCount() {
+		return chromosomeCount;
 	}
 
 	public long getActualCount() {

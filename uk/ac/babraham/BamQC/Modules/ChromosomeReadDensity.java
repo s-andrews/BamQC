@@ -137,7 +137,7 @@ public class ChromosomeReadDensity extends AbstractQCModule {
 		String xLabel = "Log Chromosome Length";
 		double maxY = 0d;
 		
-		if(logReadNumber.length < 2) {
+		if(logReadNumber.length < 1) {
 			xCategories = new String[]{"Null"};
 			return new BarGraph(new double[1], 0d, maxY+maxY*0.1, xLabel, xCategories, title);
 		}
@@ -192,7 +192,7 @@ public class ChromosomeReadDensity extends AbstractQCModule {
 
 	@Override
 	public boolean ignoreInReport() {
-		if(logChromosomeLength.length < 2) { 
+		if(logChromosomeLength.length < 1) { 
 			return true;
 		}
 		return false;
