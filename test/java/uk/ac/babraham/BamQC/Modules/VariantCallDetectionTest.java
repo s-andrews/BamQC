@@ -22,8 +22,11 @@ package test.java.uk.ac.babraham.BamQC.Modules;
 
 import static org.junit.Assert.*;
 
+import java.awt.GridLayout;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import net.sf.samtools.SAMRecord;
@@ -264,43 +267,38 @@ public class VariantCallDetectionTest {
 			variantCallDetection.processSequence(read);
 			log.debug("CigarMD: " + variantCallDetection.getCigarMD().toString());
 		}
-
-		log.info("A->C: " + variantCallDetection.getFirstA2C());
-		log.info("A->G: " + variantCallDetection.getFirstA2G());
-		log.info("A->T: " + variantCallDetection.getFirstA2T());
-		log.info("C->A: " + variantCallDetection.getFirstC2A());
-		log.info("C->G: " + variantCallDetection.getFirstC2G());
-		log.info("C->T: " + variantCallDetection.getFirstC2T());
-		log.info("G->A: " + variantCallDetection.getFirstG2A());
-		log.info("G->C: " + variantCallDetection.getFirstG2C());
-		log.info("G->T: " + variantCallDetection.getFirstG2T());
-		log.info("T->A: " + variantCallDetection.getFirstT2A());
-		log.info("T->C: " + variantCallDetection.getFirstT2C());
-		log.info("T->G: " + variantCallDetection.getFirstT2G());
-		log.info("A->C: " + variantCallDetection.getSecondA2C());
-		log.info("A->G: " + variantCallDetection.getSecondA2G());
-		log.info("A->T: " + variantCallDetection.getSecondA2T());
-		log.info("C->A: " + variantCallDetection.getSecondC2A());
-		log.info("C->G: " + variantCallDetection.getSecondC2G());
-		log.info("C->T: " + variantCallDetection.getSecondC2T());
-		log.info("G->A: " + variantCallDetection.getSecondG2A());
-		log.info("G->C: " + variantCallDetection.getSecondG2C());
-		log.info("G->T: " + variantCallDetection.getSecondG2T());
-		log.info("T->A: " + variantCallDetection.getSecondT2A());
-		log.info("T->C: " + variantCallDetection.getSecondT2C());
-		log.info("T->G: " + variantCallDetection.getSecondT2G());		
+		
+		
+		// compute statistics from the FIRST segment data
+		HashMap<String, Long> firstSNPs = variantCallDetection.getFirstSNPs();		
+		String[] snpTypeNames = firstSNPs.keySet().toArray(new String[0]);
+		// sort the labels so that they are nicely organised.
+		Arrays.sort(snpTypeNames);
+		
+		double[] dFirstSNPFrequenciesByType = new double[snpTypeNames.length];
+		for(int i=0; i<snpTypeNames.length; i++) {
+			dFirstSNPFrequenciesByType[i] = firstSNPs.get(snpTypeNames[i]);
+		}
+				
+		// compute statistics from the SECOND segment data if there are paired reads.
+		HashMap<String, Long> secondSNPs = variantCallDetection.getSecondSNPs();		
+		double[] dSecondSNPFrequenciesByType = new double[snpTypeNames.length];
+		for(int i=0; i<snpTypeNames.length; i++) {
+			dSecondSNPFrequenciesByType[i] = secondSNPs.get(snpTypeNames[i]);
+		}
+		
+		log.info("First group of SNPs");
+		for(int i=0; i<snpTypeNames.length; i++) {
+			log.info(snpTypeNames[i] + ": " + dFirstSNPFrequenciesByType[i]);
+		}
+		
+		log.info("Second group of SNPs");
+		for(int i=0; i<snpTypeNames.length; i++) {
+			log.info(snpTypeNames[i] + ": " + dSecondSNPFrequenciesByType[i]);
+		}
+		
 		log.info("Tot. Mut.: " + variantCallDetection.getTotalMutations());
-		log.info("A Ins: " + variantCallDetection.getAInsertions());
-		log.info("C Ins: " + variantCallDetection.getCInsertions());
-		log.info("G Ins: " + variantCallDetection.getGInsertions());
-		log.info("T Ins: " + variantCallDetection.getTInsertions());
-		log.info("N Ins: " + variantCallDetection.getNInsertions());
 		log.info("Tot. Ins.: " + variantCallDetection.getTotalInsertions());
-		log.info("A Del: " + variantCallDetection.getADeletions());
-		log.info("C Del: " + variantCallDetection.getCDeletions());
-		log.info("G Del: " + variantCallDetection.getGDeletions());
-		log.info("T Del: " + variantCallDetection.getTDeletions());
-		log.info("N Del: " + variantCallDetection.getNDeletions());		
 		log.info("Tot. Del.: " + variantCallDetection.getTotalDeletions());
 		log.info("Tot. Matches: " + variantCallDetection.getTotalMatches());
 		log.info("Tot. Soft Clips: " + variantCallDetection.getTotalSoftClips());
