@@ -274,7 +274,7 @@ public class BasicStatistics extends AbstractQCModule {
  			rowNames.add("Percent spliced reads");
  			rowValues.add(formatPercentage(totalSplicedReads, variantCallDetectionTotalReads));
  			
- 			rowNames.add("Percent reads without MD tag string");
+ 			rowNames.add("Percent reads with empty or wrong MD tag string");
  			rowValues.add(formatPercentage(totalSkippedReads, variantCallDetectionTotalReads));
  			
  			rowNames.add("Percent indels");
