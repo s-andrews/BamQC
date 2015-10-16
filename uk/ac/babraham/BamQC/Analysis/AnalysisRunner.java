@@ -77,9 +77,9 @@ public class AnalysisRunner implements Runnable {
 
 		
 		AnnotationSet annotationSet = null;
-		ProgressTextDialog ptd = new ProgressTextDialog("");
 
 		if(BamQCConfig.getInstance().genome != null) {
+			ProgressTextDialog ptd = new ProgressTextDialog("");
 			GenomeParser parser = new GenomeParser();
 			parser.addProgressListener(ptd);
 			
@@ -88,6 +88,8 @@ public class AnalysisRunner implements Runnable {
 
 		} else if (BamQCConfig.getInstance().gff_file != null) {	
 				annotationSet = new AnnotationSet();
+				
+				ProgressTextDialog ptd = new ProgressTextDialog("");
 				AnnotationParser parser;
 				if (BamQCConfig.getInstance().gff_file.getName().toLowerCase().endsWith("gtf")) {
 					parser = new GTFAnnotationParser();

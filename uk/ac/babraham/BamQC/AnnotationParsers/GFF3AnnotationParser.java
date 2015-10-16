@@ -307,7 +307,7 @@ public class GFF3AnnotationParser extends AnnotationParser {
 				while (e.hasMoreElements()) {
 	    			e.nextElement().progressComplete("Approx 100% complete\n" +
 	    											 "Processed features: "+groupedFeatures.size() + "\n" +
-	    											 "Parsed annotation file " + file.getName() + "\n", null);
+	    											 "Parsed annotation file " + file.getName(), null);
 				}
 			}
 		}
