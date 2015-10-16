@@ -47,8 +47,9 @@ public class ProgressTextDialog implements Runnable, ProgressListener {
 	/**
 	 * Instantiates a new progress dialog.
 	 */
-	public ProgressTextDialog (String title) {	
-		System.out.println(title);
+	public ProgressTextDialog (String title) {
+		if(!title.isEmpty())
+			System.out.println(title);
 	}
 		
 	public void setIgnoreExceptions (boolean ignore) {
