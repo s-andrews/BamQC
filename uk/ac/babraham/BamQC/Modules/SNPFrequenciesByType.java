@@ -22,11 +22,15 @@ package uk.ac.babraham.BamQC.Modules;
 
 import java.awt.GridLayout;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
 
 import javax.swing.JPanel;
 import javax.xml.stream.XMLStreamException;
 
 //import org.apache.log4j.Logger;
+
+
 
 
 
@@ -56,11 +60,7 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 	VariantCallDetection variantCallDetection = null;	
 	
 	// data fields for plotting
-	private static String[] snpTypeNames = {
-		"A->C", "A->G", "A->T",
-		"C->A", "C->G", "C->T", 
-		"G->A", "G->C", "G->T", 
-		"T->A", "T->C", "T->G"};
+	private String[] snpTypeNames = null;
 	private double[] dFirstSNPFrequenciesByType = null;
 	private double[] dSecondSNPFrequenciesByType = null;
 	
@@ -104,59 +104,27 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 				 totBases = variantCallDetection.getTotal();
 		
 		// compute statistics from the FIRST segment data
-		long firstAC = variantCallDetection.getFirstA2C(), firstAG = variantCallDetection
-				.getFirstA2G(), firstAT = variantCallDetection.getFirstA2T(), firstCA = variantCallDetection
-				.getFirstC2A(), firstCG = variantCallDetection.getFirstC2G(), firstCT = variantCallDetection
-				.getFirstC2T(), firstGA = variantCallDetection.getFirstG2A(), firstGC = variantCallDetection
-				.getFirstG2C(), firstGT = variantCallDetection.getFirstG2T(), firstTA = variantCallDetection
-				.getFirstT2A(), firstTC = variantCallDetection.getFirstT2C(), firstTG = variantCallDetection
-				.getFirstT2G();
-
-		dFirstSNPFrequenciesByType = new double[12];
-		dFirstSNPFrequenciesByType[0] = firstAC * 100d / totBases;
-		dFirstSNPFrequenciesByType[1] = firstAG * 100d / totBases;
-		dFirstSNPFrequenciesByType[2] = firstAT * 100d / totBases;
-		dFirstSNPFrequenciesByType[3] = firstCA * 100d / totBases;
-		dFirstSNPFrequenciesByType[4] = firstCG * 100d / totBases;
-		dFirstSNPFrequenciesByType[5] = firstCT * 100d / totBases;
-		dFirstSNPFrequenciesByType[6] = firstGA * 100d / totBases;
-		dFirstSNPFrequenciesByType[7] = firstGC * 100d / totBases;
-		dFirstSNPFrequenciesByType[8] = firstGT * 100d / totBases;
-		dFirstSNPFrequenciesByType[9] = firstTA * 100d / totBases;
-		dFirstSNPFrequenciesByType[10] = firstTC * 100d / totBases;
-		dFirstSNPFrequenciesByType[11] = firstTG * 100d / totBases;
+		HashMap<String, Long> firstSNPs = variantCallDetection.getFirstSNPs();		
+		snpTypeNames = firstSNPs.keySet().toArray(new String[0]);
+		Arrays.sort(snpTypeNames);
 		
-		for(int i=0; i< dFirstSNPFrequenciesByType.length; i++) {
+		dFirstSNPFrequenciesByType = new double[snpTypeNames.length];
+		for(int i=0; i<snpTypeNames.length; i++) {
+			dFirstSNPFrequenciesByType[i] = firstSNPs.get(snpTypeNames[i]) * 100d / totBases;
 			if(firstMaxX < dFirstSNPFrequenciesByType[i]) 
 				firstMaxX = dFirstSNPFrequenciesByType[i];
 		}
 		
+		
 		// compute statistics from the SECOND segment data if there are paired reads.
 		if(variantCallDetection.existPairedReads()) {
 			resultsPanel.setLayout(new GridLayout(2,1));
-			long secondAC = variantCallDetection.getFirstA2C(), secondAG = variantCallDetection
-					.getSecondA2G(), secondAT = variantCallDetection.getSecondA2T(), secondCA = variantCallDetection
-					.getSecondC2A(), secondCG = variantCallDetection.getSecondC2G(), secondCT = variantCallDetection
-					.getSecondC2T(), secondGA = variantCallDetection.getSecondG2A(), secondGC = variantCallDetection
-					.getSecondG2C(), secondGT = variantCallDetection.getSecondG2T(), secondTA = variantCallDetection
-					.getSecondT2A(), secondTC = variantCallDetection.getSecondT2C(), secondTG = variantCallDetection
-					.getSecondT2G();	
 			
-			dSecondSNPFrequenciesByType = new double[12];
-			dSecondSNPFrequenciesByType[0] = secondAC * 100d / totBases;
-			dSecondSNPFrequenciesByType[1] = secondAG * 100d / totBases;
-			dSecondSNPFrequenciesByType[2] = secondAT * 100d / totBases;
-			dSecondSNPFrequenciesByType[3] = secondCA * 100d / totBases;
-			dSecondSNPFrequenciesByType[4] = secondCG * 100d / totBases;
-			dSecondSNPFrequenciesByType[5] = secondCT * 100d / totBases;
-			dSecondSNPFrequenciesByType[6] = secondGA * 100d / totBases;
-			dSecondSNPFrequenciesByType[7] = secondGC * 100d / totBases;
-			dSecondSNPFrequenciesByType[8] = secondGT * 100d / totBases;
-			dSecondSNPFrequenciesByType[9] = secondTA * 100d / totBases;
-			dSecondSNPFrequenciesByType[10] = secondTC * 100d / totBases;
-			dSecondSNPFrequenciesByType[11] = secondTG * 100d / totBases;
-			
-			for(int i=0; i< dSecondSNPFrequenciesByType.length; i++) {
+			HashMap<String, Long> secondSNPs = variantCallDetection.getSecondSNPs();		
+			//String[] mutation = firstSNPs.keySet().toArray(new String[0]);
+			dSecondSNPFrequenciesByType = new double[snpTypeNames.length];
+			for(int i=0; i<snpTypeNames.length; i++) {
+				dSecondSNPFrequenciesByType[i] = secondSNPs.get(snpTypeNames[i]) * 100d / totBases;
 				if(secondMaxX < dSecondSNPFrequenciesByType[i]) 
 					secondMaxX = dSecondSNPFrequenciesByType[i];
 			}
@@ -166,12 +134,14 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 			resultsPanel.add(new HorizontalBarGraph(snpTypeNames, dFirstSNPFrequenciesByType, "", title, 0d, firstMaxX+firstMaxX*0.1d));
 			
 			String title2 = "Second Read SNP frequencies by Type";
+			renameYAxis();
 			// add 10% to the top for improving the visualisation of the plot.
 			resultsPanel.add(new HorizontalBarGraph(snpTypeNames, dSecondSNPFrequenciesByType, "Frequence (%)", title2, 0d, secondMaxX+secondMaxX*0.1d));
 			
 		} else {
 			resultsPanel.setLayout(new GridLayout(1,1));
 			String title = String.format("Read SNP frequencies by Type ( total SNPs: %.3f %% )", totSNPs*100.0f/totBases);
+			renameYAxis();
 			// add 10% to the top for improving the visualisation of the plot.
 			resultsPanel.add(new HorizontalBarGraph(snpTypeNames, dFirstSNPFrequenciesByType, "Frequence (%)", title, 0d, firstMaxX+firstMaxX*0.1d));			
 		}
@@ -252,6 +222,12 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 			}
 		}
 		
+	}
+	
+	private void renameYAxis() {
+		for(int i=0; i<	snpTypeNames.length; i++) {
+			snpTypeNames[i] = snpTypeNames[i].charAt(0) + "->" + snpTypeNames[i].charAt(1);
+		}
 	}
 	
 }

@@ -53,42 +53,13 @@ public class VariantCallDetection extends AbstractQCModule {
     // first or second indicate whether the read is the first or second segment. If the read is not paired, 
     // it is treated as a first.
 	
-	private long firstAC = 0;
-	private long firstAG = 0;
-	private long firstAT = 0;
-	private long firstCA = 0;
-	private long firstCG = 0;
-	private long firstCT = 0;
-	private long firstGA = 0;
-	private long firstGC = 0;
-	private long firstGT = 0;
-	private long firstTA = 0;
-	private long firstTC = 0;
-	private long firstTG = 0;
-	private long secondAC = 0;
-	private long secondAG = 0;
-	private long secondAT = 0;
-	private long secondCA = 0;
-	private long secondCG = 0;
-	private long secondCT = 0;
-	private long secondGA = 0;
-	private long secondGC = 0;
-	private long secondGT = 0;
-	private long secondTA = 0;
-	private long secondTC = 0;
-	private long secondTG = 0;	
+	private HashMap<String, Long> firstSNPs = new HashMap<String, Long>();
+	private HashMap<String, Long> secondSNPs = new HashMap<String, Long>();
+	private HashMap<String, Long> insertions = new HashMap<String, Long>();
+	private HashMap<String, Long> deletions = new HashMap<String, Long>();
+	
 	private long totalMutations = 0;	
-	private long aInsertions = 0;
-	private long cInsertions = 0;
-	private long gInsertions = 0;
-	private long tInsertions = 0;
-	private long nInsertions = 0;		
 	private long totalInsertions = 0;
-	private long aDeletions = 0;
-	private long cDeletions = 0;
-	private long gDeletions = 0;
-	private long tDeletions = 0;
-	private long nDeletions = 0;	
 	private long totalDeletions = 0;	
 	private long totalMatches = 0;
 	private long totalSkippedRegions = 0;
@@ -144,7 +115,46 @@ public class VariantCallDetection extends AbstractQCModule {
 	/**
 	 * Default constructor
 	 */
-	public VariantCallDetection() { }
+	public VariantCallDetection() { 
+		firstSNPs.put("AC", 0L);
+		firstSNPs.put("AG", 0L);
+		firstSNPs.put("AT", 0L);
+		firstSNPs.put("CA", 0L);
+		firstSNPs.put("CG", 0L);
+		firstSNPs.put("CT", 0L);
+		firstSNPs.put("GA", 0L);
+		firstSNPs.put("GC", 0L);
+		firstSNPs.put("GT", 0L);
+		firstSNPs.put("TA", 0L);
+		firstSNPs.put("TC", 0L);
+		firstSNPs.put("TG", 0L);
+		
+		secondSNPs.put("AC", 0L);
+		secondSNPs.put("AG", 0L);
+		secondSNPs.put("AT", 0L);
+		secondSNPs.put("CA", 0L);
+		secondSNPs.put("CG", 0L);
+		secondSNPs.put("CT", 0L);
+		secondSNPs.put("GA", 0L);
+		secondSNPs.put("GC", 0L);
+		secondSNPs.put("GT", 0L);
+		secondSNPs.put("TA", 0L);
+		secondSNPs.put("TC", 0L);
+		secondSNPs.put("TG", 0L);
+		
+		insertions.put("A", 0L);
+		insertions.put("C", 0L);
+		insertions.put("G", 0L);
+		insertions.put("T", 0L);
+		insertions.put("N", 0L);
+		
+		deletions.put("A", 0L);
+		deletions.put("C", 0L);
+		deletions.put("G", 0L);
+		deletions.put("T", 0L);
+		deletions.put("N", 0L);		
+		
+	}
 
 	
 	/** 
@@ -311,42 +321,46 @@ public class VariantCallDetection extends AbstractQCModule {
 	@Override	
 	public void reset() {
 				
-		firstAC = 0;
-		firstAG = 0;
-		firstAT = 0;
-		firstCA = 0;
-		firstCG = 0;
-		firstCT = 0;
-		firstGA = 0;
-		firstGC = 0;
-		firstGT = 0;
-		firstTA = 0;
-		firstTC = 0;
-		firstTG = 0;
-		secondAC = 0;
-		secondAG = 0;
-		secondAT = 0;
-		secondCA = 0;
-		secondCG = 0;
-		secondCT = 0;
-		secondGA = 0;
-		secondGC = 0;
-		secondGT = 0;
-		secondTA = 0;
-		secondTC = 0;
-		secondTG = 0;	
+		firstSNPs.put("AC", 0L);
+		firstSNPs.put("AG", 0L);
+		firstSNPs.put("AT", 0L);
+		firstSNPs.put("CA", 0L);
+		firstSNPs.put("CG", 0L);
+		firstSNPs.put("CT", 0L);
+		firstSNPs.put("GA", 0L);
+		firstSNPs.put("GC", 0L);
+		firstSNPs.put("GT", 0L);
+		firstSNPs.put("TA", 0L);
+		firstSNPs.put("TC", 0L);
+		firstSNPs.put("TG", 0L);
+		
+		secondSNPs.put("AC", 0L);
+		secondSNPs.put("AG", 0L);
+		secondSNPs.put("AT", 0L);
+		secondSNPs.put("CA", 0L);
+		secondSNPs.put("CG", 0L);
+		secondSNPs.put("CT", 0L);
+		secondSNPs.put("GA", 0L);
+		secondSNPs.put("GC", 0L);
+		secondSNPs.put("GT", 0L);
+		secondSNPs.put("TA", 0L);
+		secondSNPs.put("TC", 0L);
+		secondSNPs.put("TG", 0L);
+	
 		totalMutations = 0;
-		aInsertions = 0;
-		cInsertions = 0;
-		gInsertions = 0;
-		tInsertions = 0;
-		nInsertions = 0;
+		insertions.put("A", 0L);
+		insertions.put("C", 0L);
+		insertions.put("G", 0L);
+		insertions.put("T", 0L);
+		insertions.put("N", 0L);
+
 		totalInsertions = 0;
-		aDeletions = 0;
-		cDeletions = 0;
-		gDeletions = 0;
-		tDeletions = 0;
-		nDeletions = 0;
+		deletions.put("A", 0L);
+		deletions.put("C", 0L);
+		deletions.put("G", 0L);
+		deletions.put("T", 0L);
+		deletions.put("N", 0L);	
+		
 		totalDeletions = 0;
 		totalMatches = 0;
 		totalSkippedRegions = 0;
@@ -474,7 +488,7 @@ public class VariantCallDetection extends AbstractQCModule {
 	private void processMDtagCigarOperatorU() {
 		int numMutations = currentCigarMDElement.getLength();
 		String mutatedBases = currentCigarMDElement.getBases();
-		String basePair = "";
+		String basePair;
 
 		if(mutatedBases.length() == 0) {
 			log.error("Mutated bases not reported. currentCigarMDElement: " + currentCigarMDElement + ", cigarMD: " + cigarMD.toString() + 
@@ -491,44 +505,30 @@ public class VariantCallDetection extends AbstractQCModule {
 		if(cigarMDGenerator.isFirst()) {
 			for(int i = 0; i < numMutations; i++) {
 				basePair = mutatedBases.substring(i*2, i*2+2);
-				if(basePair.equals("AC"))      { firstAC++; firstSNPPos[currentPosition]++; currentPosition++; }
-				else if(basePair.equals("AG")) { firstAG++; firstSNPPos[currentPosition]++; currentPosition++; }
-				else if(basePair.equals("AT")) { firstAT++; firstSNPPos[currentPosition]++; currentPosition++; }
-				else if(basePair.equals("CA")) { firstCA++; firstSNPPos[currentPosition]++; currentPosition++; }
-				else if(basePair.equals("CG")) { firstCG++; firstSNPPos[currentPosition]++; currentPosition++; }
-				else if(basePair.equals("CT")) { firstCT++; firstSNPPos[currentPosition]++; currentPosition++; }
-				else if(basePair.equals("GA")) { firstGA++; firstSNPPos[currentPosition]++; currentPosition++; }
-				else if(basePair.equals("GC")) { firstGC++; firstSNPPos[currentPosition]++; currentPosition++; }
-				else if(basePair.equals("GT")) { firstGT++; firstSNPPos[currentPosition]++; currentPosition++; }
-				else if(basePair.equals("TA")) { firstTA++; firstSNPPos[currentPosition]++; currentPosition++; }
-				else if(basePair.equals("TC")) { firstTC++; firstSNPPos[currentPosition]++; currentPosition++; }
-				else if(basePair.equals("TG")) { firstTG++; firstSNPPos[currentPosition]++; currentPosition++; }	
-				else if(basePair.charAt(0) == 'N') { 
+				if(basePair.charAt(0) == 'N') { 
 					referenceUnknownBases++; currentPosition++; 
-					if(basePair.charAt(1) == 'N') { readUnknownBases++; currentPosition++; }
+					if(basePair.charAt(1) == 'N') { readUnknownBases++;  }
 				}
-				else if(basePair.charAt(1) == 'N') { readUnknownBases++; currentPosition++; }
+				else if(basePair.charAt(1) == 'N') { readUnknownBases++; currentPosition++;  }
+				else {
+					firstSNPs.put(basePair, firstSNPs.get(basePair) + 1L);
+					firstSNPPos[currentPosition]++; 
+					currentPosition++;
+				}
 			}			
 		} else {
 			for(int i = 0; i < numMutations; i++) {
 				basePair = mutatedBases.substring(i*2, i*2+2);
-				if(basePair.equals("AC"))      { secondAC++; secondSNPPos[currentPosition]++; currentPosition++; }
-				else if(basePair.equals("AG")) { secondAG++; secondSNPPos[currentPosition]++; currentPosition++; }
-				else if(basePair.equals("AT")) { secondAT++; secondSNPPos[currentPosition]++; currentPosition++; }
-				else if(basePair.equals("CA")) { secondCA++; secondSNPPos[currentPosition]++; currentPosition++; }
-				else if(basePair.equals("CG")) { secondCG++; secondSNPPos[currentPosition]++; currentPosition++; }
-				else if(basePair.equals("CT")) { secondCT++; secondSNPPos[currentPosition]++; currentPosition++; }
-				else if(basePair.equals("GA")) { secondGA++; secondSNPPos[currentPosition]++; currentPosition++; }
-				else if(basePair.equals("GC")) { secondGC++; secondSNPPos[currentPosition]++; currentPosition++; }
-				else if(basePair.equals("GT")) { secondGT++; secondSNPPos[currentPosition]++; currentPosition++; }
-				else if(basePair.equals("TA")) { secondTA++; secondSNPPos[currentPosition]++; currentPosition++; }
-				else if(basePair.equals("TC")) { secondTC++; secondSNPPos[currentPosition]++; currentPosition++; }
-				else if(basePair.equals("TG")) { secondTG++; secondSNPPos[currentPosition]++; currentPosition++; }	
-				else if(basePair.charAt(0) == 'N') { 
+				if(basePair.charAt(0) == 'N') { 
 					referenceUnknownBases++; currentPosition++; 
-					if(basePair.charAt(1) == 'N') { readUnknownBases++; currentPosition++; }
+					if(basePair.charAt(1) == 'N') { readUnknownBases++;  }
 				}
-				else if(basePair.charAt(1) == 'N') { readUnknownBases++; currentPosition++; }			
+				else if(basePair.charAt(1) == 'N') { readUnknownBases++; currentPosition++;  }
+				else {
+					secondSNPs.put(basePair, secondSNPs.get(basePair) + 1L);
+					secondSNPPos[currentPosition]++; 
+					currentPosition++;
+				}
 			}			
 		}
 	}	
@@ -537,25 +537,28 @@ public class VariantCallDetection extends AbstractQCModule {
 	private void processMDtagCigarOperatorI() {
 		int numInsertions = currentCigarMDElement.getLength();
 		String insertedBases = currentCigarMDElement.getBases();
+		String base;
 		// if the read.length is longer than what we supposed to be, here we increase the length of our *Pos arrays..
 		if(currentPosition+numInsertions >= firstInsertionPos.length) {
 			extendDensityArrays();
 	    }
 		if(cigarMDGenerator.isFirst()) {
 			for(int i = 0; i < numInsertions; i++) {
-				if(insertedBases.charAt(i) == 'A')      { aInsertions++; firstInsertionPos[currentPosition]++; currentPosition++; }
-				else if(insertedBases.charAt(i) == 'C') { cInsertions++; firstInsertionPos[currentPosition]++; currentPosition++; }
-				else if(insertedBases.charAt(i) == 'G') { gInsertions++; firstInsertionPos[currentPosition]++; currentPosition++; }
-				else if(insertedBases.charAt(i) == 'T') { tInsertions++; firstInsertionPos[currentPosition]++; currentPosition++; }
-				else if(insertedBases.charAt(i) == 'N') { nInsertions++; currentPosition++; }			
+				base = insertedBases.substring(i, i+1);
+				insertions.put(base, insertions.get(base) + 1L);
+				if(insertedBases.charAt(i) != 'N') { 
+					firstInsertionPos[currentPosition]++; 
+				}
+				currentPosition++;
 			}
 		} else {
 			for(int i = 0; i < numInsertions; i++) {
-				if(insertedBases.charAt(i) == 'A')      { aInsertions++; secondInsertionPos[currentPosition]++; currentPosition++; }
-				else if(insertedBases.charAt(i) == 'C') { cInsertions++; secondInsertionPos[currentPosition]++; currentPosition++; }
-				else if(insertedBases.charAt(i) == 'G') { gInsertions++; secondInsertionPos[currentPosition]++; currentPosition++; }
-				else if(insertedBases.charAt(i) == 'T') { tInsertions++; secondInsertionPos[currentPosition]++; currentPosition++; }
-				else if(insertedBases.charAt(i) == 'N') { nInsertions++; currentPosition++; }			
+				base = insertedBases.substring(i, i+1);
+				insertions.put(base, insertions.get(base) + 1L);
+				if(insertedBases.charAt(i) != 'N') { 
+					secondInsertionPos[currentPosition]++; 
+				}
+				currentPosition++;	
 			}			
 		}
 	}
@@ -564,25 +567,28 @@ public class VariantCallDetection extends AbstractQCModule {
 	private void processMDtagCigarOperatorD() {
 		int numDeletions = currentCigarMDElement.getLength();
 		String deletedBases = currentCigarMDElement.getBases();
+		String base;
 		// if the read.length is longer than what we supposed to be, here we increase the length of our *Pos arrays..
 		if(currentPosition+numDeletions >= firstDeletionPos.length) {
 			extendDensityArrays();		
 	    }
 		if(cigarMDGenerator.isFirst()) {
 			for(int i = 0; i < numDeletions; i++) {
-				if(deletedBases.charAt(i) == 'A')      { aDeletions++; firstDeletionPos[currentPosition]++; currentPosition++; }
-				else if(deletedBases.charAt(i) == 'C') { cDeletions++; firstDeletionPos[currentPosition]++; currentPosition++; }
-				else if(deletedBases.charAt(i) == 'G') { gDeletions++; firstDeletionPos[currentPosition]++; currentPosition++; }
-				else if(deletedBases.charAt(i) == 'T') { tDeletions++; firstDeletionPos[currentPosition]++; currentPosition++; }
-				else if(deletedBases.charAt(i) == 'N') { nDeletions++; currentPosition++; }			
+				base = deletedBases.substring(i, i+1);
+				deletions.put(base, deletions.get(base) + 1L);
+				if(deletedBases.charAt(i) != 'N') { 
+					firstDeletionPos[currentPosition]++; 
+				}
+				currentPosition++;		
 			}
 		} else {
 			for(int i = 0; i < numDeletions; i++) {
-				if(deletedBases.charAt(i) == 'A')      { aDeletions++; secondDeletionPos[currentPosition]++; currentPosition++; }
-				else if(deletedBases.charAt(i) == 'C') { cDeletions++; secondDeletionPos[currentPosition]++; currentPosition++; }
-				else if(deletedBases.charAt(i) == 'G') { gDeletions++; secondDeletionPos[currentPosition]++; currentPosition++; }
-				else if(deletedBases.charAt(i) == 'T') { tDeletions++; secondDeletionPos[currentPosition]++; currentPosition++; }
-				else if(deletedBases.charAt(i) == 'N') { nDeletions++; currentPosition++; }			
+				base = deletedBases.substring(i, i+1);
+				deletions.put(base, deletions.get(base) + 1L);
+				if(deletedBases.charAt(i) != 'N') { 
+					secondDeletionPos[currentPosition]++; 
+				}
+				currentPosition++;		
 			}			
 		}
 	}
@@ -662,148 +668,28 @@ public class VariantCallDetection extends AbstractQCModule {
 		return existPairedReads;
 	}
 	
-	public long getFirstA2C() {
-		return firstAC;
-	}
-
-	public long getFirstA2G() {
-		return firstAG;
-	}
-
-	public long getFirstA2T() {
-		return firstAT;
-	}
-
-	public long getFirstC2A() {
-		return firstCA;
-	}
-
-	public long getFirstC2G() {
-		return firstCG;
-	}
-
-	public long getFirstC2T() {
-		return firstCT;
-	}
-
-	public long getFirstG2A() {
-		return firstGA;
-	}
-
-	public long getFirstG2C() {
-		return firstGC;
-	}
-
-	public long getFirstG2T() {
-		return firstGT;
-	}
-
-	public long getFirstT2A() {
-		return firstTA;
-	}
-
-	public long getFirstT2C() {
-		return firstTC;
-	}
-
-	public long getFirstT2G() {
-		return firstTG;
+	public HashMap<String, Long> getFirstSNPs() {
+		return firstSNPs;
 	}
 	
-	public long getSecondA2C() {
-		return secondAC;
+	public HashMap<String, Long> getSecondSNPs() {
+		return secondSNPs;
 	}
-
-	public long getSecondA2G() {
-		return secondAG;
+	
+	public HashMap<String, Long> getInsertions() {
+		return insertions;
 	}
-
-	public long getSecondA2T() {
-		return secondAT;
-	}
-
-	public long getSecondC2A() {
-		return secondCA;
-	}
-
-	public long getSecondC2G() {
-		return secondCG;
-	}
-
-	public long getSecondC2T() {
-		return secondCT;
-	}
-
-	public long getSecondG2A() {
-		return secondGA;
-	}
-
-	public long getSecondG2C() {
-		return secondGC;
-	}
-
-	public long getSecondG2T() {
-		return secondGT;
-	}
-
-	public long getSecondT2A() {
-		return secondTA;
-	}
-
-	public long getSecondT2C() {
-		return secondTC;
-	}
-
-	public long getSecondT2G() {
-		return secondTG;
+	
+	public HashMap<String, Long> getDeletions() {
+		return deletions;
 	}
 
 	public long getTotalMutations() {
 		return totalMutations;
 	}
 
-	public long getAInsertions() {
-		return aInsertions;
-	}
-
-	public long getCInsertions() {
-		return cInsertions;
-	}
-
-	public long getGInsertions() {
-		return gInsertions;
-	}
-
-	public long getTInsertions() {
-		return tInsertions;
-	}
-
-	public long getNInsertions() {
-		return nInsertions;
-	}
-	
 	public long getTotalInsertions() {
 		return totalInsertions;
-	}
-
-	public long getADeletions() {
-		return aDeletions;
-	}
-
-	public long getCDeletions() {
-		return cDeletions;
-	}
-
-	public long getGDeletions() {
-		return gDeletions;
-	}
-
-	public long getTDeletions() {
-		return tDeletions;
-	}
-	
-	public long getNDeletions() {
-		return nDeletions;
 	}
 
 	public long getTotalDeletions() {
