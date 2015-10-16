@@ -106,6 +106,7 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 		// compute statistics from the FIRST segment data
 		HashMap<String, Long> firstSNPs = variantCallDetection.getFirstSNPs();		
 		snpTypeNames = firstSNPs.keySet().toArray(new String[0]);
+		// sort the labels so that they are nicely organised.
 		Arrays.sort(snpTypeNames);
 		
 		dFirstSNPFrequenciesByType = new double[snpTypeNames.length];
