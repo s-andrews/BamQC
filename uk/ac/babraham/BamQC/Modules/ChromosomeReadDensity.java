@@ -192,7 +192,7 @@ public class ChromosomeReadDensity extends AbstractQCModule {
 
 	@Override
 	public boolean ignoreInReport() {
-		if(logChromosomeLength.length < 1) { 
+		if(ModuleConfig.getParam("ChromosomeReadDensity", "ignore") > 0 || logChromosomeLength.length < 1) { 
 			return true;
 		}
 		return false;

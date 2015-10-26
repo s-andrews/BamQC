@@ -35,6 +35,7 @@ import javax.xml.stream.XMLStreamException;
 
 
 
+
 import net.sf.samtools.SAMRecord;
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.Graphs.HorizontalBarGraph;
@@ -188,7 +189,8 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 
 	@Override	
 	public boolean ignoreInReport() {
-		if(variantCallDetection == null || 
+		if(ModuleConfig.getParam("SNPFrequenciesByType", "ignore") > 0 || 
+		   variantCallDetection == null || 
 		   variantCallDetection.getTotalMutations() == 0) 
 			return true; 
 		return false;

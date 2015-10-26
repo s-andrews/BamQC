@@ -36,6 +36,7 @@ import uk.ac.babraham.BamQC.Graphs.SeparateLineGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 import uk.ac.babraham.BamQC.Statistics.SimpleStats;
+import uk.ac.babraham.BamQC.Modules.ModuleConfig;
 
 public class GenomeCoverage extends AbstractQCModule {
 
@@ -109,7 +110,7 @@ public class GenomeCoverage extends AbstractQCModule {
 
 	@Override
 	public boolean ignoreInReport() {
-		if(chromosomes == null || chromosomes.length == 0 || maxCoverage == 0.0) { 
+		if(ModuleConfig.getParam("GenomeCoverage", "ignore") > 0 || chromosomes == null || chromosomes.length == 0 || maxCoverage == 0.0) { 
 			return true; 
 		}
 		return false;

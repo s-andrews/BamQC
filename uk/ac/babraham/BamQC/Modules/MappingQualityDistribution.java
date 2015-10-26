@@ -75,9 +75,7 @@ public class MappingQualityDistribution extends AbstractQCModule {
 	public void processFile(SequenceFile file) {}
 
 	@Override
-	public void processAnnotationSet(AnnotationSet annotation) {
-		throw new UnsupportedOperationException("processAnnotationSet called");
-	}
+	public void processAnnotationSet(AnnotationSet annotation) { }
 
 	@Override
 	public JPanel getResultsPanel() {
@@ -162,6 +160,8 @@ public class MappingQualityDistribution extends AbstractQCModule {
 
 	@Override
 	public boolean ignoreInReport() {
+		if(ModuleConfig.getParam("MappingQualityDistribution", "ignore") > 0)
+			return true;
 		return false;
 	}
 

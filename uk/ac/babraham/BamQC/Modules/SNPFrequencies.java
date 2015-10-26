@@ -221,7 +221,8 @@ public class SNPFrequencies extends AbstractQCModule {
 
 	@Override	
 	public boolean ignoreInReport() {
-		if(variantCallDetection == null || 
+		if(ModuleConfig.getParam("SNPFrequencies", "ignore") > 0 || 
+		   variantCallDetection == null || 
 		   variantCallDetection.getTotalMutations() == 0) 
 			return true; 
 		return false;

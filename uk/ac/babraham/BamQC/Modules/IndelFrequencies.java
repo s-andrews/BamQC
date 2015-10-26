@@ -235,7 +235,7 @@ public class IndelFrequencies extends AbstractQCModule {
 
 	@Override	
 	public boolean ignoreInReport() {
-		if(variantCallDetection == null || 
+		if(ModuleConfig.getParam("IndelFrequencies", "ignore") > 0 || variantCallDetection == null || 
 		   (variantCallDetection.getTotalDeletions() == 0 && variantCallDetection.getTotalInsertions() == 0)) 
 			return true; 
 		return false;

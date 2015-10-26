@@ -69,6 +69,21 @@ public class ModuleConfig {
 		params.put("MappingQualityDistribution_fraction:error", 0.50d);
 		params.put("MappingQualityDistribution_fraction:warn", 0.75d);
 			
+
+		params.put("ChromosomeReadDensity:ignore",0d);
+		params.put("FeatureCoverage:ignore",0d);
+		params.put("GenomeCoverage:ignore",0d);
+		params.put("IndelFrequencies:ignore",0d);
+		params.put("InsertLengthDistribution:ignore",0d);
+		params.put("MappingQualityDistribution:ignore",0d);
+		//params.put("RpkmReference:ignore",1d);   // ignore this module
+		params.put("SequenceQualityDistribution:ignore",1d);  // ignore this module
+		params.put("SNPFrequencies:ignore",0d);
+		params.put("SNPFrequenciesByType:ignore",0d);
+		params.put("SoftClipDistribution:ignore",0d);
+		// The following option switches off InsertFrequencies, SNPFrequencies, SNPFrequenciesByType and some statistics in BasicStatistics
+		params.put("VariantCallDetection:ignore",0d);		
+		
 		
 		// Now read the config file to see if there are updated values for any
 		// of these.

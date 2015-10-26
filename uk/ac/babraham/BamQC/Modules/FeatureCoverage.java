@@ -126,7 +126,7 @@ public class FeatureCoverage extends AbstractQCModule {
 
 	@Override
 	public boolean ignoreInReport() {
-		if(featureNames == null || featureNames.length == 0) { // || datasetIsEmpty) { 
+		if(ModuleConfig.getParam("FeatureCoverage", "ignore") > 0 || featureNames == null || featureNames.length == 0) { // || datasetIsEmpty) { 
 			return true;
 		}
 		return false;	

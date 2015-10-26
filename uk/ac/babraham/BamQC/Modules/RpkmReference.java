@@ -217,7 +217,7 @@ public class RpkmReference extends AbstractQCModule {
 
 	@Override
 	public boolean ignoreInReport() {
-		if(coverage == null || coverage.length==0) 
+		if(ModuleConfig.getParam("RpkmReference", "ignore") > 0 || coverage == null || coverage.length==0) 
 			return true;
 		return false;
 	}

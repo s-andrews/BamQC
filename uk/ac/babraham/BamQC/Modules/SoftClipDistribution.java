@@ -167,7 +167,9 @@ public class SoftClipDistribution extends AbstractQCModule {
 
 	@Override
 	public boolean ignoreInReport() {
-		return leftClipCounts.length==1 && rightClipCounts.length==1;
+		if(ModuleConfig.getParam("SoftClipDistribution", "ignore") > 0 || (leftClipCounts.length==1 && rightClipCounts.length==1))
+			return true;
+		return false;
 	}
 
 	@Override

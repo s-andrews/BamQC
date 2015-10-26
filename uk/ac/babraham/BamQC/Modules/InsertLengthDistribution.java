@@ -67,9 +67,7 @@ public class InsertLengthDistribution extends AbstractQCModule {
 	public void processFile(SequenceFile file) { }
 
 	@Override
-	public void processAnnotationSet(AnnotationSet annotation) {
-		throw new UnsupportedOperationException("processAnnotationSet called");
-	}	
+	public void processAnnotationSet(AnnotationSet annotation) { }	
 	
 	@Override
 	public void processSequence(SAMRecord read) {
@@ -189,7 +187,10 @@ public class InsertLengthDistribution extends AbstractQCModule {
 
 	@Override
 	public boolean ignoreInReport() {
-		return insertLengthCounts.size() == 0;
+		if(ModuleConfig.getParam("InsertLengthDistribution", "ignore") > 0 || insertLengthCounts.size() == 0) {
+			return true;
+		}
+		return false;
 	}
 
 	private String[] buildLabels(int binNumber) {

@@ -19,27 +19,67 @@
  */
 package uk.ac.babraham.BamQC.Modules;
 
+import java.util.ArrayList;
+
 public class ModuleFactory {
 
 	public static QCModule [] getStandardModuleList () {
 
-		VariantCallDetection variantCallDetection = new VariantCallDetection();
-		QCModule [] module_list = new QCModule [] {
-				variantCallDetection,
-				new BasicStatistics(variantCallDetection),
-				new GenomeCoverage(),
-				new ChromosomeReadDensity(),
-				new FeatureCoverage(),				
-				new SoftClipDistribution(), // this could also reuse varianCallDetection
-				new IndelFrequencies(variantCallDetection),
-				new SNPFrequencies(variantCallDetection),
-				new SNPFrequenciesByType(variantCallDetection),
-				new MappingQualityDistribution(),
-				new InsertLengthDistribution() //,
-				//new RpkmReference()  // this module is not ready yet
-			};
-	
-		return (module_list);
+		// If a module is going to be skipped, we do not even compute it. 
+		// It is safer not to invoke the method ignoreInReport() as this also checks 
+		// the module data fields and can potentially throw null pointer exception if badly tested. 
+		// Let's explicitly check the configuration instead.
+		ArrayList<QCModule> selectedModules = new ArrayList<QCModule>();
+		
+		// The module VariantCallDetection is specific as its information is used by other modules and IS naturally ignored in the Report
+		// We test this here: 
+		VariantCallDetection variantCallDetection = null;
+		if(ModuleConfig.getParam("VariantCallDetection", "ignore") == 0) {
+			variantCallDetection = new VariantCallDetection();
+			selectedModules.add(variantCallDetection);
+		}
+		
+		// Now we check this for all the remaining modules
+		// We always compute the module BasicStatistics
+		selectedModules.add(new BasicStatistics(variantCallDetection));
+
+		if(ModuleConfig.getParam("GenomeCoverage", "ignore") == 0) {
+			selectedModules.add(new GenomeCoverage());
+		}
+		if(ModuleConfig.getParam("ChromosomeReadDensity", "ignore") == 0) {
+			selectedModules.add(new ChromosomeReadDensity());
+		}
+		if(ModuleConfig.getParam("FeatureCoverage", "ignore") == 0) {
+			selectedModules.add(new FeatureCoverage());
+		}
+		// TODO: this could also reuse varianCallDetection
+		if(ModuleConfig.getParam("SoftClipDistribution", "ignore") == 0) {
+			selectedModules.add(new SoftClipDistribution());
+		}
+		if(ModuleConfig.getParam("IndelFrequencies", "ignore") == 0) {
+			selectedModules.add(new IndelFrequencies(variantCallDetection));
+		}
+		if(ModuleConfig.getParam("SNPFrequencies", "ignore") == 0) {
+			selectedModules.add(new SNPFrequencies(variantCallDetection));
+		}
+		if(ModuleConfig.getParam("SNPFrequenciesByType", "ignore") == 0) {
+			selectedModules.add(new SNPFrequenciesByType(variantCallDetection));
+		}
+		if(ModuleConfig.getParam("SequenceQualityDistribution", "ignore") == 0) {
+			selectedModules.add(new SequenceQualityDistribution());
+		}
+		if(ModuleConfig.getParam("MappingQualityDistribution", "ignore") == 0) {
+			selectedModules.add(new MappingQualityDistribution());
+		}
+		if(ModuleConfig.getParam("InsertLengthDistribution", "ignore") == 0) {
+			selectedModules.add(new InsertLengthDistribution());
+		}
+		// TODO: this module is not ready yet
+//		if(ModuleConfig.getParam("RpkmReference", "ignore") == 0) {
+//			selectedModules.add(new RpkmReference());
+//		}
+		
+		return selectedModules.toArray(new QCModule[0]);
 	}
 	
 }

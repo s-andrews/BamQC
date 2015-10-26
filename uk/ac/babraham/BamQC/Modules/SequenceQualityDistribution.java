@@ -126,6 +126,8 @@ public class SequenceQualityDistribution extends AbstractQCModule {
 
 	@Override
 	public boolean ignoreInReport() {
+		if(ModuleConfig.getParam("SequenceQualityDistribution", "ignore") > 0)
+			return true;
 		return false;
 	}
 
