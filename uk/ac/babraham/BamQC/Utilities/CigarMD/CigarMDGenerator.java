@@ -503,6 +503,12 @@ public class CigarMDGenerator {
 					char currentBaseCall = readString.charAt(currentBaseCallPosition);
 					//log.debug("currentBaseCallPosition: " + currentBaseCallPosition);
 					if(currentMDChar == 'A' || currentMDChar == 'C' || currentMDChar == 'G' || currentMDChar == 'T' || currentMDChar == 'N') {
+						if(currentMDChar == currentBaseCall) {
+							//error case : FALSE POSITIVE
+							log.warn("Found a mutation in the MD tag which is wrong! Cigar : " + read.getCigarString() + ", mdString : " + mdString
+									+ ", CurrentCigarElement : " + currentCigarElement.getLength() + currentCigarElement.getOperator().toString() + ", false mutation: " + currentMDChar + currentBaseCall);
+							return false;
+						}
 						bases.append(currentMDChar).append(currentBaseCall);			
 					} else {
 						log.warn("Found unrecognised mutation " + 
@@ -519,7 +525,13 @@ public class CigarMDGenerator {
 						currentMDChar = mdString.charAt(currentMDElementPosition);
 						if(currentMDChar == 'A' || currentMDChar == 'C' || currentMDChar == 'G' || currentMDChar == 'T' || currentMDChar == 'N') {
 							currentBaseCall = readString.charAt(currentBaseCallPosition+temporaryMDElementLength);
-							bases.append(currentMDChar).append(currentBaseCall);
+							if(currentMDChar == currentBaseCall) {
+								//error case : FALSE POSITIVE
+								log.warn("Found a mutation in the MD tag which is wrong! Cigar : " + read.getCigarString() + ", mdString : " + mdString
+										+ ", CurrentCigarElement : " + currentCigarElement.getLength() + currentCigarElement.getOperator().toString() + ", false mutation: " + currentMDChar + currentBaseCall);
+								return false;
+							}
+							bases.append(currentMDChar).append(currentBaseCall);							
 							temporaryMDElementLength++;
 							currentMDElementPosition++;
 						} else if(currentMDChar == '0' && temporaryMDElementLength < temporaryCigarElementLength) {
