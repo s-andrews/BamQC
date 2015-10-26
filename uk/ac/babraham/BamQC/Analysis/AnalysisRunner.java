@@ -150,16 +150,15 @@ public class AnalysisRunner implements Runnable {
 			}
 			
 			annotationSet.processSequence(seq);
-			if(!file.hasNext()) {
-				// if this is the last sequence, we process the annotationSet cache so far collected.
-				annotationSet.flushCache();
-			}
 			
 			
 			for (int m=0;m<modules.length;m++) {
-				if (modules[m].needsToSeeSequences()) {
+				// This test is redundant and adds complexity. It can be called n*m times (n=#sequences, m=#modules)
+				// If the module does not process the annotationSet, then just call the method anyway, and leave this method not implemented.
+				// In the worse case we are doing the same thing. In the best case we do this n*m rather than 2*n*m
+				//if (modules[m].needsToSeeSequences()) {
 					modules[m].processSequence(seq);
-				}
+				//}
 			}
 			
 			if (seqCount % 1000 == 0) {
@@ -178,12 +177,19 @@ public class AnalysisRunner implements Runnable {
 			}
 		}
 		
+		// Let's flush the residual cache accumulated during the annotation set parsing. 
+		annotationSet.flushCache();
+		
+		
 		// Now send the compiled annotation around the modules which 
 		// need to see it
 		for (int m=0;m<modules.length;m++) {
-			if (modules[m].needsToSeeAnnotation()) {
+			// This test is also redundant and adds complexity (although less time consuming than the previous test needsToSeeSequences(). It can be called m times (m=#modules).
+			// If the module does not process the annotationSet, then just call the method anyway, and leave this method not implemented.
+			// In the worse case we are doing the same thing. In the best case we do this m rather than 2*m
+			//if (modules[m].needsToSeeAnnotation()) {
 				modules[m].processAnnotationSet(annotationSet);
-			}
+			//}
 		}
 		
 		
