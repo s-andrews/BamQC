@@ -153,9 +153,11 @@ public class AnalysisRunner implements Runnable {
 			
 			
 			for (int m=0;m<modules.length;m++) {
-				// This test is redundant and adds complexity. It can be called n*m times (n=#sequences, m=#modules)
-				// If the module does not process the annotationSet, then just call the method anyway, and leave this method not implemented.
-				// In the worse case we are doing the same thing. In the best case we do this n*m rather than 2*n*m
+				// This test is redundant and adds complexity. 
+				// If the module does not process the sequences, then just call the method processSequence anyway, and leave this method unimplemented. 
+				// In the worse case we are doing the same thing by calling the method needsToSeeSequences(). 
+				// If the k modules have to parse seq, then we avoid n*k calls of needsToSeeSequences().
+				// The parameter passing is by reference and needsToSeeSequences() returns a value anyway. So not a big deal in that direction either.
 				//if (modules[m].needsToSeeSequences()) {
 					modules[m].processSequence(seq);
 				//}
@@ -184,9 +186,11 @@ public class AnalysisRunner implements Runnable {
 		// Now send the compiled annotation around the modules which 
 		// need to see it
 		for (int m=0;m<modules.length;m++) {
-			// This test is also redundant and adds complexity (although less time consuming than the previous test needsToSeeSequences(). It can be called m times (m=#modules).
-			// If the module does not process the annotationSet, then just call the method anyway, and leave this method not implemented.
-			// In the worse case we are doing the same thing. In the best case we do this m rather than 2*m
+			// This test is also redundant and adds complexity (although less time consuming than the previous test needsToSeeSequences().
+			// If the module does not process the annotationSet, then just call the method anyway, and leave this method unimplemented.
+			// In the worse case we are doing the same thing by calling the method needsToSeeAnnotation().
+			// If the k modules have to parse AnnotationSet, then we avoid k calls of needsToSeeSequences().
+			// The parameter passing is by reference and needsToSeeAnnotation() returns a value anyway. So not a big deal in that direction either.
 			//if (modules[m].needsToSeeAnnotation()) {
 				modules[m].processAnnotationSet(annotationSet);
 			//}
