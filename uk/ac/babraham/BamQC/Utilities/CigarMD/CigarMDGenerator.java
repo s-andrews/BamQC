@@ -204,7 +204,9 @@ public class CigarMDGenerator {
 				}
 					
 			} else if (currentCigarElementOperator == CigarOperator.INSERTION) {
-				processMDtagCigarOperatorI();
+				if(!processMDtagCigarOperatorI(read)) {
+					return false;
+				}
 							
 			} else if (currentCigarElementOperator == CigarOperator.DELETION) {
 				if(!processMDtagCigarOperatorD(read)) {
@@ -234,7 +236,6 @@ public class CigarMDGenerator {
 			} else {
 				log.warn("Unknown Cigar operator " +currentCigarElementOperator.toString()+ " in read " + readString + "\n");
 				return false;
-				// Possibly, throw an exception here instead.
 			}
 		}
 		
@@ -602,16 +603,26 @@ public class CigarMDGenerator {
 	
 	
 	/** Process the MD string once found the CIGAR operator I. */
-	private void processMDtagCigarOperatorI() {
+	private boolean processMDtagCigarOperatorI(SAMRecord read) {
 		// The MD string does not contain information regarding an insertion.
-		String wronglyInsertedBases = readString.substring(
+		String insertedBases = readString.substring(
 				currentBaseCallPosition,
 				currentBaseCallPosition + currentCigarElementLength);
 		currentBaseCallPosition = currentBaseCallPosition
 				+ currentCigarElementLength;
+		
+		for(int i=0; i<insertedBases.length(); i++) {
+			char c = insertedBases.charAt(i);
+			if(c != 'A' && c != 'C' && c != 'G' && c != 'T') {
+				log.warn("MD string " + mdString + " contains unknown inserted bases ("+insertedBases+"). Cigar string " + read.getCigarString() + ". CurrentCigarElement : " 
+						 + currentCigarElement.getLength() + currentCigarElement.getOperator().toString());
+				return false;
+			}
+		}
 
 		//log.debug("tempCigElem: " + currentCigarElementLength + "I ~ " + " ; length: " + temporaryMDElementLength);
-		cigarMD.add(new CigarMDElement(currentCigarElementLength, CigarMDOperator.INSERTION, wronglyInsertedBases));
+		cigarMD.add(new CigarMDElement(currentCigarElementLength, CigarMDOperator.INSERTION, insertedBases));
+		return true;
 	}
 
 	
@@ -663,7 +674,7 @@ public class CigarMDGenerator {
 		for(int i=0; i<deletedBases.length(); i++) {
 			char c = deletedBases.charAt(i);
 			if(c != 'A' && c != 'C' && c != 'G' && c != 'T') {
-				log.warn("MD string " + mdString + " contains unknown bases ("+deletedBases+") to delete. Cigar string " + read.getCigarString() + ". CurrentCigarElement : " 
+				log.warn("MD string " + mdString + " contains unknown deleted bases ("+deletedBases+"). Cigar string " + read.getCigarString() + ". CurrentCigarElement : " 
 						 + currentCigarElement.getLength() + currentCigarElement.getOperator().toString());
 				return false;
 			}
