@@ -235,6 +235,28 @@ public class CigarMDGenerator {
 			}
 		}
 		
+		// Let's do some tests to see whether something is wrong..
+		if(currentBaseCallPosition < readString.length()) {
+			log.warn("Cigar string is shorter than expected. Cigar : " + read.getCigarString() + ", mdString : " + mdString
+					+ ", CurrentCigarElement : " + currentCigarElement.getLength() + currentCigarElement.getOperator().toString() 
+					+ ", Cigar length is " + currentBaseCallPosition + " when the read length is " + readString.length());
+			return false;
+		}
+
+		if(currentBaseCallPosition > readString.length()) {
+			log.warn("Cigar string is longer than expected. Cigar : " + read.getCigarString() + ", mdString : " + mdString
+					+ ", CurrentCigarElement : " + currentCigarElement.getLength() + currentCigarElement.getOperator().toString() 
+					+ ", Cigar length is " + currentBaseCallPosition + " when the read length is " + readString.length());
+			return false;
+		}
+		
+		if(temporaryMDElementLength > 0) {
+			log.warn("MD tag string is longer than expected. Cigar : " + read.getCigarString() + ", mdString : " + mdString
+					+ ", CurrentCigarElement : " + currentCigarElement.getLength() + currentCigarElement.getOperator().toString());
+			return false;
+		}
+		
+		
 		// Check whether the read is paired in sequencing or not. 
 		// Flag: 0x1 'READ_PAIRED_FLAG'
 		if(read.getReadPairedFlag()) {
@@ -445,6 +467,12 @@ public class CigarMDGenerator {
 				// This is required as MD tag string does not record insertions, whilst Cigar string does.
 				
 				if(mdString.length() <= currentMDElementPosition) {
+					if(currentBaseCallPosition + currentCigarElementLength > readString.length()) {
+						log.warn("Cigar string is longer than expected. Cigar : " + read.getCigarString() + ", mdString : " + mdString
+								+ ", CurrentCigarElement : " + currentCigarElement.getLength() + currentCigarElement.getOperator().toString() 
+								+ ", Cigar length is " + currentBaseCallPosition + " when the read length is " + readString.length());
+						return false;
+					}					
 					log.warn("MD tag string is shorter than expected. Cigar : " + read.getCigarString() + ", mdString : " + mdString
 							+ ", CurrentCigarElement : " + currentCigarElement.getLength() + currentCigarElement.getOperator().toString());
 					return false;
@@ -506,7 +534,7 @@ public class CigarMDGenerator {
 						if(currentMDChar == currentBaseCall) {
 							//error case : FALSE POSITIVE
 							log.warn("Found a mutation in the MD tag which is wrong! Cigar : " + read.getCigarString() + ", mdString : " + mdString
-									+ ", CurrentCigarElement : " + currentCigarElement.getLength() + currentCigarElement.getOperator().toString() + ", false mutation: " + currentMDChar + currentBaseCall);
+									+ ", CurrentCigarElement : " + currentCigarElement.getLength() + currentCigarElement.getOperator().toString() + ", false mutation: " + currentMDChar + "->" +  currentBaseCall);
 							return false;
 						}
 						bases.append(currentMDChar).append(currentBaseCall);			
@@ -528,7 +556,7 @@ public class CigarMDGenerator {
 							if(currentMDChar == currentBaseCall) {
 								//error case : FALSE POSITIVE
 								log.warn("Found a mutation in the MD tag which is wrong! Cigar : " + read.getCigarString() + ", mdString : " + mdString
-										+ ", CurrentCigarElement : " + currentCigarElement.getLength() + currentCigarElement.getOperator().toString() + ", false mutation: " + currentMDChar + currentBaseCall);
+										+ ", CurrentCigarElement : " + currentCigarElement.getLength() + currentCigarElement.getOperator().toString() + ", false mutation: " + currentMDChar + "->" + currentBaseCall);
 								return false;
 							}
 							bases.append(currentMDChar).append(currentBaseCall);							
@@ -628,9 +656,10 @@ public class CigarMDGenerator {
 		// temporaryCigarElementLength chars (A,C,G,T) to parse.
 		String deletedBases = mdString.substring(currentMDElementPosition,
 				currentMDElementPosition + currentCigarElementLength);
+		
 		currentMDElementPosition = currentMDElementPosition
 				+ currentCigarElementLength;
-
+		
 //		log.debug("tempCigElem: " + currentCigarElementLength + "D ~ " + "DeletedBases: " + deletedBases + " ; length: " +
 //		currentMDElement.length());
 		cigarMD.add(new CigarMDElement(currentCigarElementLength, CigarMDOperator.DELETION, deletedBases));		

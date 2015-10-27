@@ -235,7 +235,7 @@ public class VariantCallDetectionTest {
 		assertEquals("68m1uAT17m", combinedCigarMDtagList.get(1));	 // reversed and complemented (unpaired)
 		assertEquals("86m", combinedCigarMDtagList.get(2)); 	 // reversed and complemented (unpaired)
 		assertEquals("58m1uCT27m", combinedCigarMDtagList.get(3));
-		assertEquals("21m2dTT63m", combinedCigarMDtagList.get(4));
+		assertEquals("21m2dTT63m", combinedCigarMDtagList.get(4)); 
 		assertEquals("57m2dTT27m", combinedCigarMDtagList.get(5));	 // reversed and complemented (unpaired)
 		assertEquals("36m2iCC50m", combinedCigarMDtagList.get(6));
 		assertEquals("53m2iCC33m", combinedCigarMDtagList.get(7));	 // reversed and complemented (unpaired)	
@@ -325,4 +325,22 @@ public class VariantCallDetectionTest {
 	}	
 
 	
+	@Test
+	public void testErrors() {
+		// This is THE most important test for this module. All reads intentionally contain errors.
+		log.info("testErrors");
+		String filename;
+		filename = new String(new File("").getAbsolutePath() + "/test/resources/example_vc_errors.sam");
+		
+		samRecords = SAMRecordLoader.loadSAMFile(filename);		
+		if(samRecords.isEmpty()) { 
+			log.warn("Impossible to run the test as " + filename + " seems empty");
+			return; 
+		}
+		for(SAMRecord read : samRecords) {
+			//printCigarAndMD(read);
+			variantCallDetection.processSequence(read);
+			//log.info("CigarMD: " + variantCallDetection.getCigarMD().toString());
+		}
+	}
 }
