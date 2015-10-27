@@ -274,8 +274,9 @@ public class BasicStatistics extends AbstractQCModule {
  			rowNames.add("Percent spliced reads");
  			rowValues.add(formatPercentage(totalSplicedReads, variantCallDetectionTotalReads));
  			
+ 			// we do not consider here the unmapped reads which are naturally discarded.
  			rowNames.add("Percent reads with empty or inconsistent Cigar/MD tag strings");
- 			rowValues.add(formatPercentage(totalSkippedReads, variantCallDetectionTotalReads));
+ 			rowValues.add(formatPercentage(totalSkippedReads - (actualCount-mappedCount), variantCallDetectionTotalReads));
  			
  			rowNames.add("Percent indels");
  			if(totalBases > 0) { 
