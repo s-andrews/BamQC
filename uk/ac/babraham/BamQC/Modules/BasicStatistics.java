@@ -294,20 +294,22 @@ public class BasicStatistics extends AbstractQCModule {
  			rowNames.add("Percent sequences discarded for variant call detection");
  			rowValues.add(formatPercentage(totalSkippedReads, variantCallDetectionTotalReads));
  			
- 			rowNames.add("Percent indels");
- 			if(totalBases > 0) { 
- 				rowValues.add(formatPercentage(totalInsertions+totalDeletions, totalBases) + 
- 							  " (Ins:" + formatPercentage(totalInsertions, totalBases) +
-   							  "; Del:" + formatPercentage(totalDeletions, totalBases) + ")"); 
- 			} else {
- 				rowValues.add("NaN");
- 			}
- 			
- 			rowNames.add("Percent SNPs");	
- 			if(totalBases > 0) { 
- 				rowValues.add(formatPercentage(totalMutations, totalBases)); 
- 			} else {
- 				rowValues.add("NaN");
+ 			if(totalSkippedReads < variantCallDetectionTotalReads) {
+	 			rowNames.add("Percent indels");
+	 			if(totalBases > 0) { 
+	 				rowValues.add(formatPercentage(totalInsertions+totalDeletions, totalBases) + 
+	 							  " (Ins:" + formatPercentage(totalInsertions, totalBases) +
+	   							  "; Del:" + formatPercentage(totalDeletions, totalBases) + ")"); 
+	 			} else {
+	 				rowValues.add("NaN");
+	 			}
+	 			
+	 			rowNames.add("Percent SNPs");	
+	 			if(totalBases > 0) { 
+	 				rowValues.add(formatPercentage(totalMutations, totalBases)); 
+	 			} else {
+	 				rowValues.add("NaN");
+	 			}
  			}
  			
 		}

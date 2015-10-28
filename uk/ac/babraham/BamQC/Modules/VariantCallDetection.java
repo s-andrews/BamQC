@@ -219,9 +219,9 @@ public class VariantCallDetection extends AbstractQCModule {
 			switch(errorType) {
 				//case 0: // no error
 				//case 1: // unmapped read. This is already calculated in the BasicStatistics module
-				case 2: readWithoutMDString++;
-				case 3: readWithoutCigarString++;
-				case 4: inconsistentCigarMDStrings++;
+				case 2: readWithoutMDString++; break;
+				case 3: readWithoutCigarString++; break;
+				case 4: inconsistentCigarMDStrings++; break;
 			}
 			skippedReads++;
 			return;			
