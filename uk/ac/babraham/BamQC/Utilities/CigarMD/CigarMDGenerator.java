@@ -275,19 +275,19 @@ public class CigarMDGenerator {
 		
 		// Let's do some tests to see whether something is wrong..
 		if(currentBaseCallPosition < readString.length()) {
-			log.warn("Cigar string " + read.getCigarString() + " long " + currentBaseCallPosition + ", is shorter than the read length " + readString.length() 
+			log.warn("Cigar string " + read.getCigarString() + " length " + currentBaseCallPosition + " < read length " + readString.length() 
 					+ ". mdString : " + mdString + ", CurrentCigarElement : " + currentCigarElement.getLength() + currentCigarElement.getOperator().toString());
 			return false;
 		}
 
 		if(currentBaseCallPosition > readString.length()) {
-			log.warn("Cigar string " + read.getCigarString() + " long " + currentBaseCallPosition + ", is longer than the read length " + readString.length() 
+			log.warn("Cigar string " + read.getCigarString() + " length " + currentBaseCallPosition + " > read length " + readString.length() 
 					+ ". mdString : " + mdString + ", CurrentCigarElement : " + currentCigarElement.getLength() + currentCigarElement.getOperator().toString());
 			return false;
 		}
 		
 		if(temporaryMDElementLength > 0) {
-			log.warn("MD string " + mdString + " is longer than the Cigar string " + read.getCigarString() + ". CurrentCigarElement : " 
+			log.warn("MD string " + mdString + " > Cigar string " + read.getCigarString() + ". CurrentCigarElement : " 
 					 + currentCigarElement.getLength() + currentCigarElement.getOperator().toString());
 			return false;
 		}
@@ -503,11 +503,11 @@ public class CigarMDGenerator {
 				
 				if(mdString.length() <= currentMDElementPosition) {
 					if(currentBaseCallPosition + temporaryMDElementLength > readString.length()) {
-						log.warn("Cigar string " + read.getCigarString() + " long " + (currentBaseCallPosition + temporaryMDElementLength) + ", is longer than the read length " + readString.length() 
+						log.warn("Cigar string " + read.getCigarString() + " length " + (currentBaseCallPosition + temporaryMDElementLength) + " > read length " + readString.length() 
 								+ ". mdString : " + mdString + ", CurrentCigarElement : " + currentCigarElement.getLength() + currentCigarElement.getOperator().toString());
 						return false;
 					}
-					log.warn("MD string " + mdString + " is shorter than the Cigar string " + read.getCigarString() + ". CurrentCigarElement : " 
+					log.warn("MD string " + mdString + " < Cigar string " + read.getCigarString() + ". CurrentCigarElement : " 
 							 + currentCigarElement.getLength() + currentCigarElement.getOperator().toString());
 					return false;
 				}
@@ -560,7 +560,7 @@ public class CigarMDGenerator {
 					
 					
 					if(currentBaseCallPosition >= readString.length()) {
-						log.warn("MD string " + mdString + " long "+currentBaseCallPosition+", is longer than the read " + readString + " which is "+readString.length()+" long. CurrentCigarElement : " 
+						log.warn("MD string " + mdString + " length "+currentBaseCallPosition+" > read " + readString + " length "+readString.length()+". CurrentCigarElement : " 
 								 + currentCigarElement.getLength() + currentCigarElement.getOperator().toString());
 						return false;
 					}
@@ -574,14 +574,14 @@ public class CigarMDGenerator {
 					if(currentMDChar == 'A' || currentMDChar == 'C' || currentMDChar == 'G' || currentMDChar == 'T' || currentMDChar == 'N') {
 						if(currentMDChar == currentBaseCall) {
 							//error case : FALSE POSITIVE
-							log.warn("Expected mutation " + currentMDChar + " at the position " + (currentMDElementPosition-1) + " in MD string " + mdString + " but found same base " 
-							+ currentBaseCall + " in the read position " + currentBaseCallPosition + ". Cigar : " + read.getCigarString()
+							log.warn("Expected mutation " + currentMDChar + " at position " + (currentMDElementPosition-1) + " in MD string " + mdString + " but found same base " 
+							+ currentBaseCall + " in read position " + currentBaseCallPosition + ". Cigar : " + read.getCigarString()
 									+ ", CurrentCigarElement : " + currentCigarElement.getLength() + currentCigarElement.getOperator().toString());
 							return false;
 						}
 						bases.append(currentMDChar).append(currentBaseCall);			
 					} else {
-						log.warn("Expected mutation but found " + currentMDChar + " at the position " + (currentMDElementPosition-1) + " in MD string " + mdString + ". Cigar : " + read.getCigarString()
+						log.warn("Expected mutation but found " + currentMDChar + " at position " + (currentMDElementPosition-1) + " in MD string " + mdString + ". Cigar : " + read.getCigarString()
 										+ ", CurrentCigarElement : " + currentCigarElement.getLength() + currentCigarElement.getOperator().toString());
 						//bases.append('?').append('?');
 						return false;
@@ -595,15 +595,15 @@ public class CigarMDGenerator {
 						currentMDChar = mdString.charAt(currentMDElementPosition);
 						if(currentMDChar == 'A' || currentMDChar == 'C' || currentMDChar == 'G' || currentMDChar == 'T' || currentMDChar == 'N') {
 							if(currentBaseCallPosition+temporaryMDElementLength >= readString.length()) {
-								log.warn("MD string " + mdString + " long "+currentBaseCallPosition+temporaryMDElementLength+", is longer than the read " + readString + " which is "+readString.length()+" long. CurrentCigarElement : " 
+								log.warn("MD string " + mdString + " length "+currentBaseCallPosition+temporaryMDElementLength+" > read " + readString + " length "+readString.length()+". CurrentCigarElement : " 
 										 + currentCigarElement.getLength() + currentCigarElement.getOperator().toString());
 								return false;
 							}
 							currentBaseCall = readString.charAt(currentBaseCallPosition+temporaryMDElementLength);
 							if(currentMDChar == currentBaseCall) {
 								//error case : FALSE POSITIVE
-								log.warn("Expected mutation " + currentMDChar + " at the position " + currentMDElementPosition + " in MD string " + mdString + " but found base " 
-								+ currentBaseCall + " in the read position " + (currentBaseCallPosition+temporaryMDElementLength) + ". Cigar : " + read.getCigarString()
+								log.warn("Expected mutation " + currentMDChar + " at position " + currentMDElementPosition + " in MD string " + mdString + " but found base " 
+								+ currentBaseCall + " in read position " + (currentBaseCallPosition+temporaryMDElementLength) + ". Cigar : " + read.getCigarString()
 										+ ", CurrentCigarElement : " + currentCigarElement.getLength() + currentCigarElement.getOperator().toString());
 								return false;
 							}
@@ -622,7 +622,7 @@ public class CigarMDGenerator {
 					// update the position of the currentBaseCall and the parser.
 					if(bases.length() == 0) {
 						//error case
-						log.warn("MD string " + mdString + " is shorter than the Cigar string " + read.getCigarString() + ". CurrentCigarElement : " 
+						log.warn("MD string " + mdString + " < Cigar string " + read.getCigarString() + ". CurrentCigarElement : " 
 								 + currentCigarElement.getLength() + currentCigarElement.getOperator().toString());
 						return false;
 					}
@@ -678,7 +678,7 @@ public class CigarMDGenerator {
 		if(temporaryMDElementLength != 0) {
 			// There is an inconsistency between Cigar and MD strings. 
 			// If the currentCigarElement is D, temporaryMDElementLength should be 0.
-			log.warn("MD string " + mdString + " contains more matches/mismatches than the Cigar string " + read.getCigarString() 
+			log.warn("MD string " + mdString + " contains more matches/mismatches than Cigar string " + read.getCigarString() 
 					+ ". CigarElement : " + currentCigarElement.getLength() + currentCigarElement.getOperator().toString()
 					+ ", MD string position : " + currentMDElementPosition + ". Base call position : " + currentBaseCallPosition); 
 			return false;
@@ -693,7 +693,7 @@ public class CigarMDGenerator {
 		// if the CIGAR string is read too..
 		while (currentMDChar == '0') {
 			if(mdString.length() <= currentMDElementPosition) {
-				log.warn("MD string " + mdString + " is shorter than the Cigar string " + read.getCigarString() + ". CurrentCigarElement : " 
+				log.warn("MD string " + mdString + " < Cigar string " + read.getCigarString() + ". CurrentCigarElement : " 
 						 + currentCigarElement.getLength() + currentCigarElement.getOperator().toString());
 				return false;
 			}
@@ -709,7 +709,7 @@ public class CigarMDGenerator {
 			return false;
 		}
 		if(mdString.length() < currentMDElementPosition + currentCigarElementLength) {
-			log.warn("MD string " + mdString + " is shorter than the Cigar string " + read.getCigarString() + ". CurrentCigarElement : " 
+			log.warn("MD string " + mdString + " < Cigar string " + read.getCigarString() + ". CurrentCigarElement : " 
 					 + currentCigarElement.getLength() + currentCigarElement.getOperator().toString());
 			return false;
 		}
