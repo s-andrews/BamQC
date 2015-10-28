@@ -107,7 +107,11 @@ public class VariantCallDetectionTest {
 		for(SAMRecord samRecord : samRecords) {
 			//printCigarAndMD(samRecord);
 			variantCallDetection.processSequence(samRecord);
-			combinedCigarMDtagList.add(variantCallDetection.getCigarMD().toString());
+			if(variantCallDetection.getCigarMD() != null)
+				combinedCigarMDtagList.add(variantCallDetection.getCigarMD().toString());
+			else {
+				log.debug("CigarMD: not computed!");
+			}
 		}
 		assertEquals("89m", combinedCigarMDtagList.get(0));
 		assertEquals("91m", combinedCigarMDtagList.get(1));
@@ -130,7 +134,11 @@ public class VariantCallDetectionTest {
 		for(SAMRecord samRecord : samRecords) {
 	        //printCigarAndMD(samRecord);	
 			variantCallDetection.processSequence(samRecord);
-			combinedCigarMDtagList.add(variantCallDetection.getCigarMD().toString());	
+			if(variantCallDetection.getCigarMD() != null)
+				combinedCigarMDtagList.add(variantCallDetection.getCigarMD().toString());
+			else {
+				log.debug("CigarMD: not computed!");
+			}
 		}
 		assertEquals("14m1uCA1m1uCG8m1uTA16m1dT20m2uCTCT27m", combinedCigarMDtagList.get(0));
 		assertEquals("6m1dA34m1uAG13m1uGT36m", combinedCigarMDtagList.get(1));  // reversed and complemented (first+backward)
@@ -150,7 +158,11 @@ public class VariantCallDetectionTest {
 		for(SAMRecord samRecord : samRecords) {
 			//printCigarAndMD(samRecord);
 			variantCallDetection.processSequence(samRecord);
-			combinedCigarMDtagList.add(variantCallDetection.getCigarMD().toString());			
+			if(variantCallDetection.getCigarMD() != null)
+				combinedCigarMDtagList.add(variantCallDetection.getCigarMD().toString());
+			else {
+				log.debug("CigarMD: not computed!");
+			}			
 		}
 		assertEquals("65m3iGCT22m", combinedCigarMDtagList.get(0));  // reversed and complemented (first+backward)
 		assertEquals("57m1iT31m", combinedCigarMDtagList.get(1));
@@ -170,7 +182,11 @@ public class VariantCallDetectionTest {
 		for(SAMRecord samRecord : samRecords) {
           //printCigarAndMD(samRecord);		
 		  variantCallDetection.processSequence(samRecord);
-		  combinedCigarMDtagList.add(variantCallDetection.getCigarMD().toString());		  
+			if(variantCallDetection.getCigarMD() != null)
+				combinedCigarMDtagList.add(variantCallDetection.getCigarMD().toString());
+			else {
+				log.debug("CigarMD: not computed!");
+			}  
 		}
 		assertEquals("6m1iT2m1dT82m", combinedCigarMDtagList.get(0));
 		assertEquals("2m1dA56m2dGT10m1uCT21m", combinedCigarMDtagList.get(1)); // (second+backward)	
@@ -191,7 +207,11 @@ public class VariantCallDetectionTest {
 		for(SAMRecord samRecord : samRecords) {
           //printCigarAndMD(samRecord);		
 		  variantCallDetection.processSequence(samRecord);
-		  combinedCigarMDtagList.add(variantCallDetection.getCigarMD().toString());		  
+			if(variantCallDetection.getCigarMD() != null)
+				combinedCigarMDtagList.add(variantCallDetection.getCigarMD().toString());
+			else {
+				log.debug("CigarMD: not computed!");
+			} 
 		}
 		assertEquals("89m", combinedCigarMDtagList.get(0));
 		assertEquals("91m", combinedCigarMDtagList.get(1));
@@ -207,8 +227,7 @@ public class VariantCallDetectionTest {
 		assertEquals("29m1uGA2m1uTA14m1iC3m1dA17m1uTG", combinedCigarMDtagList.get(11));
 		assertEquals("49m1uGC2m1iC5m2dTT24m1uCT7m", combinedCigarMDtagList.get(12));
 		assertEquals("49m1uGC2m1iC5m2dTT22m3uGTTACT7m", combinedCigarMDtagList.get(13));		
-		assertEquals("", combinedCigarMDtagList.get(14));			
-		assertEquals("", combinedCigarMDtagList.get(15));			
+		
 	}		
 	
 	
@@ -229,7 +248,11 @@ public class VariantCallDetectionTest {
 		  log.debug("Flags: " + samRecord.getFlags());		  
 		  log.debug("CigarMD: " + variantCallDetection.getCigarMD().toString());	  		  
 		  debugCigarAndMD(samRecord);
-          combinedCigarMDtagList.add(variantCallDetection.getCigarMD().toString());		  
+			if(variantCallDetection.getCigarMD() != null)
+				combinedCigarMDtagList.add(variantCallDetection.getCigarMD().toString());
+			else {
+				log.debug("CigarMD: not computed!");
+			}  
 		}
 		assertEquals("86m", combinedCigarMDtagList.get(0));
 		assertEquals("68m1uAT17m", combinedCigarMDtagList.get(1));	 // reversed and complemented (unpaired)
@@ -265,7 +288,11 @@ public class VariantCallDetectionTest {
 		for(SAMRecord read : samRecords) {
 			//printCigarAndMD(samRecord);				
 			variantCallDetection.processSequence(read);
-			log.debug("CigarMD: " + variantCallDetection.getCigarMD().toString());
+			if(variantCallDetection.getCigarMD() != null)
+				log.debug("CigarMD: " + variantCallDetection.getCigarMD().toString());
+			else {
+				log.debug("CigarMD: not computed!");
+			}
 		}
 		
 		
@@ -340,7 +367,11 @@ public class VariantCallDetectionTest {
 		for(SAMRecord read : samRecords) {
 			//printCigarAndMD(read);
 			variantCallDetection.processSequence(read);
-			//log.info("CigarMD: " + variantCallDetection.getCigarMD().toString());
+			if(variantCallDetection.getCigarMD() != null)
+				log.info(variantCallDetection.getCigarMD().toString());
+			else {
+				log.info("CigarMD: not computed!");
+			}
 		}
 	}
 }
