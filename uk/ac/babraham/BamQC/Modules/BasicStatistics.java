@@ -53,7 +53,7 @@ public class BasicStatistics extends AbstractQCModule {
 	private long primaryCount = 0;
 	private long pairedCount = 0;
 	private long properPairCount = 0;
-	private long mappedCount = 0;
+	private long unmappedCount = 0;
 	private long duplicateCount = 0;
 	private long qcFailCount = 0;
 	private long singletonCount = 0;
@@ -178,7 +178,7 @@ public class BasicStatistics extends AbstractQCModule {
 			if (sequence.getMateUnmappedFlag() && ! sequence.getReadUnmappedFlag()) singletonCount++;
 		}
 		
-		if (!sequence.getReadUnmappedFlag()) mappedCount++;
+		if (sequence.getReadUnmappedFlag()) unmappedCount++;
 		if (sequence.getReadFailsVendorQualityCheckFlag()) qcFailCount++;
 		if (sequence.getDuplicateReadFlag()) duplicateCount++;
 		
@@ -264,8 +264,8 @@ public class BasicStatistics extends AbstractQCModule {
  			
  			rowNames.add("Percent marked duplicate");
  			rowValues.add(formatPercentage(duplicateCount, actualCount));
- 					
-			rowNames.add("Percent spliced reads");
+ 			
+			rowNames.add("Percent sequences spliced");
  			rowValues.add(formatPercentage(totalSplicedReads, variantCallDetectionTotalReads));
  			
  			rowNames.add("Percent sequences paired");
@@ -278,8 +278,8 @@ public class BasicStatistics extends AbstractQCModule {
  				rowValues.add(formatPercentage(singletonCount, actualCount));
  			}
  			
- 			rowNames.add("Percent sequences mapped");
- 			rowValues.add(formatPercentage(mappedCount, actualCount));
+ 			rowNames.add("Percent sequences unmapped");
+ 			rowValues.add(formatPercentage(unmappedCount, actualCount));
  			
  			// we do not consider here the unmapped sequences which are naturally discarded.
  			rowNames.add("Percent sequences without MD Tag String");
@@ -401,8 +401,8 @@ public class BasicStatistics extends AbstractQCModule {
 		return properPairCount;
 	}
 
-	public long getMappedCount() {
-		return mappedCount;
+	public long getUnmappedCount() {
+		return unmappedCount;
 	}
 
 	public long getDuplicateCount() {
