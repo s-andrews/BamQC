@@ -22,6 +22,7 @@ package uk.ac.babraham.BamQC.Utilities.CigarMD;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.log4j.Logger;
 
@@ -169,6 +170,11 @@ public class CigarMDGenerator {
 			log.debug("Read " + readString + " does not have MD string.");
 			return false;
 		}
+		// In some reads the bases in the MD string can be in lower case. The read and cigar strings are already set to upper case 
+		// for us by the samtools library. This doesn't happen with the mdString though. Let's set this to upper case once for all now, 
+		// so we don't have to worry about it later.
+		mdString = mdString.toUpperCase(Locale.ENGLISH);
+		
 		
 		// Get the CIGAR list
 		Cigar cigar = read.getCigar();
@@ -605,6 +611,8 @@ public class CigarMDGenerator {
 	/** Process the MD string once found the CIGAR operator I. */
 	private boolean processMDtagCigarOperatorI(SAMRecord read) {
 		// The MD string does not contain information regarding an insertion.
+		// NOTE: readString is already in upper case by samtools library, even if in the file, the read was in lowercase.
+		// therefore, we do not need to worry about this.
 		String insertedBases = readString.substring(
 				currentBaseCallPosition,
 				currentBaseCallPosition + currentCigarElementLength);
@@ -669,6 +677,7 @@ public class CigarMDGenerator {
 		
 		// The first character is a ^. There are exactly
 		// temporaryCigarElementLength chars (A,C,G,T) to parse.
+		// Let's be nice with programs setting the mdString bases in lower case. 
 		String deletedBases = mdString.substring(currentMDElementPosition,
 				currentMDElementPosition + currentCigarElementLength);
 		for(int i=0; i<deletedBases.length(); i++) {
