@@ -23,6 +23,7 @@ import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -118,6 +119,9 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 		else {
 			chooser = new JFileChooser(lastUsedDir);
 		}
+		// Open the view by details
+		Action details = chooser.getActionMap().get("viewTypeDetails");
+		details.actionPerformed(null);
 		chooser.setMultiSelectionEnabled(true);
 		BAMFileFilter bff = new BAMFileFilter();
 		// remove default "All Files" filter
@@ -203,6 +207,8 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 		else {
 			chooser = new JFileChooser(lastUsedDir);
 		}
+		Action details = chooser.getActionMap().get("viewTypeDetails");
+		details.actionPerformed(null);
 		chooser.setMultiSelectionEnabled(false);
 		GFFFileFilter gff = new GFFFileFilter();
 		// remove default "All Files" filter
