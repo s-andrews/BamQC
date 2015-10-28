@@ -27,6 +27,9 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.log4j.Logger;
+
+import net.sf.samtools.Cigar;
 import net.sf.samtools.CigarElement;
 import net.sf.samtools.CigarOperator;
 import net.sf.samtools.SAMRecord;
@@ -37,6 +40,9 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
 public class SoftClipDistribution extends AbstractQCModule {
 
+	// logger
+	private static Logger log = Logger.getLogger(SoftClipDistribution.class);
+	
 	private long [] leftClipCounts = new long[1];
 	private long [] rightClipCounts = new long[1];
 	
@@ -48,25 +54,35 @@ public class SoftClipDistribution extends AbstractQCModule {
 		int leftClip = 0;
 		int rightClip = 0;
 		
-		List<CigarElement> elements = read.getCigar().getCigarElements();
-
-		if (elements.get(elements.size()-1).getOperator().equals(CigarOperator.S)) {
-			if (read.getReadNegativeStrandFlag()) {
-				leftClip = elements.get(elements.size()-1).getLength();
-			}
-			else {
-				rightClip = elements.get(elements.size()-1).getLength();
-			}			
-		}
-
 		
-		if (elements.get(0).getOperator().equals(CigarOperator.S)) {
+		// Get the CIGAR list
+		Cigar cigar = read.getCigar();
+		if (cigar == null || read.getCigarLength() == 0) {
+			log.debug("Read " + read.getReadString() + " does not have Cigar string.");
+			return;
+		}
+		
+		
+		List<CigarElement> elements = cigar.getCigarElements();
+		CigarElement first = elements.get(0);
+		CigarElement last = elements.get(elements.size()-1);
+
+		if (first.getOperator().equals(CigarOperator.S)) {
 			if (read.getReadNegativeStrandFlag()) {
-				rightClip = elements.get(0).getLength();
+				rightClip = first.getLength();
 			}
 			else {
-				leftClip = elements.get(0).getLength();				
+				leftClip = first.getLength();				
 			}
+		}
+		
+		if (last.getOperator().equals(CigarOperator.S)) {
+			if (read.getReadNegativeStrandFlag()) {
+				leftClip = last.getLength();
+			}
+			else {
+				rightClip = last.getLength();
+			}			
 		}
 
 		int max=leftClip;
