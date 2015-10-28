@@ -72,6 +72,9 @@ public class VariantCallDetection extends AbstractQCModule {
 	private long referenceUnknownBases = 0;
 	
     private long skippedReads = 0;
+	private long readWithoutMDString = 0;
+	private long readWithoutCigarString = 0;
+	private long inconsistentCigarMDStrings = 0;
     private long totalReads = 0;
     
     private long splicedReads = 0;
@@ -99,6 +102,10 @@ public class VariantCallDetection extends AbstractQCModule {
     
     
     private int readLength = 0;
+    // temporary variable created here to limit variable declarations. 
+    // these are initialised inside the method processSequence()
+    private boolean isReadSpliced = false;
+    private int cigarMDElementsSize = 0;
     
 	// Used for computing the statistics 
 	private CigarMDGenerator cigarMDGenerator = new CigarMDGenerator();
@@ -192,7 +199,7 @@ public class VariantCallDetection extends AbstractQCModule {
 		}
 		// we do not consider totalSkippedRegions, totalHardClips and totalPaddings because they are not 
 		// recorded in the read.
-		total = totalMutations + totalInsertions + totalDeletions + totalMatches + totalSoftClips;
+		total = totalMatches + totalMutations + totalInsertions + totalDeletions + totalSoftClips;
 	}
 	
 	
@@ -201,15 +208,22 @@ public class VariantCallDetection extends AbstractQCModule {
 	@Override
 	public void processSequence(SAMRecord read) {
 
-		boolean isReadSpliced = false;
+		isReadSpliced = false;
 		totalReads++;
 		
 		// Compute and get the CigarMD object combining the strings Cigar and MD tag
 		cigarMDGenerator.generateCigarMD(read);
 		cigarMD = cigarMDGenerator.getCigarMD();
-		if(cigarMD.isEmpty()) {
+		if(cigarMD == null || cigarMD.isEmpty()) {
+			int errorType = cigarMDGenerator.getErrorType();
+			switch(errorType) {
+				//case 0: // no error
+				//case 1: // unmapped read. This is already calculated in the BasicStatistics module
+				case 2: readWithoutMDString++;
+				case 3: readWithoutCigarString++;
+				case 4: inconsistentCigarMDStrings++;
+			}
 			skippedReads++;
-			computeTotals();
 			return;			
 		}
 
@@ -224,7 +238,7 @@ public class VariantCallDetection extends AbstractQCModule {
 		currentPosition = 0;
 
 		// Use the old c-style for loop for memory (garbage collector) and CPU efficiency
-		int cigarMDElementsSize = cigarMDElements.size();
+		cigarMDElementsSize = cigarMDElements.size();
 		for(int i=0; i<cigarMDElementsSize; i++) {
 			
 			currentCigarMDElement = cigarMDElements.get(i);
@@ -660,6 +674,9 @@ public class VariantCallDetection extends AbstractQCModule {
 	
 	// Getter methods
 	
+	/** Returns the calculated CigarMD or null if this is empty 
+	 * @return CigarMD or null
+	 */
 	public CigarMD getCigarMD() {
 		return cigarMD;
 	}
@@ -735,6 +752,18 @@ public class VariantCallDetection extends AbstractQCModule {
 	public long getSkippedReads() {
 		return skippedReads;
 	}	
+	
+	public long getReadWithoutMDString() {
+		return readWithoutMDString;
+	}
+
+	public long getReadWithoutCigarString() {
+		return readWithoutCigarString;
+	}
+	
+	public long getInconsistentCigarMDStrings() {
+		return inconsistentCigarMDStrings;
+	}
 	
 	public long getTotalReads() {
 		return totalReads;

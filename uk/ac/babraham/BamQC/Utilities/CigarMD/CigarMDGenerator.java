@@ -65,7 +65,7 @@ public class CigarMDGenerator {
 	private int currentBaseCallPosition = 0;
 
 	// Data fields storing the CigarMD object combining Cigar and MD strings.
-	private CigarMD cigarMD = new CigarMD();
+	private CigarMD cigarMD = null;
 	
 	// If the read is a first or second segment.
 	private boolean isFirst = true;
@@ -74,6 +74,12 @@ public class CigarMDGenerator {
 	// quite time consuming as it copies the string every time. Here we copy it 
 	// one time only.
 	private String readString = null;
+	// local variables declared here for limiting variable declarations in the method computeCigarMDTag().
+	private Cigar cigar = null;
+	private int cigarListSize = 0;
+	
+	// 0: no error, 1: unmapped read, 2: read without MD string, 3: read without Cigar, 4: Cigar/MD/read inconsistencies
+	private int errorType = 0;
 	
 
 	// Public interface
@@ -91,6 +97,16 @@ public class CigarMDGenerator {
 	}
 
 	// getter methods
+	
+	/**
+	 * It returns the error type. 0: no error, 1: unmapped read, 2: read without MD string, 
+	 * 3: read without Cigar, 4: Cigar/MD/read inconsistencies.
+	 * @return the error type.
+	 */
+	public int getErrorType() {
+		return errorType;
+	}
+	
 	/**
 	 * It returns a string combining information from CIGAR and MD tag. This
 	 * method only returns a CigarMD string computed previously.
@@ -123,12 +139,17 @@ public class CigarMDGenerator {
 	
 	// computing methods
 	/**
-	 * It generates a string combining information from CIGAR and MD tag.
+	 * It generates a string combining information from CIGAR and MD tag. This CigarMD string is null if it could not be created.
+	 * In this last case, an error message can be retrieved using the message getErrorType().
 	 */
 	public void generateCigarMD(SAMRecord read) {
 		reset();
 		if(!computeCigarMDTag(read)) {
-			cigarMD = new CigarMD();
+			if(errorType == 0) {
+				// if we are here, we detected one of a broad range of errors due to inconsistencies between Cigar/MD/read strings.
+				errorType = 4;
+				cigarMD = null;
+			}
 		}
 	}
 
@@ -161,13 +182,15 @@ public class CigarMDGenerator {
 		// Check the state of a flag bit 'READ_UNMAPPED_FLAG'. 
 		if(read.getReadUnmappedFlag()) {
 			log.debug("Read " + readString + " is unmapped and therefore skipped.");
+			errorType = 1;
 			return false;	
 		}
 		
-		// Get the MD tag string.
+		// Get the MD tag string. It is more likely errors are in the MD rather than the Cigar. Let's put this first.
 		mdString = read.getStringAttribute("MD");
 		if (mdString == null || mdString.length() == 0) {
 			log.debug("Read " + readString + " does not have MD string.");
+			errorType = 2;
 			return false;
 		}
 		// In some reads the bases in the MD string can be in lower case. The read and cigar strings are already set to upper case 
@@ -177,15 +200,20 @@ public class CigarMDGenerator {
 		
 		
 		// Get the CIGAR list
-		Cigar cigar = read.getCigar();
+		cigar = read.getCigar();
 		if (cigar == null || read.getCigarLength() == 0) {
 			log.debug("Read " + readString + " does not have Cigar string.");
+			errorType = 3;
 			return false;
 		}
 		
 		
 		cigarList = cigar.getCigarElements();
 			
+		// setup a new CigarMD string
+		cigarMD = new CigarMD();
+		
+		
 		
 		// Use the old c-style for loop for memory (garbage collector) and CPU efficiency
 		// Iterate the CigarList
@@ -194,7 +222,7 @@ public class CigarMDGenerator {
 //		while (iterCigar.hasNext()) {
 //			currentCigarElement = iterCigar.next();
 			
-		int cigarListSize = cigarList.size();
+		cigarListSize = cigarList.size();
 		for(int i=0; i<cigarListSize; i++) {
 			
 			currentCigarElement = cigarList.get(i);
@@ -414,9 +442,8 @@ public class CigarMDGenerator {
 		currentMDElementPosition = 0;
 		currentBaseCallPosition = 0;
 		readString = null;
-		if(cigarMD != null && !cigarMD.isEmpty()) {
-			cigarMD = new CigarMD();
-		}
+		cigarMD = null;
+		errorType = 0;
 	}
 
 		
@@ -531,6 +558,13 @@ public class CigarMDGenerator {
 					// is mutated into the base A on the aligned read base. In the case of two contiguous mutation, this 
 					// can be coded as 2uCAGT if the reference string CA are mutated into GT.
 					
+					
+					if(currentBaseCallPosition >= readString.length()) {
+						log.warn("MD string " + mdString + " long "+currentBaseCallPosition+", is longer than the read " + readString + " which is "+readString.length()+" long. CurrentCigarElement : " 
+								 + currentCigarElement.getLength() + currentCigarElement.getOperator().toString());
+						return false;
+					}
+					
 					// The bases for this mismatch
 					// Capacity initially set to 8: 8 contiguous SNPs!
 					StringBuilder bases = new StringBuilder(8);
@@ -560,6 +594,11 @@ public class CigarMDGenerator {
 					while(currentMDElementPosition < mdString.length()) {		
 						currentMDChar = mdString.charAt(currentMDElementPosition);
 						if(currentMDChar == 'A' || currentMDChar == 'C' || currentMDChar == 'G' || currentMDChar == 'T' || currentMDChar == 'N') {
+							if(currentBaseCallPosition+temporaryMDElementLength >= readString.length()) {
+								log.warn("MD string " + mdString + " long "+currentBaseCallPosition+temporaryMDElementLength+", is longer than the read " + readString + " which is "+readString.length()+" long. CurrentCigarElement : " 
+										 + currentCigarElement.getLength() + currentCigarElement.getOperator().toString());
+								return false;
+							}
 							currentBaseCall = readString.charAt(currentBaseCallPosition+temporaryMDElementLength);
 							if(currentMDChar == currentBaseCall) {
 								//error case : FALSE POSITIVE
@@ -621,7 +660,7 @@ public class CigarMDGenerator {
 		
 		for(int i=0; i<insertedBases.length(); i++) {
 			char c = insertedBases.charAt(i);
-			if(c != 'A' && c != 'C' && c != 'G' && c != 'T') {
+			if(c != 'A' && c != 'C' && c != 'G' && c != 'T' && c != 'N') {
 				log.warn("MD string " + mdString + " contains unknown inserted bases ("+insertedBases+"). Cigar string " + read.getCigarString() + ". CurrentCigarElement : " 
 						 + currentCigarElement.getLength() + currentCigarElement.getOperator().toString());
 				return false;
@@ -682,7 +721,7 @@ public class CigarMDGenerator {
 				currentMDElementPosition + currentCigarElementLength);
 		for(int i=0; i<deletedBases.length(); i++) {
 			char c = deletedBases.charAt(i);
-			if(c != 'A' && c != 'C' && c != 'G' && c != 'T') {
+			if(c != 'A' && c != 'C' && c != 'G' && c != 'T' && c != 'N') {
 				log.warn("MD string " + mdString + " contains unknown deleted bases ("+deletedBases+"). Cigar string " + read.getCigarString() + ". CurrentCigarElement : " 
 						 + currentCigarElement.getLength() + currentCigarElement.getOperator().toString());
 				return false;

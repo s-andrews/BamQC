@@ -60,6 +60,9 @@ public class BasicStatistics extends AbstractQCModule {
 	
 	private long totalSplicedReads = 0;
 	private long totalSkippedReads = 0;
+	private long totalReadsWithoutMDString = 0;
+	private long totalReadsWithoutCigarString = 0;
+	private long totalInconsistenReadsCigarMDString = 0;
 	private long variantCallDetectionTotalReads = 0;
 	private long totalInsertions = 0;
 	private long totalDeletions = 0;
@@ -68,6 +71,7 @@ public class BasicStatistics extends AbstractQCModule {
 	
 
 	VariantCallDetection vcd = null;
+
 
 	/**
 	 * Constructor. Reuse of the computation provided by VariantCallDetection analysis.
@@ -116,6 +120,9 @@ public class BasicStatistics extends AbstractQCModule {
 		if(vcd != null) {
 			totalSplicedReads = vcd.getTotalSplicedReads();
 			totalSkippedReads = vcd.getSkippedReads();
+			totalReadsWithoutMDString = vcd.getReadWithoutMDString();
+			totalReadsWithoutCigarString = vcd.getReadWithoutCigarString();
+			totalInconsistenReadsCigarMDString = vcd.getInconsistentCigarMDStrings();
 			variantCallDetectionTotalReads = vcd.getTotalReads();
 			totalInsertions = vcd.getTotalInsertions();
 			totalDeletions = vcd.getTotalDeletions();
@@ -258,8 +265,8 @@ public class BasicStatistics extends AbstractQCModule {
  			rowNames.add("Percent marked duplicate");
  			rowValues.add(formatPercentage(duplicateCount, actualCount));
  					
- 			rowNames.add("Percent sequences mapped");
- 			rowValues.add(formatPercentage(mappedCount, actualCount));
+			rowNames.add("Percent spliced reads");
+ 			rowValues.add(formatPercentage(totalSplicedReads, variantCallDetectionTotalReads));
  			
  			rowNames.add("Percent sequences paired");
  			rowValues.add(formatPercentage(pairedCount, actualCount));
@@ -271,12 +278,21 @@ public class BasicStatistics extends AbstractQCModule {
  				rowValues.add(formatPercentage(singletonCount, actualCount));
  			}
  			
- 			rowNames.add("Percent spliced reads");
- 			rowValues.add(formatPercentage(totalSplicedReads, variantCallDetectionTotalReads));
+ 			rowNames.add("Percent sequences mapped");
+ 			rowValues.add(formatPercentage(mappedCount, actualCount));
  			
- 			// we do not consider here the unmapped reads which are naturally discarded.
- 			rowNames.add("Percent reads with empty or inconsistent Cigar/MD tag strings");
- 			rowValues.add(formatPercentage(totalSkippedReads - (actualCount-mappedCount), variantCallDetectionTotalReads));
+ 			// we do not consider here the unmapped sequences which are naturally discarded.
+ 			rowNames.add("Percent sequences without MD Tag String");
+ 			rowValues.add(formatPercentage(totalReadsWithoutMDString, variantCallDetectionTotalReads));
+ 			
+ 			rowNames.add("Percent sequences without Cigar String");
+ 			rowValues.add(formatPercentage(totalReadsWithoutCigarString, variantCallDetectionTotalReads));
+ 			
+ 			rowNames.add("Percent sequences with inconsistent Cigar or MD Tag Strings");
+ 			rowValues.add(formatPercentage(totalInconsistenReadsCigarMDString, variantCallDetectionTotalReads));
+
+ 			rowNames.add("Percent sequences discarded for variant call detection");
+ 			rowValues.add(formatPercentage(totalSkippedReads, variantCallDetectionTotalReads));
  			
  			rowNames.add("Percent indels");
  			if(totalBases > 0) { 
