@@ -64,6 +64,7 @@ public class BasicStatistics extends AbstractQCModule {
 	private long totalReadsWithoutCigarString = 0;
 	private long totalInconsistenReadsCigarMDString = 0;
 	private long variantCallDetectionTotalReads = 0;
+	private long totalSoftClips = 0;
 	private long totalInsertions = 0;
 	private long totalDeletions = 0;
 	private long totalMutations = 0;
@@ -124,6 +125,7 @@ public class BasicStatistics extends AbstractQCModule {
 			totalReadsWithoutCigarString = vcd.getReadWithoutCigarString();
 			totalInconsistenReadsCigarMDString = vcd.getInconsistentCigarMDStrings();
 			variantCallDetectionTotalReads = vcd.getTotalReads();
+			totalSoftClips = vcd.getTotalSoftClips();
 			totalInsertions = vcd.getTotalInsertions();
 			totalDeletions = vcd.getTotalDeletions();
 			totalMutations = vcd.getTotalMutations();
@@ -310,6 +312,14 @@ public class BasicStatistics extends AbstractQCModule {
 	 			} else {
 	 				rowValues.add("NaN");
 	 			}
+	 			
+	 			rowNames.add("Percent soft clips");
+	 			if(totalBases > 0) { 
+	 				rowValues.add(formatPercentage(totalSoftClips, totalBases)); 
+	 			} else {
+	 				rowValues.add("NaN");
+	 			}
+	 			
  			}
  			
 		}
