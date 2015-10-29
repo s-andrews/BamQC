@@ -146,8 +146,6 @@ public class IndelFrequencies extends AbstractQCModule {
 		int maxX = computeXMaxValue();
 		String[] xCategories = new String[maxX];
 		
-		
-		
 		// compute statistics from the FIRST segment data
 		long[] firstDeletionPos = variantCallDetection.getFirstDeletionPos();		
 		long[] firstInsertionPos = variantCallDetection.getFirstInsertionPos();

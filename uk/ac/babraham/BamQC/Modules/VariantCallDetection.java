@@ -180,7 +180,7 @@ public class VariantCallDetection extends AbstractQCModule {
 		totalDeletions = 0;
 		
 		if(existPairedReads) {
-			for(int i=0; i< firstSNPPos.length; i++) {
+			for(int i=0; i< totalPos.length; i++) {
 				totalMutations = totalMutations + firstSNPPos[i] + secondSNPPos[i];
 				totalInsertions = totalInsertions + firstInsertionPos[i] + secondInsertionPos[i];
 				totalDeletions = totalDeletions + firstDeletionPos[i] + secondDeletionPos[i];
@@ -189,7 +189,7 @@ public class VariantCallDetection extends AbstractQCModule {
 					          matchPos[i];
 			}
 		} else {
-			for(int i=0; i< firstSNPPos.length; i++) {
+			for(int i=0; i< totalPos.length; i++) {
 				totalMutations = totalMutations + firstSNPPos[i];
 				totalInsertions = totalInsertions + firstInsertionPos[i];
 				totalDeletions = totalDeletions + firstDeletionPos[i];
@@ -214,17 +214,13 @@ public class VariantCallDetection extends AbstractQCModule {
 		// Compute and get the CigarMD object combining the strings Cigar and MD tag
 		cigarMDGenerator.generateCigarMD(read);
 		cigarMD = cigarMDGenerator.getCigarMD();
-		if(cigarMD == null || cigarMD.isEmpty()) {
-			int errorType = cigarMDGenerator.getErrorType();
-			switch(errorType) {
-				//case 0: // no error
-				//case 1: // unmapped read. This is already calculated in the BasicStatistics module
-				case 2: readWithoutMDString++; break;
-				case 3: readWithoutCigarString++; break;
-				case 4: inconsistentCigarMDStrings++; break;
-			}
-			skippedReads++;
-			return;			
+		int errorType = cigarMDGenerator.getErrorType();
+		switch(errorType) {
+			//case 0: // no error
+			case 1: skippedReads++; return; // unmapped read. we cannot carry on here.. The number of unmapped reads is already calculated in the BasicStatistics module
+			case 2: readWithoutMDString++; break; // we won't have SNPs, but we compute statistics for the other operators.
+			case 3: readWithoutCigarString++; skippedReads++; return; // we cannot carry on here.. 
+			case 4: inconsistentCigarMDStrings++; skippedReads++; return; // we cannot carry on here.. 
 		}
 
 		readLength = read.getReadLength();
@@ -278,16 +274,19 @@ public class VariantCallDetection extends AbstractQCModule {
 			} else if(currentCigarMDElementOperator == CigarMDOperator.eq) {
 				log.debug("Extended CIGAR element = is not currently supported.");
 				skippedReads++;
+				computeTotals();
 				return;	
 				
 			} else if(currentCigarMDElementOperator == CigarMDOperator.x) {
 				log.debug("Extended CIGAR element X is not currently supported.");
 				skippedReads++;
+				computeTotals();
 				return;
 				
 			} else {
 				log.debug("Unknown operator in the CIGAR string.");
 				skippedReads++;
+				computeTotals();
 				return;	
 			}		
 		}
@@ -438,20 +437,36 @@ public class VariantCallDetection extends AbstractQCModule {
 	
 	// Private methods here
 	
-	
-	private void extendDensityArrays() {
+	/**
+	 * Extend the density arrays storing the positions for SNPs, Indels, matches and totals if and only if newSize is greater or equal than the 
+	 * current size of these arrays. As this method can be time consuming, if newSize is < than two times the current size of a density array, 
+	 * the double of the current size will be used instead of newSize.
+	 * @param newSize A suggested new size.
+	 */
+	private void extendDensityArrays(int newSize) {
+
+		if(newSize < totalPos.length) {
+			// we still have space left. 
+			return;
+		}
+		
+		// As we do not want to call this method too often, it is better to extend it 
+		// 2 times the current length if newSize is a small increase 
+		if(newSize < totalPos.length*2) {
+			newSize = totalPos.length*2;
+		}
+		
 		long[] oldFirstSNPPos = firstSNPPos;
 		long[] oldFirstInsertionPos = firstInsertionPos;
 		long[] oldFirstDeletionPos = firstDeletionPos;
 		long[] oldMatchPos = matchPos;
 		long[] oldTotalPos = totalPos;		
-		// We do not want to call this method too often, that's why it is better to extend it 
-		// 2 times the current length. 
-		firstSNPPos = new long[firstSNPPos.length*2];
-		firstInsertionPos = new long[firstSNPPos.length*2];
-		firstDeletionPos = new long[firstSNPPos.length*2];
-		matchPos = new long[firstSNPPos.length*2];
-		totalPos = new long[firstSNPPos.length*2];				
+
+		firstSNPPos = new long[newSize];
+		firstInsertionPos = new long[newSize];
+		firstDeletionPos = new long[newSize];
+		matchPos = new long[newSize];
+		totalPos = new long[newSize];				
 		
 		System.arraycopy(oldFirstSNPPos, 0, firstSNPPos, 0, oldFirstSNPPos.length);
 		System.arraycopy(oldFirstInsertionPos, 0, firstInsertionPos, 0, oldFirstSNPPos.length);
@@ -463,9 +478,9 @@ public class VariantCallDetection extends AbstractQCModule {
 			long[] oldSecondSNPPos = secondSNPPos;
 			long[] oldSecondInsertionPos = secondInsertionPos;
 			long[] oldSecondDeletionPos = secondDeletionPos;		
-			secondSNPPos = new long[firstSNPPos.length*2];			
-			secondInsertionPos = new long[firstSNPPos.length*2];
-			secondDeletionPos = new long[firstSNPPos.length*2];
+			secondSNPPos = new long[newSize];			
+			secondInsertionPos = new long[newSize];
+			secondDeletionPos = new long[newSize];
 			System.arraycopy(oldSecondSNPPos, 0, secondSNPPos, 0, oldFirstSNPPos.length);
 			System.arraycopy(oldSecondInsertionPos, 0, secondInsertionPos, 0, oldFirstSNPPos.length);
 			System.arraycopy(oldSecondDeletionPos, 0, secondDeletionPos, 0, oldFirstSNPPos.length);			
@@ -482,10 +497,10 @@ public class VariantCallDetection extends AbstractQCModule {
 	private void processMDtagCigarOperatorM() {
 		int numMatches = currentCigarMDElement.getLength();
 		totalMatches = totalMatches + numMatches;
+		
 		// if the read.length is longer than what we supposed to be, here we increase the length of our *Pos arrays.
-		if(currentPosition+numMatches >= matchPos.length) {
-			extendDensityArrays();			
-	    }
+		extendDensityArrays(currentPosition+numMatches);			
+	    
 		for(int i=0; i<numMatches; i++) {
 			matchPos[currentPosition+i]++;
 		}
@@ -513,38 +528,36 @@ public class VariantCallDetection extends AbstractQCModule {
 		}
 		
 		// if the read.length is longer than what we supposed to be, here we increase the length of our *Pos arrays.
-		if(currentPosition+numMutations >= firstSNPPos.length) {
-			extendDensityArrays();			
-	    }
+		extendDensityArrays(currentPosition+numMutations);			
+	    
 		if(cigarMDGenerator.isFirst()) {
 			for(int i = 0; i < numMutations; i++) {
 				basePair = mutatedBases.substring(i*2, i*2+2);
 				if(basePair.charAt(0) == 'N') { 
-					referenceUnknownBases++; currentPosition++; 
+					referenceUnknownBases++; 
 					if(basePair.charAt(1) == 'N') { readUnknownBases++;  }
 				}
-				else if(basePair.charAt(1) == 'N') { readUnknownBases++; currentPosition++;  }
+				else if(basePair.charAt(1) == 'N') { readUnknownBases++;  }
 				else {
 					firstSNPs.put(basePair, firstSNPs.get(basePair) + 1L);
-					firstSNPPos[currentPosition]++; 
-					currentPosition++;
+					firstSNPPos[currentPosition+i]++; 
 				}
-			}			
+			}
 		} else {
 			for(int i = 0; i < numMutations; i++) {
 				basePair = mutatedBases.substring(i*2, i*2+2);
 				if(basePair.charAt(0) == 'N') { 
-					referenceUnknownBases++; currentPosition++; 
+					referenceUnknownBases++;  
 					if(basePair.charAt(1) == 'N') { readUnknownBases++;  }
 				}
-				else if(basePair.charAt(1) == 'N') { readUnknownBases++; currentPosition++;  }
+				else if(basePair.charAt(1) == 'N') { readUnknownBases++;  }
 				else {
 					secondSNPs.put(basePair, secondSNPs.get(basePair) + 1L);
-					secondSNPPos[currentPosition]++; 
-					currentPosition++;
+					secondSNPPos[currentPosition+i]++; 
 				}
 			}			
 		}
+		currentPosition = currentPosition + numMutations;
 	}	
 	
 	/* Process the MD string once found the CigarMD operator i (insertion). */	
@@ -552,59 +565,70 @@ public class VariantCallDetection extends AbstractQCModule {
 		int numInsertions = currentCigarMDElement.getLength();
 		String insertedBases = currentCigarMDElement.getBases();
 		String base;
+		
 		// if the read.length is longer than what we supposed to be, here we increase the length of our *Pos arrays..
-		if(currentPosition+numInsertions >= firstInsertionPos.length) {
-			extendDensityArrays();
-	    }
+		extendDensityArrays(currentPosition+numInsertions);
+	    
 		if(cigarMDGenerator.isFirst()) {
 			for(int i = 0; i < numInsertions; i++) {
 				base = insertedBases.substring(i, i+1);
 				insertions.put(base, insertions.get(base) + 1L);
 				if(insertedBases.charAt(i) != 'N') { 
-					firstInsertionPos[currentPosition]++; 
+					firstInsertionPos[currentPosition+i]++; 
 				}
-				currentPosition++;
 			}
 		} else {
 			for(int i = 0; i < numInsertions; i++) {
 				base = insertedBases.substring(i, i+1);
 				insertions.put(base, insertions.get(base) + 1L);
 				if(insertedBases.charAt(i) != 'N') { 
-					secondInsertionPos[currentPosition]++; 
+					secondInsertionPos[currentPosition+i]++; 
 				}
-				currentPosition++;	
 			}			
 		}
+		currentPosition = currentPosition + numInsertions;
 	}
 	
 	/* Process the MD string once found the CigarMD operator d (deletion). */	
 	private void processMDtagCigarOperatorD() {
 		int numDeletions = currentCigarMDElement.getLength();
 		String deletedBases = currentCigarMDElement.getBases();
-		String base;
+		
 		// if the read.length is longer than what we supposed to be, here we increase the length of our *Pos arrays..
-		if(currentPosition+numDeletions >= firstDeletionPos.length) {
-			extendDensityArrays();		
-	    }
-		if(cigarMDGenerator.isFirst()) {
-			for(int i = 0; i < numDeletions; i++) {
-				base = deletedBases.substring(i, i+1);
-				deletions.put(base, deletions.get(base) + 1L);
-				if(deletedBases.charAt(i) != 'N') { 
-					firstDeletionPos[currentPosition]++; 
+		extendDensityArrays(currentPosition+numDeletions);		
+	    
+		if(!deletedBases.isEmpty()) {
+			String base;
+			if(cigarMDGenerator.isFirst()) {
+				for(int i = 0; i < numDeletions; i++) {
+					base = deletedBases.substring(i, i+1);
+					deletions.put(base, deletions.get(base) + 1L);
+					if(deletedBases.charAt(i) != 'N') { 
+						firstDeletionPos[currentPosition+i]++; 
+					}
 				}
-				currentPosition++;		
+			} else {
+				for(int i = 0; i < numDeletions; i++) {
+					base = deletedBases.substring(i, i+1);
+					deletions.put(base, deletions.get(base) + 1L);
+					if(deletedBases.charAt(i) != 'N') { 
+						secondDeletionPos[currentPosition+i]++; 
+					}
+				}			
 			}
 		} else {
-			for(int i = 0; i < numDeletions; i++) {
-				base = deletedBases.substring(i, i+1);
-				deletions.put(base, deletions.get(base) + 1L);
-				if(deletedBases.charAt(i) != 'N') { 
-					secondDeletionPos[currentPosition]++; 
+			// we do not have deleted bases because we do not have the mdString for this read! 
+			if(cigarMDGenerator.isFirst()) {
+				for(int i = 0; i < numDeletions; i++) {
+					firstDeletionPos[currentPosition+i]++; 
 				}
-				currentPosition++;		
-			}			
+			} else {
+				for(int i = 0; i < numDeletions; i++) {
+					secondDeletionPos[currentPosition+i]++; 
+				}			
+			}
 		}
+		currentPosition = currentPosition + numDeletions;	
 	}
 	
 	
@@ -616,9 +640,8 @@ public class VariantCallDetection extends AbstractQCModule {
 		totalSkippedRegions = totalSkippedRegions + numSkipped;
 //		currentPosition = currentPosition + numSkipped;
 //		// if the read.length is longer than what we supposed to be, here we increase the length of our *Pos arrays.
-//		if(currentPosition >= matchPos.length) {
-//			extendDensityArrays(currentPosition);			
-//	    }
+//		extendDensityArrays(currentPosition);			
+//	    
 	}
 	
 	/* Process the MD string once found the CigarMD operator s. */	
@@ -627,9 +650,8 @@ public class VariantCallDetection extends AbstractQCModule {
 		totalSoftClips = totalSoftClips + numSoftClips;
 //		currentPosition = currentPosition + numSoftClips;
 //		// if the read.length is longer than what we supposed to be, here we increase the length of our *Pos arrays.
-//		if(currentPosition >= matchPos.length) {
-//			extendDensityArrays(currentPosition);			
-//	    }
+//		extendDensityArrays(currentPosition);			
+//	    
 	}
 	
 	/* Process the MD string once found the CigarMD operator h. */	
@@ -638,9 +660,8 @@ public class VariantCallDetection extends AbstractQCModule {
 		totalHardClips = totalHardClips + numHardClips;
 //		currentPosition = currentPosition + numHardClips;
 //		// if the read.length is longer than what we supposed to be, here we increase the length of our *Pos arrays.
-//		if(currentPosition >= matchPos.length) {
-//			extendDensityArrays(currentPosition);			
-//	    }
+//		extendDensityArrays(currentPosition);			
+//	    
 	}
 	
 	/* Process the MD string once found the CigarMD operator p. */
@@ -649,9 +670,8 @@ public class VariantCallDetection extends AbstractQCModule {
 		totalPaddings = totalPaddings + numPaddings;
 //		currentPosition = currentPosition + numPaddings;
 //		// if the read.length is longer than what we supposed to be, here we increase the length of our *Pos arrays.
-//		if(currentPosition >= matchPos.length) {
-//			extendDensityArrays(currentPosition);			
-//	    }
+//		extendDensityArrays(currentPosition);			
+//	    
 	}	
 	
 	/* Process the MD string once found the CigarMD operator =. */	
