@@ -34,6 +34,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 
+import org.apache.log4j.Logger;
+
 import uk.ac.babraham.BamQC.Analysis.AnalysisRunner;
 import uk.ac.babraham.BamQC.Analysis.OfflineRunner;
 import uk.ac.babraham.BamQC.Dialogs.ProgressTextDialog;
@@ -55,6 +57,8 @@ import uk.ac.babraham.BamQC.DataTypes.ProgressListener;
 
 
 public class BamQCApplication extends JFrame implements ProgressListener {
+	
+	private static Logger log = Logger.getLogger(BamQCApplication.class);	
 	
 	private static BamQCApplication application;
 	
@@ -301,7 +305,7 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 		} 
 		catch (Exception e) {
 			JOptionPane.showMessageDialog(this, "Failed to create archive: "+e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-			e.printStackTrace();
+			log.warn("Failed to create archive: " + e.getMessage());
 		}
 	}
 	

@@ -53,6 +53,7 @@ import org.xml.sax.InputSource;
 
 import uk.ac.babraham.BamQC.BamQCApplication;
 import uk.ac.babraham.BamQC.BamQCConfig;
+import uk.ac.babraham.BamQC.BamQCException;
 import uk.ac.babraham.BamQC.Modules.QCModule;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 import uk.ac.babraham.BamQC.Utilities.ImageToBase64;
@@ -67,7 +68,10 @@ public class HTMLReportArchive {
 	private File htmlFile;
 	private File zipFile;
 
-	public HTMLReportArchive (SequenceFile sequenceFile, QCModule [] modules, File htmlFile) throws IOException, XMLStreamException {
+	public HTMLReportArchive (SequenceFile sequenceFile, QCModule [] modules, File htmlFile) throws BamQCException, IOException, XMLStreamException {
+		if(modules == null) {
+			throw new BamQCException("File was not processed.");
+		}
 		this.sequenceFile = sequenceFile;
 		this.modules = modules;
 		this.htmlFile = htmlFile;
