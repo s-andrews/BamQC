@@ -197,6 +197,7 @@ public class BamQCMenuBar extends JMenuBar implements ActionListener {
 			if(application.openFile()) {
 				fileClose.setEnabled(true);
 				fileCloseAll.setEnabled(true);
+				fileSave.setEnabled(true);
 			}
 		}
 		else if (action.equals("open_gff")) {
@@ -216,13 +217,17 @@ public class BamQCMenuBar extends JMenuBar implements ActionListener {
 		}
 		else if (action.equals("close")) {
 			if(application.close() == 0) {
+				application.closeAll();
+				fileUnsetAnnotation.setEnabled(false);
+				fileSave.setEnabled(false);
 				fileClose.setEnabled(false);
-				fileCloseAll.setEnabled(false);
+				fileCloseAll.setEnabled(false);				
 			}
 		}
 		else if (action.equals("close_all")) {
 			application.closeAll();
 			fileUnsetAnnotation.setEnabled(false);
+			fileSave.setEnabled(false);
 			fileClose.setEnabled(false);
 			fileCloseAll.setEnabled(false);
 		}
