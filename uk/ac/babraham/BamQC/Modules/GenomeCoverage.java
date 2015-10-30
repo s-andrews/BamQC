@@ -58,6 +58,8 @@ public class GenomeCoverage extends AbstractQCModule {
 	private int errorReads = 0;
 	private int readNumber = 0;
 	
+	private int maxBins = 1;
+	
 
 
 	@Override
@@ -109,14 +111,6 @@ public class GenomeCoverage extends AbstractQCModule {
 	}
 
 	@Override
-	public boolean ignoreInReport() {
-		if(ModuleConfig.getParam("GenomeCoverage", "ignore") > 0 || chromosomes == null || chromosomes.length == 0 || maxCoverage == 0.0) { 
-			return true; 
-		}
-		return false;
-	}
-
-	@Override
 	public void processAnnotationSet(AnnotationSet annotation) {
 
 		chromosomes = annotation.chromosomeFactory().getAllChromosomes();	
@@ -128,7 +122,7 @@ public class GenomeCoverage extends AbstractQCModule {
 		// common scale.  Our limit is going to be that we'll put 200 points on the longest
 		// chromosome
 		
-		int maxBins = 1;
+		maxBins = 1;
 		noBinCountChromosomes = 0;
 		
 		for (int c=0;c<chromosomes.length;c++) {
@@ -197,7 +191,6 @@ public class GenomeCoverage extends AbstractQCModule {
 //					if (binCounts[c][i] > 0) binCounts[c][i] = Math.log10(binCounts[c][i]);
 				}
 			}
-			
 			// Now convert to z-scores
 			double [] validValues = new double[firstInvalidBin];
 			for (int i=0;i<validValues.length;i++) {
@@ -206,8 +199,7 @@ public class GenomeCoverage extends AbstractQCModule {
 			double mean = SimpleStats.mean(validValues);
 			double sd = SimpleStats.stdev(validValues, mean);
 			for (int i=0;i<validValues.length;i++) {
-				binCounts[c][i] = (binCounts[c][i]-mean)/sd;
-				
+				if(sd > 0) binCounts[c][i] = (binCounts[c][i]-mean)/sd;
 				if (binCounts[c][i] > maxCoverage) maxCoverage = binCounts[c][i];
 				if (0-binCounts[c][i] > maxCoverage) maxCoverage = 0-binCounts[c][i];
 
@@ -325,12 +317,19 @@ public class GenomeCoverage extends AbstractQCModule {
 //		}
 	}
 
+	@Override
+	public boolean ignoreInReport() {
+		if(ModuleConfig.getParam("GenomeCoverage", "ignore") > 0 || chromosomes == null || chromosomes.length == 0 || maxBins == 1) {
+			return true; 
+		}
+		return false;
+	}
 	
 	@Override
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
 		super.writeDefaultImage(report, "genome_coverage.png", "Reference Sequence(s) Coverage", 800, 600);
 
-		if(chromosomeNames == null || binCounts == null || binCounts.length == 0) { return; }
+		if(chromosomeNames == null || chromosomes.length == 0 || maxBins == 1) { return; }
 	
 		StringBuffer sb = report.dataDocument();
 		sb.append("Chromosome_name\tGenome_position\n");

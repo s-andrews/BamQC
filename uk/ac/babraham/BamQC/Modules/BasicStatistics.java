@@ -72,6 +72,7 @@ public class BasicStatistics extends AbstractQCModule {
 	
 
 	VariantCallDetection vcd = null;
+	private boolean genomeCoverage = false;
 
 
 	/**
@@ -99,6 +100,14 @@ public class BasicStatistics extends AbstractQCModule {
 			featureTypeCount = annotation.getAllFeatures().length;
 		}
 		chromosomeCount = annotation.chromosomeFactory().getAllChromosomes().length;
+
+		Chromosome[] chromosomes = annotation.chromosomeFactory().getAllChromosomes();
+		if(chromosomes != null && chromosomes.length > 0) {
+			for(int c = 0; c < chromosomes.length && !genomeCoverage; c++)
+				for(int i = 0; i< chromosomes[c].getBinCountData().length && !genomeCoverage; i++)
+					if(chromosomes[c].getBinCountData().length > 1)
+						genomeCoverage = true;
+		}
 	}
 
 	@Override
@@ -116,8 +125,10 @@ public class BasicStatistics extends AbstractQCModule {
 		JPanel returnPanel = new JPanel();
 		returnPanel.setLayout(new BorderLayout());
 		returnPanel.add(new JLabel("Basic Statistics",JLabel.CENTER),BorderLayout.NORTH);
-		
+
+				
 		// extract these results
+		// Variant Call Detection Summaries
 		if(vcd != null) {
 			totalSplicedReads = vcd.getTotalSplicedReads();
 			totalSkippedReads = vcd.getSkippedReads();
@@ -131,6 +142,7 @@ public class BasicStatistics extends AbstractQCModule {
 			totalMutations = vcd.getTotalMutations();
 			totalBases = vcd.getTotal();
 		}
+		
 		
 		TableModel model = new ResultsTable();
 		JTable table = new JTable(model);
@@ -254,6 +266,14 @@ public class BasicStatistics extends AbstractQCModule {
 
  			rowNames.add("Total chromosomes");
  			rowValues.add("" + chromosomeCount);
+ 			
+ 			// Genome Coverage
+ 			rowNames.add("Sufficient genome coverage");
+ 			if(genomeCoverage) {
+ 	 			rowValues.add("Yes");
+ 			} else {
+ 	 			rowValues.add("No");
+ 			}
  			
  			rowNames.add("Total sequences");
  			rowValues.add("" + actualCount);
