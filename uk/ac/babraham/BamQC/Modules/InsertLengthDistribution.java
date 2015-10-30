@@ -187,7 +187,7 @@ public class InsertLengthDistribution extends AbstractQCModule {
 
 	@Override
 	public boolean ignoreInReport() {
-		if(ModuleConfig.getParam("InsertLengthDistribution", "ignore") > 0 || insertLengthCounts.size() == 0) {
+		if(ModuleConfig.getParam("InsertLengthDistribution", "ignore") > 0 || insertLengthCounts == null || insertLengthCounts.size() == 0) {
 			return true;
 		}
 		return false;
@@ -206,7 +206,7 @@ public class InsertLengthDistribution extends AbstractQCModule {
 		String title = String.format("Paired Read Insert Length Distribution ( %d bp max size and %.3f %% unpaired reads )", MAX_INSERT_SIZE, (((double) unpairedReads / reads) * 100.0));
 		super.writeDefaultImage(report, "InsertLengthDistribution.png", title, 800, 600);
 		
-		if(insertLengthCounts == null) { return; }
+		if(insertLengthCounts == null || insertLengthCounts.size() == 0) { return; }
 		
 		int binNumber = (insertLengthCounts.size() / BIN_SIZE) + 2;
 		String[] label = buildLabels(binNumber);
