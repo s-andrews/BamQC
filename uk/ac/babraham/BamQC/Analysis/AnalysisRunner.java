@@ -91,7 +91,7 @@ public class AnalysisRunner implements Runnable {
 			try {
 				parser.parseGenome(BamQCConfig.getInstance().genome);
 			} catch (Exception e) {
-				log.warn("The annotation genome " + BamQCConfig.getInstance().genome.getName() + " seems corrupted!");
+				log.warn("The annotation genome " + BamQCConfig.getInstance().genome + " seems corrupted!");
 				Iterator<AnalysisListener> i2 = listeners.iterator();
 				while (i2.hasNext()) {
 					i2.next().analysisExceptionReceived(file, e);

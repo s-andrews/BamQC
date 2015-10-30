@@ -88,7 +88,8 @@ public class Feature implements Comparable<Feature>, Serializable {
 	
 	public void setLocation (Location l) {
 		location = l;
-		if (l.end() > chr.length()) chr.setLength(l.end());
+		if (l.end() > chr.length()) 
+			chr.setLength(l.end());
 		if (source > LOCATION) {
 			name = location.start()+".."+location.end();
 			source = LOCATION;

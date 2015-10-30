@@ -122,7 +122,7 @@ public class GenomeParser extends AnnotationParser {
 		
 	
 	
-	private void parseGenomeFiles (Genome genome) {
+	private void parseGenomeFiles (Genome genome) throws Exception {
 		
 		// We need a list of all of the .dat files inside the baseLocation
 		File [] files = baseLocation.listFiles(new DatSimpleFileFilter());
@@ -156,11 +156,7 @@ public class GenomeParser extends AnnotationParser {
 	            }
 			} 
 			catch (Exception ex) {
-				e = listeners.elements();
-				while (e.hasMoreElements()) {
-					e.nextElement().progressExceptionReceived(ex);
-				}
-				return;
+				throw ex;
 			}			
 		}
 		
@@ -220,7 +216,7 @@ public class GenomeParser extends AnnotationParser {
 				while (e.hasMoreElements()) {
 					e.nextElement().progressExceptionReceived(ex);
 				}
-				return;
+				throw ex;
 			}			
 		}
 
@@ -246,114 +242,121 @@ public class GenomeParser extends AnnotationParser {
 	 */
 	private int processEMBLFile (File f) throws Exception {
 		
-		int processedLines = 0;
+//		int processedLines = 0;
 		int processedFeatures = 0;
 		
-		BufferedReader br = new BufferedReader(new FileReader(f));
-		Chromosome c = null;
-		// We need to find and read the accession line to find out
-		// which chromosome and location we're dealing with.
-		
-		// Each physical file can contain more than one EMBL file.  We 
-		// need to account for this in our processing.
-		
-		while ((c = parseChromosome(br)) != null) {
-			processedLines++;
-			String line;			
-			// We can now skip through to the start of the feature table
-			while ((line=br.readLine())!=null) {
-				processedLines++;
-				if (line.startsWith("FH") || line.startsWith("SQ")) {
-					break;
+		BufferedReader br = null; 
+		try {
+			br = new BufferedReader(new FileReader(f));
+			Chromosome c = null;
+			// We need to find and read the accession line to find out
+			// which chromosome and location we're dealing with.
+			
+			// Each physical file can contain more than one EMBL file.  We 
+			// need to account for this in our processing.
+			
+			while ((c = parseChromosome(br)) != null) {
+//				processedLines++;
+				String line;			
+				// We can now skip through to the start of the feature table
+				while ((line=br.readLine())!=null) {
+//					processedLines++;
+					if (line.startsWith("FH") || line.startsWith("SQ")) {
+						break;
+					}
+				}
+				
+				// We can now start reading the features one at a time by
+				// concatenating them and then passing them on for processing
+				StringBuffer currentAttribute = new StringBuffer();
+				boolean skipping = true;
+				Feature feature = null;
+				while ((line=br.readLine())!=null) {
+					
+	//				if (processedLines % 100000 == 0) {
+	//					System.err.println ("Processed "+processedLines+" lines currently holding "+processedFeatures+" features");
+	//				}
+//					processedLines++;
+	//				System.err.println("Read line '"+line+"'");
+					
+					if (line.startsWith("XX") || line.startsWith("SQ") || line.startsWith("//")) {
+						skipToEntryEnd(br);
+						break;
+					}
+					
+					if (line.length() < 18) continue; // Just a blank line.
+					
+					String type = line.substring(5,18).trim();
+	//				System.out.println("Type is "+type);
+					if (type.length()>0) {
+						//We're at the start of a new feature.
+						
+						// Check whether we need to process the old feature
+						if (skipping) {
+							// We're either on the first feature, or we've
+							// moving past this one
+							skipping = false;
+						}
+						else {						
+							// We need to process the last attribute from the
+							// old feature
+							processAttributeReturnSkip(currentAttribute.toString(), feature);
+							genome.annotationSet().addFeature(feature);
+							processedFeatures++;
+						}
+						
+						// We can check to see if we're bothering to load this type of feature
+						if (prefs.loadAnnotation(type)) {
+	//						System.err.println("Creating new feature of type "+type);
+							feature = new Feature(type,c);
+							currentAttribute=new StringBuffer("location=");
+							currentAttribute.append(line.substring(21).trim());
+	//						System.out.println(currentAttribute.toString());
+							continue;
+						}
+						skipping = true;
+						
+					}
+					
+					if (skipping) continue;
+					
+					String data = line.substring(21).trim();
+	
+					if (data.startsWith("/")) {
+						// We're at the start of a new attribute
+											
+						//Process the last attribute (extract the location)
+						skipping = processAttributeReturnSkip(currentAttribute.toString(), feature);
+						currentAttribute = new StringBuffer();
+					}
+					
+					// Our default action is just to append onto the existing information
+	
+					// Descriptions which run on to multiple lines need a space adding
+					// before the next lot of text.
+					if (currentAttribute.indexOf("description=") >= 0) currentAttribute.append(" ");
+	
+					currentAttribute.append(data);
+					
+				}
+				
+				// We've finished, but we need to process the last feature
+				// if there was one
+				if (!skipping) {
+					// We need to process the last attribute from the
+					// old feature
+					processAttributeReturnSkip(currentAttribute.toString(), feature);
+					genome.annotationSet().addFeature(feature);
+					processedFeatures++;
 				}
 			}
-			
-			// We can now start reading the features one at a time by
-			// concatenating them and then passing them on for processing
-			StringBuffer currentAttribute = new StringBuffer();
-			boolean skipping = true;
-			Feature feature = null;
-			while ((line=br.readLine())!=null) {
-				
-//				if (processedLines % 100000 == 0) {
-//					System.err.println ("Processed "+processedLines+" lines currently holding "+processedFeatures+" features");
-//				}
-				
-				processedLines++;
-//				System.err.println("Read line '"+line+"'");
-				
-				if (line.startsWith("XX") || line.startsWith("SQ") || line.startsWith("//")) {
-					skipToEntryEnd(br);
-					break;
-				}
-				
-				if (line.length() < 18) continue; // Just a blank line.
-				
-				String type = line.substring(5,18).trim();
-//				System.out.println("Type is "+type);
-				if (type.length()>0) {
-					//We're at the start of a new feature.
-					
-					// Check whether we need to process the old feature
-					if (skipping) {
-						// We're either on the first feature, or we've
-						// moving past this one
-						skipping = false;
-					}
-					else {						
-						// We need to process the last attribute from the
-						// old feature
-						processAttributeReturnSkip(currentAttribute.toString(), feature);
-						genome.annotationSet().addFeature(feature);
-						processedFeatures++;
-					}
-					
-					// We can check to see if we're bothering to load this type of feature
-					if (prefs.loadAnnotation(type)) {
-//						System.err.println("Creating new feature of type "+type);
-						feature = new Feature(type,c);
-						currentAttribute=new StringBuffer("location=");
-						currentAttribute.append(line.substring(21).trim());
-//						System.out.println(currentAttribute.toString());
-						continue;
-					}
-					skipping = true;
-					
-				}
-				
-				if (skipping) continue;
-				
-				String data = line.substring(21).trim();
-
-				if (data.startsWith("/")) {
-					// We're at the start of a new attribute
-										
-					//Process the last attribute (extract the location)
-					skipping = processAttributeReturnSkip(currentAttribute.toString(), feature);
-					currentAttribute = new StringBuffer();
-				}
-				
-				// Our default action is just to append onto the existing information
-
-				// Descriptions which run on to multiple lines need a space adding
-				// before the next lot of text.
-				if (currentAttribute.indexOf("description=") >= 0) currentAttribute.append(" ");
-
-				currentAttribute.append(data);
-				
-			}
-			
-			// We've finished, but we need to process the last feature
-			// if there was one
-			if (!skipping) {
-				// We need to process the last attribute from the
-				// old feature
-				processAttributeReturnSkip(currentAttribute.toString(), feature);
-				genome.annotationSet().addFeature(feature);
-				processedFeatures++;
+		} catch(Exception ex) {
+			throw ex;
+		} finally {
+			if(br != null) {
+				br.close();			
 			}
 		}
-		br.close();
 		return processedFeatures;
 	}	
 		
