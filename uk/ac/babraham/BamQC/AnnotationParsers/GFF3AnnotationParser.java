@@ -58,7 +58,7 @@ public class GFF3AnnotationParser extends AnnotationParser {
 	 * @see uk.ac.babraham.BamQC.AnnotationParsers.AnnotationParser#parseGenome(java.io.File)
 	 */
 	@Override
-	public void parseGenome (File baseLocation) {}
+	public void parseGenome (File baseLocation) throws Exception {}
 	
 
 	/* (non-Javadoc)

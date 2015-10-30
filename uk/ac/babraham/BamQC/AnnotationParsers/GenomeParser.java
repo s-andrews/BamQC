@@ -97,7 +97,7 @@ public class GenomeParser extends AnnotationParser {
 	 * @see uk.ac.babraham.BamQC.AnnotationParsers.AnnotationParser#parseGenome(java.io.File)
 	 */
 	@Override
-	public void parseGenome (File baseLocation) {
+	public void parseGenome (File baseLocation) throws Exception {
 		this.baseLocation = baseLocation;
 
 		try {
@@ -108,8 +108,8 @@ public class GenomeParser extends AnnotationParser {
 			
 			while (en.hasMoreElements()) {
 				en.nextElement().progressExceptionReceived(ex);
-				return;
 			}
+			throw ex;
 		}
 		// Update the listeners
 		Enumeration<ProgressListener> e = listeners.elements();

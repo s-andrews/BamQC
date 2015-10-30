@@ -66,8 +66,9 @@ public abstract class AnnotationParser implements Cancellable, ProgressListener 
 	 * Parses the genome.
 	 * 
 	 * @param baseLocation the base location
+	 * @throws Exception 
 	 */
-	public abstract void parseGenome (File baseLocation);
+	public abstract void parseGenome (File baseLocation) throws Exception;
 	
 	
 	/**

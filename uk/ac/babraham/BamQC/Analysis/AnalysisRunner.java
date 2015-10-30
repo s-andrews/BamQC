@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import net.sf.samtools.SAMRecord;
 import uk.ac.babraham.BamQC.BamQCConfig;
 import uk.ac.babraham.BamQC.AnnotationParsers.AnnotationParser;
@@ -35,7 +37,10 @@ import uk.ac.babraham.BamQC.Modules.QCModule;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 import uk.ac.babraham.BamQC.Sequence.SequenceFormatException;
 
+
 public class AnalysisRunner implements Runnable {
+	
+	private static Logger log = Logger.getLogger(AnalysisRunner.class);	
 
 	private SequenceFile file;
 	private QCModule [] modules;
@@ -83,7 +88,16 @@ public class AnalysisRunner implements Runnable {
 			GenomeParser parser = new GenomeParser();
 			parser.addProgressListener(ptd);
 			
-			parser.parseGenome(BamQCConfig.getInstance().genome);
+			try {
+				parser.parseGenome(BamQCConfig.getInstance().genome);
+			} catch (Exception e) {
+				log.warn("The annotation genome " + BamQCConfig.getInstance().genome.getName() + " seems corrupted!");
+				Iterator<AnalysisListener> i2 = listeners.iterator();
+				while (i2.hasNext()) {
+					i2.next().analysisExceptionReceived(file, e);
+				}
+				return;
+			}
 			annotationSet = parser.genome().annotationSet();
 
 		} else if (BamQCConfig.getInstance().gff_file != null) {	
@@ -103,11 +117,12 @@ public class AnalysisRunner implements Runnable {
 					parser.parseAnnotation(annotationSet, BamQCConfig.getInstance().gff_file);
 				}
 				catch (Exception e) {
+					log.warn("The annotation file " + BamQCConfig.getInstance().gff_file.getName() + " seems corrupted!");
 					Iterator<AnalysisListener> i2 = listeners.iterator();
 					while (i2.hasNext()) {
 						i2.next().analysisExceptionReceived(file, e);
-						return;
 					}
+					return;
 				}
 		} else { 
 			// use an empty AnnotationSet.
