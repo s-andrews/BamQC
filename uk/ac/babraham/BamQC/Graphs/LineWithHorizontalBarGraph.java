@@ -60,8 +60,8 @@ public class LineWithHorizontalBarGraph extends JPanel {
 	protected int width = -1;
 	
 	// TOOL TIPS management
-	private List<Rectangle> rectangles = new ArrayList<Rectangle>();
-	private List<String> tips = new ArrayList<String>();
+	private List<Rectangle> rectangles = null;
+	private List<String> tips = null;
 	private JWindow toolTip = null;
     private JLabel label = new JLabel();
 	private Tipster tipster = null;
@@ -203,6 +203,11 @@ public class LineWithHorizontalBarGraph extends JPanel {
 			
 		// Now draw the horizontal bar (1st plot)
 		// First we need to find the widest label
+		
+		// Initialise the arrays containing the tooltips
+		rectangles = new ArrayList<Rectangle>();
+		tips = new ArrayList<String>();
+		
 		
 		int leftSpace = g.getFontMetrics().stringWidth("");
 		
@@ -369,9 +374,8 @@ public class LineWithHorizontalBarGraph extends JPanel {
             }
             Point p = e.getPoint();
             boolean traversing = false;
-            List<Rectangle> rects = toolTips.rectangles;
-            for(int j = 0; j < rects.size(); j++) {
-                Rectangle r = rects.get(j);
+            for(int j = 0; j < toolTips.rectangles.size(); j++) {
+                Rectangle r = toolTips.rectangles.get(j);
                 if(r.contains(p)) {
                     SwingUtilities.convertPointToScreen(p, toolTips);
                     toolTips.showToolTip(j, p);
