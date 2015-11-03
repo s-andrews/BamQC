@@ -208,6 +208,7 @@ public class LineWithHorizontalBarGraph extends JPanel {
 		rectangles = new ArrayList<Rectangle>();
 		tips = new ArrayList<String>();
 		int chrPosition = 0;
+		String chrPositionStr = "";
 		
 		
 		int leftSpace = g.getFontMetrics().stringWidth("");
@@ -241,8 +242,27 @@ public class LineWithHorizontalBarGraph extends JPanel {
 			g.drawRect((int)r.getX(), (int)r.getY(), (int)r.getWidth(), (int)r.getHeight());
 			// TOOL TIPS management
 			// add rectangle coordinates and tooltip to these two lists
+			if(1.0d*chrPosition / 1000000000 >= 1.0) {
+				chrPositionStr = "" + (int)(1.0d*chrPosition / 1000000000) + "B"; 
+			} else if(1.0d*chrPosition / 1000000 >= 1.0) {
+				chrPositionStr = "" + (int)(1.0d*chrPosition / 1000000) + "M"; 
+			} else if(1.0d*chrPosition / 1000 >= 1.0) {
+				chrPositionStr = "" + (int)(1.0d*chrPosition / 1000) + "K"; 
+			} else {
+				chrPositionStr = "" + chrPosition; 
+			}
+			if((chrPosition+barData[i]) / 1000000000 >= 1.0) {
+				chrPositionStr = chrPositionStr + "-" + (int)((chrPosition+barData[i])/1000000000) + "B"; 
+			} else if((chrPosition+barData[i]) / 1000000 >= 1.0) {
+				chrPositionStr = chrPositionStr + "-" + (int)((chrPosition+barData[i])/1000000) + "M"; 
+			} else if((chrPosition+barData[i]) / 1000 >= 1.0) {
+				chrPositionStr = chrPositionStr + "-" + (int)((chrPosition+barData[i])/1000) + "K"; 
+			} else {
+				chrPositionStr = chrPositionStr + "-" + (chrPosition+(int)barData[i]); 
+			}
 			rectangles.add(r);
-			tips.add(barLabels[i] + " : " + chrPosition + "-" + (chrPosition+(int)barData[i]-1));
+			// TODO tips.add(barLabels[i] + " : " + chrPosition + "-" + (chrPosition+(int)barData[i]-1));
+			tips.add(barLabels[i] + " : " + chrPositionStr);
 			chrPosition = chrPosition + (int)barData[i];
 			
 			
@@ -277,6 +297,13 @@ public class LineWithHorizontalBarGraph extends JPanel {
 			int lastXLabelEnd = 0;
 			for(int i=0; i<lineData[0].length; i++) {
 				String baseNumber = ""+xCategories[i];
+				if(Integer.valueOf(baseNumber) / 1000000000 >= 1.0) {
+					baseNumber = baseNumber.substring(0, baseNumber.length()-9) + "B";
+				} else if(Integer.valueOf(baseNumber) / 1000000 >= 1.0) {
+					baseNumber = baseNumber.substring(0, baseNumber.length()-6) + "M";
+				} else if(Integer.valueOf(baseNumber) / 1000 >= 1.0) {
+					baseNumber = baseNumber.substring(0, baseNumber.length()-3) + "K";
+				} 
 				int baseNumberWidth = g.getFontMetrics().stringWidth(baseNumber);
 				int baseNumberPosition =  (int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*i)-(baseNumberWidth/2));
 				
