@@ -188,7 +188,8 @@ public class GenomeCoverage extends AbstractQCModule {
 			for (int i=0;i<replicateCounts.length;i++) {
 				if (replicateCounts[i]>0) {
 					binCounts[c][i] /= replicateCounts[i];
-//					if (binCounts[c][i] > 0) binCounts[c][i] = Math.log10(binCounts[c][i]);
+					// scale to log10 to enlarge the data differences.
+					if (binCounts[c][i] > 0) binCounts[c][i] = Math.log10(binCounts[c][i]);
 				}
 			}
 			// Now convert to z-scores
