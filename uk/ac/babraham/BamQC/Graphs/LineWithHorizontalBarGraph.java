@@ -207,6 +207,7 @@ public class LineWithHorizontalBarGraph extends JPanel {
 		// Initialise the arrays containing the tooltips
 		rectangles = new ArrayList<Rectangle>();
 		tips = new ArrayList<String>();
+		int chrPosition = 0;
 		
 		
 		int leftSpace = g.getFontMetrics().stringWidth("");
@@ -220,6 +221,8 @@ public class LineWithHorizontalBarGraph extends JPanel {
 		int yPos=+80;
 		int yOffset=60;
 		int cumulativeXOffset = 0;
+		
+		
 				
 		for(int i=0; i<barData.length; i++) {
 			int xValue = getX(Math.min(barData[i], maxX), leftSpace);
@@ -239,7 +242,8 @@ public class LineWithHorizontalBarGraph extends JPanel {
 			// TOOL TIPS management
 			// add rectangle coordinates and tooltip to these two lists
 			rectangles.add(r);
-			tips.add(barLabels[i]);
+			tips.add(barLabels[i] + " : " + chrPosition + "-" + (chrPosition+(int)barData[i]-1));
+			chrPosition = chrPosition + (int)barData[i];
 			
 			
 			// increase the cumulative X offset to get a measure for this plot, 
