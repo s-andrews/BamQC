@@ -159,7 +159,7 @@ public class LineGraph extends JPanel {
 		
 		// Now draw the data points
 		double baseWidth = 1.0*(getWidth()-(xOffset+10))/data[0].length;
-		if (baseWidth<1) baseWidth=1;
+
 		
 		// System.out.println("Base Width is "+baseWidth);
 		// First draw faint boxes over alternating bases so you can see which is which
