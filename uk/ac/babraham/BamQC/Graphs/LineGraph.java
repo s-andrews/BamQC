@@ -158,7 +158,7 @@ public class LineGraph extends JPanel {
 		
 		
 		// Now draw the data points
-		int baseWidth = (getWidth()-(xOffset+10))/data[0].length;
+		double baseWidth = 1.0*(getWidth()-(xOffset+10))/data[0].length;
 		if (baseWidth<1) baseWidth=1;
 		
 		// System.out.println("Base Width is "+baseWidth);
@@ -170,13 +170,13 @@ public class LineGraph extends JPanel {
 		for (int i=0;i<data[0].length;i++) {
 			if (i%2 != 0) {
 				g.setColor(new Color(230, 230, 230));
-				g.fillRect(xOffset+(baseWidth*i), 40, baseWidth, getHeight()-80);
+				g.fillRect((int)(xOffset+(baseWidth*i)), 40, (int)(baseWidth), getHeight()-80);
 			}
 			g.setColor(Color.BLACK);
 			
 			String baseNumber = ""+xCategories[i];
 			int baseNumberWidth = g.getFontMetrics().stringWidth(baseNumber);
-			int baseNumberPosition =  (baseWidth/2)+xOffset+(baseWidth*i)-(baseNumberWidth/2);
+			int baseNumberPosition =  (int)((baseWidth/2)+xOffset+(baseWidth*i)-(baseNumberWidth/2));
 			
 			if (baseNumberPosition > lastXLabelEnd) {
 				g.drawString(baseNumber,baseNumberPosition, getHeight()-25);
@@ -208,7 +208,7 @@ public class LineGraph extends JPanel {
 				
 				int thisY = getY(data[d][i]);
 				
-				g.drawLine((baseWidth/2)+xOffset+(baseWidth*(i-1)), lastY, (baseWidth/2)+xOffset+(baseWidth*i), thisY);
+				g.drawLine((int)((baseWidth/2)+xOffset+(baseWidth*(i-1))), lastY, (int)((baseWidth/2)+xOffset+(baseWidth*i)), thisY);
 				lastY = thisY;
 			}
 			
