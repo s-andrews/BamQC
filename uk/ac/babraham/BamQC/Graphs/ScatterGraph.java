@@ -246,7 +246,11 @@ public class ScatterGraph extends JPanel {
 			
 			// Draw the legend for the intercept
 			// First we need to find the widest label
-			String interceptString = "y = " + (float)(slope) + " * x + " + (float)intercept;
+			String interceptString = "y = " + (float)(slope) + " * x ";
+			if(intercept < 0) 
+				interceptString = interceptString + " - " + (float)(-intercept);
+			else 
+				interceptString = interceptString + " + " + (float)intercept;
 			int width = g.getFontMetrics().stringWidth(interceptString);
 			
 			// First draw a box to put the legend in
