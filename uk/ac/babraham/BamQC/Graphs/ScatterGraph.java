@@ -222,45 +222,44 @@ public class ScatterGraph extends JPanel {
 			responseVar[d] = data[d];	
 		}
 
+		
 		// Draw the intercept
-		LinearRegression linReg = new LinearRegression(inputVar, responseVar);
-		double intercept = linReg.intercept();
-		double slope = linReg.slope();
-		double y1=0;
-		int index = 0;
-		for(int i=0; i<inputVar.length; i++) {
-			y1 = slope*inputVar[i] + intercept;
-			index = i;
-			if(y1>=0d) break;
+		if(data.length > 1) {
+			LinearRegression linReg = new LinearRegression(inputVar, responseVar);
+			double intercept = linReg.intercept();
+			double slope = linReg.slope();
+			double y1=0;
+			int index = 0;
+			for(int i=0; i<inputVar.length; i++) {
+				y1 = slope*inputVar[i] + intercept;
+				index = i;
+				if(y1>=0d) break;
+			}
+			double y2 = slope*inputVar[responseVar.length-1] + intercept;
+			
+			g.setColor(Color.RED);
+			g.drawLine((int)(xOffset + ((baseWidth * (index) + (baseWidth * (index+1)))/2)), 
+					   getY(y1), 
+					   (int)(xOffset + ((baseWidth * (inputVar.length-1)) + (baseWidth * (inputVar.length)))/2), 
+					   getY(y2));
+			g.setColor(Color.BLACK);
+			
+			// Draw the legend for the intercept
+			// First we need to find the widest label
+			String interceptString = "y = " + (float)(slope) + " * x + " + (float)intercept;
+			int width = g.getFontMetrics().stringWidth(interceptString);
+			
+			// First draw a box to put the legend in
+			g.setColor(Color.WHITE);
+			g.fillRect(xOffset+10, 40, width+8, 23);
+			g.setColor(Color.LIGHT_GRAY);
+			g.drawRect(xOffset+10, 40, width+8, 23);
+	
+			// Now draw the intercept label
+			g.setColor(Color.RED);
+			g.drawString(interceptString, xOffset+13, 60);
+			g.setColor(Color.BLACK);
 		}
-		double y2 = slope*inputVar[responseVar.length-1] + intercept;
-		
-		g.setColor(Color.RED);
-		g.drawLine((int)(xOffset + ((baseWidth * (index) + (baseWidth * (index+1)))/2)), 
-				   getY(y1), 
-				   (int)(xOffset + ((baseWidth * (inputVar.length-1)) + (baseWidth * (inputVar.length)))/2), 
-				   getY(y2));
-		g.setColor(Color.BLACK);
-		
-		
-		
-		
-		
-		
-		// Draw the legend for the intercept
-		// First we need to find the widest label
-		String interceptString = "y = " + (float)(slope) + " * x + " + (float)intercept;
-		int width = g.getFontMetrics().stringWidth(interceptString);
-		
-		// First draw a box to put the legend in
-		g.setColor(Color.WHITE);
-		g.fillRect(xOffset+10, 40, width+8, 23);
-		g.setColor(Color.LIGHT_GRAY);
-		g.drawRect(xOffset+10, 40, width+8, 23);
-
-		// Now draw the intercept label
-		g.setColor(Color.BLACK);
-		g.drawString(interceptString, xOffset+13, 60);
 		
 	}
 	
@@ -279,7 +278,7 @@ public class ScatterGraph extends JPanel {
 			@Override
 			public void run() {
 				Random r = new Random();
-				int sampleSize = 100;
+				int sampleSize = 1000;
 				double[] data = new double[sampleSize];
 				String[] xCategories = new String[sampleSize];
 				double minY = Double.MAX_VALUE;
