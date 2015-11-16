@@ -35,7 +35,7 @@ import org.apache.commons.math3.util.Precision;
 import net.sf.samtools.SAMRecord;
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
-import uk.ac.babraham.BamQC.Graphs.BarGraph;
+import uk.ac.babraham.BamQC.Graphs.ScatterGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
@@ -132,14 +132,16 @@ public class ChromosomeReadDensity extends AbstractQCModule {
 		// TODO REMOVE once replaced with new plot
 		// return new HorizontalBarGraph(chromosomeNames, readDensities, "Per-chromosome read density");
 
-		String title = "Chromosome Read Density (Log Read Number per Log Chromosome Length)";
+		String title = "Chromosome Read Density (Log Read Number vs Log Chromosome Length)";
 		String[] xCategories;
 		String xLabel = "Log Chromosome Length";
 		double maxY = 0d;
 		
 		if(logReadNumber.length < 1) {
 			xCategories = new String[]{"Null"};
-			return new BarGraph(new double[1], 0d, maxY+maxY*0.1, xLabel, xCategories, title);
+			// Previously this was a bar graph
+			//return new BarGraph(new double[1], 0d, maxY+maxY*0.1, xLabel, xCategories, title);
+			return new ScatterGraph(new double[1], 0d, maxY+maxY*0.1, xLabel, xCategories, title);
 		}
 		
 		xCategories = new String[logChromosomeLength.length];
@@ -153,7 +155,9 @@ public class ChromosomeReadDensity extends AbstractQCModule {
 		for(int i=0; i<logChromosomeLength.length; i++) {
 			xCategories[i] = String.valueOf(logChromosomeLength[i]);
 		}
-		return new BarGraph(logReadNumber, 0d, maxY+maxY*0.1, xLabel, xCategories, title);
+		// Previously this was a bar graph
+		//return new BarGraph(logReadNumber, 0d, maxY+maxY*0.1, xLabel, xCategories, title);
+		return new ScatterGraph(logReadNumber, 0d, maxY+maxY*0.1, xLabel, xCategories, title);
 	}
 
 	
