@@ -71,13 +71,15 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 	private JTabbedPane fileTabs;
 	private WelcomePanel welcomePanel;
 	private File lastUsedDir = null;
+	
+	private String title = "BamQC";
 		
 	/** Flag to check if anything substantial has changed since the file was last loaded/saved. **/
 	private boolean changesWereMade = false;
 	
 	
 	public BamQCApplication () {
-			setTitle("BamQC");
+			setTitle(title);
 			setIconImage(new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/BamQC/Resources/bamqc_icon.png")).getImage());
 			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	//		setSize(1280, 720);
@@ -193,16 +195,18 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 	 * Launches the genome selector to begin a new project.
 	 */
 	public boolean openGFFFromNetwork () {
-		unsetAnnotation();
+		
 		new GenomeSelector(this);
 		if(BamQCConfig.getInstance().genome == null) 
 			return false;
+		// for consistency, let's remove the file annotation if this was set.
+		unsetFileAnnotation();
+		setTitle(title + " ~ " + BamQCConfig.getInstance().genome.getAbsolutePath());
 		return true;
 	}
 	
 	public boolean openGFF () {
-		unsetAnnotation();
-		
+
 		JFileChooser chooser;
 		
 		if (lastUsedDir == null) {
@@ -230,17 +234,35 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 			return false;
 		}
 		BamQCConfig.getInstance().gff_file = gff_file;
+		// for consistency, let's remove the genome annotation if this was set.
+		unsetGenomeAnnotation();
+		setTitle(title + " ~ " + BamQCConfig.getInstance().gff_file.getAbsolutePath());
 		return true;
 	}
 
 	/**
-	 * Unset the current annotation.
+	 * Unset the file annotation.
 	 */
-	public void unsetAnnotation () {
+	public void unsetFileAnnotation () {
+		BamQCConfig.getInstance().gff_file = null;
+	}
+	
+	/**
+	 * Unset the genome annotation.
+	 */
+	public void unsetGenomeAnnotation () {
 		BamQCConfig.getInstance().genome = null;
 		BamQCConfig.getInstance().species = null;
 		BamQCConfig.getInstance().assembly = null;
-		BamQCConfig.getInstance().gff_file = null;
+	}
+	
+	/**
+	 * Unset the annotation.
+	 */
+	public void unsetAnnotation () {
+		unsetGenomeAnnotation();
+		unsetFileAnnotation();
+		setTitle(title);
 	}
 
 	public void saveReport () {
