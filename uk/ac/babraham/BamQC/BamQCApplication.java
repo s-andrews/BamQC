@@ -124,8 +124,8 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 			chooser = new JFileChooser(lastUsedDir);
 		}
 		// Open the view by details
-		Action details = chooser.getActionMap().get("viewTypeDetails");
-		details.actionPerformed(null);
+//		Action details = chooser.getActionMap().get("viewTypeDetails");
+//		details.actionPerformed(null);
 		chooser.setMultiSelectionEnabled(true);
 		BAMFileFilter bff = new BAMFileFilter();
 		// remove default "All Files" filter
