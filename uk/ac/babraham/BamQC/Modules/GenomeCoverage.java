@@ -211,11 +211,34 @@ public class GenomeCoverage extends AbstractQCModule {
 
 	@Override
 	public JPanel getResultsPanel() {
-// 		// use previous plot
-//		if(true) { 
-//			return getSeparateChromosomeResultsPanel();
-//		}
+
+		if(chromosomeNames.length <= ModuleConfig.getParam("GenomeCoverage_plot_separate_chromosomes", "ignore").intValue()) {
+			// plots the genome coverage for each chromosome separately
+			return getSeparateChromosomeResultsPanel();
+		}
+		// plots the genome coverage lining all chromosomes
+		return getAllChromosomeResultsPanel();
+	}
 		
+	
+	
+	public JPanel getSeparateChromosomeResultsPanel() {
+		
+		int maxBins = 0;
+		for (int i=0;i<binCounts.length;i++) {
+			if (binCounts[i].length > maxBins) 
+				maxBins = binCounts[i].length;
+		}
+		
+		String [] labels = new String[maxBins];
+		for (int i=0;i<maxBins;i++) {
+			labels[i] = ""+(i*Chromosome.COVERAGE_BIN_SIZE);
+		}
+		return new SeparateLineGraph(binCounts, 0-maxCoverage, maxCoverage, "Genome Position", chromosomeNames, labels, "Genome Coverage");				
+	}
+	
+	
+	public JPanel getAllChromosomeResultsPanel() {	
 		/* Set up for separate line chart representing chromosome coverages. */
 		int[] scaffoldLengths = new int[binCounts.length];
 		
@@ -261,25 +284,7 @@ public class GenomeCoverage extends AbstractQCModule {
 	}
 	
 	
-//  Old plot showing the genome coverage per chromosome nicely. 
-//  possibly this plot should be shown if chromosomes below a certain threshold?
-	public JPanel getSeparateChromosomeResultsPanel() {
-		
-		int maxBins = 0;
-		for (int i=0;i<binCounts.length;i++) {
-			if (binCounts[i].length > maxBins) 
-				maxBins = binCounts[i].length;
-		}
-		
-		String [] labels = new String[maxBins];
-		for (int i=0;i<maxBins;i++) {
-			labels[i] = ""+(i*Chromosome.COVERAGE_BIN_SIZE);
-		}
-		return new SeparateLineGraph(binCounts, 0-maxCoverage, maxCoverage, "Genome Position", chromosomeNames, labels, "Genome Coverage");				
-	}
 	
-	
-
 	
 
 	private void raiseWarningErrorsZeroCoverage(int zeroCoverageBins) {
