@@ -24,23 +24,19 @@ interactive way (say as part of a pipeline) which will generate
 an HTML report for each file you process.
 
 
-Cross-platform Java 6 or 7
+Cross-platform Java
 =
 
 BamQC is a cross-platform application, written in java.  In theory it
 should run on any platform which has a suitable java runtime environment.
-Having said that we've only tested in on Windows, MacOSX 10.6 and Linux
-running the Sun v1.6 and 1.7 JREs.  Please let us know what happened if
-you try running it on other platforms / JREs.
+It's been tested on Windows, MacOSX 10.6 and Linux running java v1.6, 1.8 and 1.8.
 
 
-Install
+Download
 =
 Check out of GitHub and using git:
 
     git clone https://github.com/s-andrews/BamQC.git
-
-and then follow the instructions in the INSTALL.txt file. 
 
 
 Compile
@@ -64,6 +60,12 @@ Once Ant is installed, BamQC can be easily built using the following commands:
 	
 	# Test 
 	./bamqc
+
+Install
+=
+
+Further instructions for installing and running the program can be found in the INSTALL.txt
+file in the BamQC distribution.
 
 
 Comments
