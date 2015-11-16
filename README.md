@@ -34,7 +34,7 @@ you try running it on other platforms / JREs.
 
 Install
 =
-Check out of GitHug and using git:
+Check out of GitHub and using git:
 
     git clone https://github.com/s-andrews/BamQC.git
 
@@ -44,10 +44,8 @@ Comments
 =
 
 If you have any comments about BamQC we would like to hear them.  You
-can either enter them in our bug tracking system at:
+can either enter them as a new issue on github.
 
-http://www.bioinformatics.bbsrc.ac.uk/bugzilla/
-
-..or send them directly to 
+Or email them directly to:
 
 simon.andrews at babraham.ac.uk
