@@ -13,6 +13,7 @@ with your data, only that it is unusual.  It is possible that the
 biological nature of your sample means that you would expect this 
 particular bias in your results.
 
+
 Interactive Graphical or Command Line
 =
 
@@ -21,6 +22,7 @@ which allows you to view results for multiple files in a single
 application.  Alternatively you can run the program in a non
 interactive way (say as part of a pipeline) which will generate
 an HTML report for each file you process.
+
 
 Cross-platform Java 6 or 7
 =
@@ -39,6 +41,30 @@ Check out of GitHub and using git:
     git clone https://github.com/s-andrews/BamQC.git
 
 and then follow the instructions in the INSTALL.txt file. 
+
+
+Compile
+=
+To compile the source code of BamQC, JDK 1.6+ and the package Ant are required. 
+Ant can be downloaded at the web site https://ant.apache.org/ . 
+Once Ant is installed, BamQC can be easily built using the following commands: 
+
+	# Move to the folder of BamQC
+	cd Path/To/BamQC/SourceCode/
+	
+	# Type the command "ant". This will automatically process 
+	# the BamQC file build.xml 
+	ant
+	
+	# Move to the bin folder which was created in the previous step.
+	cd bin
+	
+	# Change permission to the file bamqc in order to execute it
+	chmod 755 bamqc
+	
+	# Test 
+	./bamqc
+
 
 Comments
 =
