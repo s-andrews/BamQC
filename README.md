@@ -6,7 +6,7 @@ data and runs a series of tests on it to generate a comprehensive
 QC report.  This will help you to understand your data and will 
 tell you if there is anything unusual the files you have analysed.
 Each test is flagged as a pass, warning or fail depending on how 
-far it departs from what you'd expect from a normal large dataset
+far it departs from what you'd expect from a normal large data set
 with no significant biases.  It's important to stress that warnings 
 or even failures do not necessarily mean that there is a problem 
 with your data, only that it is unusual.  It is possible that the 
@@ -29,7 +29,8 @@ Cross-platform Java
 
 BamQC is a cross-platform application, written in java.  In theory it
 should run on any platform which has a suitable java runtime environment.
-It's been tested on Windows, MacOSX 10.6 and Linux running java v1.6, 1.8 and 1.8.
+It is been tested on Windows, MacOSX 10.6 and Linux running Java v1.6, 
+v1.7 and v1.8.
 
 
 Download
@@ -41,9 +42,24 @@ Check out of GitHub and using git:
 
 Compile
 =
-To compile the source code of BamQC, JDK 1.6+ and the package Ant are required. 
-Ant can be downloaded at the web site https://ant.apache.org/ . 
-Once Ant is installed, BamQC can be easily built using the following commands: 
+To compile the source code of BamQC, a Java Compiler (JDK v1.6, v1.7, v1.8, 
+https://www.java.com/en/download/) and the package Ant (https://ant.apache.org/) 
+are required. The correct installation of these two packages can be tested by 
+typing the commands: 
+
+	# Test for the Java Compiler 
+	javac -version
+	# Example of output: 
+	# > javac 1.7.0_85
+	
+	# Test for Ant
+	ant
+	# Example of output if no build.xml is located in the same folder
+	# > Buildfile: build.xml does not exist!
+	# > Build failed
+ 	
+
+BamQC can be easily built using the following commands: 
 
 	# Move to the folder of BamQC
 	cd Path/To/BamQC/SourceCode/
