@@ -65,7 +65,7 @@ my $gff;
 my $genome;
 my $species;
 my $assembly;
-my $available;
+my $genome_pattern = 'unassigned';
 my $saved;
 my $limits;
 my $threads;
@@ -77,7 +77,7 @@ my $java_bin = 'java';
 
 my $result = GetOptions('v|version' => \$version,
 			'h|help' => \$help,
-			'b|available' => \$available,
+			'b|available:s' => \$genome_pattern,
 			'e|saved' => \$saved,
 			'q|quiet' => \$quiet,
 			'nogroup' => \$nogroup,
@@ -106,8 +106,15 @@ if ($version) {
 	push @java_args ,"-Dbamqc.show_version=true";
 }
 
-if ($available) {
+if ($genome_pattern ne 'unassigned') {
 	push @java_args ,"-Dbamqc.available_genomes=true";
+	# For some reason, if a user uses the filter '*', this is converted 
+	# to 'bamqc' by Perl. The following test is used to reverse this back.
+	if($genome_pattern eq 'bamqc') {
+		push @java_args ,"-Dbamqc.genome_pattern=*";
+	} else {
+		push @java_args ,"-Dbamqc.genome_pattern=$genome_pattern";
+	}
 }
 
 if ($saved) {
@@ -253,31 +260,28 @@ foreach (@ARGV) {
 # This is set internally as well, but on some JREs it doesn't
 # pick up the internally set value properly, so we'll set it
 # outside as well which should work.
-if (@files or $version or $help or $available or $saved) {
+if (@files or $version or $help or $genome_pattern ne 'unassigned' or $saved) {
 	push @java_args, "-Djava.awt.headless=true";
 }
 
 #warn "Running 'exec $java_bin,@java_args, \"uk.ac.babraham.BamQC.BamQCApplication\", @files, CLASSPATH is $ENV{CLASSPATH}";
 
 
-
 if ($java_bin ne 'java') {
-  if ($available) {
-      system $java_bin,@java_args, "uk.ac.babraham.BamQC.Utilities.BamQCListGenomes", "--available-genomes";
-  } elsif ($saved) {
-      system $java_bin,@java_args, "uk.ac.babraham.BamQC.Utilities.BamQCListGenomes", "--saved-genomes";
+  if ($genome_pattern ne 'unassigned' or $saved) {
+      system $java_bin, @java_args, "uk.ac.babraham.BamQC.Utilities.BamQCListGenomes";
   } else {
-      system $java_bin,@java_args, "uk.ac.babraham.BamQC.BamQCApplication", @files;
+      system $java_bin, @java_args, "uk.ac.babraham.BamQC.BamQCApplication", @files;
   }
 } else {
-  if ($available) {
-      exec $java_bin,@java_args, "uk.ac.babraham.BamQC.Utilities.BamQCListGenomes", "--available-genomes";
-  } elsif ($saved) {
-      exec $java_bin,@java_args, "uk.ac.babraham.BamQC.Utilities.BamQCListGenomes", "--saved-genomes";
+  if ($genome_pattern ne 'unassigned' or $saved) {
+      exec $java_bin, @java_args, "uk.ac.babraham.BamQC.Utilities.BamQCListGenomes";
   } else {
-      exec $java_bin,@java_args, "uk.ac.babraham.BamQC.BamQCApplication", @files;
+      exec $java_bin, @java_args, "uk.ac.babraham.BamQC.BamQCApplication", @files;
   }
 }
+
+
 
 
 
@@ -327,7 +331,11 @@ DESCRIPTION
                     If the couple species assembly does not exist, BamQC 
                     will try to download it.  
      
-    -b --available  List the genomes available on the Babraham Server
+    -b --available [Pattern] List the genomes available on the Babraham Server
+    				which are filtered using the string Pattern if this is provided. 
+    				This string is considered as a substring in the pattern matching. 
+    				For instance, the pattern=m?s will retrieve mus, mis, musculus, 
+    				humus. Therefore its behaviour is equivalent to *m?s*.
     
     -e --saved      List the saved genomes
     

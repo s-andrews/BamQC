@@ -22,6 +22,12 @@ package uk.ac.babraham.BamQC.Utilities;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import uk.ac.babraham.BamQC.Preferences.BamQCPreferences;
 import uk.ac.babraham.BamQC.Network.DownloadableGenomes.DownloadableGenomeSet;
@@ -36,32 +42,64 @@ public class BamQCListGenomes {
 	/**
 	 * Return the list of genomes available on the Babraham server or null if this list cannot be downloaded.
 	 * Each species will be shown as follows: species [assembly1, assembly2, ... assemblyN].
+	 * @param regex a regular expression string used as filter. (* is equivalent to unfiltered)
 	 * @return the list of available genomes or null
 	 */
-	public static GenomeSpecies[] listAvailableGenomes() {
+	public static GenomeSpecies[] listAvailableGenomes(String regex) {
+		
+		System.out.println("List of genomes (species [ assemblies ]) retrieved from the " 
+				 + "Babraham Servers:");
+		
 		GenomeSpecies[] gs = null;
-		System.out.println("Available genomes at the Babraham Servers:");
+		
 		try {
+			Pattern pattern = Pattern.compile(regex);
+			Matcher matcher = null;
+			String[] allSpeciesAssemblies = null;
+			
 			DownloadableGenomeSet dgs = new DownloadableGenomeSet();		
-			System.out.println("List of species+assemblies:");
+
 			gs = dgs.species();
-			for(int i=0;i<gs.length;i++) {
-				System.out.print(gs[i].name() + " [ ");
-				GenomeAssembly[] ga = gs[i].assemblies();
-				for(int j=0;j<ga.length;j++) {
-					System.out.print(ga[j].assembly());
-					if(j < ga.length-1) {
-						System.out.print(" | ");
+			if(gs.length > 0) {
+				allSpeciesAssemblies = new String[gs.length];
+				
+				// Store all species and assemblies in the array allSpeciesAssemblies
+				for(int i=0;i<gs.length;i++) {
+					allSpeciesAssemblies[i] = gs[i].name() + " [ ";
+					GenomeAssembly[] ga = gs[i].assemblies();
+					for(int j=0;j<ga.length;j++) {
+						allSpeciesAssemblies[i] += ga[j].assembly();
+						if(j < ga.length-1) {
+							allSpeciesAssemblies[i] += " | ";
+						}
+					}
+					allSpeciesAssemblies[i] += " ]";
+				}
+				
+				// Now print them using the matcher filter.
+				for(int i=0; i<allSpeciesAssemblies.length; i++) {
+					matcher = pattern.matcher(allSpeciesAssemblies[i]);
+					if(matcher.find()) {
+						System.out.println(allSpeciesAssemblies[i]);
 					}
 				}
-				System.out.println(" ]");
-			}	
+				
+			} else {
+				System.out.println("Something went wrong. No species was retrieved from the " 
+								 + "Babraham Servers. Is your Internet connection working?");
+			}
+			
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (PatternSyntaxException e) {
+			e.printStackTrace();
+			System.out.println("The regular expression " + regex + " is not valid.");
 		}
 		return gs;
 	}
 
+	
+	
 	
 	/**
 	 * Return the list of downloaded genomes or null if this is empty
@@ -76,7 +114,8 @@ public class BamQCListGenomes {
 			}
 		} 
 		catch (FileNotFoundException e) {
-			System.out.println("Couldn't find the folder containing your genomes.  Please check your file preferences.");
+			System.out.println("Could not find the folder containing your genomes. "
+					         + "Please check your file preferences.");
 			return genomes;
 		}
 		System.out.println("Downloaded genomes:");
@@ -86,18 +125,166 @@ public class BamQCListGenomes {
 		return genomes;
 	}
 	
+	
+	
+	
+	
+	/**
+	 * Converts a standard POSIX Shell globbing pattern into a regular expression
+	 * pattern. The result can be used with the standard {@link java.util.regex} API to
+	 * recognize strings which match the glob pattern.
+	 * <p/>
+	 * See also, the POSIX Shell language:
+	 * http://pubs.opengroup.org/onlinepubs/009695399/utilities/xcu_chap02.html#tag_02_13_01
+	 * 
+	 * @author Neil Traft (http://stackoverflow.com/questions/1247772/is-there-an-equivalent-of-java-util-regex-for-glob-type-patterns)
+	 * @author Piero Dalle Pezze
+	 * 
+	 * @param pattern A glob pattern.
+	 * @param matchWholeString true if the whole string is matched, false if only a substring is matched.
+	 * @return A regex pattern to recognize the given glob pattern.
+	 */
+	public static final String convertGlobToRegex(String pattern, boolean matchWholeString) {
+	    StringBuilder sb = new StringBuilder(pattern.length());
+	    int inGroup = 0;
+	    int inClass = 0;
+	    int firstIndexInClass = -1;
+	    char[] arr = pattern.toCharArray();
+	    for (int i = 0; i < arr.length; i++) {
+	        char ch = arr[i];
+	        switch (ch) {
+	            case '\\':
+	                if (++i >= arr.length) {
+	                    sb.append('\\');
+	                } else {
+	                    char next = arr[i];
+	                    switch (next) {
+	                        case ',':
+	                            // escape not needed
+	                            break;
+	                        case 'Q':
+	                        case 'E':
+	                            // extra escape needed
+	                            sb.append('\\');
+	                        default:
+	                            sb.append('\\');
+	                    }
+	                    sb.append(next);
+	                }
+	                break;
+	            case '*':
+	                if (inClass == 0)
+	                    sb.append(".*");
+	                else
+	                    sb.append('*');
+	                break;
+	            case '?':
+	                if (inClass == 0)
+	                    sb.append('.');
+	                else
+	                    sb.append('?');
+	                break;
+	            case '[':
+	                inClass++;
+	                firstIndexInClass = i+1;
+	                sb.append('[');
+	                break;
+	            case ']':
+	                inClass--;
+	                sb.append(']');
+	                break;
+	            case '.':
+	            case '(':
+	            case ')':
+	            case '+':
+	            case '|':
+	            case '^':
+	            case '$':
+	            case '@':
+	            case '%':
+	                if (inClass == 0 || (firstIndexInClass == i && ch == '^'))
+	                    sb.append('\\');
+	                sb.append(ch);
+	                break;
+	            case '!':
+	                if (firstIndexInClass == i)
+	                    sb.append('^');
+	                else
+	                    sb.append('!');
+	                break;
+	            case '{':
+	                inGroup++;
+	                sb.append('(');
+	                break;
+	            case '}':
+	                inGroup--;
+	                sb.append(')');
+	                break;
+	            case ',':
+	                if (inGroup > 0)
+	                    sb.append('|');
+	                else
+	                    sb.append(',');
+	                break;
+	            default:
+	                sb.append(ch);
+	        }
+	    }
+	    
+	    if(matchWholeString) {
+	    	return "^" + sb.toString() + "$";
+	    }
+	    return sb.toString();
+	}
+	
+	
+	
+	public static String convertGlobToRegexSimple(String pattern) {
+	    String out = "^";
+	    for(int i = 0; i < pattern.length(); ++i) {
+	        final char c = pattern.charAt(i);
+	        switch(c) {
+	        	case '*': out += ".*"; break;
+	        	case '?': out += '.'; break;
+	        	case '.': out += "\\."; break;
+	        	case '\\': out += "\\\\"; break;
+	        	default: out += c;
+	        }
+	    }
+	    out += '$';
+	    return out;
+	}
+	
+	
+	
+	
+	
 
 	public static void main(String[] args) {
-		if(args.length != 1) {
+		
+	    Properties properties = System.getProperties();
+	    
+	    if(properties.getProperty("bamqc.saved_genomes") != null && 
+	       properties.getProperty("bamqc.saved_genomes").equals("true")) {
+			BamQCListGenomes.listSavedGenomes();	
+	    
+	    } else if(properties.getProperty("bamqc.available_genomes") != null && 
+	    		  properties.getProperty("bamqc.available_genomes").equals("true")) {
+	    	
+	    	// If it is preferred to match the whole string, then set matchWholeString to true.
+			boolean matchWholeString = false;
+			String pattern = "*", regex = "";
+			if(properties.getProperty("bamqc.genome_pattern") != null && 
+	    	   !properties.getProperty("bamqc.genome_pattern").equals("")) {
+				pattern = properties.getProperty("bamqc.genome_pattern");
+			}			
+			regex = convertGlobToRegex(pattern, matchWholeString);
+			BamQCListGenomes.listAvailableGenomes(regex);			
+	    
+	    } else {
 			System.out.println("Please, use the option '--saved-genomes' or '--available-genomes'");
-			return;
-		}
-		if(args[0].equals("--saved-genomes")) {
-			BamQCListGenomes.listSavedGenomes();			
-		} else if(args[0].equals("--available-genomes")) {
-			BamQCListGenomes.listAvailableGenomes();			
-		}
-
+	    }	    
+	    
 	}
 	
 }
