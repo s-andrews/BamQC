@@ -3,3 +3,6 @@ jdk:
   - oraclejdk8
   - oraclejdk7
   - openjdk6
+install: ant
+before_script: chmod 755 bin/bamqc
+script: ./bin/bamqc --version
