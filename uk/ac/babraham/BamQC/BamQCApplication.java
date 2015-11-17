@@ -23,7 +23,6 @@ import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
 
-import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -53,6 +52,7 @@ import uk.ac.babraham.BamQC.Utilities.FileFilters.GFFFileFilter;
 import uk.ac.babraham.BamQC.Dialogs.GenomeSelector;
 import uk.ac.babraham.BamQC.Network.GenomeDownloader;
 import uk.ac.babraham.BamQC.DataTypes.ProgressListener;
+import uk.ac.babraham.BamQC.Displays.StatusPanel;
 
 
 
@@ -67,6 +67,9 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 	public static final String VERSION = "0.1.0_devel";
 	
 	private BamQCMenuBar menu;
+	
+	/** This is the small strip at the bottom of the main display */
+	private StatusPanel statusPanel;
 	
 	private JTabbedPane fileTabs;
 	private WelcomePanel welcomePanel;
@@ -85,14 +88,20 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 	//		setSize(1280, 720);
 			setSize(800,600);
 			setLocationRelativeTo(null);
-			
-			welcomePanel = new WelcomePanel();
-			
-			fileTabs = new JTabbedPane(JTabbedPane.TOP);
-			setContentPane(welcomePanel);
-			
+
 			menu = new BamQCMenuBar(this);
 			setJMenuBar(menu);
+			
+			
+			fileTabs = new JTabbedPane(JTabbedPane.TOP);
+			
+			getContentPane().setLayout(new BorderLayout());
+			
+			welcomePanel = new WelcomePanel();
+			getContentPane().add(welcomePanel,BorderLayout.CENTER);
+
+			statusPanel = new StatusPanel();
+			getContentPane().add(statusPanel,BorderLayout.SOUTH);
 			
 		}
 
@@ -101,17 +110,15 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 			fileTabs.remove(fileTabs.getSelectedIndex());
 		}
 		if (fileTabs.getTabCount() == 0) {
-			setContentPane(welcomePanel);
-			validate();
-			repaint();
+			closeAll();
 		}
 		return fileTabs.getTabCount();
 	}
 	
 	public void closeAll () {
-		unsetAnnotation();
 		fileTabs.removeAll();
-		setContentPane(welcomePanel);
+		getContentPane().remove(fileTabs);
+		getContentPane().add(welcomePanel,BorderLayout.CENTER);
 		validate();
 		repaint();
 	}
@@ -146,7 +153,8 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 		// If we're still showing the welcome panel switch this out for
 		// the file tabs panel
 		if (fileTabs.getTabCount() == 0) {
-			setContentPane(fileTabs);
+			getContentPane().remove(welcomePanel);
+			getContentPane().add(fileTabs,BorderLayout.CENTER);
 			validate();
 			repaint();
 		}
@@ -201,7 +209,8 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 			return false;
 		// for consistency, let's remove the file annotation if this was set.
 		unsetFileAnnotation();
-		setTitle(title + " ~ " + BamQCConfig.getInstance().genome.getAbsolutePath());
+		//setTitle(title + " ~ " + BamQCConfig.getInstance().genome.getAbsolutePath());
+		statusPanel.setText("Genome annotation : " + BamQCConfig.getInstance().genome.getAbsolutePath());
 		return true;
 	}
 	
@@ -236,7 +245,8 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 		BamQCConfig.getInstance().gff_file = gff_file;
 		// for consistency, let's remove the genome annotation if this was set.
 		unsetGenomeAnnotation();
-		setTitle(title + " ~ " + BamQCConfig.getInstance().gff_file.getAbsolutePath());
+		//setTitle(title + " ~ " + BamQCConfig.getInstance().gff_file.getAbsolutePath());
+		statusPanel.setText("Annotation file : " + BamQCConfig.getInstance().gff_file.getAbsolutePath());
 		return true;
 	}
 
@@ -262,7 +272,8 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 	public void unsetAnnotation () {
 		unsetGenomeAnnotation();
 		unsetFileAnnotation();
-		setTitle(title);
+		//setTitle(title);
+		statusPanel.setText(" ");
 	}
 
 	public void saveReport () {
