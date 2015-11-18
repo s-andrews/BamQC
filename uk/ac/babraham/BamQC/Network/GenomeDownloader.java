@@ -229,7 +229,6 @@ public class GenomeDownloader implements Runnable {
 		 * through these listeners (either via Enumeration or array) only notifies one
 		 * (BamQCApplication) and the progress dialog is never told.
 		 * 
-		 * If I notify them in reverse order then it works as expected, but I can't see
 		 * why telling the application first should stop further processing.
 		 * 
 		 * On my windows system I don't get this problem.
@@ -238,7 +237,7 @@ public class GenomeDownloader implements Runnable {
 		ProgressListener [] en = listeners.toArray(new ProgressListener[0]);
 				
 		for (int i=en.length-1;i>=0;i--) {
-			en[i].progressComplete("genome_downloaded", null);
+			en[i].progressComplete("Genome downloaded!", null);
 		}
 		
 	}

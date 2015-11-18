@@ -20,6 +20,7 @@
 package uk.ac.babraham.BamQC;
 
 import java.awt.BorderLayout;
+import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
 
@@ -124,6 +125,8 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 	}
 	
 	public boolean openFile () {
+		statusPanel.progressUpdated(" ", 0, 0);
+		
 		JFileChooser chooser;
 		
 		if (lastUsedDir == null) {
@@ -206,17 +209,19 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 	public boolean openGFFFromNetwork () {
 		
 		new GenomeSelector(this);
-		if(BamQCConfig.getInstance().genome == null) 
+		if(BamQCConfig.getInstance().genome == null) {
 			return false;
+		}
 		// for consistency, let's remove the file annotation if this was set.
 		unsetFileAnnotation();
 		//setTitle(title + " ~ " + BamQCConfig.getInstance().genome.getAbsolutePath());
+		statusPanel.progressUpdated(" ", 0, 0);
 		statusPanel.setText("Genome annotation : " + BamQCConfig.getInstance().genome.getAbsolutePath());
 		return true;
 	}
 	
 	public boolean openGFF () {
-
+		
 		JFileChooser chooser;
 		
 		if (lastUsedDir == null) {
@@ -247,6 +252,7 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 		// for consistency, let's remove the genome annotation if this was set.
 		unsetGenomeAnnotation();
 		//setTitle(title + " ~ " + BamQCConfig.getInstance().gff_file.getAbsolutePath());
+		statusPanel.progressUpdated(" ", 0, 0);
 		statusPanel.setText("Annotation file : " + BamQCConfig.getInstance().gff_file.getAbsolutePath());
 		return true;
 	}
@@ -410,10 +416,18 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 		d.addProgressListener(this);
 
 //		// using a text ProgressTextDialog
-		ProgressTextDialog ptd = new ProgressTextDialog("Downloading genome...");
-		d.addProgressListener(ptd);
+        if(GraphicsEnvironment.isHeadless()) {
+        	ProgressTextDialog ptd = new ProgressTextDialog("Downloading genome...");
+        	d.addProgressListener(ptd);
+        }
+        
+        // TODO 
+        //update the status panel with the progress listener. Status bar must implement Progress listener. Copy this from 
+        // Result panel
+        d.addProgressListener(statusPanel);
 
-		d.downloadGenome(species,assembly,size,true);
+        
+		d.downloadGenome(species,assembly,size,true);		
 	}
 	
 	
@@ -441,7 +455,7 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 		
 		if (command == null) return;
 
-		if (command.equals("genome_downloaded")) {
+		if (command.equals("Genome downloaded!")) {
 			// No result is returned
 			openGFFFromNetwork();
 		}
