@@ -111,7 +111,7 @@ public class GTFAnnotationParser extends AnnotationParser {
 	        		// Update the listeners
 	        		e = listeners.elements();
 	        		while (e.hasMoreElements()) {
-	        			e.nextElement().progressUpdated("Approx "+percent+"% complete for " + file.getName(), percent, 100);
+	        			e.nextElement().progressUpdated("Parsing annotation file " + file.getName() + " (" + percent + "%)\n", percent, 100);
 	        		}
 	                previousPercent = percent;
 	            }
@@ -278,7 +278,7 @@ public class GTFAnnotationParser extends AnnotationParser {
 				// Update the listeners
 				e = listeners.elements();
 				while (e.hasMoreElements()) {
-	    			e.nextElement().progressComplete("Approx 100% complete for " + file.getName() + "\n" +
+	    			e.nextElement().progressComplete("Parsing annotation file " + file.getName() + " (100%)\n" +
 	    											 "Processed features: "+groupedFeatures.size() + "\n" +
 	    											 "Parsed annotation file " + file.getName(), null);
 				}
