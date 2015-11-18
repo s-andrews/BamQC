@@ -125,7 +125,7 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 	}
 	
 	public boolean openFile () {
-		statusPanel.progressUpdated(" ", 0, 0);
+		statusPanel.progressUpdated(" ", 0, 100);
 		
 		JFileChooser chooser;
 		
@@ -215,7 +215,7 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 		// for consistency, let's remove the file annotation if this was set.
 		unsetFileAnnotation();
 		//setTitle(title + " ~ " + BamQCConfig.getInstance().genome.getAbsolutePath());
-		statusPanel.progressUpdated(" ", 0, 0);
+		statusPanel.progressUpdated(" ", 0, 100);
 		statusPanel.setText("Genome annotation : " + BamQCConfig.getInstance().genome.getAbsolutePath());
 		return true;
 	}
@@ -252,7 +252,7 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 		// for consistency, let's remove the genome annotation if this was set.
 		unsetGenomeAnnotation();
 		//setTitle(title + " ~ " + BamQCConfig.getInstance().gff_file.getAbsolutePath());
-		statusPanel.progressUpdated(" ", 0, 0);
+		statusPanel.progressUpdated(" ", 0, 100);
 		statusPanel.setText("Annotation file : " + BamQCConfig.getInstance().gff_file.getAbsolutePath());
 		return true;
 	}
