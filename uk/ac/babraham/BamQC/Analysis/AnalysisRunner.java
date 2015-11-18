@@ -19,6 +19,7 @@
  */
 package uk.ac.babraham.BamQC.Analysis;
 
+import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -31,6 +32,7 @@ import uk.ac.babraham.BamQC.AnnotationParsers.AnnotationParser;
 import uk.ac.babraham.BamQC.AnnotationParsers.GFF3AnnotationParser;
 import uk.ac.babraham.BamQC.AnnotationParsers.GTFAnnotationParser;
 import uk.ac.babraham.BamQC.AnnotationParsers.GenomeParser;
+import uk.ac.babraham.BamQC.DataTypes.ProgressListener;
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.Dialogs.ProgressTextDialog;
 import uk.ac.babraham.BamQC.Modules.QCModule;
@@ -44,7 +46,12 @@ public class AnalysisRunner implements Runnable {
 
 	private SequenceFile file;
 	private QCModule [] modules;
-	private List<AnalysisListener> listeners = new ArrayList<AnalysisListener>();
+	// In the future this could be part of a hierarchy
+	// for the analysis
+	private List<AnalysisListener> analysisListeners = new ArrayList<AnalysisListener>();
+	// for the annotation
+	private List<ProgressListener> progressListeners = new ArrayList<ProgressListener>();
+	
 	private int percentComplete = 0;
 	
 	public AnalysisRunner (SequenceFile file) {
@@ -52,14 +59,26 @@ public class AnalysisRunner implements Runnable {
 	}
 	
 	public void addAnalysisListener (AnalysisListener l) {
-		if (l != null && !listeners.contains(l)) {
-			listeners.add(l);
+		if (l != null && !analysisListeners.contains(l)) {
+			analysisListeners.add(l);
 		}
 	}
 
 	public void removeAnalysisListener (AnalysisListener l) {
-		if (l != null && listeners.contains(l)) {
-			listeners.remove(l);
+		if (l != null && analysisListeners.contains(l)) {
+			analysisListeners.remove(l);
+		}
+	}
+	
+	public void addProgressListener (ProgressListener l) {
+		if (l != null && !progressListeners.contains(l)) {
+			progressListeners.add(l);
+		}
+	}
+
+	public void removeProgressListener (ProgressListener l) {
+		if (l != null && progressListeners.contains(l)) {
+			progressListeners.remove(l);
 		}
 	}
 
@@ -75,24 +94,35 @@ public class AnalysisRunner implements Runnable {
 	@Override
 	public void run() {
 
-		Iterator<AnalysisListener> i = listeners.iterator();
-		while (i.hasNext()) {
-			i.next().analysisStarted(file);
-		}
 
+		
+		
 		
 		AnnotationSet annotationSet = null;
 
 		if(BamQCConfig.getInstance().genome != null) {
-			ProgressTextDialog ptd = new ProgressTextDialog("");
-			GenomeParser parser = new GenomeParser();
-			parser.addProgressListener(ptd);
+			
+        	GenomeParser parser = new GenomeParser();
+        	
+        	
+			// SET UP THE ANNOTATION PROGRESS LISTENER
+			// This is used for reporting the annotation progress on a shell
+	        if(GraphicsEnvironment.isHeadless()) {
+	        	ProgressTextDialog ptd = new ProgressTextDialog("");
+	        	parser.addProgressListener(ptd);
+	        }
+			// This is the progress listener for the annotation
+			Iterator<ProgressListener> progressListenerIter = progressListeners.iterator();
+			while (progressListenerIter.hasNext()) {
+				parser.addProgressListener(progressListenerIter.next());
+			}
+
 			
 			try {
 				parser.parseGenome(BamQCConfig.getInstance().genome);
 			} catch (Exception e) {
 				log.warn("The annotation genome " + BamQCConfig.getInstance().genome + " seems corrupted!");
-				Iterator<AnalysisListener> i2 = listeners.iterator();
+				Iterator<AnalysisListener> i2 = analysisListeners.iterator();
 				while (i2.hasNext()) {
 					i2.next().analysisExceptionReceived(file, e);
 				}
@@ -103,7 +133,6 @@ public class AnalysisRunner implements Runnable {
 		} else if (BamQCConfig.getInstance().gff_file != null) {	
 				annotationSet = new AnnotationSet();
 				
-				ProgressTextDialog ptd = new ProgressTextDialog("");
 				AnnotationParser parser;
 				if (BamQCConfig.getInstance().gff_file.getName().toLowerCase().endsWith("gtf")) {
 					parser = new GTFAnnotationParser();
@@ -111,14 +140,27 @@ public class AnalysisRunner implements Runnable {
 				else {
 					parser = new GFF3AnnotationParser();
 				}
-				parser.addProgressListener(ptd);
+				
+				
+				// SET UP THE ANNOTATION PROGRESS LISTENER
+				// This is used for reporting the annotation progress on a shell
+		        if(GraphicsEnvironment.isHeadless()) {
+		        	ProgressTextDialog ptd = new ProgressTextDialog("");
+		        	parser.addProgressListener(ptd);
+		        }
+				// This is the progress listener for the annotation
+				Iterator<ProgressListener> progressListenerIter = progressListeners.iterator();
+				while (progressListenerIter.hasNext()) {
+					parser.addProgressListener(progressListenerIter.next());
+				}
+				
 				
 				try {
 					parser.parseAnnotation(annotationSet, BamQCConfig.getInstance().gff_file);
 				}
 				catch (Exception e) {
 					log.warn("The annotation file " + BamQCConfig.getInstance().gff_file.getName() + " seems corrupted!");
-					Iterator<AnalysisListener> i2 = listeners.iterator();
+					Iterator<AnalysisListener> i2 = analysisListeners.iterator();
 					while (i2.hasNext()) {
 						i2.next().analysisExceptionReceived(file, e);
 					}
@@ -144,6 +186,13 @@ public class AnalysisRunner implements Runnable {
 		
 		
 		
+		Iterator<AnalysisListener> analysisListenerIter = analysisListeners.iterator();
+		while (analysisListenerIter.hasNext()) {
+			analysisListenerIter.next().analysisStarted(file);
+		}
+
+		
+		
 
 		for (int m=0;m<modules.length;m++) {
 			modules[m].processFile(file);
@@ -157,9 +206,9 @@ public class AnalysisRunner implements Runnable {
 				seq = file.next();
 			}
 			catch (SequenceFormatException e) {
-				i = listeners.iterator();
-				while (i.hasNext()) {
-					i.next().analysisExceptionReceived(file,e);
+				analysisListenerIter = analysisListeners.iterator();
+				while (analysisListenerIter.hasNext()) {
+					analysisListenerIter.next().analysisExceptionReceived(file,e);
 				}
 				return;
 			}
@@ -182,9 +231,9 @@ public class AnalysisRunner implements Runnable {
 				int percent = file.getPercentComplete();
 				if (percent >= percentComplete+5) {
 					percentComplete = percent;
-					i = listeners.iterator();
-					while (i.hasNext()) {
-						i.next().analysisUpdated(file, seqCount, percentComplete);
+					analysisListenerIter = analysisListeners.iterator();
+					while (analysisListenerIter.hasNext()) {
+						analysisListenerIter.next().analysisUpdated(file, seqCount, percentComplete);
 					}
 					try {
 						Thread.sleep(10);
@@ -212,9 +261,9 @@ public class AnalysisRunner implements Runnable {
 		}
 		
 		
-		i = listeners.iterator();
-		while (i.hasNext()) {
-			i.next().analysisComplete(file,modules);
+		analysisListenerIter = analysisListeners.iterator();
+		while (analysisListenerIter.hasNext()) {
+			analysisListenerIter.next().analysisComplete(file,modules);
 		}
 
 	}

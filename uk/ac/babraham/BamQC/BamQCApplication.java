@@ -187,6 +187,7 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 			AnalysisRunner runner = new AnalysisRunner(sequenceFile);
 
 			ResultsPanel rp = new ResultsPanel(sequenceFile);
+			runner.addProgressListener(rp);
 			runner.addAnalysisListener(rp);
 			fileTabs.addTab(sequenceFile.name(), rp);
 			

@@ -109,7 +109,7 @@ public class GFF3AnnotationParser extends AnnotationParser {
 	        		// Update the listeners
 	        		e = listeners.elements();
 	        		while (e.hasMoreElements()) {
-	        			e.nextElement().progressUpdated("Approx "+percent+"% complete", percent, 100);
+	        			e.nextElement().progressUpdated("Approx "+percent+"% complete for " + file.getName(), percent, 100);
 	        		}
 	                previousPercent = percent;
 	            }
@@ -305,7 +305,7 @@ public class GFF3AnnotationParser extends AnnotationParser {
 				// Update the listeners
 				e = listeners.elements();
 				while (e.hasMoreElements()) {
-	    			e.nextElement().progressComplete("Approx 100% complete\n" +
+	    			e.nextElement().progressComplete("Approx 100% complete for " + file.getName() + "\n" +
 	    											 "Processed features: "+groupedFeatures.size() + "\n" +
 	    											 "Parsed annotation file " + file.getName(), null);
 				}

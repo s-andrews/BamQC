@@ -36,10 +36,11 @@ import javax.swing.event.ListSelectionListener;
 
 import uk.ac.babraham.BamQC.BamQCConfig;
 import uk.ac.babraham.BamQC.Analysis.AnalysisListener;
+import uk.ac.babraham.BamQC.DataTypes.ProgressListener;
 import uk.ac.babraham.BamQC.Modules.QCModule;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
-public class ResultsPanel extends JPanel implements ListSelectionListener, AnalysisListener{
+public class ResultsPanel extends JPanel implements ListSelectionListener, AnalysisListener, ProgressListener {
 
 	private static final long serialVersionUID = 2141753423963373692L;
 	private static final ImageIcon ERROR_ICON = new ImageIcon(ClassLoader.getSystemResource("uk/ac/babraham/BamQC/Resources/error.png"));
@@ -168,13 +169,48 @@ public class ResultsPanel extends JPanel implements ListSelectionListener, Analy
 
 	@Override
 	public void analysisStarted(SequenceFile file) {
-		if (BamQCConfig.getInstance().gff_file == null) {
-			progressLabel.setText("Starting analysis...");
-		}
-		else {
-			progressLabel.setText("Reading "+BamQCConfig.getInstance().gff_file.getName());			
-		}
+		progressLabel.setText("Starting analysis...");
 	}
+
+	
+	
+	
+	/* (non-Javadoc)
+	 * @see uk.ac.babraham.BamQC.DataTypes.ProgressListener#progressUpdated(java.lang.String, int, int)
+	 */
+	@Override
+	public void progressUpdated(String message, int currentPos, int totalPos) {
+		progressLabel.setText(message);
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.ac.babraham.BamQC.DataTypes.ProgressListener#progressExceptionReceived(java.lang.Exception)
+	 */
+	@Override
+	public void progressExceptionReceived(Exception e) {
+		progressLabel.setText("Failed to process file: "+e.getLocalizedMessage());
+	}
+
+	
+	/* (non-Javadoc)
+	 * @see uk.ac.babraham.BamQC.DataTypes.ProgressListener#progressCancelled()
+	 */
+	@Override
+	public void progressCancelled() { }
+
+	/* (non-Javadoc)
+	 * @see uk.ac.babraham.BamQC.DataTypes.ProgressListener#progressComplete(java.lang.String, java.lang.Object)
+	 */
+	@Override
+	public void progressComplete(String command, Object result) {
+		progressLabel.setText(command);
+	}
+
+	/* (non-Javadoc)
+	 * @see uk.ac.babraham.BamQC.DataTypes.ProgressListener#progressWarningReceived(java.lang.Exception)
+	 */
+	@Override
+	public void progressWarningReceived(Exception e) { }
 	
 	
 }

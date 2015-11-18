@@ -25,6 +25,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Enumeration;
 
+import uk.ac.babraham.BamQC.BamQCConfig;
 import uk.ac.babraham.BamQC.BamQCException;
 import uk.ac.babraham.BamQC.DataTypes.ProgressListener;
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
@@ -150,7 +151,9 @@ public class GenomeParser extends AnnotationParser {
 	        		// Update the listeners
 	        		e = listeners.elements();
 	        		while (e.hasMoreElements()) {
-	        			e.nextElement().progressUpdated("Approx "+percent+"% complete", percent, 100);
+	        			e.nextElement().progressUpdated("Approx "+percent+"% complete for " 
+	        		     + BamQCConfig.getInstance().genome.getParentFile().getName() + " [ " 
+	        			 + BamQCConfig.getInstance().genome.getName() + " ]", percent, 100);
 	        		}
 	                previousPercent = percent;
 	            }
