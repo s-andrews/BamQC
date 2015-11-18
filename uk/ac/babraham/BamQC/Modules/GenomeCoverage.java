@@ -21,6 +21,8 @@
 package uk.ac.babraham.BamQC.Modules;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 
 import javax.swing.JPanel;
 import javax.xml.stream.XMLStreamException;
@@ -41,6 +43,7 @@ import uk.ac.babraham.BamQC.Modules.ModuleConfig;
 public class GenomeCoverage extends AbstractQCModule {
 
 	private static Logger log = Logger.getLogger(GenomeCoverage.class);
+	private int plotSeparateChromosomeThreshold = ModuleConfig.getParam("GenomeCoverage_plot_separate_chromosomes", "ignore").intValue();
 	private double genomeCoverageZeroWarningFraction = ModuleConfig.getParam("GenomeCoverage_zero_fraction", "warn");
 	private double genomeCoverageZeroErrorFraction = ModuleConfig.getParam("GenomeCoverage_zero_fraction", "error");
 	private double genomeCoverageRsdWarningFraction = ModuleConfig.getParam("GenomeCoverage_rsd_fraction", "warn");
@@ -113,7 +116,15 @@ public class GenomeCoverage extends AbstractQCModule {
 	@Override
 	public void processAnnotationSet(AnnotationSet annotation) {
 
-		chromosomes = annotation.chromosomeFactory().getAllChromosomes();	
+		chromosomes = annotation.chromosomeFactory().getAllChromosomes();
+		
+		if(chromosomes.length < plotSeparateChromosomeThreshold) {
+			// This will plot the chromosomes from 1 (top) to n (bottom)
+			Arrays.sort(chromosomes, Collections.reverseOrder());
+		} else {
+			// This will plot the chromosomes from 1 (left) to n (right)
+			Arrays.sort(chromosomes);
+		}
 		
 		chromosomeNames = new String [chromosomes.length];
 		binCounts = new double[chromosomes.length][];
@@ -161,7 +172,7 @@ public class GenomeCoverage extends AbstractQCModule {
 		}
 				
 		for (int c=0;c<chromosomes.length;c++) {
-			chromosomeNames[c] = "chromosome " + chromosomes[c].name();
+			chromosomeNames[c] = chromosomes[c].name();
 //			System.out.println("Chromosome is " + chromosomes[c].name());
 			coverage = chromosomes[c].getBinCountData();
 			binCounts[c] = new double[binsToUse];
@@ -184,14 +195,16 @@ public class GenomeCoverage extends AbstractQCModule {
 				binCounts[c][i] = Double.NaN;
 			}
 			
-			// Now average the replicates	
+			// Now average the replicates
 			for (int i=0;i<replicateCounts.length;i++) {
 				if (replicateCounts[i]>0) {
 					binCounts[c][i] /= replicateCounts[i];
 					// scale to log10 to enlarge the data differences.
-					if (binCounts[c][i] > 0) binCounts[c][i] = Math.log10(binCounts[c][i]);
+//					if (binCounts[c][i] > 0) binCounts[c][i] = Math.log10(binCounts[c][i]);
 				}
-			}
+			}				
+			
+			
 			// Now convert to z-scores
 			double [] validValues = new double[firstInvalidBin];
 			for (int i=0;i<validValues.length;i++) {
@@ -212,7 +225,7 @@ public class GenomeCoverage extends AbstractQCModule {
 	@Override
 	public JPanel getResultsPanel() {
 
-		if(chromosomeNames.length <= ModuleConfig.getParam("GenomeCoverage_plot_separate_chromosomes", "ignore").intValue()) {
+		if(chromosomeNames.length <= plotSeparateChromosomeThreshold) {
 			// plots the genome coverage for each chromosome separately
 			return getSeparateChromosomeResultsPanel();
 		}
@@ -364,3 +377,12 @@ public class GenomeCoverage extends AbstractQCModule {
 	}
 	
 }
+
+
+
+
+
+class ChromosomeBinCounts {
+	
+}
+
