@@ -55,8 +55,9 @@ public class VariantCallDetection extends AbstractQCModule {
 	
 	private HashMap<String, Long> firstSNPs = new HashMap<String, Long>();
 	private HashMap<String, Long> secondSNPs = new HashMap<String, Long>();
-	private HashMap<String, Long> insertions = new HashMap<String, Long>();
-	private HashMap<String, Long> deletions = new HashMap<String, Long>();
+	// To reduce computational time let's not collect data regarding indel type.
+	//private HashMap<String, Long> insertions = new HashMap<String, Long>();
+	//private HashMap<String, Long> deletions = new HashMap<String, Long>();
 	
 	private long totalMutations = 0;	
 	private long totalInsertions = 0;
@@ -149,17 +150,18 @@ public class VariantCallDetection extends AbstractQCModule {
 		secondSNPs.put("TC", 0L);
 		secondSNPs.put("TG", 0L);
 		
-		insertions.put("A", 0L);
-		insertions.put("C", 0L);
-		insertions.put("G", 0L);
-		insertions.put("T", 0L);
-		insertions.put("N", 0L);
-		
-		deletions.put("A", 0L);
-		deletions.put("C", 0L);
-		deletions.put("G", 0L);
-		deletions.put("T", 0L);
-		deletions.put("N", 0L);		
+		// To reduce computational time let's not collect data regarding indel type.
+//		insertions.put("A", 0L);
+//		insertions.put("C", 0L);
+//		insertions.put("G", 0L);
+//		insertions.put("T", 0L);
+//		insertions.put("N", 0L);
+//		
+//		deletions.put("A", 0L);
+//		deletions.put("C", 0L);
+//		deletions.put("G", 0L);
+//		deletions.put("T", 0L);
+//		deletions.put("N", 0L);		
 		
 	}
 
@@ -361,18 +363,19 @@ public class VariantCallDetection extends AbstractQCModule {
 		secondSNPs.put("TG", 0L);
 	
 		totalMutations = 0;
-		insertions.put("A", 0L);
-		insertions.put("C", 0L);
-		insertions.put("G", 0L);
-		insertions.put("T", 0L);
-		insertions.put("N", 0L);
-
-		totalInsertions = 0;
-		deletions.put("A", 0L);
-		deletions.put("C", 0L);
-		deletions.put("G", 0L);
-		deletions.put("T", 0L);
-		deletions.put("N", 0L);	
+		// To reduce computational time let's not collect data regarding indel type.
+//		insertions.put("A", 0L);
+//		insertions.put("C", 0L);
+//		insertions.put("G", 0L);
+//		insertions.put("T", 0L);
+//		insertions.put("N", 0L);
+//
+//		totalInsertions = 0;
+//		deletions.put("A", 0L);
+//		deletions.put("C", 0L);
+//		deletions.put("G", 0L);
+//		deletions.put("T", 0L);
+//		deletions.put("N", 0L);	
 		
 		totalDeletions = 0;
 		totalMatches = 0;
@@ -564,23 +567,26 @@ public class VariantCallDetection extends AbstractQCModule {
 	private void processMDtagCigarOperatorI() {
 		int numInsertions = currentCigarMDElement.getLength();
 		String insertedBases = currentCigarMDElement.getBases();
-		String base;
+		// To reduce computational time let's not collect data regarding indel type.
+//		String base;
 		
 		// if the read.length is longer than what we supposed to be, here we increase the length of our *Pos arrays..
 		extendDensityArrays(currentPosition+numInsertions);
 	    
 		if(cigarMDGenerator.isFirst()) {
 			for(int i = 0; i < numInsertions; i++) {
-				base = insertedBases.substring(i, i+1);
-				insertions.put(base, insertions.get(base) + 1L);
+				// To reduce computational time let's not collect data regarding indel type.
+//				base = insertedBases.substring(i, i+1);
+//				insertions.put(base, insertions.get(base) + 1L);
 				if(insertedBases.charAt(i) != 'N') { 
 					firstInsertionPos[currentPosition+i]++; 
 				}
 			}
 		} else {
 			for(int i = 0; i < numInsertions; i++) {
-				base = insertedBases.substring(i, i+1);
-				insertions.put(base, insertions.get(base) + 1L);
+				// To reduce computational time let's not collect data regarding indel type.
+//				base = insertedBases.substring(i, i+1);
+//				insertions.put(base, insertions.get(base) + 1L);
 				if(insertedBases.charAt(i) != 'N') { 
 					secondInsertionPos[currentPosition+i]++; 
 				}
@@ -598,19 +604,22 @@ public class VariantCallDetection extends AbstractQCModule {
 		extendDensityArrays(currentPosition+numDeletions);		
 	    
 		if(!deletedBases.isEmpty()) {
-			String base;
+			// To reduce computational time let's not collect data regarding indel type.			
+//			String base;
 			if(cigarMDGenerator.isFirst()) {
 				for(int i = 0; i < numDeletions; i++) {
-					base = deletedBases.substring(i, i+1);
-					deletions.put(base, deletions.get(base) + 1L);
+					// To reduce computational time let's not collect data regarding indel type.
+//					base = deletedBases.substring(i, i+1);
+//					deletions.put(base, deletions.get(base) + 1L);
 					if(deletedBases.charAt(i) != 'N') { 
 						firstDeletionPos[currentPosition+i]++; 
 					}
 				}
 			} else {
 				for(int i = 0; i < numDeletions; i++) {
-					base = deletedBases.substring(i, i+1);
-					deletions.put(base, deletions.get(base) + 1L);
+					// To reduce computational time let's not collect data regarding indel type.
+//					base = deletedBases.substring(i, i+1);
+//					deletions.put(base, deletions.get(base) + 1L);
 					if(deletedBases.charAt(i) != 'N') { 
 						secondDeletionPos[currentPosition+i]++; 
 					}
@@ -713,13 +722,14 @@ public class VariantCallDetection extends AbstractQCModule {
 		return secondSNPs;
 	}
 	
-	public HashMap<String, Long> getInsertions() {
-		return insertions;
-	}
-	
-	public HashMap<String, Long> getDeletions() {
-		return deletions;
-	}
+	// To reduce computational time let's not collect data regarding indel type.
+//	public HashMap<String, Long> getInsertions() {
+//		return insertions;
+//	}
+//	
+//	public HashMap<String, Long> getDeletions() {
+//		return deletions;
+//	}
 
 	public long getTotalMutations() {
 		return totalMutations;
