@@ -359,7 +359,8 @@ public class LineWithHorizontalBarGraph extends JPanel {
 //				g.setColor(new Color(100, 100, 100));
 //				g.fillRect((baseWidth/2)+xOffset+(baseWidth*(i)), (int)(minY), (baseWidth/2)+xOffset+(baseWidth*(i+1)), getY(minY,d));
 				g.setColor(Color.BLACK);				
-				g.drawLine((int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i))), getY(minY*0.95,d), (int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i+1))), getY(minY*0.95,d));
+				// NOTE HORIZONTAL POSITION!!
+				g.drawLine((int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i))), getY(minY*0.75,d), (int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i+1))), getY(minY*0.75,d));
 				g.setColor(COLOURS[0]);
 			}
 			
@@ -378,7 +379,8 @@ public class LineWithHorizontalBarGraph extends JPanel {
 //					g.setColor(new Color(100, 100, 100));
 //					g.fillRect((baseWidth/2)+xOffset+(baseWidth*(i-1)), (int)(minY), (baseWidth/2)+xOffset+(baseWidth*i), getY(minY,d));
 					g.setColor(Color.BLACK);
-					g.drawLine((int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i-1))), getY(minY*0.95,d), (int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*i)), getY(minY*0.95,d));
+					// NOTE HORIZONTAL POSITION!!
+					g.drawLine((int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i-1))), getY(minY*0.75,d), (int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*i)), getY(minY*0.75,d));
 					g.setColor(COLOURS[0]);
 					lastY = getY(midY,d);
 					continue;
