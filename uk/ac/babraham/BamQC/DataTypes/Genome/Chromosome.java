@@ -38,6 +38,17 @@ public class Chromosome implements Comparable<Chromosome>, Serializable {
 	private int seqCount = 0;
 	
 	public Chromosome (String name) {
+		// We remove chr if present.
+		//
+		// Because the manual genome builder adds a 'pseudo' prefix to 
+		// the artificial chromosomes it builds we remove that if it's 
+		// present so that doesn't mess up the ordering.
+
+		if (name.toLowerCase().startsWith("chr")) {
+			this.name = name.substring(3);
+		} else if (name.toLowerCase().startsWith("pseudo")) {
+			this.name = name.substring(6);
+		}
 		this.name = name;
 	}
 	
@@ -99,10 +110,6 @@ public class Chromosome implements Comparable<Chromosome>, Serializable {
 		// We try to compare by number first and then by string if that
 		// fails.  Numbers come before text.
 		//
-		// Because the manual genome builder adds a 'pseudo' prefix to 
-		// the artificial chromosomes it builds we remove that if it's 
-		// present so that doesn't mess up the ordering.
-		
 		// This needed to be modified to fix a nasty data corruption bug.
 		// The sorting rule actually needs to be:
 		//
@@ -114,14 +121,6 @@ public class Chromosome implements Comparable<Chromosome>, Serializable {
 		
 		String thisName = name;
 		String thatName = o.name;
-		
-		if (thisName.startsWith("pseudo")) {
-			thisName = thisName.substring(6);
-		}
-
-		if (thatName.startsWith("pseudo")) {
-			thatName = thatName.substring(6);
-		}
 		
 		try {
 			int thisNumber = Integer.parseInt(thisName);
