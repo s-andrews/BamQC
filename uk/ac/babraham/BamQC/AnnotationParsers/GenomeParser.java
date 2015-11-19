@@ -153,7 +153,7 @@ public class GenomeParser extends AnnotationParser {
 	        		while (e.hasMoreElements()) {
 	        			e.nextElement().progressUpdated("Parsing genome "  
 	        		     + BamQCConfig.getInstance().genome.getParentFile().getName() + " [ " 
-	        			 + BamQCConfig.getInstance().genome.getName() + " ] (" + percent + "%)\n", percent, 100);
+	        			 + BamQCConfig.getInstance().genome.getName() + " ] (" + percent + "%)", percent, 100);
 	        		}
 	                previousPercent = percent;
 	            }
@@ -208,7 +208,7 @@ public class GenomeParser extends AnnotationParser {
 	        		// Update the listeners
 	        		e = listeners.elements();
 	        		while (e.hasMoreElements()) {
-	        			e.nextElement().progressUpdated("Parsing annotation file " + files[i].getName() + " (" + percent + "%)\n", percent, 100);
+	        			e.nextElement().progressUpdated("Parsing annotation file " + files[i].getName() + " (" + percent + "%)", percent, 100);
 	        		}
 	                previousPercent = percent;
 	            }

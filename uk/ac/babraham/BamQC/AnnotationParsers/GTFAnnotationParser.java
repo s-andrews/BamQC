@@ -111,7 +111,7 @@ public class GTFAnnotationParser extends AnnotationParser {
 	        		// Update the listeners
 	        		e = listeners.elements();
 	        		while (e.hasMoreElements()) {
-	        			e.nextElement().progressUpdated("Parsing annotation file " + file.getName() + " (" + percent + "%)\n", percent, 100);
+	        			e.nextElement().progressUpdated("Parsing annotation file " + file.getName() + " (" + percent + "%)", percent, 100);
 	        		}
 	                previousPercent = percent;
 	            }
