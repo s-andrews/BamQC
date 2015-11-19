@@ -205,7 +205,7 @@ public class GenomeCoverage extends AbstractQCModule {
 						continue;
 					} 
 					// scale to log10 to enlarge the data differences.
-					//if (binCounts[c][i] > 0) binCounts[c][i] = Math.log10(binCounts[c][i]);
+					if (binCounts[c][i] > 0) binCounts[c][i] = Math.log10(binCounts[c][i]);
 				}
 			}				
 						
@@ -223,7 +223,7 @@ public class GenomeCoverage extends AbstractQCModule {
 				if (binCounts[c][i] > maxCoverage) maxCoverage = binCounts[c][i];
 				if (0-binCounts[c][i] > maxCoverage) maxCoverage = 0-binCounts[c][i];
 				
-				//if(binCounts[c][i] < 0) System.out.println(binCounts[c][i]);
+				// if(binCounts[c][i] < 0) System.out.println(binCounts[c][i]);
 			}
 			
 		}

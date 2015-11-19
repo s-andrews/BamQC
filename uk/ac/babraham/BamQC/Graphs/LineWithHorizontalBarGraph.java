@@ -242,21 +242,29 @@ public class LineWithHorizontalBarGraph extends JPanel {
 			g.drawRect((int)r.getX(), (int)r.getY(), (int)r.getWidth(), (int)r.getHeight());
 			// TOOL TIPS management
 			// add rectangle coordinates and tooltip to these two lists
-			if(1.0d*chrPosition / 1000000000 >= 1.0) {
-				chrPositionStr = "" + (int)(1.0d*chrPosition / 1000000000) + "B"; 
+			if(1.0d*chrPosition / 1000000000000000L >= 1.0) {
+				chrPositionStr = "" + (int)(1.0d*chrPosition / 1000000000000000L) + "P"; 
+			} else if(1.0d*chrPosition / 1000000000000L >= 1.0) {
+				chrPositionStr = "" + (int)(1.0d*chrPosition / 1000000000000L) + "T"; 
+			} else if(1.0d*chrPosition / 1000000000 >= 1.0) {
+				chrPositionStr = "" + (int)(1.0d*chrPosition / 1000000000) + "G"; 
 			} else if(1.0d*chrPosition / 1000000 >= 1.0) {
 				chrPositionStr = "" + (int)(1.0d*chrPosition / 1000000) + "M"; 
 			} else if(1.0d*chrPosition / 1000 >= 1.0) {
-				chrPositionStr = "" + (int)(1.0d*chrPosition / 1000) + "K"; 
+				chrPositionStr = "" + (int)(1.0d*chrPosition / 1000) + "k"; 
 			} else {
 				chrPositionStr = "" + chrPosition; 
 			}
-			if((chrPosition+barData[i]) / 1000000000 >= 1.0) {
-				chrPositionStr = chrPositionStr + "-" + (int)((chrPosition+barData[i])/1000000000) + "B"; 
+			if((chrPosition+barData[i]) / 1000000000000000L >= 1.0) {
+				chrPositionStr = chrPositionStr + "-" + (int)((chrPosition+barData[i])/1000000000000000L) + "P"; 
+			} else if((chrPosition+barData[i]) / 1000000000000L >= 1.0) {
+				chrPositionStr = chrPositionStr + "-" + (int)((chrPosition+barData[i])/1000000000000L) + "T"; 				
+			} else if((chrPosition+barData[i]) / 1000000000 >= 1.0) {
+				chrPositionStr = chrPositionStr + "-" + (int)((chrPosition+barData[i])/1000000000) + "G"; 
 			} else if((chrPosition+barData[i]) / 1000000 >= 1.0) {
 				chrPositionStr = chrPositionStr + "-" + (int)((chrPosition+barData[i])/1000000) + "M"; 
 			} else if((chrPosition+barData[i]) / 1000 >= 1.0) {
-				chrPositionStr = chrPositionStr + "-" + (int)((chrPosition+barData[i])/1000) + "K"; 
+				chrPositionStr = chrPositionStr + "-" + (int)((chrPosition+barData[i])/1000) + "k"; 
 			} else {
 				chrPositionStr = chrPositionStr + "-" + (chrPosition+(int)barData[i]); 
 			}
@@ -297,12 +305,16 @@ public class LineWithHorizontalBarGraph extends JPanel {
 			int lastXLabelEnd = 0;
 			for(int i=0; i<lineData[0].length; i++) {
 				String baseNumber = ""+xCategories[i];
-				if(Integer.valueOf(baseNumber) / 1000000000 >= 1.0) {
-					baseNumber = baseNumber.substring(0, baseNumber.length()-9) + "B";
+				if(Integer.valueOf(baseNumber) / 1000000000000000L >= 1.0) {
+					baseNumber = baseNumber.substring(0, baseNumber.length()-15) + "P";
+				} else if(Integer.valueOf(baseNumber) / 1000000000000L >= 1.0) {
+					baseNumber = baseNumber.substring(0, baseNumber.length()-12) + "T";					
+				} else if(Integer.valueOf(baseNumber) / 1000000000 >= 1.0) {
+					baseNumber = baseNumber.substring(0, baseNumber.length()-9) + "G";
 				} else if(Integer.valueOf(baseNumber) / 1000000 >= 1.0) {
 					baseNumber = baseNumber.substring(0, baseNumber.length()-6) + "M";
 				} else if(Integer.valueOf(baseNumber) / 1000 >= 1.0) {
-					baseNumber = baseNumber.substring(0, baseNumber.length()-3) + "K";
+					baseNumber = baseNumber.substring(0, baseNumber.length()-3) + "k";
 				} 
 				int baseNumberWidth = g.getFontMetrics().stringWidth(baseNumber);
 				int baseNumberPosition =  (int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*i)-(baseNumberWidth/2));
@@ -341,6 +353,17 @@ public class LineWithHorizontalBarGraph extends JPanel {
 				lastY = getY(lineData[d][0],d);	
 				for (int i=1;i<lineData[d].length;i++) {
 					if (Double.isNaN(lineData[d][i])) break;
+					// Check whether we have points with null coverage (the commented code removes 
+					// an additional spike found at the beginning.
+					if (Double.isInfinite(lineData[d][i]) ) { // || 
+						//(i<lineData[d].length -2 && Double.isInfinite(lineData[d][i+1]))) {
+//						g.setColor(new Color(200, 200, 200));
+//						g.fillRect(xOffset+(baseWidth*i), (int)(minY), baseWidth, getY(minY,d));
+//						g.setColor(COLOURS[0]);
+						lastY = getY(midY,d);
+						continue;
+					}
+					
 					int thisY = getY(lineData[d][i],d);
 					g.drawLine((int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i-1))), lastY, (int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*i)), thisY);
 				

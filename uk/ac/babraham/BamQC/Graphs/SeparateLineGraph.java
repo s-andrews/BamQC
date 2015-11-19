@@ -181,6 +181,17 @@ public class SeparateLineGraph extends JPanel {
 				g.setColor(Color.BLACK);
 
 				String baseNumber = ""+xCategories[i];
+				if(Integer.valueOf(baseNumber) / 1000000000000000L >= 1.0) {
+					baseNumber = baseNumber.substring(0, baseNumber.length()-15) + "P";
+				} else if(Integer.valueOf(baseNumber) / 1000000000000L >= 1.0) {
+					baseNumber = baseNumber.substring(0, baseNumber.length()-12) + "T";	
+				} else if(Integer.valueOf(baseNumber) / 1000000000 >= 1.0) {
+					baseNumber = baseNumber.substring(0, baseNumber.length()-9) + "G";
+				} else if(Integer.valueOf(baseNumber) / 1000000 >= 1.0) {
+					baseNumber = baseNumber.substring(0, baseNumber.length()-6) + "M";
+				} else if(Integer.valueOf(baseNumber) / 1000 >= 1.0) {
+					baseNumber = baseNumber.substring(0, baseNumber.length()-3) + "k";
+				} 
 				int baseNumberWidth = g.getFontMetrics().stringWidth(baseNumber);
 				int baseNumberPosition =  (baseWidth/2)+xOffset+(baseWidth*i)-(baseNumberWidth/2);
 
@@ -215,8 +226,10 @@ public class SeparateLineGraph extends JPanel {
 			for (int i=1;i<data[d].length;i++) {
 				// Check whether we are at the end
 				if (Double.isNaN(data[d][i])) break;
-				// Check whether we have points with null coverage
-				if (Double.isInfinite(data[d][i]) ) {
+				// Check whether we have points with null coverage (the commented code removes 
+				// an additional spike found at the beginning.
+				if (Double.isInfinite(data[d][i]) ) { // || 
+					//(i<data[d].length -2 && Double.isInfinite(data[d][i+1]))) {
 //					g.setColor(new Color(200, 200, 200));
 //					g.fillRect(xOffset+(baseWidth*i), (int)(minY), baseWidth, getY(minY,d));
 //					g.setColor(COLOURS[0]);
