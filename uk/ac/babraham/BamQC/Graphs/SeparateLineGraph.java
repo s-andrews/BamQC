@@ -159,12 +159,12 @@ public class SeparateLineGraph extends JPanel {
 		g.drawString(xLabel, (getWidth()/2) - (g.getFontMetrics().stringWidth(xLabel)/2), getHeight()-5);
 		
 		
-		int baseWidth = 1;
+		double baseWidth = 1d;
 		
 		// check that there is some data
 		if(data.length > 0) {
 			// Now draw the data points
-			baseWidth = (getWidth()-(xOffset+10))/data[0].length;
+			baseWidth = 1.0d*(getWidth()-(xOffset+10))/data[0].length;
 			if (baseWidth<1) baseWidth=1;
 
 			// System.out.println("Base Width is "+baseWidth);
@@ -176,7 +176,7 @@ public class SeparateLineGraph extends JPanel {
 			for (int i=0;i<data[0].length;i++) {
 				if (i%2 != 0) {
 					g.setColor(new Color(230, 230, 230));
-					g.fillRect(xOffset+(baseWidth*i), 40, baseWidth, getHeight()-80);
+					g.fillRect((int)(xOffset+(baseWidth*i)), 40, (int)baseWidth, getHeight()-80);
 				}
 				g.setColor(Color.BLACK);
 
@@ -193,7 +193,7 @@ public class SeparateLineGraph extends JPanel {
 					baseNumber = baseNumber.substring(0, baseNumber.length()-3) + "k";
 				} 
 				int baseNumberWidth = g.getFontMetrics().stringWidth(baseNumber);
-				int baseNumberPosition =  (baseWidth/2)+xOffset+(baseWidth*i)-(baseNumberWidth/2);
+				int baseNumberPosition =  (int)((baseWidth/2)+xOffset+(baseWidth*i)-(baseNumberWidth/2));
 
 				if (baseNumberPosition > lastXLabelEnd) {
 					g.drawString(baseNumber,baseNumberPosition, getHeight()-25);
@@ -232,7 +232,7 @@ public class SeparateLineGraph extends JPanel {
 //				g.setColor(new Color(100, 100, 100));
 //				g.fillRect((baseWidth/2)+xOffset+(baseWidth*(i)), (int)(minY), (baseWidth/2)+xOffset+(baseWidth*(i+1)), getY(minY,d));
 				g.setColor(Color.BLACK);				
-				g.drawLine((baseWidth/2)+xOffset+(baseWidth*(i)), getY(minY*0.75,d), (baseWidth/2)+xOffset+(baseWidth*(i+1)), getY(minY*0.75,d));
+				g.drawLine((int)((baseWidth/2)+xOffset+(baseWidth*(i))), getY(minY*0.75,d), (int)((baseWidth/2)+xOffset+(baseWidth*(i+1))), getY(minY*0.75,d));
 				g.setColor(COLOURS[0]);
 			}
 			
@@ -252,7 +252,7 @@ public class SeparateLineGraph extends JPanel {
 //					g.setColor(new Color(100, 100, 100));
 //					g.fillRect((baseWidth/2)+xOffset+(baseWidth*(i-1)), (int)(minY), (baseWidth/2)+xOffset+(baseWidth*i), getY(minY,d));
 					g.setColor(Color.BLACK);
-					g.drawLine((baseWidth/2)+xOffset+(baseWidth*(i-1)), getY(minY*0.75,d), (baseWidth/2)+xOffset+(baseWidth*i), getY(minY*0.75,d));
+					g.drawLine((int)((baseWidth/2)+xOffset+(baseWidth*(i-1))), getY(minY*0.75,d), (int)((baseWidth/2)+xOffset+(baseWidth*i)), getY(minY*0.75,d));
 					g.setColor(COLOURS[0]);
 					lastY = getY(midY,d);
 					continue;
@@ -260,7 +260,7 @@ public class SeparateLineGraph extends JPanel {
 				
 				int thisY = getY(data[d][i],d);
 				
-				g.drawLine((baseWidth/2)+xOffset+(baseWidth*(i-1)), lastY, (baseWidth/2)+xOffset+(baseWidth*i), thisY);
+				g.drawLine((int)((baseWidth/2)+xOffset+(baseWidth*(i-1))), lastY, (int)((baseWidth/2)+xOffset+(baseWidth*i)), thisY);
 				lastY = thisY;
 			}
 		}
