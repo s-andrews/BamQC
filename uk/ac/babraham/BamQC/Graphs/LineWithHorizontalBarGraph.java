@@ -349,22 +349,37 @@ public class LineWithHorizontalBarGraph extends JPanel {
 		
 		for (int d=0;d<lineData.length;d++) {
 			g.setColor(COLOURS[0]);
-				
-			if (Double.isInfinite(lineData[d][0]) ) {
-				lastY = getY(midY,d);
-			} else {
-				lastY = getY(lineData[d][0],d);
+			
+			// First check whether we are starting with points having 0 coverage.
+			int i=0;
+			lastY = getY(lineData[d][i],d);
+			for (; i<lineData[d].length && Double.isInfinite(lineData[d][i]); i++) {
+				// TODO 
+				// Darken the area if these points have 0 coverage
+//				g.setColor(new Color(100, 100, 100));
+//				g.fillRect((baseWidth/2)+xOffset+(baseWidth*(i)), (int)(minY), (baseWidth/2)+xOffset+(baseWidth*(i+1)), getY(minY,d));
+				g.setColor(Color.BLACK);				
+				g.drawLine((int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i))), getY(minY*0.95,d), (int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i+1))), getY(minY*0.95,d));
+				g.setColor(COLOURS[0]);
 			}
+			
+			if(i<lineData[d].length) {
+				// This point has non-zero coverage
+				lastY = getY(lineData[d][i],d);
+		    }
 				
-			for (int i=1;i<lineData[d].length;i++) {
+			for(i++; i<lineData[d].length; i++) {
 				if (Double.isNaN(lineData[d][i])) break;
 				// Check whether we have points with null coverage (the commented code removes 
 				// an additional spike found at the beginning.
 				if (Double.isInfinite(lineData[d][i]) ) { // || 
-					//(i<lineData[d].length -2 && Double.isInfinite(lineData[d][i+1]))) {
-//					g.setColor(new Color(200, 200, 200));
-//					g.fillRect(xOffset+(baseWidth*i), (int)(minY), baseWidth, getY(minY,d));
-//					g.setColor(COLOURS[0]);
+					// TODO 
+					// Darken the area if these points have 0 coverage
+//					g.setColor(new Color(100, 100, 100));
+//					g.fillRect((baseWidth/2)+xOffset+(baseWidth*(i-1)), (int)(minY), (baseWidth/2)+xOffset+(baseWidth*i), getY(minY,d));
+					g.setColor(Color.BLACK);
+					g.drawLine((int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i-1))), getY(minY*0.95,d), (int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*i)), getY(minY*0.95,d));
+					g.setColor(COLOURS[0]);
 					lastY = getY(midY,d);
 					continue;
 				}

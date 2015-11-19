@@ -222,23 +222,38 @@ public class SeparateLineGraph extends JPanel {
 
 		g.setColor(COLOURS[0]);
 		for (int d=0;d<data.length;d++) {
-			
-			if (Double.isInfinite(data[d][0]) ) {
-				lastY = getY(midY,d);
-			} else {
-				lastY = getY(data[d][0],d);
+			g.setColor(COLOURS[0]);			
+			// First check whether we are starting with points having 0 coverage.
+			int i=0;
+			lastY = getY(data[d][i],d);
+			for (; i<data[d].length && Double.isInfinite(data[d][i]); i++) {
+				// TODO 
+				// Darken the area if these points have 0 coverage
+//				g.setColor(new Color(100, 100, 100));
+//				g.fillRect((baseWidth/2)+xOffset+(baseWidth*(i)), (int)(minY), (baseWidth/2)+xOffset+(baseWidth*(i+1)), getY(minY,d));
+				g.setColor(Color.BLACK);				
+				g.drawLine((baseWidth/2)+xOffset+(baseWidth*(i)), getY(minY*0.95,d), (baseWidth/2)+xOffset+(baseWidth*(i+1)), getY(minY*0.95,d));
+				g.setColor(COLOURS[0]);
 			}
 			
-			for (int i=1;i<data[d].length;i++) {
+			if(i<data[d].length) {
+				// This point has non-zero coverage
+				lastY = getY(data[d][i],d);
+		    }
+			
+			// Now we continue with the plot.
+			for (i++; i<data[d].length; i++) {
 				// Check whether we are at the end
 				if (Double.isNaN(data[d][i])) break;
-				// Check whether we have points with null coverage (the commented code removes 
-				// an additional spike found at the beginning.
-				if (Double.isInfinite(data[d][i]) ) { // || 
-					//(i<data[d].length -2 && Double.isInfinite(data[d][i+1]))) {
-//					g.setColor(new Color(200, 200, 200));
-//					g.fillRect(xOffset+(baseWidth*i), (int)(minY), baseWidth, getY(minY,d));
-//					g.setColor(COLOURS[0]);
+				// Check whether we have points with null coverage
+				if (Double.isInfinite(data[d][i]) ) {
+					// TODO 
+					// Darken the area if these points have 0 coverage
+//					g.setColor(new Color(100, 100, 100));
+//					g.fillRect((baseWidth/2)+xOffset+(baseWidth*(i-1)), (int)(minY), (baseWidth/2)+xOffset+(baseWidth*i), getY(minY,d));
+					g.setColor(Color.BLACK);
+					g.drawLine((baseWidth/2)+xOffset+(baseWidth*(i-1)), getY(minY*0.95,d), (baseWidth/2)+xOffset+(baseWidth*i), getY(minY*0.95,d));
+					g.setColor(COLOURS[0]);
 					lastY = getY(midY,d);
 					continue;
 				}

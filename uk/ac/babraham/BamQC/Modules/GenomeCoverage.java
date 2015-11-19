@@ -232,6 +232,11 @@ public class GenomeCoverage extends AbstractQCModule {
 	@Override
 	public JPanel getResultsPanel() {
 
+		for(int i=0; i<chromosomeNames.length; i++) {
+			if(chromosomeNames[i].toLowerCase().startsWith("chr")) 
+				chromosomeNames[i] = chromosomeNames[i].substring(3);
+		}
+		
 		if(chromosomeNames.length <= plotSeparateChromosomeThreshold) {
 			// plots the genome coverage for each chromosome separately
 			return getSeparateChromosomeResultsPanel();
@@ -254,7 +259,7 @@ public class GenomeCoverage extends AbstractQCModule {
 		for (int i=0;i<maxBins;i++) {
 			labels[i] = ""+(i*Chromosome.COVERAGE_BIN_SIZE);
 		}
-		return new SeparateLineGraph(binCounts, 0-maxCoverage, maxCoverage, "Genome Position", chromosomeNames, labels, "Genome Coverage (z-scores)");				
+		return new SeparateLineGraph(binCounts, 0-maxCoverage, maxCoverage, "Genome Position", chromosomeNames, labels, "Genome Coverage (z-scores ,  black line = no coverage)");				
 	}
 	
 	
@@ -292,13 +297,13 @@ public class GenomeCoverage extends AbstractQCModule {
 		
 		/* Set up of a stacked row chart representing chromosome coverages. */
 		double maxLimit = maxCoverage*(1.5*maxCoverage);
-		String title = "Genome Coverage (z-scores)";
+		String title = "Genome Coverage (z-scores ,  black line = no coverage)";
 		
 		
 		/* plot the data */
 		JPanel resultsPanel = new JPanel();
 		resultsPanel.setLayout(new javax.swing.BoxLayout(resultsPanel, javax.swing.BoxLayout.PAGE_AXIS));
-		resultsPanel.add(new LineWithHorizontalBarGraph(fullBinLengths, fullBinCounts, 0-maxLimit, maxLimit, "Genome Position", chromosomeNames, new String[]{""}, labels, title, "Scaffold (for chromosome names, cross the red bars with the mouse)"));
+		resultsPanel.add(new LineWithHorizontalBarGraph(fullBinLengths, fullBinCounts, 0-maxLimit, maxLimit, "Genome Position", chromosomeNames, new String[]{""}, labels, title, "Scaffold (for Chr names, cross the red bars with the mouse)"));
 		
 		return resultsPanel;
 	}
