@@ -349,26 +349,30 @@ public class LineWithHorizontalBarGraph extends JPanel {
 		
 		for (int d=0;d<lineData.length;d++) {
 			g.setColor(COLOURS[0]);
-			if(lineData[d].length > 0) {
-				lastY = getY(lineData[d][0],d);	
-				for (int i=1;i<lineData[d].length;i++) {
-					if (Double.isNaN(lineData[d][i])) break;
-					// Check whether we have points with null coverage (the commented code removes 
-					// an additional spike found at the beginning.
-					if (Double.isInfinite(lineData[d][i]) ) { // || 
-						//(i<lineData[d].length -2 && Double.isInfinite(lineData[d][i+1]))) {
-//						g.setColor(new Color(200, 200, 200));
-//						g.fillRect(xOffset+(baseWidth*i), (int)(minY), baseWidth, getY(minY,d));
-//						g.setColor(COLOURS[0]);
-						lastY = getY(midY,d);
-						continue;
-					}
-					
-					int thisY = getY(lineData[d][i],d);
-					g.drawLine((int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i-1))), lastY, (int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*i)), thisY);
 				
-					lastY = thisY;
+			if (Double.isInfinite(lineData[d][0]) ) {
+				lastY = getY(midY,d);
+			} else {
+				lastY = getY(lineData[d][0],d);
+			}
+				
+			for (int i=1;i<lineData[d].length;i++) {
+				if (Double.isNaN(lineData[d][i])) break;
+				// Check whether we have points with null coverage (the commented code removes 
+				// an additional spike found at the beginning.
+				if (Double.isInfinite(lineData[d][i]) ) { // || 
+					//(i<lineData[d].length -2 && Double.isInfinite(lineData[d][i+1]))) {
+//					g.setColor(new Color(200, 200, 200));
+//					g.fillRect(xOffset+(baseWidth*i), (int)(minY), baseWidth, getY(minY,d));
+//					g.setColor(COLOURS[0]);
+					lastY = getY(midY,d);
+					continue;
 				}
+					
+				int thisY = getY(lineData[d][i],d);
+				g.drawLine((int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i-1))), lastY, (int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*i)), thisY);
+			
+				lastY = thisY;
 			}	
 		}
 	}

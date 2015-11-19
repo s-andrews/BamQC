@@ -221,8 +221,14 @@ public class SeparateLineGraph extends JPanel {
 		}
 
 		g.setColor(COLOURS[0]);
-		for (int d=0;d<data.length;d++) {					
-			lastY = getY(data[d][0],d);
+		for (int d=0;d<data.length;d++) {
+			
+			if (Double.isInfinite(data[d][0]) ) {
+				lastY = getY(midY,d);
+			} else {
+				lastY = getY(data[d][0],d);
+			}
+			
 			for (int i=1;i<data[d].length;i++) {
 				// Check whether we are at the end
 				if (Double.isNaN(data[d][i])) break;
