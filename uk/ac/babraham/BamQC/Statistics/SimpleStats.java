@@ -23,7 +23,7 @@ package uk.ac.babraham.BamQC.Statistics;
 import java.util.Arrays;
 
 /**
- * Some static methods for basic statistical calcuations.
+ * Some static methods for basic statistical calculations.
  */
 public class SimpleStats {
 
@@ -38,11 +38,14 @@ public class SimpleStats {
 		if (values.length == 0) return 0;
 		
 		double mean = 0;
+		int count = 0;
 		for (int i=0;i<values.length;i++) {
+			if (Double.isInfinite(values[i]) || Double.isNaN(values[i])) continue;
 			mean += values[i];
+			count++;
 		}
 		
-		mean /= values.length;
+		mean /= count;
 		
 		return mean;
 		
@@ -161,12 +164,14 @@ public class SimpleStats {
 		if (values.length < 2) return 0;
 		
 		double stdev = 0;
-		
+		int count = 0;
 		for (int i=0;i<values.length;i++) {
+			if (Double.isInfinite(values[i]) || Double.isNaN(values[i])) continue;
 			stdev += Math.pow(values[i]-mean, 2);
+			count++;
 		}
 		
-		stdev /= values.length-1;
+		stdev /= count;
 
 		stdev = Math.sqrt(stdev);
 		
@@ -184,6 +189,7 @@ public class SimpleStats {
 		return stdev(values,mean);
 	}
 	
+	
 	public static double max (double [] values) {
 		if (values.length == 0) return 0;
 		double max = values[0];
@@ -192,6 +198,7 @@ public class SimpleStats {
 		}
 		return max;
 	}
+	
 	
 	public static double percentile (double [] values, int percentile) {
 		

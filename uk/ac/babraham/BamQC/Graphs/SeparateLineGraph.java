@@ -204,26 +204,33 @@ public class SeparateLineGraph extends JPanel {
 		g.drawLine(xOffset, getHeight()-40, xOffset, 40);
 		
 		// Now draw the datasets
-		
 		if (g instanceof Graphics2D) {
 			((Graphics2D)g).setStroke(new BasicStroke(2));
 			//((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		}
-		
-		for (int d=0;d<data.length;d++) {
-			g.setColor(COLOURS[0]);
-						
+
+		g.setColor(COLOURS[0]);
+		for (int d=0;d<data.length;d++) {					
 			lastY = getY(data[d][0],d);
 			for (int i=1;i<data[d].length;i++) {
+				// Check whether we are at the end
 				if (Double.isNaN(data[d][i])) break;
+				// Check whether we have points with null coverage
+				if (Double.isInfinite(data[d][i]) ) {
+//					g.setColor(new Color(200, 200, 200));
+//					g.fillRect(xOffset+(baseWidth*i), (int)(minY), baseWidth, getY(minY,d));
+//					g.setColor(COLOURS[0]);
+					lastY = getY(midY,d);
+					continue;
+				}
 				
 				int thisY = getY(data[d][i],d);
 				
 				g.drawLine((baseWidth/2)+xOffset+(baseWidth*(i-1)), lastY, (baseWidth/2)+xOffset+(baseWidth*i), thisY);
 				lastY = thisY;
 			}
-			
 		}
+		g.setColor(Color.BLACK);
 				
 		
 	}

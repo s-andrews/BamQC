@@ -199,24 +199,31 @@ public class GenomeCoverage extends AbstractQCModule {
 			for (int i=0;i<replicateCounts.length;i++) {
 				if (replicateCounts[i]>0) {
 					binCounts[c][i] /= replicateCounts[i];
+					if(binCounts[c][i] <= 0) {
+						// Let's label these points having null coverage so that we don't miss them
+						binCounts[c][i] = Double.NEGATIVE_INFINITY;
+						continue;
+					} 
 					// scale to log10 to enlarge the data differences.
-//					if (binCounts[c][i] > 0) binCounts[c][i] = Math.log10(binCounts[c][i]);
+					//if (binCounts[c][i] > 0) binCounts[c][i] = Math.log10(binCounts[c][i]);
 				}
 			}				
-			
-			
+						
 			// Now convert to z-scores
 			double [] validValues = new double[firstInvalidBin];
 			for (int i=0;i<validValues.length;i++) {
 				validValues[i] = binCounts[c][i];				
 			}
+			// The following two methods remove NaN and Infinite values from the computation.
 			double mean = SimpleStats.mean(validValues);
 			double sd = SimpleStats.stdev(validValues, mean);
 			for (int i=0;i<validValues.length;i++) {
+				if(Double.isInfinite(binCounts[c][i])) continue;
 				if(sd > 0) binCounts[c][i] = (binCounts[c][i]-mean)/sd;
 				if (binCounts[c][i] > maxCoverage) maxCoverage = binCounts[c][i];
 				if (0-binCounts[c][i] > maxCoverage) maxCoverage = 0-binCounts[c][i];
-
+				
+				//if(binCounts[c][i] < 0) System.out.println(binCounts[c][i]);
 			}
 			
 		}
@@ -247,7 +254,7 @@ public class GenomeCoverage extends AbstractQCModule {
 		for (int i=0;i<maxBins;i++) {
 			labels[i] = ""+(i*Chromosome.COVERAGE_BIN_SIZE);
 		}
-		return new SeparateLineGraph(binCounts, 0-maxCoverage, maxCoverage, "Genome Position", chromosomeNames, labels, "Genome Coverage");				
+		return new SeparateLineGraph(binCounts, 0-maxCoverage, maxCoverage, "Genome Position", chromosomeNames, labels, "Genome Coverage (z-scores)");				
 	}
 	
 	
@@ -285,7 +292,7 @@ public class GenomeCoverage extends AbstractQCModule {
 		
 		/* Set up of a stacked row chart representing chromosome coverages. */
 		double maxLimit = maxCoverage*(1.5*maxCoverage);
-		String title = "Genome Coverage";
+		String title = "Genome Coverage (z-scores)";
 		
 		
 		/* plot the data */
