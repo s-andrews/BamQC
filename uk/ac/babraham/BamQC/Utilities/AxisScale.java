@@ -19,7 +19,6 @@
  */
 package uk.ac.babraham.BamQC.Utilities;
 
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 
 public class AxisScale {
