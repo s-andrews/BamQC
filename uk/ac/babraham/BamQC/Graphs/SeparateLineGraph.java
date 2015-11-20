@@ -28,6 +28,8 @@ import java.awt.RenderingHints;
 
 import javax.swing.JPanel;
 
+import uk.ac.babraham.BamQC.Utilities.FormatNumber;
+
 public class SeparateLineGraph extends JPanel {
 
 	private static final long serialVersionUID = -2880615892132541273L;
@@ -180,18 +182,10 @@ public class SeparateLineGraph extends JPanel {
 				}
 				g.setColor(Color.BLACK);
 
-				String baseNumber = ""+xCategories[i];
-				if(Integer.valueOf(baseNumber) / 1000000000000000L >= 1.0) {
-					baseNumber = baseNumber.substring(0, baseNumber.length()-15) + "P";
-				} else if(Integer.valueOf(baseNumber) / 1000000000000L >= 1.0) {
-					baseNumber = baseNumber.substring(0, baseNumber.length()-12) + "T";	
-				} else if(Integer.valueOf(baseNumber) / 1000000000 >= 1.0) {
-					baseNumber = baseNumber.substring(0, baseNumber.length()-9) + "G";
-				} else if(Integer.valueOf(baseNumber) / 1000000 >= 1.0) {
-					baseNumber = baseNumber.substring(0, baseNumber.length()-6) + "M";
-				} else if(Integer.valueOf(baseNumber) / 1000 >= 1.0) {
-					baseNumber = baseNumber.substring(0, baseNumber.length()-3) + "k";
-				} 
+				//String baseNumber = ""+xCategories[i];
+				//baseNumber = FormatNumber.compactInteger(baseNumber);
+				String baseNumber = FormatNumber.convertToScientificNotation(xCategories[i]);
+				baseNumber = baseNumber.replaceAll(".0$", ""); // Don't leave trailing .0s where we don't need them.
 				int baseNumberWidth = g.getFontMetrics().stringWidth(baseNumber);
 				int baseNumberPosition =  (int)((baseWidth/2)+xOffset+(baseWidth*i)-(baseNumberWidth/2));
 

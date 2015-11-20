@@ -34,6 +34,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import uk.ac.babraham.BamQC.Utilities.AxisScale;
+import uk.ac.babraham.BamQC.Utilities.FormatNumber;
 
 public class HorizontalBarGraph extends JPanel {
 
@@ -164,9 +165,10 @@ public class HorizontalBarGraph extends JPanel {
 			int xPos = getX((float)currentValue, widestLabel);
 
 			String label = "" + new BigDecimal(currentValue).setScale(
-					AxisScale.getFirstSignificantNonNullDecimalPosition(xInterval), RoundingMode.HALF_UP).doubleValue();	
+					FormatNumber.getFirstSignificantNonNullDecimalPosition(xInterval), RoundingMode.HALF_UP).doubleValue();	
+			label = FormatNumber.convertToScientificNotation(label);
 			label = label.replaceAll(".0$", ""); // Don't leave trailing .0s where we don't need them.
-						
+			
 			int labelWidth = g.getFontMetrics().stringWidth(label);
 
 			currentPosition = xPos-(labelWidth/2);
@@ -216,11 +218,11 @@ public class HorizontalBarGraph extends JPanel {
 		double[] values = new double[4];
 		String[] names = new String[3];
 		names[0] = "Item 1";
-		values[0] = 100000;
+		values[0] = 0.00100000000;
 		names[1] = "Very long Item 2";
-		values[1] = 20000;
+		values[1] = 0.00200000;
 		names[2] = "Item 3";
-		values[2] = 200000;
+		values[2] = 0.00200000000;
 
 		
 

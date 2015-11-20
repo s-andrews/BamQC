@@ -39,6 +39,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.MouseInputAdapter;
 
+import uk.ac.babraham.BamQC.Utilities.FormatNumber;
+
 
 
 public class LineWithHorizontalBarGraph extends JPanel {
@@ -242,32 +244,11 @@ public class LineWithHorizontalBarGraph extends JPanel {
 			g.drawRect((int)r.getX(), (int)r.getY(), (int)r.getWidth(), (int)r.getHeight());
 			// TOOL TIPS management
 			// add rectangle coordinates and tooltip to these two lists
-			if(1.0d*chrPosition / 1000000000000000L >= 1.0) {
-				chrPositionStr = "" + (int)(1.0d*chrPosition / 1000000000000000L) + "P"; 
-			} else if(1.0d*chrPosition / 1000000000000L >= 1.0) {
-				chrPositionStr = "" + (int)(1.0d*chrPosition / 1000000000000L) + "T"; 
-			} else if(1.0d*chrPosition / 1000000000 >= 1.0) {
-				chrPositionStr = "" + (int)(1.0d*chrPosition / 1000000000) + "G"; 
-			} else if(1.0d*chrPosition / 1000000 >= 1.0) {
-				chrPositionStr = "" + (int)(1.0d*chrPosition / 1000000) + "M"; 
-			} else if(1.0d*chrPosition / 1000 >= 1.0) {
-				chrPositionStr = "" + (int)(1.0d*chrPosition / 1000) + "k"; 
-			} else {
-				chrPositionStr = "" + chrPosition; 
-			}
-			if((chrPosition+barData[i]) / 1000000000000000L >= 1.0) {
-				chrPositionStr = chrPositionStr + "-" + (int)((chrPosition+barData[i])/1000000000000000L) + "P"; 
-			} else if((chrPosition+barData[i]) / 1000000000000L >= 1.0) {
-				chrPositionStr = chrPositionStr + "-" + (int)((chrPosition+barData[i])/1000000000000L) + "T"; 				
-			} else if((chrPosition+barData[i]) / 1000000000 >= 1.0) {
-				chrPositionStr = chrPositionStr + "-" + (int)((chrPosition+barData[i])/1000000000) + "G"; 
-			} else if((chrPosition+barData[i]) / 1000000 >= 1.0) {
-				chrPositionStr = chrPositionStr + "-" + (int)((chrPosition+barData[i])/1000000) + "M"; 
-			} else if((chrPosition+barData[i]) / 1000 >= 1.0) {
-				chrPositionStr = chrPositionStr + "-" + (int)((chrPosition+barData[i])/1000) + "k"; 
-			} else {
-				chrPositionStr = chrPositionStr + "-" + (chrPosition+(int)barData[i]); 
-			}
+			//chrPositionStr = FormatNumber.compactIntegerRange(chrPosition, (int)barData[i]);
+			chrPositionStr = FormatNumber.convertToScientificNotation(chrPosition) + "-" + 
+							 FormatNumber.convertToScientificNotation((int)barData[i]);
+			chrPositionStr = chrPositionStr.replaceAll(".0$", ""); // Don't leave trailing .0s where we don't need them.
+			
 			rectangles.add(r);
 			// TODO tips.add(barLabels[i] + " : " + chrPosition + "-" + (chrPosition+(int)barData[i]-1));
 			tips.add(barLabels[i] + " : " + chrPositionStr);
@@ -304,18 +285,10 @@ public class LineWithHorizontalBarGraph extends JPanel {
 
 			int lastXLabelEnd = 0;
 			for(int i=0; i<lineData[0].length; i++) {
-				String baseNumber = ""+xCategories[i];
-				if(Integer.valueOf(baseNumber) / 1000000000000000L >= 1.0) {
-					baseNumber = baseNumber.substring(0, baseNumber.length()-15) + "P";
-				} else if(Integer.valueOf(baseNumber) / 1000000000000L >= 1.0) {
-					baseNumber = baseNumber.substring(0, baseNumber.length()-12) + "T";					
-				} else if(Integer.valueOf(baseNumber) / 1000000000 >= 1.0) {
-					baseNumber = baseNumber.substring(0, baseNumber.length()-9) + "G";
-				} else if(Integer.valueOf(baseNumber) / 1000000 >= 1.0) {
-					baseNumber = baseNumber.substring(0, baseNumber.length()-6) + "M";
-				} else if(Integer.valueOf(baseNumber) / 1000 >= 1.0) {
-					baseNumber = baseNumber.substring(0, baseNumber.length()-3) + "k";
-				} 
+				//String baseNumber = ""+xCategories[i];
+				//baseNumber = FormatNumber.compactInteger(baseNumber);
+				String baseNumber = FormatNumber.convertToScientificNotation(xCategories[i]);
+				baseNumber = baseNumber.replaceAll(".0$", ""); // Don't leave trailing .0s where we don't need them.
 				int baseNumberWidth = g.getFontMetrics().stringWidth(baseNumber);
 				int baseNumberPosition =  (int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*i)-(baseNumberWidth/2));
 				

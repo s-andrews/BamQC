@@ -34,6 +34,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import uk.ac.babraham.BamQC.Utilities.AxisScale;
+import uk.ac.babraham.BamQC.Utilities.FormatNumber;
 
 public class StackedHorizontalBarGraph extends JPanel {
 
@@ -167,7 +168,7 @@ public class StackedHorizontalBarGraph extends JPanel {
 			int xPos = getX((float)currentValue, widestLabel);
 
 			String label = "" + new BigDecimal(currentValue).setScale(
-					AxisScale.getFirstSignificantNonNullDecimalPosition(xInterval), RoundingMode.HALF_UP).doubleValue();	
+					FormatNumber.getFirstSignificantNonNullDecimalPosition(xInterval), RoundingMode.HALF_UP).doubleValue();	
 			label = label.replaceAll(".0$", ""); // Don't leave trailing .0s where we don't need them.
 						
 			int labelWidth = g.getFontMetrics().stringWidth(label);

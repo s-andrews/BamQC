@@ -1,7 +1,7 @@
 /**
  * Copyright 2011-13 Simon Andrews
  *
- *    This file is part of SeqMonk.
+ *    This file is part of BamQC.
  *
  *    SeqMonk is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -100,40 +100,6 @@ public class AxisScale {
 	}
 	
 	
-	/** Computes the position of the first non-zero decimal digit. 
-	 * 
-	 * @param number
-	 * @return the first non-zero decimal digit for the parameter number.
-	 */
-	public static int getFirstSignificantNonNullDecimalPosition(double number) {
-		//System.out.println(number);
-		int significantDecimalPosition = 0;
-		
-		// We need to convert a scientific notation (e.g. 2.0E-4) to a decimal notation (0.0002)
-        DecimalFormat df = new DecimalFormat("#");
-        df.setMaximumFractionDigits(20);
-        String extendedNumber = df.format(number);
-        
-		if(extendedNumber.indexOf(".") != -1) {
-			String[] parts = extendedNumber.split("\\.");		
-			if(parts[parts.length - 1].length() > 0) {
-				int zeros = 0;
-				String decimalPart = parts[parts.length - 1];
-//				System.out.println("number " + number);
-//				System.out.println("String num " + extendedNumber);
-//				System.out.println("dec part " + decimalPart);
-//				System.out.println("dec part length " + decimalPart.length());
-				// count how many zero before a number != 0 
-				while(zeros < decimalPart.length() && decimalPart.charAt(zeros) == '0') { 
-					zeros++;
-				}
-				significantDecimalPosition = zeros + 1;
-			}
-		}
-		return significantDecimalPosition;
-	}
-	
-	
 	public double getStartingValue () {
 		return starting;
 	}
@@ -151,22 +117,8 @@ public class AxisScale {
 	}
 	
 	public static void main (String [] args) {
-		AxisScale as = new AxisScale(-4.75, 4.52);
-		
+		AxisScale as = new AxisScale(-4.75, 4.52);		
 		System.out.println("Scale is "+as.getMin()+"-"+as.getMax()+" starts at "+as.getStartingValue()+" with interval "+as.getInterval());
-		double d = 2;
-		System.out.println("First Significant Decimal Position for " + d + ": " + getFirstSignificantNonNullDecimalPosition(d));
-		d = 1.10;
-		System.out.println("First Significant Decimal Position for " + d + ": " + getFirstSignificantNonNullDecimalPosition(d));
-		d = 1.01;
-		System.out.println("First Significant Decimal Position for " + d + ": " + getFirstSignificantNonNullDecimalPosition(d));		
-		d = 1.56300;
-		System.out.println("First Significant Decimal Position for " + d + ": " + getFirstSignificantNonNullDecimalPosition(d));
-		d = 0.00234;
-		System.out.println("First Significant Decimal Position for " + d + ": " + getFirstSignificantNonNullDecimalPosition(d));
-		d = 0.00000234;
-		System.out.println("First Significant Decimal Position for " + d + ": " + getFirstSignificantNonNullDecimalPosition(d));
-		d = 0.0000000000234;
-		System.out.println("First Significant Decimal Position for " + d + ": " + getFirstSignificantNonNullDecimalPosition(d));				
+		
 	}
 }

@@ -31,6 +31,7 @@ import java.math.RoundingMode;
 import javax.swing.JPanel;
 
 import uk.ac.babraham.BamQC.Utilities.AxisScale;
+import uk.ac.babraham.BamQC.Utilities.FormatNumber;
 
 public class LineGraph extends JPanel {
 
@@ -135,7 +136,7 @@ public class LineGraph extends JPanel {
 			//String label = scale.format(currentValue);
 			
 			String label = "" + new BigDecimal(i).setScale(
-					AxisScale.getFirstSignificantNonNullDecimalPosition(yInterval), RoundingMode.HALF_UP).doubleValue();	
+					FormatNumber.getFirstSignificantNonNullDecimalPosition(yInterval), RoundingMode.HALF_UP).doubleValue();	
 			label = label.replaceAll(".0$", ""); // Don't leave trailing .0s where we don't need them.			
 			int width = g.getFontMetrics().stringWidth(label);
 			if (width > xOffset) {
@@ -174,7 +175,10 @@ public class LineGraph extends JPanel {
 			}
 			g.setColor(Color.BLACK);
 			
-			String baseNumber = ""+xCategories[i];
+			//String baseNumber = ""+xCategories[i];
+			//baseNumber = FormatNumber.compactInteger(baseNumber);
+			String baseNumber = FormatNumber.convertToScientificNotation(xCategories[i]);
+			baseNumber = baseNumber.replaceAll(".0$", ""); // Don't leave trailing .0s where we don't need them.
 			int baseNumberWidth = g.getFontMetrics().stringWidth(baseNumber);
 			int baseNumberPosition =  (int)((baseWidth/2)+xOffset+(baseWidth*i)-(baseNumberWidth/2));
 			
