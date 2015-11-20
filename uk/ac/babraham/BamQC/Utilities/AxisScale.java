@@ -114,7 +114,7 @@ public class AxisScale {
         DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(20);
         String extendedNumber = df.format(number);
- 
+        
 		if(extendedNumber.indexOf(".") != -1) {
 			String[] parts = extendedNumber.split("\\.");		
 			if(parts[parts.length - 1].length() > 0) {
@@ -155,9 +155,19 @@ public class AxisScale {
 		AxisScale as = new AxisScale(-4.75, 4.52);
 		
 		System.out.println("Scale is "+as.getMin()+"-"+as.getMax()+" starts at "+as.getStartingValue()+" with interval "+as.getInterval());
-		System.out.println("First Significant Decimal Position : " + getFirstSignificantNonNullDecimalPosition(2));
-		System.out.println("First Significant Decimal Position : " + getFirstSignificantNonNullDecimalPosition(1.56300));
-		System.out.println("First Significant Decimal Position : " + getFirstSignificantNonNullDecimalPosition(0.00234));
-		System.out.println("First Significant Decimal Position : " + getFirstSignificantNonNullDecimalPosition(0.00000234));		
+		double d = 2;
+		System.out.println("First Significant Decimal Position for " + d + ": " + getFirstSignificantNonNullDecimalPosition(d));
+		d = 1.10;
+		System.out.println("First Significant Decimal Position for " + d + ": " + getFirstSignificantNonNullDecimalPosition(d));
+		d = 1.01;
+		System.out.println("First Significant Decimal Position for " + d + ": " + getFirstSignificantNonNullDecimalPosition(d));		
+		d = 1.56300;
+		System.out.println("First Significant Decimal Position for " + d + ": " + getFirstSignificantNonNullDecimalPosition(d));
+		d = 0.00234;
+		System.out.println("First Significant Decimal Position for " + d + ": " + getFirstSignificantNonNullDecimalPosition(d));
+		d = 0.00000234;
+		System.out.println("First Significant Decimal Position for " + d + ": " + getFirstSignificantNonNullDecimalPosition(d));
+		d = 0.0000000000234;
+		System.out.println("First Significant Decimal Position for " + d + ": " + getFirstSignificantNonNullDecimalPosition(d));				
 	}
 }
