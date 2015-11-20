@@ -19,6 +19,7 @@
  */
 package uk.ac.babraham.BamQC.Utilities;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 
 public class AxisScale {
@@ -105,15 +106,27 @@ public class AxisScale {
 	 * @param number
 	 * @return the first non-zero decimal digit for the parameter number.
 	 */
-	public static int getFirstSignificantDecimalPosition(double number) {
-		int significantDecimalPosition = 0; 
-		if(String.valueOf(number).indexOf(".") != -1) {
-			String[] parts = String.valueOf(number).split("\\.");		
+	public static int getFirstSignificantNonNullDecimalPosition(double number) {
+		//System.out.println(number);
+		int significantDecimalPosition = 0;
+		
+		// We need to convert a scientific notation (e.g. 2.0E-4) to a decimal notation (0.0002)
+        DecimalFormat df = new DecimalFormat("#");
+        df.setMaximumFractionDigits(20);
+        String extendedNumber = df.format(number);
+ 
+		if(extendedNumber.indexOf(".") != -1) {
+			String[] parts = extendedNumber.split("\\.");		
 			if(parts[parts.length - 1].length() > 0) {
 				int zeros = 0;
 				String decimalPart = parts[parts.length - 1];
+//				System.out.println("number " + number);
+//				System.out.println("String num " + extendedNumber);
+//				System.out.println("dec part " + decimalPart);
+//				System.out.println("dec part length " + decimalPart.length());
+				// count how many zero before a number != 0 
 				while(zeros < decimalPart.length() && decimalPart.charAt(zeros) == '0') { 
-					zeros++; 
+					zeros++;
 				}
 				significantDecimalPosition = zeros + 1;
 			}
@@ -142,5 +155,9 @@ public class AxisScale {
 		AxisScale as = new AxisScale(-4.75, 4.52);
 		
 		System.out.println("Scale is "+as.getMin()+"-"+as.getMax()+" starts at "+as.getStartingValue()+" with interval "+as.getInterval());
+		System.out.println("First Significant Decimal Position : " + getFirstSignificantNonNullDecimalPosition(2));
+		System.out.println("First Significant Decimal Position : " + getFirstSignificantNonNullDecimalPosition(1.56300));
+		System.out.println("First Significant Decimal Position : " + getFirstSignificantNonNullDecimalPosition(0.00234));
+		System.out.println("First Significant Decimal Position : " + getFirstSignificantNonNullDecimalPosition(0.00000234));		
 	}
 }

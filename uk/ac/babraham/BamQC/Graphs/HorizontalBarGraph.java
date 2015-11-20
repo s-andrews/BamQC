@@ -164,7 +164,7 @@ public class HorizontalBarGraph extends JPanel {
 			int xPos = getX((float)currentValue, widestLabel);
 
 			String label = "" + new BigDecimal(currentValue).setScale(
-					AxisScale.getFirstSignificantDecimalPosition(xInterval), RoundingMode.HALF_UP).doubleValue();	
+					AxisScale.getFirstSignificantNonNullDecimalPosition(xInterval), RoundingMode.HALF_UP).doubleValue();	
 			label = label.replaceAll(".0$", ""); // Don't leave trailing .0s where we don't need them.
 						
 			int labelWidth = g.getFontMetrics().stringWidth(label);

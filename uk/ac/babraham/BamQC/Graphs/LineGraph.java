@@ -133,10 +133,10 @@ public class LineGraph extends JPanel {
 		
 		for (double i=yStart;i<=maxY;i+=yInterval) {
 			//String label = scale.format(currentValue);
-			String label = "" + new BigDecimal(i).setScale(
-					AxisScale.getFirstSignificantDecimalPosition(yInterval), RoundingMode.HALF_UP).doubleValue();	
-			label = label.replaceAll(".0$", ""); // Don't leave trailing .0s where we don't need them.			
 			
+			String label = "" + new BigDecimal(i).setScale(
+					AxisScale.getFirstSignificantNonNullDecimalPosition(yInterval), RoundingMode.HALF_UP).doubleValue();	
+			label = label.replaceAll(".0$", ""); // Don't leave trailing .0s where we don't need them.			
 			int width = g.getFontMetrics().stringWidth(label);
 			if (width > xOffset) {
 				xOffset = width;
