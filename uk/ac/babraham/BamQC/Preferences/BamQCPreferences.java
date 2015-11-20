@@ -30,6 +30,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import org.apache.commons.lang3.SystemUtils;
+
 /**
  * A set of preferences, both temporary and permanent which are used
  * throughout BamQC.  Permanent preferences can be loaded from and
@@ -44,17 +46,17 @@ public class BamQCPreferences {
 	private HashSet<String> ignoredAnnotations = new HashSet<String>();
 	
 	/** The directory under which to look for genome files */
-	private File genomeBase = new File(System.getProperty("user.home") + File.separator + "BamQC_files" + File.separator + "genomes"); //null;
+	private File genomeBase = null;
 	
 	/** The default save location. */
-	private File saveLocation = new File(System.getProperty("user.home") + File.separator + "BamQC_files");
+	private File saveLocation = null;
 	
 	/** The last used save location. */
 	private File lastUsedSaveLocation = null;
 	
 	/** The preferences file. */
 	private File preferencesFile = null;
-		
+			
 	/** The network address from where we can download new genomes */
 	private String genomeDownloadLocation = "http://www.bioinformatics.babraham.ac.uk/seqmonk/genomes/";
 	
@@ -75,12 +77,35 @@ public class BamQCPreferences {
 	 * class.  External access is via the getInstnace() method.
 	 */
 	private BamQCPreferences () {
+
+		
+		if(SystemUtils.IS_OS_MAC_OSX) {
+			// let's store these files inside a folder BamQC
+			preferencesFile= new File(System.getProperty("user.home") + File.separator + "Library" + File.separator + "BamQC" + File.separator + "bamqc_prefs.txt");
+			saveLocation = new File(System.getProperty("user.home") + File.separator + "Library" + File.separator + "BamQC" + File.separator + "BamQC_files");
+			genomeBase = new File(saveLocation.getAbsolutePath() + File.separator + "genomes");
+		} else if (SystemUtils.IS_OS_WINDOWS) {
+			// let's store these files inside a folder BamQC
+			preferencesFile= new File(System.getProperty("user.home") + File.separator + "bamqc" + File.separator + "bamqc_prefs.txt");
+			saveLocation = new File(System.getProperty("user.home") + File.separator + "bamqc" + File.separator + "BamQC_files");
+			genomeBase = new File(saveLocation.getAbsolutePath() + File.separator + "genomes");
+		} else if(SystemUtils.IS_OS_UNIX) {
+			// let's store these files as hidden files inside a folder .bamqc
+			preferencesFile= new File(System.getProperty("user.home") + File.separator + ".bamqc" + File.separator + "bamqc_prefs.txt");
+			saveLocation = new File(System.getProperty("user.home") + File.separator + ".bamqc" + File.separator + "BamQC_files");
+			genomeBase = new File(saveLocation.getAbsolutePath() + File.separator + "genomes");
+		} else {
+			// let's store these files explicitly inside a folder bamqc
+			preferencesFile= new File(System.getProperty("user.home") + File.separator + "bamqc" + File.separator + "bamqc_prefs.txt");
+			saveLocation = new File(System.getProperty("user.home") + File.separator + "bamqc" + File.separator + "BamQC_files");
+			genomeBase = new File(saveLocation.getAbsolutePath() + File.separator + "genomes");
+		}	   
+
+		
 		new File(genomeBase.getAbsolutePath()).mkdirs();
 		new File(saveLocation.getAbsolutePath()).mkdirs();
 		
 		
-//		System.out.println("Looking for preferences at: "+System.getProperty("user.home")+"/chipmonk_prefs.txt");
-		preferencesFile= new File(System.getProperty("user.home") + File.separator + "bamqc_prefs.txt");
 		
 		if (preferencesFile!=null && preferencesFile.exists()) {
 //			System.out.println("Loading preferences from file...");
