@@ -21,6 +21,7 @@ package uk.ac.babraham.BamQC;
 
 import java.awt.BorderLayout;
 import java.awt.GraphicsEnvironment;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 
@@ -456,8 +457,10 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 		if (command == null) return;
 
 		if (command.equals("Genome downloaded!")) {
-			// No result is returned
-			openGFFFromNetwork();
+			// use the menu controls for consistency instead of calling the method directly.
+			// in this way the menu item 'unset_annotation' is automatically enabled if a genome 
+			// is set at this stage.
+			menu.actionPerformed(new ActionEvent(this, 0, "open_gff_from_network"));
 		}
 		
 		else {
