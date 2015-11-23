@@ -79,6 +79,7 @@ public class BamQCPreferences {
 	private BamQCPreferences () {
 
 		
+		// This code uses apache commons.lang3. If you don't want to use it, you can edit this code and use the commented code just below.
 		if(SystemUtils.IS_OS_MAC_OSX) {
 			// let's store these files inside a folder BamQC
 //			preferencesFile= new File(System.getProperty("user.home") + File.separator + "Library" + File.separator + "BamQC" + File.separator + "bamqc_prefs.txt");
@@ -99,10 +100,16 @@ public class BamQCPreferences {
 //			preferencesFile= new File(System.getProperty("user.home") + File.separator + "bamqc" + File.separator + "bamqc_prefs.txt");
 			saveLocation = new File(System.getProperty("user.home") + File.separator + "bamqc" + File.separator + "BamQC_files");
 			genomeBase = new File(saveLocation.getAbsolutePath() + File.separator + "genomes");
-		}	   
+		}
 		
+		// Code independent of apache commons.lang3
+		//saveLocation = new File(System.getProperty("user.home") + File.separator + "bamqc" + File.separator + "BamQC_files");
+		//genomeBase = new File(saveLocation.getAbsolutePath() + File.separator + "genomes");
+	
 		// This is left outside for now. 
 		preferencesFile= new File(System.getProperty("user.home") + File.separator + "bamqc_prefs.txt");
+		
+		
 		
 		new File(genomeBase.getAbsolutePath()).mkdirs();
 		new File(saveLocation.getAbsolutePath()).mkdirs();
