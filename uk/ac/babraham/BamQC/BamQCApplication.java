@@ -32,6 +32,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 
@@ -559,9 +560,15 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 				BamQCConfig.getInstance().do_unzip = false;
 			}
 	
-			application = new BamQCApplication();
-	
-			application.setVisible(true);
+			
+			SwingUtilities.invokeLater(new Runnable() {
+		        @Override
+				public void run() {
+		        	  application = new BamQCApplication();
+		        	  application.setVisible(true);
+		          }
+		    });
+			
 		}
 	}	
 
