@@ -246,11 +246,10 @@ public class LineWithHorizontalBarGraph extends JPanel {
 			// add rectangle coordinates and tooltip to these two lists
 			//chrPositionStr = FormatNumber.compactIntegerRange(chrPosition, (int)barData[i]);
 			chrPositionStr = FormatNumber.convertToScientificNotation(chrPosition) + "-" + 
-							 FormatNumber.convertToScientificNotation((int)barData[i]);
+							 FormatNumber.convertToScientificNotation(chrPosition+(int)(barData[i]));
 			chrPositionStr = chrPositionStr.replaceAll(".0$", ""); // Don't leave trailing .0s where we don't need them.
 			
 			rectangles.add(r);
-			// TODO tips.add(barLabels[i] + " : " + chrPosition + "-" + (chrPosition+(int)barData[i]-1));
 			tips.add(barLabels[i] + " : " + chrPositionStr);
 			chrPosition = chrPosition + (int)barData[i];
 			
