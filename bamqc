@@ -263,10 +263,10 @@ foreach (@ARGV) {
 if (@files or $version or $help or $genome_pattern ne 'unassigned' or $saved) {
 	push @java_args, "-Djava.awt.headless=true";
 } 
-else {
-    # Antialiasing by default on text  
-	push @java_args, "-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true";
-}
+#else {
+#    # Antialiasing by default on text  
+#	push @java_args, "-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true";
+#}
 
 #warn "Running 'exec $java_bin,@java_args, \"uk.ac.babraham.BamQC.BamQCApplication\", @files, CLASSPATH is $ENV{CLASSPATH}";
 
