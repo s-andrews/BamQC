@@ -170,6 +170,8 @@ public class RpkmReference extends AbstractQCModule {
 		
 
 		String title = String.format("Reads per KB per MB");
+		String xLabel = "Bases bp";
+		String yLabel = "Reads";
 
 		//return new BarGraph(graphCounts, 0.0, max, "Bases bp", xCategories, title);
 		
@@ -182,7 +184,7 @@ public class RpkmReference extends AbstractQCModule {
 				max = coverage[i];
 			xCategories[i] = i;	
 		}	
-		return new BarGraph(coverage, min, max, "Bases bp", xCategories, title);
+		return new BarGraph(coverage, min, max, xLabel, yLabel, xCategories, title);
 	}
 
 	@Override

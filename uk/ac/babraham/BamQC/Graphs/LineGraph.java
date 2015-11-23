@@ -25,6 +25,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -38,6 +39,7 @@ public class LineGraph extends JPanel {
 	private static final long serialVersionUID = -7893883434501058128L;
 	private String [] xTitles;
 	private String xLabel;
+	private String yLabel;
 	private String [] xCategories;
 	private double [][] data;
 	private String graphTitle;
@@ -49,20 +51,21 @@ public class LineGraph extends JPanel {
 	
 	private static final Color [] COLOURS = new Color[] {new Color(220,0,0), new Color(0,0,220), new Color(0,220,0), Color.DARK_GRAY, Color.MAGENTA, Color.ORANGE,Color.YELLOW,Color.CYAN,Color.PINK,Color.LIGHT_GRAY};
 	
-	public LineGraph (double [] [] data, double minY, double maxY, String xLabel, String [] xTitles, int [] xCategories, String graphTitle) {
-		this(data,minY,maxY,xLabel,xTitles,new String[0],graphTitle);
+	public LineGraph (double [] [] data, double minY, double maxY, String xLabel, String yLabel, String [] xTitles, int [] xCategories, String graphTitle) {
+		this(data,minY,maxY,xLabel,yLabel,xTitles,new String[0],graphTitle);
 		this.xCategories = new String [xCategories.length];
 		for (int i=0;i<xCategories.length;i++) {
 			this.xCategories[i] = ""+xCategories[i];
 		}
 	}
 	
-	public LineGraph (double [] [] data, double minY, double maxY, String xLabel, String [] xTitles, String [] xCategories, String graphTitle) {
+	public LineGraph (double [] [] data, double minY, double maxY, String xLabel, String yLabel, String [] xTitles, String [] xCategories, String graphTitle) {
 		this.data = data;
 		this.minY = minY;
 		this.maxY = maxY;
 		this.xTitles = xTitles;
 		this.xLabel = xLabel;
+		this.yLabel = yLabel;
 		this.xCategories = xCategories;
 		this.graphTitle = graphTitle;
 		this.yInterval = new AxisScale (minY, maxY).getInterval();
@@ -129,9 +132,23 @@ public class LineGraph extends JPanel {
 		
 		int xOffset = 0;
 		
-		
+		// Draw the yLabel on the left of the yAxis
+		int yLabelRightShift = 12;
+		if(yLabel == null || yLabel.isEmpty()) {
+			yLabelRightShift = 0;
+		} else {
+			if (g instanceof Graphics2D) {
+				Graphics2D g2 = (Graphics2D)g;
+				AffineTransform orig = g2.getTransform();
+				g2.rotate(-Math.PI/2);
+				g2.setColor(Color.BLACK);
+				g2.drawString(yLabel, -getY(-yInterval)/2 - (g.getFontMetrics().stringWidth(yLabel)/2), yLabelRightShift);
+				g2.setTransform(orig);
+			}
+		}
 
 		
+		// Draw the y axis labels
 		for (double i=yStart;i<=maxY;i+=yInterval) {
 			//String label = scale.format(currentValue);
 			
@@ -143,11 +160,11 @@ public class LineGraph extends JPanel {
 				xOffset = width;
 			}
 			
-			g.drawString(label, 2, getY(i)+(g.getFontMetrics().getAscent()/2));			
+			g.drawString(label, yLabelRightShift+6, getY(i) + (g.getFontMetrics().getAscent() / 2));
 		}
-	
+
 		// Give the x axis a bit of breathing space
-		xOffset += 5;
+		xOffset = xOffset + yLabelRightShift + 8;
 		
 		
 		// Draw the graph title

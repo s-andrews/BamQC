@@ -259,7 +259,10 @@ public class GenomeCoverage extends AbstractQCModule {
 		for (int i=0;i<maxBins;i++) {
 			labels[i] = ""+(i*Chromosome.COVERAGE_BIN_SIZE);
 		}
-		return new SeparateLineGraph(binCounts, 0-maxCoverage, maxCoverage, "Genome Position", chromosomeNames, labels, "Genome Coverage (red: z-scores ,  black: no coverage)");				
+		String title = "Genome Coverage (red: z-scores ,  black: no coverage)";
+		String xLabel = "Genome Position";
+		String yLabel = "Chromosomes";
+		return new SeparateLineGraph(binCounts, 0-maxCoverage, maxCoverage, xLabel, yLabel, chromosomeNames, labels, title);				
 	}
 	
 	

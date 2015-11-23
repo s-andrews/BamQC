@@ -78,16 +78,17 @@ public class SequenceQualityDistribution extends AbstractQCModule {
 		}
 		double maxVaule = ( (double) maxCount / total) * 100.0;
 		
-		return new BarGraph(distributionDouble, 0.0D, maxVaule, "Sequence Quality (Phred)", label, "Sequence Quality Distribution");
+		String title = "Sequence Quality Distribution";
+		String xLabel = "Sequence Quality (Phred)";
+		String yLabel = "Percent of Reads";
+		return new BarGraph(distributionDouble, 0.0D, maxVaule, xLabel, yLabel, label, title);
 	}
 	
 	@Override
 	public void processFile(SequenceFile file) {}
 
 	@Override
-	public void processAnnotationSet(AnnotationSet annotation) {
-		throw new UnsupportedOperationException("processAnnotationSet called");
-	}
+	public void processAnnotationSet(AnnotationSet annotation) { }
 
 	@Override
 	public String name() {

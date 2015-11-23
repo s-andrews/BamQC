@@ -25,6 +25,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
 
 import javax.swing.JPanel;
 
@@ -35,6 +36,7 @@ public class SeparateLineGraph extends JPanel {
 	private static final long serialVersionUID = -2880615892132541273L;
 	protected String [] xTitles;
 	protected String xLabel;
+	protected String yLabel;
 	protected String [] xCategories;
 	protected double [][] data;
 	protected String graphTitle;
@@ -46,20 +48,21 @@ public class SeparateLineGraph extends JPanel {
 	
 	protected static final Color [] COLOURS = new Color[] {new Color(220,0,0), new Color(0,0,220), new Color(0,220,0), Color.DARK_GRAY, Color.MAGENTA, Color.ORANGE,Color.YELLOW,Color.CYAN,Color.PINK,Color.LIGHT_GRAY};
 	
-	public SeparateLineGraph (double [] [] data, double minY, double maxY, String xLabel, String [] xTitles, int [] xCategories, String graphTitle) {
-		this(data,minY,maxY,xLabel,xTitles,new String[0],graphTitle);
+	public SeparateLineGraph (double [] [] data, double minY, double maxY, String xLabel, String yLabel, String [] xTitles, int [] xCategories, String graphTitle) {
+		this(data,minY,maxY,xLabel,yLabel,xTitles,new String[0],graphTitle);
 		this.xCategories = new String [xCategories.length];
 		for (int i=0;i<xCategories.length;i++) {
 			this.xCategories[i] = ""+xCategories[i];
 		}
 	}
 	
-	public SeparateLineGraph (double [] [] data, double minY, double maxY, String xLabel, String [] xTitles, String [] xCategories, String graphTitle) {
+	public SeparateLineGraph (double [] [] data, double minY, double maxY, String xLabel, String yLabel, String [] xTitles, String [] xCategories, String graphTitle) {
 		this.data = data;
 		this.minY = minY;
 		this.maxY = maxY;
 		this.xTitles = xTitles;
 		this.xLabel = xLabel;
+		this.yLabel = yLabel;
 		this.xCategories = xCategories;
 		this.graphTitle = graphTitle;
 		this.yInterval = findOptimalYInterval(maxY);
@@ -137,6 +140,21 @@ public class SeparateLineGraph extends JPanel {
 		
 		int xOffset = 0;
 
+		// Draw the yLabel on the left of the yAxis
+		int yLabelRightShift = 12;
+		if(yLabel == null || yLabel.isEmpty()) {
+			yLabelRightShift = 0;
+		} else {
+			if (g instanceof Graphics2D) {
+				Graphics2D g2 = (Graphics2D)g;
+				AffineTransform orig = g2.getTransform();
+				g2.rotate(-Math.PI/2);
+				g2.setColor(Color.BLACK);
+				g2.drawString(yLabel, -getY(-yInterval, 0)/2 - (g.getFontMetrics().stringWidth(yLabel)/2), yLabelRightShift);
+				g2.setTransform(orig);
+			}
+		}
+		
 		double midY = minY+((maxY-minY)/2);
 		for (int d=0;d<data.length;d++) {
 			String label = xTitles[d];
@@ -145,12 +163,11 @@ public class SeparateLineGraph extends JPanel {
 				xOffset = width;
 			}
 			
-			g.drawString(label, 2, getY(midY,d)+(g.getFontMetrics().getAscent()/2));
-			
+			g.drawString(label, yLabelRightShift+6, getY(midY, d) + (g.getFontMetrics().getAscent() / 2));
 		}
-	
+
 		// Give the x axis a bit of breathing space
-		xOffset += 5;
+		xOffset = xOffset + yLabelRightShift + 8;
 		
 		// Draw the graph title
 		int titleWidth = g.getFontMetrics().stringWidth(graphTitle);

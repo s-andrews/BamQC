@@ -25,6 +25,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -39,6 +40,7 @@ public class BarGraph extends JPanel {
 	private static Logger log = Logger.getLogger(BarGraph.class);
 
 	private String xLabel;
+	private String yLabel;
 	private String[] xCategories;
 	private double[] data;
 	private String graphTitle;
@@ -48,8 +50,8 @@ public class BarGraph extends JPanel {
 	private int height = -1;
 	private int width = -1;
 
-	public BarGraph(double[] data, double minY, double maxY, String xLabel, int[] xCategories, String graphTitle) {
-		this(data, minY, maxY, xLabel, new String[0], graphTitle);
+	public BarGraph(double[] data, double minY, double maxY, String xLabel, String yLabel, int[] xCategories, String graphTitle) {
+		this(data, minY, maxY, xLabel, yLabel, new String[0], graphTitle);
 		this.xCategories = new String[xCategories.length];
 
 		for (int i = 0; i < xCategories.length; i++) {
@@ -57,11 +59,12 @@ public class BarGraph extends JPanel {
 		}
 	}
 
-	public BarGraph(double[] data, double minY, double maxY, String xLabel, String[] xCategories, String graphTitle) {
+	public BarGraph(double[] data, double minY, double maxY, String xLabel, String yLabel, String[] xCategories, String graphTitle) {
 		this.data = data;
 		this.minY = minY;
 		this.maxY = maxY;
 		this.xLabel = xLabel;
+		this.yLabel = yLabel;
 		this.xCategories = xCategories;
 		this.graphTitle = graphTitle;
 		this.yInterval = findOptimalYInterval(maxY);
@@ -142,6 +145,22 @@ public class BarGraph extends JPanel {
 
 		int xOffset = 0;
 
+		// Draw the yLabel on the left of the yAxis
+		int yLabelRightShift = 12;
+		if(yLabel == null || yLabel.isEmpty()) {
+			yLabelRightShift = 0;
+		} else {
+			if (g instanceof Graphics2D) {
+				Graphics2D g2 = (Graphics2D)g;
+				AffineTransform orig = g2.getTransform();
+				g2.rotate(-Math.PI/2);
+				g2.setColor(Color.BLACK);
+				g2.drawString(yLabel, -getY(-yInterval)/2 - (g.getFontMetrics().stringWidth(yLabel)/2), yLabelRightShift);
+				g2.setTransform(orig);
+			}
+		}
+		
+		// Draw the y axis labels
 		for (double i = yStart; i <= maxY; i += yInterval) {
 			String label = "" + i;
 			label = label.replaceAll(".0$", ""); // Don't leave trailing .0s
@@ -151,11 +170,11 @@ public class BarGraph extends JPanel {
 				xOffset = width;
 			}
 
-			g.drawString(label, 2, getY(i) + (g.getFontMetrics().getAscent() / 2));
+			g.drawString(label, yLabelRightShift+6, getY(i) + (g.getFontMetrics().getAscent() / 2));
 		}
 
 		// Give the x axis a bit of breathing space
-		xOffset += 5;
+		xOffset = xOffset + yLabelRightShift + 8;
 
 		// Draw the graph title
 		int titleWidth = g.getFontMetrics().stringWidth(graphTitle);
@@ -233,11 +252,12 @@ public class BarGraph extends JPanel {
 				double minY = 0.0;
 				double maxY = 5.0;
 				String xLabel = "xLabel";
+				String yLabel = "yLabel";
 				String[] xCategories = new String[] { "one", "two", "three", "four"};
 				String graphTitle = "graphTitle";
 
 				JFrame frame = new JFrame();
-				BarGraph barGraph = new BarGraph(data, minY, maxY, xLabel, xCategories, graphTitle);
+				BarGraph barGraph = new BarGraph(data, minY, maxY, xLabel, yLabel, xCategories, graphTitle);
 
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				frame.setSize(500, 500);

@@ -120,7 +120,9 @@ public class InsertLengthDistribution extends AbstractQCModule {
 		}
 				
 		String title = String.format("Paired Read Insert Length Distrib ( %d bp max size and %.3f %% unpaired reads )", MAX_INSERT_SIZE, (((double) unpairedReads / reads) * 100.0));
-		return new BarGraph(graphCounts, 0.0d, max, "Inferred Insert Length bp", xCategories, title);
+		String xLabel = "Inferred Insert Length bp";
+		String yLabel = "Percent of Reads";
+		return new BarGraph(graphCounts, 0.0d, max, xLabel, yLabel, xCategories, title);
 	}
 	
 	

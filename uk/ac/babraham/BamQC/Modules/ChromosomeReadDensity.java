@@ -132,16 +132,17 @@ public class ChromosomeReadDensity extends AbstractQCModule {
 		// TODO REMOVE once replaced with new plot
 		// return new HorizontalBarGraph(chromosomeNames, readDensities, "Per-chromosome read density");
 
-		String title = "Chromosome Read Density (Log Read Number vs Log Chromosome Length)";
+		String title = "Chromosome Read Density";
 		String[] xCategories;
 		String xLabel = "Log Chromosome Length";
+		String yLabel = "Log Read Number";
 		double maxY = 0d;
 		
 		if(logReadNumber.length < 1) {
 			xCategories = new String[]{"Null"};
 			// Previously this was a bar graph
 			//return new BarGraph(new double[1], 0d, maxY+maxY*0.1, xLabel, xCategories, title);
-			return new ScatterGraph(new double[1], 0d, maxY+maxY*0.1, xLabel, xCategories, title);
+			return new ScatterGraph(new double[1], 0d, maxY+maxY*0.1, xLabel, yLabel, xCategories, title);
 		}
 		
 		xCategories = new String[logChromosomeLength.length];
@@ -157,7 +158,7 @@ public class ChromosomeReadDensity extends AbstractQCModule {
 		}
 		// Previously this was a bar graph
 		//return new BarGraph(logReadNumber, 0d, maxY+maxY*0.1, xLabel, xCategories, title);
-		return new ScatterGraph(logReadNumber, 0d, maxY+maxY*0.1, xLabel, xCategories, title);
+		return new ScatterGraph(logReadNumber, 0d, maxY+maxY*0.1, xLabel, yLabel, xCategories, title);
 	}
 
 	

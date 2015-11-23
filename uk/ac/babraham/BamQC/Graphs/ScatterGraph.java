@@ -25,14 +25,12 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.geom.Point2D;
+import java.awt.geom.AffineTransform;
 import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-
-import org.apache.log4j.Logger;
 
 import uk.ac.babraham.BamQC.Utilities.LinearRegression;
 
@@ -40,9 +38,8 @@ public class ScatterGraph extends JPanel {
 
 	private static final long serialVersionUID = -7292512222510200683L;
 
-	private static Logger log = Logger.getLogger(ScatterGraph.class);
-
 	private String xLabel;
+	private String yLabel;
 	private String[] xCategories;
 	private double[] data;
 	private String graphTitle;
@@ -52,8 +49,8 @@ public class ScatterGraph extends JPanel {
 	private int height = -1;
 	private int width = -1;
 
-	public ScatterGraph(double[] data, double minY, double maxY, String xLabel, int[] xCategories, String graphTitle) {
-		this(data, minY, maxY, xLabel, new String[0], graphTitle);
+	public ScatterGraph(double[] data, double minY, double maxY, String xLabel, String yLabel, int[] xCategories, String graphTitle) {
+		this(data, minY, maxY, xLabel, yLabel, new String[0], graphTitle);
 		this.xCategories = new String[xCategories.length];
 
 		for (int i = 0; i < xCategories.length; i++) {
@@ -61,11 +58,12 @@ public class ScatterGraph extends JPanel {
 		}
 	}
 
-	public ScatterGraph(double[] data, double minY, double maxY, String xLabel, String[] xCategories, String graphTitle) {
+	public ScatterGraph(double[] data, double minY, double maxY, String xLabel, String yLabel, String[] xCategories, String graphTitle) {
 		this.data = data;
 		this.minY = minY;
 		this.maxY = maxY;
 		this.xLabel = xLabel;
+		this.yLabel = yLabel;
 		this.xCategories = xCategories;
 		this.graphTitle = graphTitle;
 		this.yInterval = findOptimalYInterval(maxY);
@@ -133,8 +131,6 @@ public class ScatterGraph extends JPanel {
 			((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		}
 		
-		int lastY = 0;
-
 		double yStart;
 
 		if (minY % yInterval == 0) {
@@ -146,6 +142,21 @@ public class ScatterGraph extends JPanel {
 
 		int xOffset = 0;
 
+		// Draw the yLabel on the left of the yAxis
+		int yLabelRightShift = 12;
+		if(yLabel == null || yLabel.isEmpty()) {
+			yLabelRightShift = 0;
+		} else {
+			if (g instanceof Graphics2D) {
+				Graphics2D g2 = (Graphics2D)g;
+				AffineTransform orig = g2.getTransform();
+				g2.rotate(-Math.PI/2);
+				g2.setColor(Color.BLACK);
+				g2.drawString(yLabel, -getY(-yInterval)/2 - (g.getFontMetrics().stringWidth(yLabel)/2), yLabelRightShift);
+				g2.setTransform(orig);
+			}
+		}
+		
 		
 		// Draw the y axis labels
 		for (double i = yStart; i <= maxY; i += yInterval) {
@@ -157,11 +168,11 @@ public class ScatterGraph extends JPanel {
 				xOffset = width;
 			}
 
-			g.drawString(label, 2, getY(i) + (g.getFontMetrics().getAscent() / 2));
+			g.drawString(label, yLabelRightShift+6, getY(i) + (g.getFontMetrics().getAscent() / 2));
 		}
 
 		// Give the x axis a bit of breathing space
-		xOffset += 5;
+		xOffset = xOffset + yLabelRightShift + 8;
 
 		
 		// Draw the graph title
@@ -173,6 +184,7 @@ public class ScatterGraph extends JPanel {
 		// Draw the xLabel under the xAxis
 		g.drawString(xLabel, (getWidth() / 2) - (g.getFontMetrics().stringWidth(xLabel) / 2), getHeight() - 5);
 
+		
 		// Now draw the data points
 		double baseWidth = (getWidth() - (xOffset + 10)) / data.length;
 		if (baseWidth < 1) baseWidth = 1;
@@ -295,10 +307,12 @@ public class ScatterGraph extends JPanel {
 				}
 					
 				String xLabel = "xLabel";
+				String yLabel = "yLabel";
+				//String yLabel = null;
 				String graphTitle = "Graph Title";
 
 				JFrame frame = new JFrame();
-				ScatterGraph scatterGraph = new ScatterGraph(data, minY, maxY, xLabel, xCategories, graphTitle);
+				ScatterGraph scatterGraph = new ScatterGraph(data, minY, maxY, xLabel, yLabel, xCategories, graphTitle);
 
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				frame.setSize(500, 500);

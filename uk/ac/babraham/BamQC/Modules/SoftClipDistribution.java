@@ -138,8 +138,8 @@ public class SoftClipDistribution extends AbstractQCModule {
 		}
 		
 		
-		resultsPanel.add(new LineGraph(leftData, 0, maxLeft, "Clip Length", new String[]{"Left (5') clips"}, labels,"Soft Clip Distribution at the Left (5') End"));
-		resultsPanel.add(new LineGraph(rightData, 0, maxRight, "Clip Length", new String[]{"Right (3') clips"},labels, "Soft Clip Distribution at the Right (3') End"));
+		resultsPanel.add(new LineGraph(leftData, 0, maxLeft, "Clip Length", "Clip Number", new String[]{"Left (5') clips"}, labels,"Soft Clip Distribution at the Left (5') End"));
+		resultsPanel.add(new LineGraph(rightData, 0, maxRight, "Clip Length", "Clip Number", new String[]{"Right (3') clips"},labels, "Soft Clip Distribution at the Right (3') End"));
 		
 		return (resultsPanel);
 	}
