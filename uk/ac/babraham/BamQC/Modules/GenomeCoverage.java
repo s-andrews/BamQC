@@ -49,7 +49,6 @@ public class GenomeCoverage extends AbstractQCModule {
 	private double genomeCoverageRsdWarningFraction = ModuleConfig.getParam("GenomeCoverage_rsd_fraction", "warn");
 	private double genomeCoverageRsdErrorFraction = ModuleConfig.getParam("GenomeCoverage_rsd_fraction", "error");
 
-	Chromosome [] chromosomes = null;
 	private String [] chromosomeNames = null;
 	private double [][] binCounts = null;
 	private long [] coverage = null;
@@ -87,7 +86,6 @@ public class GenomeCoverage extends AbstractQCModule {
 		raiseWarning = false;
 		errorReads = 0;
 		readNumber = 0;
-		chromosomes = null;
 		chromosomeNames = null;
 		binCounts = null;
 		coverage = null;
@@ -116,7 +114,7 @@ public class GenomeCoverage extends AbstractQCModule {
 	@Override
 	public void processAnnotationSet(AnnotationSet annotation) {
 
-		chromosomes = annotation.chromosomeFactory().getAllChromosomes();
+		Chromosome [] chromosomes = annotation.chromosomeFactory().getAllChromosomes();
 		
 		if(chromosomes.length < plotSeparateChromosomeThreshold) {
 			// This will plot the chromosomes from 1 (top) to n (bottom)
@@ -353,7 +351,7 @@ public class GenomeCoverage extends AbstractQCModule {
 
 	@Override
 	public boolean ignoreInReport() {
-		if(ModuleConfig.getParam("GenomeCoverage", "ignore") > 0 || chromosomes == null || chromosomes.length == 0 || maxBins == 1) {
+		if(ModuleConfig.getParam("GenomeCoverage", "ignore") > 0 || chromosomeNames == null || chromosomeNames.length == 0 || maxBins == 1) {
 			return true; 
 		}
 		return false;
@@ -363,7 +361,7 @@ public class GenomeCoverage extends AbstractQCModule {
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
 		super.writeDefaultImage(report, "genome_coverage.png", "Reference Sequence(s) Coverage", 800, 600);
 
-		if(chromosomeNames == null || chromosomes.length == 0 || maxBins == 1) { return; }
+		if(chromosomeNames == null || chromosomeNames.length == 0 || maxBins == 1) { return; }
 	
 		StringBuffer sb = report.dataDocument();
 		sb.append("Chromosome_name\tGenome_position\n");
