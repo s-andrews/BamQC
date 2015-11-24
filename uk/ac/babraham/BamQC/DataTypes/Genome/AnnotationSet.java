@@ -31,16 +31,13 @@ import uk.ac.babraham.BamQC.Modules.ModuleConfig;
 import net.sf.samtools.SAMRecord;
 
 public class AnnotationSet {
-	
-	
+
 	/** The reference file for this annotation set */
 	private File file = null;
 	
 	private ChromosomeFactory factory = new ChromosomeFactory();
 	
 	private HashMap<String, FeatureClass> features = new HashMap<String, FeatureClass>();
-	
-	private FeatureClass [] featureArray = null;
 	
 	private HashSet<Feature> allFeatures = new HashSet<Feature>();
 	
@@ -128,11 +125,8 @@ public class AnnotationSet {
 			Chromosome c = factory.getChromosome(r.getReferenceName());
 			c.processSequence(r);
 		}
-		if (featureArray == null) {
-			featureArray = features.values().toArray(new FeatureClass[0]);
-		}
-		for (int i=0;i<featureArray.length;i++) {
-			featureArray[i].processSequence(r);
+		for(FeatureClass value : features.values()) {
+			value.processSequence(r);
 		}
 	}
 
