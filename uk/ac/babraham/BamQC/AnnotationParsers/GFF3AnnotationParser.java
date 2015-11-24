@@ -25,7 +25,6 @@ import java.io.FileReader;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 import uk.ac.babraham.BamQC.DataTypes.ProgressListener;
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
@@ -283,6 +282,9 @@ public class GFF3AnnotationParser extends AnnotationParser {
 				}
 				else {
 					// No group parameter to worry about
+          // TODO THIS CODE HERE CAN BE DETRIMENTAL FOR COMPUTATION
+          // The creation of the annotation set can fail if the file is too large.
+          // There are just too many objects which can cause a GC crash
 					Feature feature = new Feature(sections[2],c);
 					feature.setLocation(new Location(start,end,strand));
 					annotationSet.addFeature(feature);
@@ -326,7 +328,7 @@ public class GFF3AnnotationParser extends AnnotationParser {
 		private Feature feature;
 
 		/** The sub locations. */
-		private LinkedList<Location> subLocations = new LinkedList<Location>();
+		private ArrayList<Location> subLocations = new ArrayList<Location>();
 		
 		/** The location */
 		private Location location;

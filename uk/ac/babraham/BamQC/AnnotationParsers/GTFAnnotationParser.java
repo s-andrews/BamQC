@@ -22,9 +22,9 @@ package uk.ac.babraham.BamQC.AnnotationParsers;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.LinkedList;
 
 import uk.ac.babraham.BamQC.DataTypes.ProgressListener;
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
@@ -256,9 +256,12 @@ public class GTFAnnotationParser extends AnnotationParser {
 					// We assume that anything else we don't understand is a single span feature
 					// class so we just enter it directly.
 
-					Feature feature = new Feature(sections[2],sections[1],c);
-					feature.setLocation(new Location(start,end,strand));
-					annotationSet.addFeature(feature);
+				  // TODO THIS CODE HERE CAN BE DETRIMENTAL FOR COMPUTATION
+				  // The creation of the annotation set can fail if the file is too large.
+				  // There are just too many objects which can cause a GC crash
+					//Feature feature = new Feature(sections[2],sections[1],c);
+					//feature.setLocation(new Location(start,end,strand));
+					//annotationSet.addFeature(feature);
 				}
 
 
@@ -266,6 +269,7 @@ public class GTFAnnotationParser extends AnnotationParser {
 
 			// TODO THIS CAN BE PROBLEMATIC AS IT WORKS AS A FLUSH. 
 			// IT WOULD BE BETTER TO ADD THESE GRADUALLY INSTEAD
+			// NOTE: This problem is less important than the problem above.
 			// Now go through the grouped features adding them to the annotation set
 			for(Transcript t : groupedFeatures.values()) {
 				annotationSet.addFeature(t.feature());
@@ -316,7 +320,7 @@ public class GTFAnnotationParser extends AnnotationParser {
 		private Feature feature;
 
 		/** The sub locations. */
-		private LinkedList<Location> subLocations = new LinkedList<Location>();
+		private ArrayList<Location> subLocations = new ArrayList<Location>();
 
 		private int startCodon;
 		private int stopCodon;
