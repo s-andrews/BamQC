@@ -94,9 +94,6 @@ public class AnalysisRunner implements Runnable {
 	@Override
 	public void run() {
 
-
-		
-		
 		
 		AnnotationSet annotationSet = null;
 
