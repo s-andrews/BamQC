@@ -85,8 +85,8 @@ public class IndelFrequencies extends AbstractQCModule {
 	 */
 	private int computeXMaxValue() {
 		HashMap<Integer, Long> hm = variantCallDetection.getContributingReadsPerPos();
-		Integer[] readLengths = hm.keySet().toArray(new Integer[hm.size()]);
-		Long[] readCounts = hm.values().toArray(new Long[hm.size()]);
+		Integer[] readLengths = hm.keySet().toArray(new Integer[0]);
+		Long[] readCounts = hm.values().toArray(new Long[0]);
 		int xMaxValue = 5; // sequences long at least 5.
 		long moreFrequentReadLength = 0;
 		// Computes a variable threshold depending on the read length distribution of read library
