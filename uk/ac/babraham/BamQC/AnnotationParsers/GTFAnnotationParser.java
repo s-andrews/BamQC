@@ -259,6 +259,13 @@ public class GTFAnnotationParser extends AnnotationParser {
 				  // TODO THIS CODE HERE CAN BE DETRIMENTAL FOR COMPUTATION
 				  // The creation of the annotation set can fail if the file is too large.
 				  // There are just too many objects which can cause a GC crash
+				  
+				  // POSSIBLY A SOLUTION is that we group these features as well (maybe in another HashMap 
+				  // if we need to keep these distinct, but possibly not). Anyway, this would not solve the 
+				  // problem because the HashMap would simply become too large. The solution would be that 
+				  // we adjust the sublocation array ( using splitLocation() ) after a certain number of 
+				  // features inserted. That method could become handy to compact these locations so that 
+				  // not much space is used.
 					Feature feature = new Feature(sections[2],sections[1],c);
 					feature.setLocation(new Location(start,end,strand));
 					annotationSet.addFeature(feature);
