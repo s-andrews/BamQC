@@ -266,11 +266,21 @@ public class GTFAnnotationParser extends AnnotationParser {
 				  // we adjust the sublocation array ( using splitLocation() ) after a certain number of 
 				  // features inserted. That method could become handy to compact these locations so that 
 				  // not much space is used.
-					Feature feature = new Feature(sections[2],sections[1],c);
-					feature.setLocation(new Location(start,end,strand));
-					annotationSet.addFeature(feature);
+					//Feature feature = new Feature(sections[2],sections[1],c);
+					//feature.setLocation(new Location(start,end,strand));
+					//annotationSet.addFeature(feature);
+					
+	        Feature feat = new Feature(sections[2],sections[1],c);
+          Transcript transcript = new Transcript(feat);
+          transcript.addSublocation(new Location(start,end,strand));
+          groupedFeatures.put(sections[2]+"_"+sections[1], transcript);
 				}
 
+				if(percent%10 == 0) {
+				  for(Transcript t : groupedFeatures.values()) {
+				    t.compact();
+				  }
+				}
 
 			}
 
@@ -383,6 +393,14 @@ public class GTFAnnotationParser extends AnnotationParser {
 			return feature;
 		}
 
+    public void compact() {
+      if (subLocations.size() > 100000) {          
+        Location compactedLocation = new SplitLocation(subLocations.toArray(new Location[0]));
+        subLocations.clear();
+        subLocations.add(compactedLocation);
+      }
+    }
+		
 
 	}
 
