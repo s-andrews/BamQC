@@ -269,7 +269,21 @@ public class GTFAnnotationParser extends AnnotationParser {
 					//Feature feature = new Feature(sections[2],sections[1],c);
 					//feature.setLocation(new Location(start,end,strand));
 					//annotationSet.addFeature(feature);
-					
+
+				  
+				  // OKAY SOLUTION 2: Instead of using sublocations or locations, the extremes start, end and strand 
+				  // are saved. Every time you process a new feature, you store the feature and the values above. 
+				  // Instead of adding a new locations to the array of sublocaitons, just pass those three values 
+				  // and compare them with the current stored ones. This is equivalent to a sort+SplitLocation+etc. 
+				  // When the method feature() is called, this just create 1 location with the values start, end and 
+				  // strand; add this location to feature and return the usual. 
+				  // There is no need to do any call to the method compact().
+				  // The piece of code adding the grouped features to the annotation set can be left at the end as it 
+				  // becomes innocuous. 
+				  // Might be worth extracting the object FeatureGroup and call it differently (e.g. ProtoFeature). 
+				  // Transcript would extend an object of type FeatureGroup including codons.
+				  // The parser should become quite faster because not much memory is used and the computation is similar. 
+				  // The parser of the following bam file should be fine too.
 	        Feature feat = new Feature(sections[2],sections[1],c);
           Transcript transcript = new Transcript(feat);
           transcript.addSublocation(new Location(start,end,strand));
