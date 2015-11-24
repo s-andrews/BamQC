@@ -24,7 +24,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
@@ -84,20 +83,19 @@ public class BAMFile implements SequenceFile {
 
 	@Override
 	public Chromosome[] listChromosomes() {
-		Vector<Chromosome> chrs = new Vector<Chromosome>();
-		
 		SAMSequenceDictionary dict = header.getSequenceDictionary();
 		List<SAMSequenceRecord> records = dict.getSequences();
-		
 		int recordsSize = records.size(); 
+		Chromosome[] chrs = new Chromosome[recordsSize];
+		
 		for(int i=0; i<recordsSize; i++) {
 			SAMSequenceRecord record = records.get(i);
 			Chromosome chr = annotationSet.chromosomeFactory().getChromosome(record.getSequenceName());
 			chr.setLength(record.getSequenceLength());
-			chrs.add(chr);
+			chrs[i] = chr;
 		}
 		
-		return chrs.toArray(new Chromosome[0]);
+		return chrs;
 		
 	}
 
