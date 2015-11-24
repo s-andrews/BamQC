@@ -264,10 +264,11 @@ public class GTFAnnotationParser extends AnnotationParser {
 
 			}
 
+			// TODO THIS CAN BE PROBLEMATIC AS IT WORKS AS A FLUSH. 
+			// IT WOULD BE BETTER TO ADD THESE GRADUALLY INSTEAD
 			// Now go through the grouped features adding them to the annotation set
-			Transcript[] t = groupedFeatures.values().toArray(new Transcript[0]);
-			for(int j=0; j<t.length; j++) {
-				annotationSet.addFeature(t[j].feature());
+			for(Transcript t : groupedFeatures.values()) {
+				annotationSet.addFeature(t.feature());
 			}
 					
 		} catch (Exception ex) {

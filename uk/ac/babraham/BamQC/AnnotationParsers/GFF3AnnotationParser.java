@@ -291,10 +291,11 @@ public class GFF3AnnotationParser extends AnnotationParser {
 
 			}
 
+			// TODO THIS CAN BE PROBLEMATIC AS IT WORKS AS A FLUSH. 
+			// IT WOULD BE BETTER TO ADD THESE GRADUALLY INSTEAD
 			// Now go through the grouped features adding them to the annotation set	
-			FeatureGroup[] fg = groupedFeatures.values().toArray(new FeatureGroup[0]);
-			for(int j=0; j<fg.length; j++) {
-				annotationSet.addFeature(fg[j].feature());
+			for(FeatureGroup fg : groupedFeatures.values()) {
+				annotationSet.addFeature(fg.feature());
 			}
 			
 		} catch(Exception ex) {
