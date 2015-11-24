@@ -324,7 +324,7 @@ public class GFF3AnnotationParser extends AnnotationParser {
 		private Feature feature;
 
 		/** The sub locations. */
-		private ArrayList<Location> subLocations = new ArrayList<Location>(50);
+		private ArrayList<Location> subLocations = new ArrayList<Location>(0);
 		
 		/** The location */
 		private Location location;
