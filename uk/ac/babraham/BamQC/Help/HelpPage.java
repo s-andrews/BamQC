@@ -68,7 +68,7 @@ public class HelpPage extends DefaultMutableTreeNode {
 			
 			// If we get here then we want to chop the first part
 			// of the name off
-			StringBuffer sb = new StringBuffer(nameSections[1]);
+			StringBuilder sb = new StringBuilder(nameSections[1]);
 			for (int s=2;s<nameSections.length;s++) {
 				sb.append(" ");
 				sb.append(nameSections[s]);

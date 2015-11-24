@@ -128,7 +128,7 @@ public class Feature implements Comparable<Feature>, Serializable {
 	 * @return the all annotation
 	 */
 	public String getAllAnnotation (){
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 		for (int e=0;e<annotation.length;e++) {
 			AnnotationTagValue a = annotation[e];
 			buffer.append(a.tag());

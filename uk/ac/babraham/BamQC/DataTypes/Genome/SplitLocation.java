@@ -149,7 +149,7 @@ public class SplitLocation extends Location {
 			return super.locationString();
 		}
 		
-		StringBuffer b = new StringBuffer();
+		StringBuilder b = new StringBuilder();
 		if (strand() == REVERSE) {
 			b.append("complement(");
 		}

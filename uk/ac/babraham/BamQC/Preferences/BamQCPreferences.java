@@ -256,7 +256,7 @@ public class BamQCPreferences {
 		}
 			
 		// Finally the list of features to load
-		StringBuffer b = new StringBuffer("IgnoredFeatures");
+		StringBuilder b = new StringBuilder("IgnoredFeatures");
 		Iterator<String> i = ignoredAnnotations.iterator();
 		while (i.hasNext()) {
 			b.append("\t");

@@ -271,7 +271,7 @@ public class GenomeParser extends AnnotationParser {
 				
 				// We can now start reading the features one at a time by
 				// concatenating them and then passing them on for processing
-				StringBuffer currentAttribute = new StringBuffer();
+				StringBuilder currentAttribute = new StringBuilder();
 				boolean skipping = true;
 				Feature feature = null;
 				while ((line=br.readLine())!=null) {
@@ -312,7 +312,7 @@ public class GenomeParser extends AnnotationParser {
 						if (prefs.loadAnnotation(type)) {
 	//						System.err.println("Creating new feature of type "+type);
 							feature = new Feature(type,c);
-							currentAttribute=new StringBuffer("location=");
+							currentAttribute=new StringBuilder("location=");
 							currentAttribute.append(line.substring(21).trim());
 	//						System.out.println(currentAttribute.toString());
 							continue;
@@ -330,7 +330,7 @@ public class GenomeParser extends AnnotationParser {
 											
 						//Process the last attribute (extract the location)
 						skipping = processAttributeReturnSkip(currentAttribute.toString(), feature);
-						currentAttribute = new StringBuffer();
+						currentAttribute = new StringBuilder();
 					}
 					
 					// Our default action is just to append onto the existing information

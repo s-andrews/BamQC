@@ -25,7 +25,6 @@ import java.io.FileReader;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.ArrayList;
-import java.util.Vector;
 
 import uk.ac.babraham.BamQC.DataTypes.ProgressListener;
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
@@ -325,7 +324,7 @@ public class GFF3AnnotationParser extends AnnotationParser {
 		private Feature feature;
 
 		/** The sub locations. */
-		private Vector<Location> subLocations = new Vector<Location>();
+		private ArrayList<Location> subLocations = new ArrayList<Location>(50);
 		
 		/** The location */
 		private Location location;
@@ -361,7 +360,7 @@ public class GFF3AnnotationParser extends AnnotationParser {
 					feature.setLocation(location);					
 				}
 				else if (subLocations.size() == 1) {
-					feature.setLocation(subLocations.elementAt(0));					
+					feature.setLocation(subLocations.get(0));					
 				}
 				else {
 					feature.setLocation(new SplitLocation(subLocations.toArray(new Location[0])));
