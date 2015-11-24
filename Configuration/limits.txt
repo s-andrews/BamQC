@@ -1,18 +1,18 @@
 # For each of the modules you can choose to not run that
 # module at all by setting the value below to 1 for the
 # modules you want to remove.
-ChromosomeReadDensity			ignore	1
-FeatureCoverage					ignore	1
-GenomeCoverage					ignore	1
+ChromosomeReadDensity			ignore	0
+FeatureCoverage					ignore	0
+GenomeCoverage					ignore	0
 IndelFrequencies				ignore	0
-InsertLengthDistribution		ignore	1
-MappingQualityDistribution		ignore	1
+InsertLengthDistribution		ignore	0
+MappingQualityDistribution		ignore	0
 SequenceQualityDistribution		ignore	1
 SNPFrequencies					ignore	0
 SNPFrequenciesByType			ignore	0
-SoftClipDistribution			ignore	1
+SoftClipDistribution			ignore	0
 # The following option switches off InsertFrequencies, SNPFrequencies, SNPFrequenciesByType and some statistics in BasicStatistics
-VariantCallDetection			ignore	1
+VariantCallDetection			ignore	0
 
 
 # Annotation Module.
