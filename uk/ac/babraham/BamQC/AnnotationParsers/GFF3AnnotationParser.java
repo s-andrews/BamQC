@@ -25,6 +25,7 @@ import java.io.FileReader;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import uk.ac.babraham.BamQC.DataTypes.ProgressListener;
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
@@ -324,7 +325,7 @@ public class GFF3AnnotationParser extends AnnotationParser {
 		private Feature feature;
 
 		/** The sub locations. */
-		private ArrayList<Location> subLocations = new ArrayList<Location>(0);
+		private LinkedList<Location> subLocations = new LinkedList<Location>();
 		
 		/** The location */
 		private Location location;
