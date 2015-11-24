@@ -47,9 +47,6 @@ public class Feature implements Comparable<Feature>, Serializable {
 	/** The source. */
 	private int source = NONE;
 	
-	/** The annotation. */
-	private AnnotationTagValue [] annotation = new AnnotationTagValue[0];
-	
 		
 	//Constants to store source type
 	/** The Constant MANUAL. */
@@ -111,35 +108,6 @@ public class Feature implements Comparable<Feature>, Serializable {
 		this.id = new String(id);
 		idSource = ID_MANUAL; // This always wins!
 	}
-
-	
-	/**
-	 * Gets the annotation tag values.
-	 * 
-	 * @return the annotation tag values
-	 */
-	public AnnotationTagValue [] getAnnotationTagValues () {
-		return annotation;
-	}
-	
-	/**
-	 * Gets the all annotation.
-	 * 
-	 * @return the all annotation
-	 */
-	public String getAllAnnotation (){
-		StringBuilder buffer = new StringBuilder();
-		for (int e=0;e<annotation.length;e++) {
-			AnnotationTagValue a = annotation[e];
-			buffer.append(a.tag());
-			for (int i=0;i<15-a.tag().length();i++) {
-				buffer.append(" ");
-			}
-			buffer.append(a.value());
-			buffer.append("\n");
-		}
-		return buffer.toString();
-	}
 		
 	/**
 	 * Adds the attribute.
@@ -177,12 +145,6 @@ public class Feature implements Comparable<Feature>, Serializable {
 				
 		findBestName(key,value);
 
-		AnnotationTagValue [] newAnnotation = new AnnotationTagValue[annotation.length+1];
-		for (int i=0;i<annotation.length;i++) {
-			newAnnotation[i] = annotation[i];
-		}
-		newAnnotation[newAnnotation.length-1] = new AnnotationTagValue(key, value);
-		annotation = newAnnotation;		
 	}
 	
 	/**
@@ -259,25 +221,7 @@ public class Feature implements Comparable<Feature>, Serializable {
 		
 		return name();
 	}
-	
-	/**
-	 * Description.
-	 * 
-	 * @return the string
-	 */
-	public String description () {
-		for (int e=0;e<annotation.length;e++) {
-			AnnotationTagValue a = annotation[e];
-			if (a.tag().equals("description")) {
-				if (a.value().equals("")) {
-					return "No description";
-				}
-				return a.value();
-			}
-		}
-		return "No description";
-	}
-	
+		
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
@@ -373,18 +317,7 @@ public class Feature implements Comparable<Feature>, Serializable {
 			id = thisValue;
 			id = id.replaceAll("\"","");
 			idSource = thisSource;
-		}
-		
-		
-	}
-	
-	/**
-	 * Flatten tags.
-	 * 
-	 * @return the string
-	 */
-	public String flattenTags () {
-		return annotation.toString().replaceAll("\\n", "\\\\n");
+		}		
 	}
 
 	@Override
