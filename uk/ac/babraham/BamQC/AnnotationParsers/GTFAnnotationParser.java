@@ -259,9 +259,9 @@ public class GTFAnnotationParser extends AnnotationParser {
 				  // TODO THIS CODE HERE CAN BE DETRIMENTAL FOR COMPUTATION
 				  // The creation of the annotation set can fail if the file is too large.
 				  // There are just too many objects which can cause a GC crash
-					//Feature feature = new Feature(sections[2],sections[1],c);
-					//feature.setLocation(new Location(start,end,strand));
-					//annotationSet.addFeature(feature);
+					Feature feature = new Feature(sections[2],sections[1],c);
+					feature.setLocation(new Location(start,end,strand));
+					annotationSet.addFeature(feature);
 				}
 
 
