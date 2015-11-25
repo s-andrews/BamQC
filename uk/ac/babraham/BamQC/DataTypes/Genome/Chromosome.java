@@ -81,7 +81,7 @@ public class Chromosome implements Comparable<Chromosome>, Serializable {
 		
 		if (coverageBins.length<=maxBin) {
 			long[] oldCoverageBins = coverageBins;
-			coverageBins = new long[maxBin+1];	
+			coverageBins = new long[maxBin+1];
 			System.arraycopy(oldCoverageBins, 0, coverageBins, 0, oldCoverageBins.length);
 		}
 		coverageBins[maxBin]++;
