@@ -282,9 +282,6 @@ public class GFF3AnnotationParser extends AnnotationParser {
 				}
 				else {
 					// No group parameter to worry about
-          // TODO THIS CODE HERE CAN BE DETRIMENTAL FOR COMPUTATION
-          // The creation of the annotation set can fail if the file is too large.
-          // There are just too many objects which can cause a GC crash
 					Feature feature = new Feature(sections[2],c);
 					feature.setLocation(new Location(start,end,strand));
 					annotationSet.addFeature(feature);
@@ -292,9 +289,6 @@ public class GFF3AnnotationParser extends AnnotationParser {
 
 
 			}
-
-			// TODO THIS CAN BE PROBLEMATIC AS IT WORKS AS A FLUSH. 
-			// IT WOULD BE BETTER TO ADD THESE GRADUALLY INSTEAD
 			// Now go through the grouped features adding them to the annotation set	
 			for(FeatureGroup fg : groupedFeatures.values()) {
 				annotationSet.addFeature(fg.feature());
