@@ -31,7 +31,6 @@ import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Feature;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Location;
-import uk.ac.babraham.BamQC.DataTypes.Genome.SplitLocation;
 
 /**
  * The Class GFFAnnotationParser reads sequence features from GFFv3 files
@@ -85,14 +84,15 @@ public class GFF3AnnotationParser extends AnnotationParser {
 		annotationSet.setFile(file);
 		
 		HashMap<String, FeatureGroup> groupedFeatures = new HashMap<String, FeatureGroup>();
-		BufferedReader br = null;
+		// This will contain all the other features (the else case)
+		HashMap<String, ProtoFeature> protoFeatures = new HashMap<String, ProtoFeature>();
 		
+		BufferedReader br = null;
 		
         long totalBytes = file.length();                    
         long bytesRead = 0;
         int previousPercent = 0;
 		
-
 		try { 
 			
 			br = new BufferedReader(new FileReader(file));
@@ -239,7 +239,7 @@ public class GFF3AnnotationParser extends AnnotationParser {
 							if (!groupedFeatures.containsKey(sections[2]+"_"+parents[p])) {
 								// Make a new feature to which we can add this
 								Feature feature = new Feature(sections[2],c);
-								groupedFeatures.put(sections[2]+"_"+parents[p], new FeatureGroup(feature, strand, feature.location()));
+								groupedFeatures.put(sections[2]+"_"+parents[p], new FeatureGroup(feature));
 							}	
 							groupedFeatures.get(sections[2]+"_"+parents[p]).addSublocation(new Location(start, end, strand));
 
@@ -257,41 +257,58 @@ public class GFF3AnnotationParser extends AnnotationParser {
 
 						if (! groupedFeatures.containsKey(sections[2]+"_"+keyValuePairs.get("transcript_id").get(0))) {
 							Feature feature = new Feature(sections[2],c);
-
-							groupedFeatures.put(sections[2]+"_"+keyValuePairs.get("transcript_id").get(0), new FeatureGroup(feature, strand, feature.location()));
+							groupedFeatures.put(sections[2]+"_"+keyValuePairs.get("transcript_id").get(0), new FeatureGroup(feature));
 						}						
-
 						groupedFeatures.get(sections[2]+"_"+keyValuePairs.get("transcript_id").get(0)).addSublocation(new Location(start, end, strand));
 					}
 
 					else {
 						// If we get here we're making a feature with attributes
-
-						Feature feature = new Feature(sections[2],c);
-						feature.setLocation(new Location(start,end,strand));
 						if (keyValuePairs.containsKey("ID")) {
 							// This is a feature which may end up having subfeatures
-							groupedFeatures.put(sections[2]+"_"+keyValuePairs.get("ID").get(0), new FeatureGroup(feature, strand, feature.location()));				
+							Feature feature = new Feature(sections[2],c);
+							groupedFeatures.put(sections[2]+"_"+keyValuePairs.get("ID").get(0), new FeatureGroup(feature));
 						}
-						else {
-							// We can just add this to the annotation collection
-							annotationSet.addFeature(feature);
-						}
+						groupedFeatures.get(sections[2]+"_"+keyValuePairs.get("ID").get(0)).addSublocation(new Location(start,end,strand));
 					}
 
 				}
 				else {
-					// No group parameter to worry about
-					Feature feature = new Feature(sections[2],c);
-					feature.setLocation(new Location(start,end,strand));
-					annotationSet.addFeature(feature);
+					// We assume that anything else we don't understand is a single span feature
+					// class so we just enter it directly.
+					
+					// THIS CODE HERE CAN BE DETRIMENTAL FOR COMPUTATION
+					// The creation of the annotation set can fail if the file is too large.
+					// There are just too many features which can cause a GC crash. 
+					// This also causes a delay in the feature collection
+					// and increase the analysis when the sam/bam file is parsed.
+//					Feature feature = new Feature(sections[2],sections[1],c);
+//					feature.setLocation(new Location(start,end,strand));
+//					annotationSet.addFeature(feature);
+						
+					// Instead of adding all these features separately or using sublocation mechanism 
+					// implemented in FeatureGroup, only one location is saved and kept updated. We do something similar 
+					// to the SplitLocation algorithm, but immediately instead of saving all the locations, sorting them, 
+					// and then extract the values from the smaller and the larger. 
+					String str = sections[2]+"_"+sections[1];
+					if(protoFeatures.containsKey(str)) {
+						protoFeatures.get(str).update(start, end, strand);
+					} else {
+						Feature feature = new Feature(sections[2],sections[1],c);
+						ProtoFeature protoFeature = new ProtoFeature(feature, start, end, strand);
+						protoFeatures.put(str, protoFeature);
+					}
+				
 				}
-
 
 			}
 			// Now go through the grouped features adding them to the annotation set	
 			for(FeatureGroup fg : groupedFeatures.values()) {
-				annotationSet.addFeature(fg.feature());
+				annotationSet.addFeature(fg.getFeature());
+			}
+			
+			for(ProtoFeature pf : protoFeatures.values()) {
+				annotationSet.addFeature(pf.getFeature());
 			}
 			
 		} catch(Exception ex) {
@@ -308,64 +325,6 @@ public class GFF3AnnotationParser extends AnnotationParser {
 				}
 			}
 		}
-
-	}
-
-	
-	
-	/**
-	 * The Class featureGroup.
-	 */
-	private class FeatureGroup {
-
-		/** The feature. */
-		private Feature feature;
-
-		/** The sub locations. */
-		private ArrayList<Location> subLocations = new ArrayList<Location>();
-		
-		/** The location */
-		private Location location;
-
-		/**
-		 * Instantiates a new feature group.
-		 * 
-		 * @param feature the feature
-		 * @param strand the strand
-		 * @param location the location
-		 */
-		public FeatureGroup (Feature feature, int strand, Location location) {
-			this.feature = feature;
-			this.location = location;
-		}
-
-		/**
-		 * Adds a sublocation.
-		 * 
-		 * @param location the location
-		 */
-		public void addSublocation (Location location) {
-			subLocations.add(location);
-		}
-
-		/**
-		 * Feature.
-		 * 
-		 * @return the feature
-		 */
-		public Feature feature () {
-				if (subLocations.size() == 0) {
-					feature.setLocation(location);					
-				}
-				else if (subLocations.size() == 1) {
-					feature.setLocation(subLocations.get(0));					
-				}
-				else {
-					feature.setLocation(new SplitLocation(subLocations.toArray(new Location[0])));
-				}
-			return feature;
-		}
-
 
 	}
 

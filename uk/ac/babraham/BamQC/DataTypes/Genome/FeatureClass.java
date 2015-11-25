@@ -49,9 +49,8 @@ public class FeatureClass {
 	}
 	
 	public void processSequence (ShortRead r) {
-		FeatureSubclass[] fsc = subClasses.values().toArray(new FeatureSubclass[0]);
-		for (int i=0; i<fsc.length; i++) {
-			fsc[i].processSequence(r);
+		for(FeatureSubclass fsc : subClasses.values()) {
+			fsc.processSequence(r);
 		}
 	}
 	

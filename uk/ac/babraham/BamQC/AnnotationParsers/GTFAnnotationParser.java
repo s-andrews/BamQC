@@ -22,7 +22,6 @@ package uk.ac.babraham.BamQC.AnnotationParsers;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 
@@ -31,7 +30,6 @@ import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Feature;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Location;
-import uk.ac.babraham.BamQC.DataTypes.Genome.SplitLocation;
 
 
 /**
@@ -86,14 +84,15 @@ public class GTFAnnotationParser extends AnnotationParser {
 		annotationSet.setFile(file);
 		
 		HashMap<String, Transcript> groupedFeatures = new HashMap<String, Transcript>();
+		// This will contain all the other features (the else case)
+		HashMap<String, ProtoFeature> protoFeatures = new HashMap<String, ProtoFeature>();
+		
 		BufferedReader br = null;
-		
-		
+				
         long totalBytes = file.length();                    
         long bytesRead = 0;
         int previousPercent = 0;
 	
-        
 		try { 
 		
 			br = new BufferedReader(new FileReader(file));
@@ -202,7 +201,6 @@ public class GTFAnnotationParser extends AnnotationParser {
 					// We need to get the transcript id.
 					String transcriptID = getTranscriptIDFromAttributes(sections[8]);
 					groupedFeatures.put(transcriptID, transcript);
-
 				}
 
 				else if (sections[2].equals("exon")) {
@@ -255,15 +253,41 @@ public class GTFAnnotationParser extends AnnotationParser {
 				else {
 					// We assume that anything else we don't understand is a single span feature
 					// class so we just enter it directly.
-					Feature feature = new Feature(sections[2],sections[1],c);
-					feature.setLocation(new Location(start,end,strand));
-					annotationSet.addFeature(feature);
+					
+					// THIS CODE HERE CAN BE DETRIMENTAL FOR COMPUTATION
+					// The creation of the annotation set can fail if the file is too large.
+					// There are just too many objects which can cause a GC crash
+					// This also causes a delay in the feature collection.
+					// and increase the analysis when the sam/bam file is parsed.
+//					Feature feature = new Feature(sections[2],sections[1],c);
+//					feature.setLocation(new Location(start,end,strand));
+//					annotationSet.addFeature(feature);
+						
+					// Instead of adding all these features separately or using sublocation mechanism 
+					// implemented in FeatureGroup, only one location is saved and kept updated. We do something similar 
+					// to the SplitLocation algorithm, but immediately instead of saving all the locations, sorting them, 
+					// and then extract the values from the smaller and the larger. 
+					String str = sections[2]+"_"+sections[1];
+					if(protoFeatures.containsKey(str)) {
+						protoFeatures.get(str).update(start, end, strand);
+					} else {
+						Feature feature = new Feature(sections[2],sections[1],c);
+						ProtoFeature protoFeature = new ProtoFeature(feature, start, end, strand);
+						protoFeatures.put(str, protoFeature);
+					}
+
 				}
+
 			}
 
 			for(Transcript t : groupedFeatures.values()) {
-				annotationSet.addFeature(t.feature());
+				annotationSet.addFeature(t.getFeature());
 			}
+			
+			for(ProtoFeature pf : protoFeatures.values()) {
+				annotationSet.addFeature(pf.getFeature());
+			}
+			
 					
 		} catch (Exception ex) {
 			throw ex;
@@ -279,6 +303,8 @@ public class GTFAnnotationParser extends AnnotationParser {
 				}
 			}
 		}
+
+
 	}
 
 	private String getTranscriptIDFromAttributes (String attribString) throws Exception {
@@ -297,75 +323,6 @@ public class GTFAnnotationParser extends AnnotationParser {
 
 	}
 
-	
-	
-	/**
-	 * The Class featureGroup.
-	 */
-	private class Transcript {
-
-		/** The feature. */
-		private Feature feature;
-
-		/** The sub locations. */
-		private ArrayList<Location> subLocations = new ArrayList<Location>();
-
-		private int startCodon;
-		private int stopCodon;
-
-		/** The location */
-		private Location location;
-
-		/**
-		 * Instantiates a new feature group.
-		 * 
-		 * @param feature the feature
-		 * @param strand the strand
-		 * @param location the location
-		 */
-		public Transcript (Feature feature) {
-			this.feature = feature;
-		}
-
-		/**
-		 * Adds a sublocation.
-		 * 
-		 * @param location the location
-		 */
-		public void addSublocation (Location location) {
-			subLocations.add(location);
-		}
-
-		public void addStartCodon (int startCodon) {
-			this.startCodon = startCodon;
-		}
-
-		public void addStopCodon (int stopCodon) {
-			this.stopCodon = stopCodon;
-		}
-
-
-		/**
-		 * Feature.
-		 * 
-		 * @return the feature
-		 */
-		public Feature feature () {
-			if (subLocations.size() == 0) {
-				feature.setLocation(location);					
-			}
-			else if (subLocations.size() == 1) {
-				feature.setLocation(subLocations.get(0));					
-			}
-			else {
-				feature.setLocation(new SplitLocation(subLocations.toArray(new Location[0])));
-			}
-
-			return feature;
-		}
-		
-
-	}
 
 }
 

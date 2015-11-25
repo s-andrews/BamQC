@@ -19,9 +19,10 @@
  */
 package uk.ac.babraham.BamQC.DataTypes.Genome;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -43,9 +44,8 @@ public class FeatureSubclass {
 
 	private AnnotationSet annotationSet;
 
-	private HashMap<Chromosome, ArrayList<Feature>> featuresRaw = new HashMap<Chromosome, ArrayList<Feature>>();
+	private HashMap<Chromosome, ArrayList<Feature>> features = new HashMap<Chromosome, ArrayList<Feature>>();
 	
-	private HashMap<Chromosome, Feature[]> features = null;
 	private HashMap<Chromosome, int[]> indices = null;
 	
 	
@@ -54,7 +54,7 @@ public class FeatureSubclass {
 	private int currRecordAlignmentStart = 0;
 	private int currRecordAlignmentEnd = 0;
 	private Chromosome currChromosome = null;
-	private Feature[] currChromosomeFeatures = null;
+	private ArrayList<Feature> currChromosomeFeatures = null;
 	private int[] currChromosomeIndices = null;
 	
 	
@@ -70,18 +70,18 @@ public class FeatureSubclass {
 	}
 	
 	public void addFeature (Feature f) {
-		if (features != null) throw new IllegalStateException("Can't add more features after sending data");
-		if (!featuresRaw.containsKey(f.chr())) {
-			featuresRaw.put(f.chr(), new ArrayList<Feature>());
+		if (indices != null) throw new IllegalStateException("Can't add more features after sending data");
+		if (!features.containsKey(f.chr())) {
+			features.put(f.chr(), new ArrayList<Feature>());
 		}
 		
-		featuresRaw.get(f.chr()).add(f);
+		features.get(f.chr()).add(f);
 	}
 	
 	
 	public void processSequence (ShortRead r) {
 		
-		if (features == null) {
+		if (indices == null) {
 			processFeatures();
 		}
 	
@@ -110,9 +110,9 @@ public class FeatureSubclass {
 			return;
 		}
 		
-		for (int i = currChromosomeIndices[binStart]; i < currChromosomeFeatures.length && 
-      		currChromosomeFeatures[i].location().start() < currRecordAlignmentEnd; i++) {
-			if (currChromosomeFeatures[i].location().end() > currRecordAlignmentStart) {	
+		for (int i = currChromosomeIndices[binStart]; i < currChromosomeFeatures.size() && 
+      		currChromosomeFeatures.get(i).location().start() < currRecordAlignmentEnd; i++) {
+			if (currChromosomeFeatures.get(i).location().end() > currRecordAlignmentStart) {	
 				count++;
 				break;		
 			}
@@ -122,30 +122,26 @@ public class FeatureSubclass {
 	
 	private void processFeatures () {
 		
-		features = new HashMap<Chromosome, Feature[]>();
 		indices = new HashMap<Chromosome, int[]>();
 		
-		Chromosome [] chromosomes = featuresRaw.keySet().toArray(new Chromosome[0]);
-		
-		for (int c=0;c<chromosomes.length;c++) {
+		for(Entry<Chromosome, ArrayList<Feature>> entry : features.entrySet()) {
+			Chromosome chromosome = entry.getKey();
+			ArrayList<Feature> chromosomeFeatures = entry.getValue();
 
-			Feature [] featuresForThisChromosome = featuresRaw.get(chromosomes[c]).toArray(new Feature[0]);
-			
-			Arrays.sort(featuresForThisChromosome);
-	
-			features.put(chromosomes[c],featuresForThisChromosome);
-					
-			int numberOfBinsNeeded = (chromosomes[c].length()/SEQUENCE_CHUNK_LENGTH)+1;
-			if (!(chromosomes[c].length() % SEQUENCE_CHUNK_LENGTH == 0)) numberOfBinsNeeded++;
+			// Sort features by their location
+			Collections.sort(chromosomeFeatures);
+						
+			int numberOfBinsNeeded = (chromosome.length()/SEQUENCE_CHUNK_LENGTH)+1;
+			if (!(chromosome.length() % SEQUENCE_CHUNK_LENGTH == 0)) numberOfBinsNeeded++;
 			
 			int [] indicesForThisChromsome = new int[numberOfBinsNeeded];
 			indicesForThisChromsome[0] = 0;
-			indices.put(chromosomes[c],indicesForThisChromsome);
+			indices.put(chromosome,indicesForThisChromsome);
 			
 			int lastBin = 0;
 			
-			for (int f=0;f<featuresForThisChromosome.length;f++) {
-				int startBin = featuresForThisChromosome[f].location().start()/SEQUENCE_CHUNK_LENGTH;
+			for (int f=0;f<chromosomeFeatures.size();f++) {
+				int startBin = chromosomeFeatures.get(f).location().start()/SEQUENCE_CHUNK_LENGTH;
 
 				if (startBin > lastBin) {
 					for (int i=lastBin+1;i<=startBin;i++) {
@@ -155,7 +151,6 @@ public class FeatureSubclass {
 				}
 			}				
 		}
-		featuresRaw = null;	
 	}
 	
 	

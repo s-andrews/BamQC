@@ -86,7 +86,7 @@ public class FeatureCoverage extends AbstractQCModule {
 
 	@Override
 	public JPanel getResultsPanel() {
-		return new HorizontalBarGraph(featureNames, readCounts, "", "Feature Type Read Counts");
+		return new HorizontalBarGraph(featureNames, readCounts, "Number of Features", "Feature Type Read Counts");
 	}
 
 	@Override
