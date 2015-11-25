@@ -239,7 +239,7 @@ public class GFF3AnnotationParser extends AnnotationParser {
 							if (!groupedFeatures.containsKey(sections[2]+"_"+parents[p])) {
 								// Make a new feature to which we can add this
 								Feature feature = new Feature(sections[2],c);
-								groupedFeatures.put(sections[2]+"_"+parents[p], new FeatureGroup(feature, strand, feature.location()));
+								groupedFeatures.put(sections[2]+"_"+parents[p], new FeatureGroup(feature));
 							}	
 							groupedFeatures.get(sections[2]+"_"+parents[p]).addSublocation(new Location(start, end, strand));
 
@@ -257,26 +257,19 @@ public class GFF3AnnotationParser extends AnnotationParser {
 
 						if (! groupedFeatures.containsKey(sections[2]+"_"+keyValuePairs.get("transcript_id").get(0))) {
 							Feature feature = new Feature(sections[2],c);
-
-							groupedFeatures.put(sections[2]+"_"+keyValuePairs.get("transcript_id").get(0), new FeatureGroup(feature, strand, feature.location()));
+							groupedFeatures.put(sections[2]+"_"+keyValuePairs.get("transcript_id").get(0), new FeatureGroup(feature));
 						}						
-
 						groupedFeatures.get(sections[2]+"_"+keyValuePairs.get("transcript_id").get(0)).addSublocation(new Location(start, end, strand));
 					}
 
 					else {
 						// If we get here we're making a feature with attributes
-
-						Feature feature = new Feature(sections[2],c);
-						feature.setLocation(new Location(start,end,strand));
 						if (keyValuePairs.containsKey("ID")) {
 							// This is a feature which may end up having subfeatures
-							groupedFeatures.put(sections[2]+"_"+keyValuePairs.get("ID").get(0), new FeatureGroup(feature, strand, feature.location()));				
+							Feature feature = new Feature(sections[2],c);
+							groupedFeatures.put(sections[2]+"_"+keyValuePairs.get("ID").get(0), new FeatureGroup(feature));
 						}
-						else {
-							// We can just add this to the annotation collection
-							annotationSet.addFeature(feature);
-						}
+						groupedFeatures.get(sections[2]+"_"+keyValuePairs.get("ID").get(0)).addSublocation(new Location(start,end,strand));
 					}
 
 				}
@@ -291,7 +284,7 @@ public class GFF3AnnotationParser extends AnnotationParser {
 			}
 			// Now go through the grouped features adding them to the annotation set	
 			for(FeatureGroup fg : groupedFeatures.values()) {
-				annotationSet.addFeature(fg.feature());
+				annotationSet.addFeature(fg.getFeature());
 			}
 			
 		} catch(Exception ex) {
@@ -308,64 +301,6 @@ public class GFF3AnnotationParser extends AnnotationParser {
 				}
 			}
 		}
-
-	}
-
-	
-	
-	/**
-	 * The Class featureGroup.
-	 */
-	private class FeatureGroup {
-
-		/** The feature. */
-		private Feature feature;
-
-		/** The sub locations. */
-		private ArrayList<Location> subLocations = new ArrayList<Location>();
-		
-		/** The location */
-		private Location location;
-
-		/**
-		 * Instantiates a new feature group.
-		 * 
-		 * @param feature the feature
-		 * @param strand the strand
-		 * @param location the location
-		 */
-		public FeatureGroup (Feature feature, int strand, Location location) {
-			this.feature = feature;
-			this.location = location;
-		}
-
-		/**
-		 * Adds a sublocation.
-		 * 
-		 * @param location the location
-		 */
-		public void addSublocation (Location location) {
-			subLocations.add(location);
-		}
-
-		/**
-		 * Feature.
-		 * 
-		 * @return the feature
-		 */
-		public Feature feature () {
-				if (subLocations.size() == 0) {
-					feature.setLocation(location);					
-				}
-				else if (subLocations.size() == 1) {
-					feature.setLocation(subLocations.get(0));					
-				}
-				else {
-					feature.setLocation(new SplitLocation(subLocations.toArray(new Location[0])));
-				}
-			return feature;
-		}
-
 
 	}
 

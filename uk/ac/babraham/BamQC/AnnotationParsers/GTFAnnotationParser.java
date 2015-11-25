@@ -203,7 +203,6 @@ public class GTFAnnotationParser extends AnnotationParser {
 					// We need to get the transcript id.
 					String transcriptID = getTranscriptIDFromAttributes(sections[8]);
 					groupedFeatures.put(transcriptID, transcript);
-
 				}
 
 				else if (sections[2].equals("exon")) {
@@ -257,42 +256,16 @@ public class GTFAnnotationParser extends AnnotationParser {
 					// We assume that anything else we don't understand is a single span feature
 					// class so we just enter it directly.
 
-				  // TODO THIS CODE HERE CAN BE DETRIMENTAL FOR COMPUTATION
+				  // THIS CODE HERE CAN BE DETRIMENTAL FOR COMPUTATION
 				  // The creation of the annotation set can fail if the file is too large.
 				  // There are just too many objects which can cause a GC crash
 					//Feature feature = new Feature(sections[2],sections[1],c);
 					//feature.setLocation(new Location(start,end,strand));
 					//annotationSet.addFeature(feature);
 					
-				  // POSSIBLY A SOLUTION is that we group these features as well (maybe in another HashMap 
-				  // if we need to keep these distinct, but possibly not). Anyway, this would not solve the 
-				  // problem because the HashMap would simply become too large. The solution would be that 
-				  // we adjust the sublocation array ( using splitLocation() ) after a certain number of 
-				  // features inserted. That method could become handy to compact these locations so that 
-				  // not much space is used.
-//					Feature feature = new Feature(sections[2],sections[1],c);
-//	        		Transcript transcript = new Transcript(feature);
-//	        		transcript.addSublocation(new Location(start,end,strand));
-//	        		groupedFeatures.put(sections[2]+"_"+sections[1], transcript);
-//				}
-//				if(percent%10 == 0) {
-//					  for(Transcript t : groupedFeatures.values()) {
-//					    t.compact();
-//					  }
-//				}
-					
-				  
-				  // OKAY SOLUTION 2: Instead of using sublocations or locations, the extremes start, end and strand 
-				  // are saved. Every time you process a new feature, you store the feature and the values above. 
-				  // Instead of adding a new locations to the array of sublocaitons, just pass those three values 
-				  // and compare them with the current stored ones. This is equivalent to a sort+SplitLocation+etc. 
-				  // When the method feature() is called, this just create 1 location with the values start, end and 
-				  // strand; add this location to feature and return the usual. 
-				  // There is no need to do any call to the method compact().
-				  // Might be worth extracting the object FeatureGroup and call it differently (e.g. ProtoFeature). 
-				  // Transcript would extend an object of type FeatureGroup including codons.
-				  // The parser should become quite faster because not much memory is used and the computation is similar. 
-				  // The parser of the following bam file should be fine too.
+				  // OKAY SOLUTION 2: Instead of using sublocations, only one location is saved. We do something similar 
+				  // to the SplitLocation algorithm, but immediately instead of saving all the locations, sorting them, 
+				  // and then extract the values from the smaller and the larger. 
 					String str = sections[2]+"_"+sections[1];
 					if(protoFeatures.containsKey(str)) {
 						protoFeatures.get(str).update(start, end, strand);
@@ -307,7 +280,7 @@ public class GTFAnnotationParser extends AnnotationParser {
 			}
 
 			for(Transcript t : groupedFeatures.values()) {
-				annotationSet.addFeature(t.feature());
+				annotationSet.addFeature(t.getFeature());
 			}
 			
 			for(ProtoFeature pf : protoFeatures.values()) {
@@ -349,84 +322,6 @@ public class GTFAnnotationParser extends AnnotationParser {
 
 	}
 
-	
-	
-	/**
-	 * The Class featureGroup.
-	 */
-	private class Transcript {
-
-		/** The feature. */
-		private Feature feature;
-
-		/** The sub locations. */
-		private ArrayList<Location> subLocations = new ArrayList<Location>();
-
-		private int startCodon;
-		private int stopCodon;
-
-		/** The location */
-		private Location location;
-
-		/**
-		 * Instantiates a new feature group.
-		 * 
-		 * @param feature the feature
-		 * @param strand the strand
-		 * @param location the location
-		 */
-		public Transcript (Feature feature) {
-			this.feature = feature;
-		}
-
-		/**
-		 * Adds a sublocation.
-		 * 
-		 * @param location the location
-		 */
-		public void addSublocation (Location location) {
-			subLocations.add(location);
-		}
-
-		public void addStartCodon (int startCodon) {
-			this.startCodon = startCodon;
-		}
-
-		public void addStopCodon (int stopCodon) {
-			this.stopCodon = stopCodon;
-		}
-
-
-		/**
-		 * Feature.
-		 * 
-		 * @return the feature
-		 */
-		public Feature feature () {
-			if (subLocations.size() == 0) {
-				feature.setLocation(location);					
-			}
-			else if (subLocations.size() == 1) {
-				feature.setLocation(subLocations.get(0));					
-			}
-			else {
-				feature.setLocation(new SplitLocation(subLocations.toArray(new Location[0])));
-			}
-
-			return feature;
-		}
-
-    public void compact() {
-    	if (subLocations.size() > 100000) {          
-    		Location compactedLocation = new SplitLocation(subLocations.toArray(new Location[0]));
-    		subLocations.clear();
-    		subLocations.add(compactedLocation);
-    	}
-    }
-		
-
-   }
-	
 
 }
 
