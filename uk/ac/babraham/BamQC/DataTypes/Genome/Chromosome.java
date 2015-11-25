@@ -49,13 +49,11 @@ public class Chromosome implements Comparable<Chromosome>, Serializable {
 		this.length = length;
 		
 		int maxBin = length/COVERAGE_BIN_SIZE;
-		
+				
 		if (coverageBins.length<=maxBin) {
-			long [] elongatedBins = new long[maxBin+1];
-			for (int i=0;i<coverageBins.length;i++) {
-				elongatedBins[i] = coverageBins[i];
-			}
-			coverageBins = elongatedBins;
+			long[] oldCoverageBins = coverageBins;
+			coverageBins = new long[maxBin+1];	
+			System.arraycopy(oldCoverageBins, 0, coverageBins, 0, oldCoverageBins.length);
 		}
 		
 	}
@@ -79,17 +77,14 @@ public class Chromosome implements Comparable<Chromosome>, Serializable {
 			length = record.getAlignmentEnd();
 		}
 		
-		int bin = record.getAlignmentStart()/COVERAGE_BIN_SIZE;
+		int maxBin = record.getAlignmentStart()/COVERAGE_BIN_SIZE;
 		
-		if (bin >= coverageBins.length) {
-			long [] elongatedBins = new long[bin+1];
-			for (int i=0;i<coverageBins.length;i++) {
-				elongatedBins[i] = coverageBins[i];
-			}
-			coverageBins = elongatedBins;
+		if (coverageBins.length<=maxBin) {
+			long[] oldCoverageBins = coverageBins;
+			coverageBins = new long[maxBin+1];	
+			System.arraycopy(oldCoverageBins, 0, coverageBins, 0, oldCoverageBins.length);
 		}
-		
-		coverageBins[bin]++;
+		coverageBins[maxBin]++;
 		
 	}
 	
