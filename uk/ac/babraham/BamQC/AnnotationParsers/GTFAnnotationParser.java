@@ -86,6 +86,7 @@ public class GTFAnnotationParser extends AnnotationParser {
 		annotationSet.setFile(file);
 		
 		HashMap<String, Transcript> groupedFeatures = new HashMap<String, Transcript>();
+		HashMap<String, ProtoFeature> protoFeatures = new HashMap<String, ProtoFeature>();
 		BufferedReader br = null;
 		
 		
@@ -255,15 +256,64 @@ public class GTFAnnotationParser extends AnnotationParser {
 				else {
 					// We assume that anything else we don't understand is a single span feature
 					// class so we just enter it directly.
-					Feature feature = new Feature(sections[2],sections[1],c);
-					feature.setLocation(new Location(start,end,strand));
-					annotationSet.addFeature(feature);
+
+				  // TODO THIS CODE HERE CAN BE DETRIMENTAL FOR COMPUTATION
+				  // The creation of the annotation set can fail if the file is too large.
+				  // There are just too many objects which can cause a GC crash
+					//Feature feature = new Feature(sections[2],sections[1],c);
+					//feature.setLocation(new Location(start,end,strand));
+					//annotationSet.addFeature(feature);
+					
+				  // POSSIBLY A SOLUTION is that we group these features as well (maybe in another HashMap 
+				  // if we need to keep these distinct, but possibly not). Anyway, this would not solve the 
+				  // problem because the HashMap would simply become too large. The solution would be that 
+				  // we adjust the sublocation array ( using splitLocation() ) after a certain number of 
+				  // features inserted. That method could become handy to compact these locations so that 
+				  // not much space is used.
+//					Feature feature = new Feature(sections[2],sections[1],c);
+//	        		Transcript transcript = new Transcript(feature);
+//	        		transcript.addSublocation(new Location(start,end,strand));
+//	        		groupedFeatures.put(sections[2]+"_"+sections[1], transcript);
+//				}
+//				if(percent%10 == 0) {
+//					  for(Transcript t : groupedFeatures.values()) {
+//					    t.compact();
+//					  }
+//				}
+					
+				  
+				  // OKAY SOLUTION 2: Instead of using sublocations or locations, the extremes start, end and strand 
+				  // are saved. Every time you process a new feature, you store the feature and the values above. 
+				  // Instead of adding a new locations to the array of sublocaitons, just pass those three values 
+				  // and compare them with the current stored ones. This is equivalent to a sort+SplitLocation+etc. 
+				  // When the method feature() is called, this just create 1 location with the values start, end and 
+				  // strand; add this location to feature and return the usual. 
+				  // There is no need to do any call to the method compact().
+				  // Might be worth extracting the object FeatureGroup and call it differently (e.g. ProtoFeature). 
+				  // Transcript would extend an object of type FeatureGroup including codons.
+				  // The parser should become quite faster because not much memory is used and the computation is similar. 
+				  // The parser of the following bam file should be fine too.
+					String str = sections[2]+"_"+sections[1];
+					if(protoFeatures.containsKey(str)) {
+						protoFeatures.get(str).update(start, end, strand);
+					} else {
+						Feature feature = new Feature(sections[2],sections[1],c);
+						ProtoFeature protoFeature = new ProtoFeature(feature, start, end, strand);
+						protoFeatures.put(str, protoFeature);
+					}
 				}
+
+
 			}
 
 			for(Transcript t : groupedFeatures.values()) {
 				annotationSet.addFeature(t.feature());
 			}
+			
+			for(ProtoFeature pf : protoFeatures.values()) {
+				annotationSet.addFeature(pf.getFeature());
+			}
+			
 					
 		} catch (Exception ex) {
 			throw ex;
@@ -279,6 +329,8 @@ public class GTFAnnotationParser extends AnnotationParser {
 				}
 			}
 		}
+
+
 	}
 
 	private String getTranscriptIDFromAttributes (String attribString) throws Exception {
@@ -363,9 +415,18 @@ public class GTFAnnotationParser extends AnnotationParser {
 
 			return feature;
 		}
+
+    public void compact() {
+    	if (subLocations.size() > 100000) {          
+    		Location compactedLocation = new SplitLocation(subLocations.toArray(new Location[0]));
+    		subLocations.clear();
+    		subLocations.add(compactedLocation);
+    	}
+    }
 		
 
-	}
+   }
+	
 
 }
 
