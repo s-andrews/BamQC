@@ -22,6 +22,8 @@ package uk.ac.babraham.BamQC.DataTypes.Genome;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -125,22 +127,22 @@ public class FeatureSubclass {
 		features = new HashMap<Chromosome, Feature[]>();
 		indices = new HashMap<Chromosome, int[]>();
 		
-		Chromosome [] chromosomes = featuresRaw.keySet().toArray(new Chromosome[0]);
-		
-		for (int c=0;c<chromosomes.length;c++) {
+		for(Entry<Chromosome, ArrayList<Feature>> entry : featuresRaw.entrySet()) {
+			Chromosome chromosome = entry.getKey();
 
-			Feature [] featuresForThisChromosome = featuresRaw.get(chromosomes[c]).toArray(new Feature[0]);
+			Feature [] featuresForThisChromosome = entry.getValue().toArray(new Feature[0]);
 			
+			// Sort features by their location
 			Arrays.sort(featuresForThisChromosome);
 	
-			features.put(chromosomes[c],featuresForThisChromosome);
+			features.put(chromosome,featuresForThisChromosome);
 					
-			int numberOfBinsNeeded = (chromosomes[c].length()/SEQUENCE_CHUNK_LENGTH)+1;
-			if (!(chromosomes[c].length() % SEQUENCE_CHUNK_LENGTH == 0)) numberOfBinsNeeded++;
+			int numberOfBinsNeeded = (chromosome.length()/SEQUENCE_CHUNK_LENGTH)+1;
+			if (!(chromosome.length() % SEQUENCE_CHUNK_LENGTH == 0)) numberOfBinsNeeded++;
 			
 			int [] indicesForThisChromsome = new int[numberOfBinsNeeded];
 			indicesForThisChromsome[0] = 0;
-			indices.put(chromosomes[c],indicesForThisChromsome);
+			indices.put(chromosome,indicesForThisChromsome);
 			
 			int lastBin = 0;
 			
