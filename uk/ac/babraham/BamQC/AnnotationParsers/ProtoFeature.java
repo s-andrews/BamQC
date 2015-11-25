@@ -1,6 +1,5 @@
 package uk.ac.babraham.BamQC.AnnotationParsers;
 
-import java.util.Arrays;
 
 import uk.ac.babraham.BamQC.DataTypes.Genome.Feature;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Location;
@@ -11,16 +10,16 @@ import uk.ac.babraham.BamQC.DataTypes.Genome.Location;
 
 
 /**
- * The Class ProtoFeature.
+ * The Class ProtoFeature. This class represents a feature with temporary location 
+ * parameters which can still be updated. 
  */
 public class ProtoFeature {
 
 	/** The feature. */
-	private Feature feature;
+	protected Feature feature;
 	
-	private long value;
-	// cache the values including the LAST_31_BIT_MASK for start() and end() methods
-	private int startValue, endValue, strandValue;
+	protected long value;
+	protected int startValue, endValue, strandValue;
 	
 	
 	public static final int FORWARD = 1;

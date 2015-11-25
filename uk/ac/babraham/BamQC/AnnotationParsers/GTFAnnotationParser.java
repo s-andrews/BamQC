@@ -22,7 +22,6 @@ package uk.ac.babraham.BamQC.AnnotationParsers;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 
@@ -31,7 +30,6 @@ import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Feature;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Location;
-import uk.ac.babraham.BamQC.DataTypes.Genome.SplitLocation;
 
 
 /**
@@ -86,15 +84,15 @@ public class GTFAnnotationParser extends AnnotationParser {
 		annotationSet.setFile(file);
 		
 		HashMap<String, Transcript> groupedFeatures = new HashMap<String, Transcript>();
+		// This will contain all the other features (the else case)
 		HashMap<String, ProtoFeature> protoFeatures = new HashMap<String, ProtoFeature>();
+		
 		BufferedReader br = null;
-		
-		
+				
         long totalBytes = file.length();                    
         long bytesRead = 0;
         int previousPercent = 0;
 	
-        
 		try { 
 		
 			br = new BufferedReader(new FileReader(file));
@@ -255,17 +253,20 @@ public class GTFAnnotationParser extends AnnotationParser {
 				else {
 					// We assume that anything else we don't understand is a single span feature
 					// class so we just enter it directly.
-
-				  // THIS CODE HERE CAN BE DETRIMENTAL FOR COMPUTATION
-				  // The creation of the annotation set can fail if the file is too large.
-				  // There are just too many objects which can cause a GC crash
-					//Feature feature = new Feature(sections[2],sections[1],c);
-					//feature.setLocation(new Location(start,end,strand));
-					//annotationSet.addFeature(feature);
 					
-				  // OKAY SOLUTION 2: Instead of using sublocations, only one location is saved. We do something similar 
-				  // to the SplitLocation algorithm, but immediately instead of saving all the locations, sorting them, 
-				  // and then extract the values from the smaller and the larger. 
+					// THIS CODE HERE CAN BE DETRIMENTAL FOR COMPUTATION
+					// The creation of the annotation set can fail if the file is too large.
+					// There are just too many objects which can cause a GC crash
+					// This also causes a delay in the feature collection.
+					// and increase the analysis when the sam/bam file is parsed.
+//					Feature feature = new Feature(sections[2],sections[1],c);
+//					feature.setLocation(new Location(start,end,strand));
+//					annotationSet.addFeature(feature);
+						
+					// Instead of adding all these features separately or using sublocation mechanism 
+					// implemented in FeatureGroup, only one location is saved and kept updated. We do something similar 
+					// to the SplitLocation algorithm, but immediately instead of saving all the locations, sorting them, 
+					// and then extract the values from the smaller and the larger. 
 					String str = sections[2]+"_"+sections[1];
 					if(protoFeatures.containsKey(str)) {
 						protoFeatures.get(str).update(start, end, strand);
@@ -274,8 +275,8 @@ public class GTFAnnotationParser extends AnnotationParser {
 						ProtoFeature protoFeature = new ProtoFeature(feature, start, end, strand);
 						protoFeatures.put(str, protoFeature);
 					}
-				}
 
+				}
 
 			}
 
