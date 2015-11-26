@@ -125,25 +125,7 @@ public class BasicStatistics extends AbstractQCModule {
 		JPanel returnPanel = new JPanel();
 		returnPanel.setLayout(new BorderLayout());
 		returnPanel.add(new JLabel("Basic Statistics",JLabel.CENTER),BorderLayout.NORTH);
-
 				
-		// extract these results
-		// Variant Call Detection Summaries
-		if(vcd != null) {
-			totalSplicedReads = vcd.getTotalSplicedReads();
-			totalSkippedReads = vcd.getSkippedReads();
-			totalReadsWithoutMDString = vcd.getReadWithoutMDString();
-			totalReadsWithoutCigarString = vcd.getReadWithoutCigarString();
-			totalInconsistenReadsCigarMDString = vcd.getInconsistentCigarMDStrings();
-			variantCallDetectionTotalReads = vcd.getTotalReads();
-			totalSoftClips = vcd.getTotalSoftClips();
-			totalInsertions = vcd.getTotalInsertions();
-			totalDeletions = vcd.getTotalDeletions();
-			totalMutations = vcd.getTotalMutations();
-			totalBases = vcd.getTotal();
-		}
-		
-		
 		TableModel model = new ResultsTable();
 		JTable table = new JTable(model);
 		// add multi line per cell renderer to this table.
@@ -242,6 +224,8 @@ public class BasicStatistics extends AbstractQCModule {
 		
 		public ResultsTable() {
 			super();
+			
+			extractVariantCallStatistics();
 			
 			rowNames.add("File name");
 			rowValues.add(filename);
@@ -386,7 +370,24 @@ public class BasicStatistics extends AbstractQCModule {
 		
 	}
 
-
+	private void extractVariantCallStatistics() {
+		// extract these results
+		// Variant Call Detection Summaries
+		if(vcd != null) {
+			totalSplicedReads = vcd.getTotalSplicedReads();
+			totalSkippedReads = vcd.getSkippedReads();
+			totalReadsWithoutMDString = vcd.getReadWithoutMDString();
+			totalReadsWithoutCigarString = vcd.getReadWithoutCigarString();
+			totalInconsistenReadsCigarMDString = vcd.getInconsistentCigarMDStrings();
+			variantCallDetectionTotalReads = vcd.getTotalReads();
+			totalSoftClips = vcd.getTotalSoftClips();
+			totalInsertions = vcd.getTotalInsertions();
+			totalDeletions = vcd.getTotalDeletions();
+			totalMutations = vcd.getTotalMutations();
+			totalBases = vcd.getTotal();
+		}
+	}
+	
 	public String getFilename() {
 		return filename;
 	}
