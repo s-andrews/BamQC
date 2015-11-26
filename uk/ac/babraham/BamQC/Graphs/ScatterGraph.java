@@ -240,20 +240,30 @@ public class ScatterGraph extends JPanel {
 			LinearRegression linReg = new LinearRegression(inputVar, responseVar);
 			double intercept = linReg.intercept();
 			double slope = linReg.slope();
+
+			// Let's now calculate the two points (x1, y1) and (xn, yn)
+			// The point (x1, y1) is where the intercept crosses the x axis (since we are not interested 
+			// in what there is below): y=ax+b => ax+b=0 . Therefore (x1, y1) = (-b/a, 0). 
+			// The point (xn, yn) is the last point of our discrete intercept.
+			double x1 = -intercept / slope;			
 			double y1=0;
-			int index = 0;
-			for(int i=0; i<inputVar.length; i++) {
-				y1 = slope*inputVar[i] + intercept;
-				index = i;
-				if(y1>=0d) break;
+			if(x1 < 0) {
+				x1 = 0;
+				y1 = intercept;
 			}
-			double y2 = slope*inputVar[responseVar.length-1] + intercept;
+			
+			double xn = inputVar.length-1;
+			double yn = slope*inputVar[inputVar.length-1] + intercept;
+
+			// Note that y1 and yn are the actual points calculated from the intercept. These need to be "converted" 
+			// in real plot coordinates.
+			// x1 and xn represents the factors of baseWidth on the x-axis. 
 			
 			g.setColor(Color.RED);
-			g.drawLine((int)(xOffset + ((baseWidth * (index) + (baseWidth * (index+1)))/2)), 
+			g.drawLine((int)(xOffset + ((baseWidth * (x1) + (baseWidth * (x1+1)))/2)), 
 					   getY(y1), 
-					   (int)(xOffset + ((baseWidth * (inputVar.length-1)) + (baseWidth * (inputVar.length)))/2), 
-					   getY(y2));
+					   (int)(xOffset + ((baseWidth * (xn)) + (baseWidth * (xn+1)))/2), 
+					   getY(yn));
 			g.setColor(Color.BLACK);
 			
 			// Draw the legend for the intercept
