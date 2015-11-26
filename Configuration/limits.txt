@@ -32,16 +32,11 @@ GenomeCoverage_plot_separate_chromosomes	ignore		50
 GenomeCoverage_plot_bins_all_chromosomes   	ignore   	500		
 GenomeCoverage_plot_bins_per_chromosome   	ignore   	100
 
-		
 # Insert Length Distribution module
 InsertLengthDistribution_max_insert_size   		ignore   	5000.0
 InsertLengthDistribution_bin_size   			ignore   	25.0
 InsertLengthDistribution_percentage_deviation   error   	50.0
 InsertLengthDistribution_percentage_deviation   warn   		75.0
-
-# RpkmReference module
-RpkmReference_max_size   ignore   5000.0
-RpkmReference_bin_size   ignore   400.0
 		
 # MappingQualityDistribution module
 MappingQualityDistribution_fraction   error   	0.50
