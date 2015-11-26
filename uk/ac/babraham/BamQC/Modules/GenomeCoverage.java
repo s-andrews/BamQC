@@ -43,7 +43,6 @@ import uk.ac.babraham.BamQC.Modules.ModuleConfig;
 public class GenomeCoverage extends AbstractQCModule {
 
 	private static Logger log = Logger.getLogger(GenomeCoverage.class);
-	private int alwaysPlotSeparateChromosomes = ModuleConfig.getParam("GenomeCoverage_always_plot_separate_chromosomes", "ignore").intValue();
 	private int plotSeparateChromosomeThreshold = ModuleConfig.getParam("GenomeCoverage_plot_separate_chromosomes", "ignore").intValue();
 
 	private String [] chromosomeNames = null;
@@ -105,7 +104,7 @@ public class GenomeCoverage extends AbstractQCModule {
 
 		Chromosome [] chromosomes = annotation.chromosomeFactory().getAllChromosomes();
 		
-		if(alwaysPlotSeparateChromosomes > 0 || chromosomes.length <= plotSeparateChromosomeThreshold) {
+		if(chromosomes.length <= plotSeparateChromosomeThreshold) {
 			// This will plot the chromosomes from 1 (top) to n (bottom)
 			Arrays.sort(chromosomes, Collections.reverseOrder());
 		} else {
@@ -134,7 +133,7 @@ public class GenomeCoverage extends AbstractQCModule {
 		// configuration of how many bins per chromosome we want to plot.
 		// This is the number of bins per chromosome for the official plot getResultsPanel()
 		int plotBinsPerChromosome = 0; 
-		if(alwaysPlotSeparateChromosomes > 0 || noBinCountChromosomes == chromosomes.length) {
+		if(noBinCountChromosomes == chromosomes.length) {
 			plotBinsPerChromosome = ModuleConfig.getParam("GenomeCoverage_plot_bins_per_chromosome", "ignore").intValue();
 		} else {
 			plotBinsPerChromosome = ModuleConfig.getParam("GenomeCoverage_plot_bins_all_chromosomes", "ignore").intValue() / (chromosomes.length - noBinCountChromosomes);
@@ -224,7 +223,7 @@ public class GenomeCoverage extends AbstractQCModule {
 				chromosomeNames[i] = chromosomeNames[i].substring(3);
 		}
 		
-		if(alwaysPlotSeparateChromosomes > 0 || chromosomeNames.length <= plotSeparateChromosomeThreshold) {
+		if(chromosomeNames.length <= plotSeparateChromosomeThreshold) {
 			// plots the genome coverage for each chromosome separately
 			return getSeparateChromosomeResultsPanel();
 		}
