@@ -60,45 +60,45 @@ public class ProtoFeature {
 
 		
 // Equivalent code for two intervals (Don't think this is correct though.. )
-//		if(startValue > newStartValue) {
-//			setPosition(newStartValue, endValue, strand);
-//		} else if(endValue > newEndValue) {
-//			setPosition(newStartValue, endValue, strand);
-//		} else if(strandValue > strand) {
-//			setPosition(newStartValue, endValue, strand);
-//		} else {
-//			setPosition(startValue, newEndValue, strandValue);
-//		}
+		if(startValue > newStartValue) {
+			setPosition(newStartValue, endValue, strand);
+		} else if(endValue > newEndValue) {
+			setPosition(newStartValue, endValue, strand);
+		} else if(strandValue > strand) {
+			setPosition(newStartValue, endValue, strand);
+		} else {
+			setPosition(startValue, newEndValue, strandValue);
+		}
 		
 // new code (TO TEST)
-		if(startValue <= newStartValue) {
-		  // A1 <= B1  ---> A1
-		  if(endValue < newStartValue) {
-		    // ---> A2		  
-		    // Do nothing
-		  } else if(endValue < newEndValue) {
-        // A2 >= B1
-		    // ---> B2
-	      setPosition(startValue, newEndValue, strandValue);
-		  } else {
-		    // A2 >= B2
-		    // ---> A2
-		    // Do nothing
-		  }
-		} else {
-		  // A1 > B1  ---> B1
-		    if(startValue > newEndValue) {
-		      // --- > B2
-	        setPosition(newStartValue, newEndValue, strand);
-		    } else if(endValue > newEndValue) {
-		      // A1 <= B2
-		      // ---> A2
-          setPosition(newStartValue, endValue, strand);
-		    } else {
-		      // A2 <= B2
-          setPosition(newStartValue, newEndValue, strand);
-		    }
-		}
+//		if(startValue <= newStartValue) {
+//		  // A1 <= B1  ---> A1
+//		  if(endValue < newStartValue) {
+//		    // ---> A2		  
+//		    // Do nothing
+//		  } else if(endValue < newEndValue) {
+//        // A2 >= B1
+//		    // ---> B2
+//	      setPosition(startValue, newEndValue, strandValue);
+//		  } else {
+//		    // A2 >= B2
+//		    // ---> A2
+//		    // Do nothing
+//		  }
+//		} else {
+//		  // A1 > B1  ---> B1
+//		    if(startValue > newEndValue) {
+//		      // --- > B2
+//	        setPosition(newStartValue, newEndValue, strand);
+//		    } else if(endValue > newEndValue) {
+//		      // A1 <= B2
+//		      // ---> A2
+//          setPosition(newStartValue, endValue, strand);
+//		    } else {
+//		      // A2 <= B2
+//          setPosition(newStartValue, newEndValue, strand);
+//		    }
+//		}
 	
 		
 	}
