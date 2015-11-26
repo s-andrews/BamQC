@@ -75,9 +75,9 @@ public class ModuleFactory {
 			selectedModules.add(new InsertLengthDistribution());
 		}
 		// TODO: this module is not ready yet
-//		if(ModuleConfig.getParam("RpkmReference", "ignore") == 0) {
-//			selectedModules.add(new RpkmReference());
-//		}
+		if(ModuleConfig.getParam("RpkmReference", "ignore") == 0) {
+			selectedModules.add(new RpkmReference());
+		}
 		
 		return selectedModules.toArray(new QCModule[0]);
 	}

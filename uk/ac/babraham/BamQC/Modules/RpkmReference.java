@@ -148,16 +148,10 @@ public class RpkmReference extends AbstractQCModule {
 	}
 
 	@Override
-	public void processFile(SequenceFile file) {
-		// TODO Auto-generated method stub
-
-	}
+	public void processFile(SequenceFile file) { }
 
 	@Override
-	public void processAnnotationSet(AnnotationSet annotation) {
-		// TODO Auto-generated method stub
-
-	}
+	public void processAnnotationSet(AnnotationSet annotation) { }
 
 	@Override
 	public JPanel getResultsPanel() {
@@ -169,27 +163,34 @@ public class RpkmReference extends AbstractQCModule {
 		distributionDouble = cd.getDistributionDouble();
 		
 
-		String title = String.format("Reads per KB per MB");
+		String title = String.format("Reads per kB per MB");
 		String xLabel = "Bases bp";
 		String yLabel = "Reads";
 
-		//return new BarGraph(graphCounts, 0.0, max, "Bases bp", xCategories, title);
-		
-		double min=0, max=0;
-		int[] xCategories = new int[coverage.length];
-		for(int i=0; i<coverage.length; i++) {
-			if(min>coverage[i])
-				min = coverage[i];
-			else if(max<coverage[i]) 
-				max = coverage[i];
-			xCategories[i] = i;	
+		double min=Double.MAX_VALUE, max=Double.MIN_VALUE;
+		for(int i=0; i<graphCounts.length; i++) {
+			if(min>graphCounts[i])
+				min = graphCounts[i];
+			else if(max<graphCounts[i]) 
+				max = graphCounts[i];
 		}	
-		return new BarGraph(coverage, min, max, xLabel, yLabel, xCategories, title);
+		return new BarGraph(graphCounts, 0.0, max, xLabel, yLabel, xCategories, title);
+		
+		
+//		int[] xCategories = new int[coverage.length];
+//		for(int i=0; i<coverage.length; i++) {
+//			if(min>coverage[i])
+//				min = coverage[i];
+//			else if(max<coverage[i]) 
+//				max = coverage[i];
+//			xCategories[i] = i;	
+//		}	
+//		return new BarGraph(coverage, min, max, xLabel, yLabel, xCategories, title);
 	}
 
 	@Override
 	public String name() {
-		return "Reads per KB per MB";
+		return "Reads per kB per MB";
 	}
 
 	@Override

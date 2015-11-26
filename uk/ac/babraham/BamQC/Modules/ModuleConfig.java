@@ -71,7 +71,7 @@ public class ModuleConfig {
 		params.put("IndelFrequencies:ignore",0d);
 		params.put("InsertLengthDistribution:ignore",0d);
 		params.put("MappingQualityDistribution:ignore",0d);
-		//params.put("RpkmReference:ignore",1d);   // ignore this module
+		params.put("RpkmReference:ignore",1d);                // ignore this module
 		params.put("SequenceQualityDistribution:ignore",1d);  // ignore this module
 		params.put("SNPFrequencies:ignore",0d);
 		params.put("SNPFrequenciesByType:ignore",0d);

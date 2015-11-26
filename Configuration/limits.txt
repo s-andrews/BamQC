@@ -42,5 +42,3 @@ InsertLengthDistribution_percentage_deviation   warn   		75.0
 MappingQualityDistribution_fraction   error   	0.50
 MappingQualityDistribution_fraction   warn   	0.75
 
-
-
