@@ -42,8 +42,6 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 public class ChromosomeReadDensity extends AbstractQCModule {
 
 	private String [] chromosomeNames;
-	@Deprecated // TODO remove after testing new plot
-	private double [] readDensities;
 	private double [] logReadNumber;
 	private double [] logChromosomeLength;
 	
@@ -52,34 +50,6 @@ public class ChromosomeReadDensity extends AbstractQCModule {
 
 	@Override
 	public void processFile(SequenceFile file) {}
-
-	// TODO REMOVE once replaced with new plot
-	@Deprecated 
-	private void processAnnotationSetDeprecated(AnnotationSet annotation) {
-
-		Chromosome [] chromosomes = annotation.chromosomeFactory().getAllChromosomes();
-		
-		ArrayList<Chromosome> keptChromosomes = new ArrayList<Chromosome>();
-		
-		for (int c=0;c<chromosomes.length;c++) {
-			if (chromosomes[c].seqCount() > 0) {
-				keptChromosomes.add(chromosomes[c]);
-			}
-		}
-		
-		chromosomes = keptChromosomes.toArray(new Chromosome[0]);
-		
-		Arrays.sort(chromosomes);
-		
-		chromosomeNames = new String [chromosomes.length];
-		readDensities = new double[chromosomes.length];
-		
-		for (int c=0;c<chromosomes.length;c++) {
-			chromosomeNames[c] = chromosomes[c].name();
-			readDensities[c] = chromosomes[c].seqCount()/(chromosomes[c].length()/1000f);			
-		}
-	}
-	
 	
 	@Override
 	public void processAnnotationSet(AnnotationSet annotation) {
@@ -129,8 +99,6 @@ public class ChromosomeReadDensity extends AbstractQCModule {
 	
 	@Override
 	public JPanel getResultsPanel() {
-		// TODO REMOVE once replaced with new plot
-		// return new HorizontalBarGraph(chromosomeNames, readDensities, "Per-chromosome read density");
 
 		String title = "Chromosome Read Density";
 		String[] xCategories;
@@ -224,11 +192,6 @@ public class ChromosomeReadDensity extends AbstractQCModule {
 
 	public String[] getChromosomeNames() {
 		return chromosomeNames;
-	}
-
-	@Deprecated
-	public double[] getReadDensities() {
-		return readDensities;
 	}
 
 	public double[] getLogReadNumber() {
