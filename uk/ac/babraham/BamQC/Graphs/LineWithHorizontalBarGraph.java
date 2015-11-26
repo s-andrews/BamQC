@@ -47,11 +47,11 @@ public class LineWithHorizontalBarGraph extends JPanel {
 
 	private static final long serialVersionUID = -5947375412672203276L;
 	protected String [] barLabels;
-	protected String [] xTitles;
+	protected String xTitle;
 	protected String xLabel;
 	protected String barDataLabel;	
 	protected String [] xCategories;
-	protected double [][] lineData;
+	protected double [] lineData;
 	protected double [] barData;
 	protected String graphTitle;
 	protected double minY;
@@ -70,21 +70,21 @@ public class LineWithHorizontalBarGraph extends JPanel {
 	
 	protected static final Color [] COLOURS = new Color[] {new Color(220,0,0), new Color(0,0,220), new Color(0,220,0), Color.DARK_GRAY, Color.MAGENTA, Color.ORANGE,Color.YELLOW,Color.CYAN,Color.PINK,Color.LIGHT_GRAY};
 	
-	public LineWithHorizontalBarGraph(double[] barData, double[][] lineData, double minY, double maxY, String xLabel, String[] barLabels, String[] xTitles, int[] xCategories, String graphTitle, String barDataLabel) {
-		this(barData,lineData,minY,maxY,xLabel,barLabels, xTitles,new String[0],graphTitle, barDataLabel);
+	public LineWithHorizontalBarGraph(double[] barData, double[] lineData, double minY, double maxY, String xLabel, String[] barLabels, String xTitle, int[] xCategories, String graphTitle, String barDataLabel) {
+		this(barData,lineData,minY,maxY,xLabel,barLabels, xTitle,new String[0],graphTitle, barDataLabel);
 		this.xCategories = new String [xCategories.length];
 		for (int i=0;i<xCategories.length;i++) {
 			this.xCategories[i] = ""+xCategories[i];
 		}
 	}
 	
-	public LineWithHorizontalBarGraph(double[] barData, double[][] lineData, double minY, double maxY, String xLabel, String[] barLabels, String[] xTitles, String[] xCategories, String graphTitle, String barDataLabel) {
+	public LineWithHorizontalBarGraph(double[] barData, double[] lineData, double minY, double maxY, String xLabel, String[] barLabels, String xTitle, String[] xCategories, String graphTitle, String barDataLabel) {
 		this.barData = barData;
 		this.lineData = lineData;
 		this.minY = minY;
 		this.maxY = maxY;
 		this.barLabels = barLabels;		
-		this.xTitles = xTitles;
+		this.xTitle = xTitle;
 		this.xLabel = xLabel;
 		this.xCategories = xCategories;
 		this.graphTitle = graphTitle;
@@ -168,15 +168,14 @@ public class LineWithHorizontalBarGraph extends JPanel {
 		int xOffsetLineGraph = 0;
 
 		double midY = minY+((maxY-minY)/2);
-		for (int d=0;d<lineData.length;d++) {
-			String label = xTitles[d];
-			int width = g.getFontMetrics().stringWidth(label);
-			if (width > xOffsetLineGraph) {
-				xOffsetLineGraph = width;
-			}
-			g.drawString(label, 2, getY(midY,d)+(g.getFontMetrics().getAscent()/2));
-			
+
+		String label = xTitle;
+		int width = g.getFontMetrics().stringWidth(label);
+		if (width > xOffsetLineGraph) {
+			xOffsetLineGraph = width;
 		}
+		g.drawString(label, 2, getY(midY)+(g.getFontMetrics().getAscent()/2));
+
 		// calculate maxX
 		maxX=0;
 		for(int i=0; i<barData.length; i++) {
@@ -276,34 +275,31 @@ public class LineWithHorizontalBarGraph extends JPanel {
 		// Let's find the longest label, and then work out how often we can draw labels
 		double baseWidth = 1;	
 		int lastY = 0;
-		// check that there is some data
-		if(lineData.length > 0) {
-			// Now draw the data points
-			// Set the width for the plot line
-			baseWidth = 1.0*(cumulativeXOffset)/lineData[0].length;			
 
-			int lastXLabelEnd = 0;
-			for(int i=0; i<lineData[0].length; i++) {
-				//String baseNumber = ""+xCategories[i];
-				//baseNumber = FormatNumber.compactInteger(baseNumber);
-				String baseNumber = FormatNumber.convertToScientificNotation(xCategories[i]);
-				baseNumber = baseNumber.replaceAll(".0$", ""); // Don't leave trailing .0s where we don't need them.
-				int baseNumberWidth = g.getFontMetrics().stringWidth(baseNumber);
-				int baseNumberPosition =  (int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*i)-(baseNumberWidth/2));
-				
-				if (baseNumberPosition > lastXLabelEnd) {
-					g.drawString(baseNumber,baseNumberPosition, getHeight()-25);
-					lastXLabelEnd = baseNumberPosition+baseNumberWidth+5;
-				}
+		// Now draw the data points
+		// Set the width for the plot line
+		baseWidth = 1.0*(cumulativeXOffset)/lineData.length;			
+
+		int lastXLabelEnd = 0;
+		for(int i=0; i<lineData.length; i++) {
+			//String baseNumber = ""+xCategories[i];
+			//baseNumber = FormatNumber.compactInteger(baseNumber);
+			String baseNumber = FormatNumber.convertToScientificNotation(xCategories[i]);
+			baseNumber = baseNumber.replaceAll(".0$", ""); // Don't leave trailing .0s where we don't need them.
+			int baseNumberWidth = g.getFontMetrics().stringWidth(baseNumber);
+			int baseNumberPosition =  (int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*i)-(baseNumberWidth/2));
+			
+			if (baseNumberPosition > lastXLabelEnd) {
+				g.drawString(baseNumber,baseNumberPosition, getHeight()-25);
+				lastXLabelEnd = baseNumberPosition+baseNumberWidth+5;
 			}
 		}
 		
 		// Draw an horizontal line behind the line graph.
-		g.setColor(new Color(180,180,180));
 		g.setColor(new Color(128,128,128));
-		for (int d=0;d<lineData.length;d++) {
-			g.drawLine(xOffsetLineGraph, getY(midY,d), getWidth()-10, getY(midY,d));
-		}
+		// TODO remove once finished
+		//g.drawLine(xOffsetLineGraph, getYOld(midY,0), getWidth()-10, getYOld(midY,0));
+		g.drawLine(xOffsetLineGraph, getY(midY), getWidth()-10, getY(midY));
 		g.setColor(Color.BLACK);
 		
 		
@@ -316,61 +312,61 @@ public class LineWithHorizontalBarGraph extends JPanel {
 		// Now draw the datasets
 		if (g instanceof Graphics2D) {
 			((Graphics2D)g).setStroke(new BasicStroke(2));
-			((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		}
 		
-		for (int d=0;d<lineData.length;d++) {
-			g.setColor(COLOURS[0]);
-			
-			// First check whether we are starting with points having 0 coverage.
-			int i=0;
-			lastY = getY(lineData[d][i],d);
-			for (; i<lineData[d].length && Double.isInfinite(lineData[d][i]); i++) {
-				// TODO 
-				// Darken the area if these points have 0 coverage
+		g.setColor(COLOURS[0]);
+		
+		// First check whether we are starting with points having 0 coverage.
+		int i=0;
+		lastY = getY(lineData[i]);
+		for (; i<lineData.length && Double.isInfinite(lineData[i]); i++) {
+			// TODO not sure about this
+			// Darken the area if these points have 0 coverage
 //				g.setColor(new Color(100, 100, 100));
 //				g.fillRect((baseWidth/2)+xOffset+(baseWidth*(i)), (int)(minY), (baseWidth/2)+xOffset+(baseWidth*(i+1)), getY(minY,d));
-				g.setColor(Color.BLACK);				
-				// NOTE HORIZONTAL POSITION!!
-				g.drawLine((int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i))), getY(minY*0.75,d), (int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i+1))), getY(minY*0.75,d));
-				g.setColor(COLOURS[0]);
-			}
 			
-			if(i<lineData[d].length) {
-				// This point has non-zero coverage
-				lastY = getY(lineData[d][i],d);
-		    }
-				
-			for(i++; i<lineData[d].length; i++) {
-				if (Double.isNaN(lineData[d][i])) break;
-				// Check whether we have points with null coverage (the commented code removes 
-				// an additional spike found at the beginning.
-				if (Double.isInfinite(lineData[d][i]) ) { // || 
-					// TODO 
-					// Darken the area if these points have 0 coverage
-//					g.setColor(new Color(100, 100, 100));
-//					g.fillRect((baseWidth/2)+xOffset+(baseWidth*(i-1)), (int)(minY), (baseWidth/2)+xOffset+(baseWidth*i), getY(minY,d));
-					g.setColor(Color.BLACK);
-					// NOTE HORIZONTAL POSITION!!
-					g.drawLine((int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i-1))), getY(minY*0.75,d), (int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*i)), getY(minY*0.75,d));
-					g.setColor(COLOURS[0]);
-					lastY = getY(midY,d);
-					continue;
-				}
-					
-				int thisY = getY(lineData[d][i],d);
-				g.drawLine((int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i-1))), lastY, (int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*i)), thisY);
-			
-				lastY = thisY;
-			}	
+			// if there is no coverage in the beginning we don't plot anything 
+//				g.setColor(Color.BLACK);				
+//				// NOTE HORIZONTAL POSITION!!
+//				g.drawLine((int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i))), getY(minY*0.75,d), (int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i+1))), getY(minY*0.75,d));
+//				g.setColor(COLOURS[0]);
 		}
+		
+		if(i<lineData.length) {
+			// This point has non-zero coverage
+			lastY = getY(lineData[i]);
+	    }
+			
+		for(i++; i<lineData.length; i++) {
+			if (Double.isNaN(lineData[i])) break;
+			// Check whether we have points with null coverage (the commented code removes 
+			// an additional spike found at the beginning.
+			if (Double.isInfinite(lineData[i]) ) { // || 
+				// TODO not sure about this
+				// Darken the area if these points have 0 coverage
+//				g.setColor(new Color(100, 100, 100));
+//				g.fillRect((baseWidth/2)+xOffset+(baseWidth*(i-1)), (int)(minY), (baseWidth/2)+xOffset+(baseWidth*i), getY(minY,d));
+				g.setColor(Color.BLACK);
+				// NOTE HORIZONTAL POSITION!!
+				g.drawLine((int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i-1))), getY(minY*0.75), (int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*i)), getY(minY*0.75));
+				g.setColor(COLOURS[0]);
+				lastY = getY(midY);
+				continue;
+			}
+				
+			int thisY = getY(lineData[i]);
+			g.drawLine((int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i-1))), lastY, (int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*i)), thisY);
+		
+			lastY = thisY;
+		}	
 	}
 
-	private int getY(double y, int index) {
+
+	private int getY(double y) {
 		int totalPlotArea = getHeight()-160;
-		int plotAreaPerSample = totalPlotArea/lineData.length;
-		return (getHeight()-30) - ((plotAreaPerSample*index)+(int)((plotAreaPerSample/(maxY-minY))*(y-minY)));		
+		return (getHeight()-30) - (int)((totalPlotArea/(maxY-minY))*(y-minY));		
 	}
+	
 	
 	private int getX(double value, int longestLabel) {
 		int lengthToUse = getWidth()-(longestLabel+20);

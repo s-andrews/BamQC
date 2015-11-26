@@ -228,7 +228,6 @@ public class SeparateLineGraph extends JPanel {
 		// Now draw the datasets
 		if (g instanceof Graphics2D) {
 			((Graphics2D)g).setStroke(new BasicStroke(2));
-			//((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		}
 
 		g.setColor(COLOURS[0]);
@@ -242,9 +241,11 @@ public class SeparateLineGraph extends JPanel {
 				// Darken the area if these points have 0 coverage
 //				g.setColor(new Color(100, 100, 100));
 //				g.fillRect((baseWidth/2)+xOffset+(baseWidth*(i)), (int)(minY), (baseWidth/2)+xOffset+(baseWidth*(i+1)), getY(minY,d));
-				g.setColor(Color.BLACK);				
-				g.drawLine((int)((baseWidth/2)+xOffset+(baseWidth*(i))), getY(minY*0.75,d), (int)((baseWidth/2)+xOffset+(baseWidth*(i+1))), getY(minY*0.75,d));
-				g.setColor(COLOURS[0]);
+				
+				// if there is no coverage in the beginning we don't plot anything 
+//				g.setColor(Color.BLACK);				
+//				g.drawLine((int)((baseWidth/2)+xOffset+(baseWidth*(i))), getY(minY*0.75,d), (int)((baseWidth/2)+xOffset+(baseWidth*(i+1))), getY(minY*0.75,d));
+//				g.setColor(COLOURS[0]);
 			}
 			
 			if(i<data[d].length) {
@@ -281,10 +282,12 @@ public class SeparateLineGraph extends JPanel {
 	}
 
 	private int getY(double y, int index) {
-		
 		int totalPlotArea = getHeight()-80;
-		int plotAreaPerSample = totalPlotArea/data.length;
-				
+		int plotAreaPerSample = totalPlotArea/data.length;	
+		// a little adjustment to avoid that the spikes cover the all area
+		if(data.length == 1) {
+			 return (getHeight()-40) - ((int)((plotAreaPerSample/(maxY*4-minY*4))*(y-minY*4)));
+		}	
 		return (getHeight()-40) - ((plotAreaPerSample*index)+(int)((plotAreaPerSample/(maxY-minY))*(y-minY)));
 	}
 	

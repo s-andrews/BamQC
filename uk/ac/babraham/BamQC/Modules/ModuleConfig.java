@@ -49,7 +49,7 @@ public class ModuleConfig {
 		params.put("VariantCallPosition_snp_threshold:warn", 1d);	
 		params.put("VariantCallPosition_snp_threshold:error", 2d);
 
-		params.put("GenomeCoverage_plot_separate_chromosomes:ignore", 50d);
+		params.put("GenomeCoverage_plot_type_chromosomes_threshold:ignore", 50d);
 		params.put("GenomeCoverage_plot_bins_all_chromosomes:ignore", 500d);		
 		params.put("GenomeCoverage_plot_bins_per_chromosome:ignore", 100d);
 		

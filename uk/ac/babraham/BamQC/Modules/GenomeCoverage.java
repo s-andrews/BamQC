@@ -29,8 +29,6 @@ import javax.xml.stream.XMLStreamException;
 
 import net.sf.samtools.SAMRecord;
 
-import org.apache.log4j.Logger;
-
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.BamQC.Graphs.LineWithHorizontalBarGraph;
@@ -42,14 +40,11 @@ import uk.ac.babraham.BamQC.Modules.ModuleConfig;
 
 public class GenomeCoverage extends AbstractQCModule {
 
-	private static Logger log = Logger.getLogger(GenomeCoverage.class);
-	private int plotSeparateChromosomeThreshold = ModuleConfig.getParam("GenomeCoverage_plot_separate_chromosomes", "ignore").intValue();
+	private int plotTypeChromosomesThreshold = ModuleConfig.getParam("GenomeCoverage_plot_type_chromosomes_threshold", "ignore").intValue();
 
 	private String [] chromosomeNames = null;
 	private double [][] binCounts = null;
 	private long [] coverage = null;
-	private int noBinCountChromosomes = 0;
-	
 	private double maxCoverage = 0.0;
 	
 	private int maxBins = 1;
@@ -104,7 +99,7 @@ public class GenomeCoverage extends AbstractQCModule {
 
 		Chromosome [] chromosomes = annotation.chromosomeFactory().getAllChromosomes();
 		
-		if(chromosomes.length <= plotSeparateChromosomeThreshold) {
+		if(chromosomes.length <= plotTypeChromosomesThreshold) {
 			// This will plot the chromosomes from 1 (top) to n (bottom)
 			Arrays.sort(chromosomes, Collections.reverseOrder());
 		} else {
@@ -120,11 +115,8 @@ public class GenomeCoverage extends AbstractQCModule {
 		// chromosome
 		
 		maxBins = 1;
-		noBinCountChromosomes = 0;
-		
 		for (int c=0;c<chromosomes.length;c++) {
 			if(chromosomes[c].getBinCountData().length <= 1) {
-				noBinCountChromosomes++;
 			} else if (chromosomes[c].getBinCountData().length>maxBins) { 
 				maxBins = chromosomes[c].getBinCountData().length;
 			}
@@ -133,20 +125,12 @@ public class GenomeCoverage extends AbstractQCModule {
 		// configuration of how many bins per chromosome we want to plot.
 		// This is the number of bins per chromosome for the official plot getResultsPanel()
 		int plotBinsPerChromosome = 0; 
-		if(noBinCountChromosomes == chromosomes.length) {
+		if(chromosomeNames.length <= plotTypeChromosomesThreshold) {
 			plotBinsPerChromosome = ModuleConfig.getParam("GenomeCoverage_plot_bins_per_chromosome", "ignore").intValue();
 		} else {
-			plotBinsPerChromosome = ModuleConfig.getParam("GenomeCoverage_plot_bins_all_chromosomes", "ignore").intValue() / (chromosomes.length - noBinCountChromosomes);
+			plotBinsPerChromosome = ModuleConfig.getParam("GenomeCoverage_plot_bins_all_chromosomes", "ignore").intValue() / chromosomes.length;
 		}
-		// This is the number of bins per chromosome for the old plot now called getSeparateChromosomeResultsPanel()		
-		//plotBinsPerChromosome = ModuleConfig.getParam("GenomeCoverage_plot_bins_per_chromosome", "ignore").intValue();
 
-
-		
-		// We could set a threshold and show the second plot if chromosomes.length < 20 (?) or the first plot otherwise. 
-		// Alternatively, we could move the previous code in another module which reuses the computation of this module. 
-		// or simply ignore the second plot (which is the current solution).
-		
 		
 		int binsToUse = plotBinsPerChromosome;
 		
@@ -190,8 +174,8 @@ public class GenomeCoverage extends AbstractQCModule {
 						binCounts[c][i] = Double.NEGATIVE_INFINITY;
 						continue;
 					} 
-					// scale to log10 to enlarge the data differences.
-					if (binCounts[c][i] > 0) binCounts[c][i] = Math.log10(binCounts[c][i]);
+					// scale to log to enlarge the data differences. log_e makes it smaller than log_10.
+					if (binCounts[c][i] > 0) binCounts[c][i] = Math.log(binCounts[c][i]);
 				}
 			}				
 						
@@ -223,7 +207,7 @@ public class GenomeCoverage extends AbstractQCModule {
 				chromosomeNames[i] = chromosomeNames[i].substring(3);
 		}
 		
-		if(chromosomeNames.length <= plotSeparateChromosomeThreshold) {
+		if(chromosomeNames.length <= plotTypeChromosomesThreshold) {
 			// plots the genome coverage for each chromosome separately
 			return getSeparateChromosomeResultsPanel();
 		}
@@ -245,7 +229,7 @@ public class GenomeCoverage extends AbstractQCModule {
 		for (int i=0;i<maxBins;i++) {
 			labels[i] = ""+(i*Chromosome.COVERAGE_BIN_SIZE);
 		}
-		String title = "Genome Coverage (red: z-scores ,  black: no coverage)";
+		String title = "Genome Coverage (red: z-scores ,  black: region with no coverage)";
 		String xLabel = "Genome Position";
 		String yLabel = "Chromosomes";
 		return new SeparateLineGraph(binCounts, 0-maxCoverage, maxCoverage, xLabel, yLabel, chromosomeNames, labels, title);				
@@ -267,17 +251,17 @@ public class GenomeCoverage extends AbstractQCModule {
 			}
 			fullBinCountsLength = fullBinCountsLength + scaffoldLengths[i];
 		}
-		double[][] fullBinCounts = new double[1][fullBinCountsLength];
+		double[] fullBinCounts = new double[fullBinCountsLength];
 		double[] fullBinLengths = new double[binCounts.length];
 		int k=0;
 		for(int i=0; i<binCounts.length; i++) {
 			for(int j=0; j<scaffoldLengths[i]; j++) {
-				fullBinCounts[0][k] = binCounts[i][j];
+				fullBinCounts[k] = binCounts[i][j];
 				k++;
 			}
 			fullBinLengths[i] = scaffoldLengths[i]*Chromosome.COVERAGE_BIN_SIZE;
 		}
-		int maxBins = fullBinCounts[0].length;
+		int maxBins = fullBinCounts.length;
 		String[] labels = new String[maxBins];
 		for(int i=0; i<maxBins; i++) {
 			labels[i] = ""+(i*Chromosome.COVERAGE_BIN_SIZE);
@@ -286,13 +270,13 @@ public class GenomeCoverage extends AbstractQCModule {
 		
 		/* Set up of a stacked row chart representing chromosome coverages. */
 		double maxLimit = maxCoverage*(1.5*maxCoverage);
-		String title = "Genome Coverage (red: z-scores ,  black: no coverage)";
+		String title = "Genome Coverage (red: z-scores ,  black: region with no coverage)";
 		
 		
 		/* plot the data */
 		JPanel resultsPanel = new JPanel();
 		resultsPanel.setLayout(new javax.swing.BoxLayout(resultsPanel, javax.swing.BoxLayout.PAGE_AXIS));
-		resultsPanel.add(new LineWithHorizontalBarGraph(fullBinLengths, fullBinCounts, 0-maxLimit, maxLimit, "Genome Position", chromosomeNames, new String[]{""}, labels, title, "Scaffold (for Chr names, cross the red bars with the mouse)"));
+		resultsPanel.add(new LineWithHorizontalBarGraph(fullBinLengths, fullBinCounts, 0-maxLimit, maxLimit, "Genome Position", chromosomeNames, "", labels, title, "Scaffold (for Chr names, cross the red bars with the mouse)"));
 		
 		return resultsPanel;
 	}
@@ -307,7 +291,7 @@ public class GenomeCoverage extends AbstractQCModule {
 	
 	@Override
 	public void makeReport(HTMLReportArchive report) throws XMLStreamException, IOException {
-		super.writeDefaultImage(report, "genome_coverage.png", "Reference Sequence(s) Coverage", 800, 600);
+		super.writeDefaultImage(report, "genome_coverage.png", "Genome Coverage", 800, 600);
 
 		if(chromosomeNames == null || chromosomeNames.length == 0 || maxBins == 1) { return; }
 	

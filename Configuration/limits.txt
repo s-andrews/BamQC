@@ -28,9 +28,9 @@ VariantCallPosition_snp_threshold   					warn   		1
 VariantCallPosition_snp_threshold   					error   	2
 
 # Genome Coverage module
-GenomeCoverage_plot_separate_chromosomes				ignore		50
-GenomeCoverage_plot_bins_all_chromosomes   				ignore   	500		
-GenomeCoverage_plot_bins_per_chromosome   				ignore   	100
+GenomeCoverage_plot_type_chromosomes_threshold			ignore		50
+GenomeCoverage_plot_bins_all_chromosomes   				ignore   	5000		
+GenomeCoverage_plot_bins_per_chromosome   				ignore   	500
 
 # Insert Length Distribution module
 InsertLengthDistribution_max_insert_size   		ignore   	5000.0
