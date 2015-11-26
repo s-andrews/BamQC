@@ -43,21 +43,15 @@ public class ModuleConfig {
 		
 		params.put("VariantCallPosition_array_length:ignore", 150d);
 		params.put("VariantCallPosition_indel_seqpercent_xaxis_threshold:ignore", 5d);
-		params.put("VariantCallPosition_indel_threshold:warn", 1d);	
-		params.put("VariantCallPosition_indel_threshold:error", 4d);
+		params.put("VariantCallPosition_indel_threshold:warn", 0.5d);	
+		params.put("VariantCallPosition_indel_threshold:error", 1d);
 		params.put("VariantCallPosition_snp_seqpercent_xaxis_threshold:ignore", 5d); 		
-		params.put("VariantCallPosition_snp_threshold:warn", 2d);	
-		params.put("VariantCallPosition_snp_threshold:error", 5d);
-		params.put("VariantCallPosition_snp_by_type_threshold:warn", 0.15d);	
-		params.put("VariantCallPosition_snp_by_type_threshold:error", 0.4d);		
+		params.put("VariantCallPosition_snp_threshold:warn", 1d);	
+		params.put("VariantCallPosition_snp_threshold:error", 2d);
 
 		params.put("GenomeCoverage_plot_separate_chromosomes:ignore", 50d);
 		params.put("GenomeCoverage_plot_bins_all_chromosomes:ignore", 500d);		
 		params.put("GenomeCoverage_plot_bins_per_chromosome:ignore", 100d);
-		params.put("GenomeCoverage_zero_fraction:warn", 0.1d);
-		params.put("GenomeCoverage_zero_fraction:error", 0.2d);
-		params.put("GenomeCoverage_rsd_fraction:warn", 0.25d);
-		params.put("GenomeCoverage_rsd_fraction:error", 0.50d);
 		
 		params.put("InsertLengthDistribution_max_insert_size:ignore", 5000.0d);
 		params.put("InsertLengthDistribution_bin_size:ignore", 25.0d);

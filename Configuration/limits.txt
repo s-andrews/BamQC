@@ -21,22 +21,17 @@ AnnotationSet_annotation_cache_capacity   ignore   50000
 # Indel/SNP modules		
 VariantCallPosition_array_length   						ignore   	150
 VariantCallPosition_indel_seqpercent_xaxis_threshold   	ignore   	5
-VariantCallPosition_indel_threshold   					warn   		1	
-VariantCallPosition_indel_threshold   					error   	4
+VariantCallPosition_indel_threshold   					warn   		0.5	
+VariantCallPosition_indel_threshold   					error   	1
 VariantCallPosition_snp_seqpercent_xaxis_threshold   	ignore   	5 		
-VariantCallPosition_snp_threshold   					warn   		2	
-VariantCallPosition_snp_threshold   					error   	5
-VariantCallPosition_snp_by_type_threshold   			warn   		0.15	
-VariantCallPosition_snp_by_type_threshold   			error   	0.4		
+VariantCallPosition_snp_threshold   					warn   		1	
+VariantCallPosition_snp_threshold   					error   	2
 
 # Genome Coverage module
 GenomeCoverage_plot_separate_chromosomes	ignore		50
 GenomeCoverage_plot_bins_all_chromosomes   	ignore   	500		
 GenomeCoverage_plot_bins_per_chromosome   	ignore   	100
-GenomeCoverage_zero_fraction   				warn   		0.1
-GenomeCoverage_zero_fraction   				error   	0.2
-GenomeCoverage_rsd_fraction   				warn   		0.25
-GenomeCoverage_rsd_fraction   				error   	0.50
+
 		
 # Insert Length Distribution module
 InsertLengthDistribution_max_insert_size   		ignore   	5000.0
