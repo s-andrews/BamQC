@@ -44,21 +44,13 @@ public class GenomeCoverage extends AbstractQCModule {
 
 	private static Logger log = Logger.getLogger(GenomeCoverage.class);
 	private int plotSeparateChromosomeThreshold = ModuleConfig.getParam("GenomeCoverage_plot_separate_chromosomes", "ignore").intValue();
-	private double genomeCoverageZeroWarningFraction = ModuleConfig.getParam("GenomeCoverage_zero_fraction", "warn");
-	private double genomeCoverageZeroErrorFraction = ModuleConfig.getParam("GenomeCoverage_zero_fraction", "error");
-	private double genomeCoverageRsdWarningFraction = ModuleConfig.getParam("GenomeCoverage_rsd_fraction", "warn");
-	private double genomeCoverageRsdErrorFraction = ModuleConfig.getParam("GenomeCoverage_rsd_fraction", "error");
 
 	private String [] chromosomeNames = null;
 	private double [][] binCounts = null;
 	private long [] coverage = null;
 	private int noBinCountChromosomes = 0;
 	
-	private boolean raiseError = false;
-	private boolean raiseWarning = false;
 	private double maxCoverage = 0.0;
-	private int errorReads = 0;
-	private int readNumber = 0;
 	
 	private int maxBins = 1;
 	
@@ -82,10 +74,6 @@ public class GenomeCoverage extends AbstractQCModule {
 
 	@Override
 	public void reset() {
-		raiseError = false;
-		raiseWarning = false;
-		errorReads = 0;
-		readNumber = 0;
 		chromosomeNames = null;
 		binCounts = null;
 		coverage = null;
@@ -93,12 +81,12 @@ public class GenomeCoverage extends AbstractQCModule {
 
 	@Override
 	public boolean raisesError() {
-		return raiseError;
+		return false;
 	}
 
 	@Override
 	public boolean raisesWarning() {
-		return raiseWarning;
+		return false;
 	}
 
 	@Override
@@ -309,46 +297,6 @@ public class GenomeCoverage extends AbstractQCModule {
 		return resultsPanel;
 	}
 	
-	
-	
-	
-
-	private void raiseWarningErrorsZeroCoverage(int zeroCoverageBins) {
-//		double zeroCoverageBinFraction = (double) zeroCoverageBins / BIN_NUMBER;
-//
-//		log.info(String.format("zeroCoverageBins %d, zeroCoverageBinFraction %f", zeroCoverageBins, zeroCoverageBinFraction));
-//
-//		if (zeroCoverageBinFraction >= genomeCoverageZeroErrorFraction) {
-//			raiseError = true;
-//		}
-//		else if (zeroCoverageBinFraction >= genomeCoverageZeroWarningFraction) {
-//			raiseWarning = true;
-//		}
-	}
-
-	private void raiseWarningErrorsStandardDeviation() {
-//		double total = 0.0;
-//
-//		for (double binCoverage : coverage) {
-//			total += binCoverage;
-//		}
-//		double mean = total / coverage.length;
-//		double variance = 0.0;
-//
-//		for (double binCoverage : coverage) {
-//			variance += Math.pow((binCoverage - mean), 2.0);
-//		}
-//		double rsdFraction = Math.sqrt((variance / coverage.length)) / mean;
-//		log.info("rsdFraction = " + rsdFraction);
-//
-//		if (rsdFraction >= genomeCoverageRsdErrorFraction) {
-//			raiseError = true;
-//		}
-//		else if (rsdFraction >= genomeCoverageRsdWarningFraction) {
-//			raiseWarning = true;
-//		}
-	}
-
 	@Override
 	public boolean ignoreInReport() {
 		if(ModuleConfig.getParam("GenomeCoverage", "ignore") > 0 || chromosomeNames == null || chromosomeNames.length == 0 || maxBins == 1) {
@@ -390,12 +338,3 @@ public class GenomeCoverage extends AbstractQCModule {
 	}
 	
 }
-
-
-
-
-
-class ChromosomeBinCounts {
-	
-}
-
