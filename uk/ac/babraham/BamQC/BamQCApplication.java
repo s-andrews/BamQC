@@ -197,9 +197,9 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 			fileTabs.addTab(sequenceFile.name(), rp);
 			
 
-			QCModule [] module_list = ModuleFactory.getStandardModuleList();
+			QCModule [] moduleList = ModuleFactory.getStandardModuleList();
 	
-			runner.startAnalysis(module_list);
+			runner.startAnalysis(moduleList);
 		}
 		return true;
 	}

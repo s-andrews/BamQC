@@ -114,14 +114,6 @@ public class OfflineRunner implements AnalysisListener {
 			}
 		}
 		
-		
-		// NOTE: As this class is executed in batch mode, the operating system may change the priorities of the running 
-		// threads after a while. If this happens, it works as a drop in performance after a certain time the main bamqc 
-		// process was started. This behaviour is due to the nature of this bamqc process (batch mode) and does not 
-		// happen when bamqc is run via GUI, because in this case the bamqc process is executed in interactive mode.
-		// The code below is fine, although the poll "Thread.sleep(1500)" could be replaced by a join(). This requires the 
-		// references of the created threads explicitly.
-		
 				
 		// See if we need to group together files from a casava group
 		
@@ -166,9 +158,9 @@ public class OfflineRunner implements AnalysisListener {
 		
 		runner.addAnalysisListener(this);
 			
-		QCModule [] module_list = ModuleFactory.getStandardModuleList();
+		QCModule [] moduleList = ModuleFactory.getStandardModuleList();
 
-		runner.startAnalysis(module_list);
+		runner.startAnalysis(moduleList);
 
 	}
 	
