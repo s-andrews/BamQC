@@ -36,6 +36,7 @@ import javax.xml.stream.XMLStreamException;
 
 
 
+
 import net.sf.samtools.SAMRecord;
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.Graphs.HorizontalBarGraph;
@@ -165,14 +166,16 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 
 	@Override	
 	public boolean raisesError() {
-		if(firstMaxX+secondMaxX> ModuleConfig.getParam("VariantCallPosition_snp_by_type_threshold", "error").doubleValue())
+		double snpPercent = 100.0d*(variantCallDetection.getTotalMutations()) / variantCallDetection.getTotal();
+		if(snpPercent > ModuleConfig.getParam("VariantCallPosition_snp_threshold", "error").doubleValue())
 			return true;		
 		return false;
 	}
 
 	@Override	
 	public boolean raisesWarning() {
-		if(firstMaxX+secondMaxX > ModuleConfig.getParam("VariantCallPosition_snp_by_type_threshold", "warn").doubleValue())
+		double snpPercent = 100.0d*(variantCallDetection.getTotalMutations()) / variantCallDetection.getTotal();
+		if(snpPercent > ModuleConfig.getParam("VariantCallPosition_snp_threshold", "warn").doubleValue())
 			return true;		
 		return false;
 	}

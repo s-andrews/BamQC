@@ -197,14 +197,16 @@ public class SNPFrequencies extends AbstractQCModule {
 
 	@Override	
 	public boolean raisesError() {
-		if(firstMaxY+secondMaxY > ModuleConfig.getParam("VariantCallPosition_snp_threshold", "error").doubleValue())
+		double snpPercent = 100.0d*(variantCallDetection.getTotalMutations()) / variantCallDetection.getTotal();
+		if(snpPercent > ModuleConfig.getParam("VariantCallPosition_snp_threshold", "error").doubleValue())
 			return true;		
 		return false;
 	}
 
 	@Override	
 	public boolean raisesWarning() {
-		if(firstMaxY+secondMaxY > ModuleConfig.getParam("VariantCallPosition_snp_threshold", "warn").doubleValue())
+		double snpPercent = 100.0d*(variantCallDetection.getTotalMutations()) / variantCallDetection.getTotal();
+		if(snpPercent > ModuleConfig.getParam("VariantCallPosition_snp_threshold", "warn").doubleValue())
 			return true;		
 		return false;
 	}

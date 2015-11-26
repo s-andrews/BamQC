@@ -209,14 +209,18 @@ public class IndelFrequencies extends AbstractQCModule {
 
 	@Override	
 	public boolean raisesError() {
-		if(firstMaxY+secondMaxY > ModuleConfig.getParam("VariantCallPosition_indel_threshold", "error").doubleValue())
+		double indelPercent = 100.0d*(variantCallDetection.getTotalDeletions() + variantCallDetection.getTotalInsertions() ) 
+							  / variantCallDetection.getTotal();
+		if(indelPercent > ModuleConfig.getParam("VariantCallPosition_indel_threshold", "error").doubleValue())
 			return true;		
 		return false;
 	}
 
 	@Override	
 	public boolean raisesWarning() {
-		if(firstMaxY+secondMaxY > ModuleConfig.getParam("VariantCallPosition_indel_threshold", "warn").doubleValue())
+		double indelPercent = 100.0d*(variantCallDetection.getTotalDeletions() + variantCallDetection.getTotalInsertions() ) 
+				  / variantCallDetection.getTotal();
+		if(indelPercent > ModuleConfig.getParam("VariantCallPosition_indel_threshold", "warn").doubleValue())
 			return true;		
 		return false;
 	}
