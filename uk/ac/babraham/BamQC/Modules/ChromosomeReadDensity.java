@@ -35,6 +35,7 @@ import org.apache.commons.math3.util.Precision;
 import net.sf.samtools.SAMRecord;
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
+import uk.ac.babraham.BamQC.Graphs.BarGraph;
 import uk.ac.babraham.BamQC.Graphs.ScatterGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
@@ -89,6 +90,9 @@ public class ChromosomeReadDensity extends AbstractQCModule {
 		chromosomeNames = new String [chromosomes.length];
 				
 		for (int c=0; c<chromosomes.length; c++) {
+			//logReadNumber[c] = chromosomes[c].seqCount();
+			//logChromosomeLength[c] = chromosomes[c].length();
+			
 			logReadNumber[c] = Precision.round(Math.log(chromosomes[c].seqCount()), 2);
 			logChromosomeLength[c] = Precision.round(Math.log(chromosomes[c].length()), 2);
 			chromosomeNames[c] = chromosomes[c].name();
@@ -104,13 +108,13 @@ public class ChromosomeReadDensity extends AbstractQCModule {
 		String[] xCategories;
 		String xLabel = "Log Chromosome Length";
 		String yLabel = "Log Read Number";
-		double maxY = 0d;
+		double maxY = Double.MIN_VALUE, minY=Double.MAX_VALUE;
 		
 		if(logReadNumber.length < 1) {
 			xCategories = new String[]{"Null"};
 			// Previously this was a bar graph
-			//return new BarGraph(new double[1], 0d, maxY+maxY*0.1, xLabel, xCategories, title);
-			return new ScatterGraph(new double[1], 0d, maxY+maxY*0.1, xLabel, yLabel, xCategories, title);
+			//return new BarGraph(new double[1], 0d, maxY, xLabel, yLabel, xCategories, title);
+			return new ScatterGraph(new double[1], 0d, maxY, xLabel, yLabel, xCategories, title);
 		}
 		
 		xCategories = new String[logChromosomeLength.length];
@@ -118,15 +122,22 @@ public class ChromosomeReadDensity extends AbstractQCModule {
 		for(int i=0; i<logReadNumber.length; i++) {
 			if(maxY < logReadNumber[i]) {
 				maxY = logReadNumber[i];
+			} else if(minY > logReadNumber[i]) {
+					minY = logReadNumber[i];
 			}
+			//System.out.println(logChromosomeLength[i] + " " + logReadNumber[i]);
 		}
+
+		// temporarily replaced with 0
+		minY = 0;
+		
 		
 		for(int i=0; i<logChromosomeLength.length; i++) {
 			xCategories[i] = String.valueOf(logChromosomeLength[i]);
 		}
 		// Previously this was a bar graph
-		//return new BarGraph(logReadNumber, 0d, maxY+maxY*0.1, xLabel, xCategories, title);
-		return new ScatterGraph(logReadNumber, 0d, maxY+maxY*0.1, xLabel, yLabel, xCategories, title);
+		//return new BarGraph(logReadNumber, minY, maxY, xLabel, yLabel, xCategories, title);
+		return new ScatterGraph(logReadNumber, minY, maxY+maxY*0.1, xLabel, yLabel, xCategories, title);
 	}
 
 	

@@ -159,6 +159,7 @@ public class ScatterGraph extends JPanel {
 		
 		
 		// Draw the y axis labels
+		// TODO
 		for (double i = yStart; i <= maxY; i += yInterval) {
 			String label = "" + i;
 			label = label.replaceAll(".0$", ""); // Don't leave trailing .0s
@@ -170,9 +171,19 @@ public class ScatterGraph extends JPanel {
 
 			g.drawString(label, yLabelRightShift+6, getY(i) + (g.getFontMetrics().getAscent() / 2));
 		}
-
+		
+		
 		// Give the x axis a bit of breathing space
 		xOffset = xOffset + yLabelRightShift + 8;
+		
+		
+		// Now draw horizontal lines across from the y axis
+		g.setColor(new Color(180,180,180));
+		for (double i=yStart; i<=maxY; i+=yInterval) {
+			g.drawLine(xOffset, getY(i), getWidth()-10, getY(i));
+		}
+		g.setColor(Color.BLACK);
+		
 
 		
 		// Draw the graph title
@@ -222,8 +233,9 @@ public class ScatterGraph extends JPanel {
 		g.drawLine(xOffset, getHeight() - 40, xOffset, 40);
 		
 
+		g.setColor(Color.BLUE);
 		// Draw the data points
-		double ovalSize = 4;
+		double ovalSize = 5;
 		// We distinguish two inputs since the x label does not start from 0.
 		// used for computing the actual line points as if they were starting from 0.
 		double[] inputVar = new double[data.length];
@@ -236,76 +248,89 @@ public class ScatterGraph extends JPanel {
 			g.fillOval((int)x, (int)y, (int)(ovalSize), (int)(ovalSize));
 			// TODO this plots correctly but shouldn't .... 
 			inputVar[d] = Double.valueOf(d);  
+			//inputVar[d] = Double.valueOf(xCategories[d]); 
+			//legendInputVar[d] = Double.valueOf(d);
 			legendInputVar[d] = Double.valueOf(xCategories[d]);
 			responseVar[d] = data[d];	
 		}
-
+		g.setColor(Color.BLACK);
+		
+		
+		
+		
+		
 		
 		// Draw the intercept 
 		
-		// WARNING: Is drawing a least squares regression line asserting that "the distribution follows a power law" correct? 
+		// WARNING: Is drawing a least squares regression line asserting that "the distribution follows a power law" correct?
+		// This is our case if we plot log-log..
 		// It seems not in this paper (Appendix A) http://arxiv.org/pdf/0706.1062v2.pdf
 		
-		if(data.length > 1) {
-			LinearRegression linReg = new LinearRegression(inputVar, responseVar);
-			double intercept = linReg.intercept();
-			double slope = linReg.slope();
-		
-			// Let's now calculate the two points (x1, y1) and (xn, yn)
-			// The point (x1, y1) is where the intercept crosses the x axis (since we are not interested 
-			// in what there is below): y=ax+b => ax+b=0 . Therefore (x1, y1) = (-b/a, 0). 
-			// The point (xn, yn) is the last point of our discrete intercept.
-			
-			double x1 = -intercept / slope;			
-			double y1=0;
-			if(x1 < 0) {
-				x1 = 0;
-				y1 = intercept;
-			}
-			
-			
-			
-			double xn = inputVar.length-1;
-			double yn = slope*inputVar[inputVar.length-1] + intercept;
-
-			
-			
-			// Note that y1 and yn are the actual points calculated from the intercept. These need to be "converted" 
-			// in real plot coordinates.
-			// x1 and xn represents the factors of baseWidth on the x-axis. 
-			
-			g.setColor(Color.RED);
-			g.drawLine((int)(xOffset + ((baseWidth * (x1) + (baseWidth * (x1+1)))/2)), 
-					   getY(y1), 
-					   (int)(xOffset + ((baseWidth * (xn)) + (baseWidth * (xn+1)))/2), 
-					   getY(yn));
-			g.setColor(Color.BLACK);
-			
-			// Draw the legend for the intercept
-			// First we need to find the widest label
-			LinearRegression legendEquationLinReg = new LinearRegression(legendInputVar, responseVar);
-			double legendIntercept = legendEquationLinReg.intercept();
-			double legendSlope = legendEquationLinReg.slope();
-			double legendRSquare = legendEquationLinReg.R2();
-			String legendInterceptString = "y = " + (float)(legendSlope) + " * x ";
-			if(legendIntercept < 0) 
-				legendInterceptString += " - " + (float)(-legendIntercept);
-			else 
-				legendInterceptString += " + " + (float)legendIntercept;
-			legendInterceptString += " , R^2 = " + (float)legendRSquare;
-			int width = g.getFontMetrics().stringWidth(legendInterceptString);
-			
-			// First draw a box to put the legend in
-			g.setColor(Color.WHITE);
-			g.fillRect(xOffset+10, 40, width+8, 23);
-			g.setColor(Color.LIGHT_GRAY);
-			g.drawRect(xOffset+10, 40, width+8, 23);
-	
-			// Now draw the intercept label
-			g.setColor(Color.RED);
-			g.drawString(legendInterceptString, xOffset+13, 60);
-			g.setColor(Color.BLACK);
-		}
+//		if(data.length > 1) {
+//			LinearRegression linReg = new LinearRegression(inputVar, responseVar);
+//			double intercept = linReg.intercept();
+//			double slope = linReg.slope();
+//		
+//			// Let's now calculate the two points (x1, y1) and (xn, yn)
+//			// The point (x1, y1) is where the intercept crosses the x axis (since we are not interested 
+//			// in what there is below): y=ax+b => ax+b=0 . Therefore (x1, y1) = (-b/a, 0). 
+//			// The point (xn, yn) is the last point of our discrete intercept.
+//			
+//			double x1 = -intercept / slope;			
+//			double y1=0;
+//			if(x1 < 0) {
+//				x1 = 0;
+//				y1 = intercept;
+//			}
+//			
+//			
+//			
+//			double xn = inputVar.length-1;
+//			double yn = slope*inputVar[inputVar.length-1] + intercept;
+//
+//			
+//			
+//			// Note that y1 and yn are the actual points calculated from the intercept. These need to be "converted" 
+//			// in real plot coordinates.
+//			// x1 and xn represents the factors of baseWidth on the x-axis. 
+//			
+//			g.setColor(Color.RED);
+//			g.drawLine((int)(xOffset + ((baseWidth * (x1) + (baseWidth * (x1+1)))/2)), 
+//					   getY(y1), 
+//					   (int)(xOffset + ((baseWidth * (xn)) + (baseWidth * (xn+1)))/2), 
+//					   getY(yn));
+//			g.setColor(Color.BLACK);
+//			
+//			// Draw the legend for the intercept
+//			// First we need to find the widest label
+//			LinearRegression legendEquationLinReg = new LinearRegression(legendInputVar, responseVar);
+//			double legendIntercept = legendEquationLinReg.intercept();
+//			double legendSlope = legendEquationLinReg.slope();
+//			double legendRSquare = legendEquationLinReg.R2();
+//			
+//			// Translate line to x for inputVar[0]
+//			//legendIntercept = legendIntercept - slope*inputVar[0];
+//			
+//			String legendInterceptString = "y = " + (float)(legendSlope) + " * x ";
+//			
+//			if(legendIntercept < 0) 
+//				legendInterceptString += " - " + (float)(-legendIntercept);
+//			else 
+//				legendInterceptString += " + " + (float)legendIntercept;
+//			legendInterceptString += " , R^2 = " + (float)legendRSquare;
+//			int width = g.getFontMetrics().stringWidth(legendInterceptString);
+//			
+//			// First draw a box to put the legend in
+//			g.setColor(Color.WHITE);
+//			g.fillRect(xOffset+10, 40, width+8, 23);
+//			g.setColor(Color.LIGHT_GRAY);
+//			g.drawRect(xOffset+10, 40, width+8, 23);
+//	
+//			// Now draw the intercept label
+//			g.setColor(Color.RED);
+//			g.drawString(legendInterceptString, xOffset+13, 60);
+//			g.setColor(Color.BLACK);
+//		}
 		
 	}
 	
