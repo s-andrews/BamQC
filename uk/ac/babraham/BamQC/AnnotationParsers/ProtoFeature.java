@@ -49,14 +49,17 @@ public class ProtoFeature {
 		int newStartValue = (int)(newValue & LAST_31_BIT_MASK);
 		int newEndValue = (int)((newValue>>31) & LAST_31_BIT_MASK);	
 		
+// From Location.java:		
 //		if (start() != o.start()) return start() - o.start();
 //		else if (end() != o.end()) return end()- o.end();
 //		else if (strand() != o.strand()) return strand() - o.strand();
 //		else return hashCode() - o.hashCode();
-//		
+// From SplitLocation.java
 //		Arrays.sort(this.subLocations);
 //		setPosition(subLocations[0].start(),subLocations[subLocations.length-1].end(),subLocations[0].strand());
+
 		
+// Equivalent code for two intervals (Don't think this is correct though.. )
 		if(startValue > newStartValue) {
 			setPosition(newStartValue, endValue, strand);
 		} else if(endValue > newEndValue) {
@@ -66,6 +69,38 @@ public class ProtoFeature {
 		} else {
 			setPosition(startValue, newEndValue, strandValue);
 		}
+		
+// new code (TO TEST)
+//		if(startValue <= newStartValue) {
+//		  // A1 <= B1  ---> A1
+//		  if(endValue < newStartValue) {
+//		    // ---> A2		  
+//		    // Do nothing
+//		  } else if(endValue < newEndValue) {
+//        // A2 >= B1
+//		    // ---> B2
+//	      setPosition(startValue, newEndValue, strandValue);
+//		  } else {
+//		    // A2 >= B2
+//		    // ---> A2
+//		    // Do nothing
+//		  }
+//		} else {
+//		  // A1 > B1  ---> B1
+//		    if(startValue > newEndValue) {
+//		      // --- > B2
+//	        setPosition(newStartValue, newEndValue, strand);
+//		    } else if(endValue > newEndValue) {
+//		      // A1 <= B2
+//		      // ---> A2
+//          setPosition(newStartValue, endValue, strand);
+//		    } else {
+//		      // A2 <= B2
+//          setPosition(newStartValue, newEndValue, strand);
+//		    }
+//		}
+	
+		
 	}
 
 	/**
