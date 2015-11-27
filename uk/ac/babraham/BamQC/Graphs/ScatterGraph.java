@@ -224,27 +224,39 @@ public class ScatterGraph extends JPanel {
 
 		// Draw the data points
 		double ovalSize = 4;
+		// We distinguish two inputs since the x label does not start from 0.
+		// used for computing the actual line points as if they were starting from 0.
 		double[] inputVar = new double[data.length];
+		// used for the equation legend as this does not start from 0.
+		double[] legendInputVar = new double[data.length];
 		double[] responseVar = new double[data.length];
 		for (int d = 0; d < data.length; d++) {
 			double x = xOffset + ((baseWidth * d) + (baseWidth * (d+1)))/2;
 			double y = getY(data[d])-ovalSize/2;
 			g.fillOval((int)x, (int)y, (int)(ovalSize), (int)(ovalSize));
-			inputVar[d] = Double.valueOf(xCategories[d]);
+			// TODO this plots correctly but shouldn't .... 
+			inputVar[d] = Double.valueOf(d);  
+			legendInputVar[d] = Double.valueOf(xCategories[d]);
 			responseVar[d] = data[d];	
 		}
 
 		
-		// Draw the intercept
+		// Draw the intercept 
+		
+		// WARNING: Is drawing a least squares regression line asserting that "the distribution follows a power law" correct? 
+		// It seems not in this paper (Appendix A) http://arxiv.org/pdf/0706.1062v2.pdf
+		
 		if(data.length > 1) {
 			LinearRegression linReg = new LinearRegression(inputVar, responseVar);
 			double intercept = linReg.intercept();
 			double slope = linReg.slope();
-
+		
+			System.out.println(linReg.toString());
 			// Let's now calculate the two points (x1, y1) and (xn, yn)
 			// The point (x1, y1) is where the intercept crosses the x axis (since we are not interested 
 			// in what there is below): y=ax+b => ax+b=0 . Therefore (x1, y1) = (-b/a, 0). 
 			// The point (xn, yn) is the last point of our discrete intercept.
+			
 			double x1 = -intercept / slope;			
 			double y1=0;
 			if(x1 < 0) {
@@ -252,9 +264,13 @@ public class ScatterGraph extends JPanel {
 				y1 = intercept;
 			}
 			
+			
+			
 			double xn = inputVar.length-1;
 			double yn = slope*inputVar[inputVar.length-1] + intercept;
 
+			
+			
 			// Note that y1 and yn are the actual points calculated from the intercept. These need to be "converted" 
 			// in real plot coordinates.
 			// x1 and xn represents the factors of baseWidth on the x-axis. 
@@ -268,12 +284,17 @@ public class ScatterGraph extends JPanel {
 			
 			// Draw the legend for the intercept
 			// First we need to find the widest label
-			String interceptString = "y = " + (float)(slope) + " * x ";
-			if(intercept < 0) 
-				interceptString = interceptString + " - " + (float)(-intercept);
+			LinearRegression legendEquationLinReg = new LinearRegression(legendInputVar, responseVar);
+			double legendIntercept = legendEquationLinReg.intercept();
+			double legendSlope = legendEquationLinReg.slope();
+			double legendRSquare = legendEquationLinReg.R2();
+			String legendInterceptString = "y = " + (float)(legendSlope) + " * x ";
+			if(legendIntercept < 0) 
+				legendInterceptString += " - " + (float)(-legendIntercept);
 			else 
-				interceptString = interceptString + " + " + (float)intercept;
-			int width = g.getFontMetrics().stringWidth(interceptString);
+				legendInterceptString += " + " + (float)legendIntercept;
+			legendInterceptString += " , R^2 = " + (float)legendRSquare;
+			int width = g.getFontMetrics().stringWidth(legendInterceptString);
 			
 			// First draw a box to put the legend in
 			g.setColor(Color.WHITE);
@@ -283,7 +304,7 @@ public class ScatterGraph extends JPanel {
 	
 			// Now draw the intercept label
 			g.setColor(Color.RED);
-			g.drawString(interceptString, xOffset+13, 60);
+			g.drawString(legendInterceptString, xOffset+13, 60);
 			g.setColor(Color.BLACK);
 		}
 		
