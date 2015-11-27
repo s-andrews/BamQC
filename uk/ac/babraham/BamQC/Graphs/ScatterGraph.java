@@ -251,7 +251,6 @@ public class ScatterGraph extends JPanel {
 			double intercept = linReg.intercept();
 			double slope = linReg.slope();
 		
-			System.out.println(linReg.toString());
 			// Let's now calculate the two points (x1, y1) and (xn, yn)
 			// The point (x1, y1) is where the intercept crosses the x axis (since we are not interested 
 			// in what there is below): y=ax+b => ax+b=0 . Therefore (x1, y1) = (-b/a, 0). 
