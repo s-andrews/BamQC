@@ -159,7 +159,6 @@ public class ScatterGraph extends JPanel {
 		
 		
 		// Draw the y axis labels
-		// TODO
 		for (double i = yStart; i <= maxY; i += yInterval) {
 			String label = "" + i;
 			label = label.replaceAll(".0$", ""); // Don't leave trailing .0s
@@ -218,14 +217,6 @@ public class ScatterGraph extends JPanel {
 			}
 		}
 		
-		
-		// Now draw horizontal lines across from the y axis
-//		g.setColor(new Color(180, 180, 180));
-//		for (double i = yStart; i <= maxY; i += yInterval) {
-//			g.drawLine(xOffset, getY(i), getWidth() - 10, getY(i));
-//		}
-//		g.setColor(Color.BLACK);
-
 		
 		
 		// Now draw the axes
