@@ -206,7 +206,6 @@ public class CompactScatterGraph extends JPanel {
 		
 		// Now draw the data points
 		double baseWidth = (getWidth() - (xOffset + 10)) / data.length;
-		if (baseWidth < 1) baseWidth = 1;
 
 		// System.out.println("Base Width is "+baseWidth);
 		// Let's find the longest label, and then work out how often we can draw

@@ -192,7 +192,6 @@ public class SeparateLineGraph extends JPanel {
 		if(data.length > 0) {
 			// Now draw the data points
 			baseWidth = 1.0d*(getWidth()-(xOffset+10))/data[0].length;
-			if (baseWidth<1) baseWidth=1;
 
 			// System.out.println("Base Width is "+baseWidth);
 			// First draw faint boxes over alternating bases so you can see which is which
