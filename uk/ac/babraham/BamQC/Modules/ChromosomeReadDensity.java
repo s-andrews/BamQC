@@ -36,6 +36,7 @@ import net.sf.samtools.SAMRecord;
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.BamQC.Graphs.BarGraph;
+import uk.ac.babraham.BamQC.Graphs.CompactScatterGraph;
 import uk.ac.babraham.BamQC.Graphs.ScatterGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
@@ -43,8 +44,8 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 public class ChromosomeReadDensity extends AbstractQCModule {
 
 	private String [] chromosomeNames;
-	private double [] logReadNumber;
-	private double [] logChromosomeLength;
+	private double [] readNumber;
+	private double [] chromosomeLength;
 	
 	@Override
 	public void processSequence(SAMRecord read) {}
@@ -84,17 +85,16 @@ public class ChromosomeReadDensity extends AbstractQCModule {
 			});
 		
 		// recorded for the plot and text report
-		logReadNumber = new double [chromosomes.length];
-		logChromosomeLength = new double[chromosomes.length];
+		readNumber = new double [chromosomes.length];
+		chromosomeLength = new double[chromosomes.length];
 		// recorded for the text report only
 		chromosomeNames = new String [chromosomes.length];
 				
 		for (int c=0; c<chromosomes.length; c++) {
-			//logReadNumber[c] = chromosomes[c].seqCount();
-			//logChromosomeLength[c] = chromosomes[c].length();
-			
-			logReadNumber[c] = Precision.round(Math.log(chromosomes[c].seqCount()), 2);
-			logChromosomeLength[c] = Precision.round(Math.log(chromosomes[c].length()), 2);
+//			readNumber[c] = chromosomes[c].seqCount();
+//			chromosomeLength[c] = chromosomes[c].length();
+			readNumber[c] = Precision.round(Math.log(chromosomes[c].seqCount()), 2);
+			chromosomeLength[c] = Precision.round(Math.log(chromosomes[c].length()), 2);
 			chromosomeNames[c] = chromosomes[c].name();
 		}
 		
@@ -103,6 +103,19 @@ public class ChromosomeReadDensity extends AbstractQCModule {
 	
 	@Override
 	public JPanel getResultsPanel() {
+		String title = "Chromosome Read Density";
+		String xLabel = "Log Chromosome Length";
+		String yLabel = "Log Read Number";
+		if(readNumber.length < 1) {
+			return new ScatterGraph(new double[1], new double[1], xLabel, yLabel, title);
+		}		
+		return new ScatterGraph(readNumber, chromosomeLength, xLabel, yLabel, title);
+	}
+
+	
+	/* This simply plots the points without including empty spaces in between if these are found. */
+	@Deprecated
+	public JPanel getOldResultsPanel() {
 
 		String title = "Chromosome Read Density";
 		String[] xCategories;
@@ -110,36 +123,36 @@ public class ChromosomeReadDensity extends AbstractQCModule {
 		String yLabel = "Log Read Number";
 		double maxY = Double.MIN_VALUE, minY=Double.MAX_VALUE;
 		
-		if(logReadNumber.length < 1) {
+		if(readNumber.length < 1) {
 			xCategories = new String[]{"Null"};
-			// Previously this was a bar graph
-			//return new BarGraph(new double[1], 0d, maxY, xLabel, yLabel, xCategories, title);
-			return new ScatterGraph(new double[1], 0d, maxY, xLabel, yLabel, xCategories, title);
+//			 Previously this was a bar graph
+//			return new BarGraph(new double[1], 0d, maxY, xLabel, yLabel, xCategories, title);
+			return new CompactScatterGraph(new double[1], 0d, maxY, xLabel, yLabel, xCategories, title);
 		}
 		
-		xCategories = new String[logChromosomeLength.length];
+		xCategories = new String[chromosomeLength.length];
 		
-		for(int i=0; i<logReadNumber.length; i++) {
-			if(maxY < logReadNumber[i]) {
-				maxY = logReadNumber[i];
-			} else if(minY > logReadNumber[i]) {
-					minY = logReadNumber[i];
+		for(int i=0; i<readNumber.length; i++) {
+			if(maxY < readNumber[i]) {
+				maxY = readNumber[i];
+			} else if(minY > readNumber[i]) {
+					minY = readNumber[i];
 			}
-			//System.out.println(logChromosomeLength[i] + " " + logReadNumber[i]);
+			//System.out.println(chromosomeLength[i] + " " + readNumber[i]);
 		}
 
 		// temporarily replaced with 0
 		minY = 0;
 		
-		
-		for(int i=0; i<logChromosomeLength.length; i++) {
-			xCategories[i] = String.valueOf(logChromosomeLength[i]);
+		for(int i=0; i<chromosomeLength.length; i++) {
+			xCategories[i] = String.valueOf(chromosomeLength[i]);
 		}
 		// Previously this was a bar graph
-		//return new BarGraph(logReadNumber, minY, maxY, xLabel, yLabel, xCategories, title);
-		return new ScatterGraph(logReadNumber, minY, maxY+maxY*0.1, xLabel, yLabel, xCategories, title);
+		//return new BarGraph(readNumber, minY, maxY, xLabel, yLabel, xCategories, title);
+		// This just plots the data as it is, without empty non-represented points.
+		return new CompactScatterGraph(readNumber, minY, maxY+maxY*0.1, xLabel, yLabel, xCategories, title);
 	}
-
+	
 	
 	@Override
 	public String name() {
@@ -176,7 +189,7 @@ public class ChromosomeReadDensity extends AbstractQCModule {
 
 	@Override
 	public boolean ignoreInReport() {
-		if(ModuleConfig.getParam("ChromosomeReadDensity", "ignore") > 0 || logChromosomeLength.length < 1) { 
+		if(ModuleConfig.getParam("ChromosomeReadDensity", "ignore") > 0 || chromosomeLength.length < 1) { 
 			return true;
 		}
 		return false;
@@ -193,9 +206,9 @@ public class ChromosomeReadDensity extends AbstractQCModule {
 		for (int i=0;i<chromosomeNames.length;i++) {
 			sb.append(chromosomeNames[i]);
 			sb.append("\t");
-			sb.append(logChromosomeLength[i]);
+			sb.append(chromosomeLength[i]);
 			sb.append("\t");
-			sb.append(logReadNumber[i]);
+			sb.append(readNumber[i]);
 			sb.append("\n");
 		}
 				
@@ -206,11 +219,11 @@ public class ChromosomeReadDensity extends AbstractQCModule {
 	}
 
 	public double[] getLogReadNumber() {
-		return logReadNumber;
+		return readNumber;
 	}
 
 	public double[] getLogChromosomeLength() {
-		return logChromosomeLength;
+		return chromosomeLength;
 	}
 
 }

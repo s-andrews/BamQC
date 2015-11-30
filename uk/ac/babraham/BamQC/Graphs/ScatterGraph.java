@@ -40,38 +40,56 @@ public class ScatterGraph extends JPanel {
 
 	private String xLabel;
 	private String yLabel;
-	private String[] xCategories;
 	private double[] data;
+	private double[] xCategories;
 	private String graphTitle;
+	private double minX;
+	private double maxX;
+	private double xInterval;
 	private double minY;
 	private double maxY;
 	private double yInterval;
 	private int height = -1;
 	private int width = -1;
 
-	public ScatterGraph(double[] data, double minY, double maxY, String xLabel, String yLabel, int[] xCategories, String graphTitle) {
-		this(data, minY, maxY, xLabel, yLabel, new String[0], graphTitle);
-		this.xCategories = new String[xCategories.length];
-
-		for (int i = 0; i < xCategories.length; i++) {
-			this.xCategories[i] = "" + xCategories[i];
-		}
+	public ScatterGraph(double[] data, double[] xCategories, String xLabel, String yLabel, String graphTitle) {
+		initialise(data, xCategories, xLabel, yLabel, graphTitle);
 	}
 
-	public ScatterGraph(double[] data, double minY, double maxY, String xLabel, String yLabel, String[] xCategories, String graphTitle) {
+	
+	public ScatterGraph(double[] data, String[] xCategories, String xLabel, String yLabel, String graphTitle) {
+		double[] myCategories = new double[xCategories.length];
+		for (int i=0; i<xCategories.length; i++) {
+			myCategories[i] = Double.parseDouble(xCategories[i]);
+		}
+		initialise(data, myCategories, xLabel, yLabel, graphTitle);
+	}
+	
+	private void initialise(double[] data, double[] xCategories, String xLabel, String yLabel, String graphTitle) {
 		this.data = data;
-		this.minY = minY;
-		this.maxY = maxY;
+		this.xCategories = xCategories;
 		this.xLabel = xLabel;
 		this.yLabel = yLabel;
-		this.xCategories = xCategories;
-		this.graphTitle = graphTitle;
-		this.yInterval = findOptimalYInterval(maxY);
+		this.graphTitle = graphTitle;		
+
+		// calculate minX-maxX, minY-maxY and xInterval-yInterval
+		double[] minmax = new double[]{Double.MAX_VALUE, Double.MIN_VALUE};
+		calculateMinMax(this.data, minmax);
+		minY = minmax[0];
+		maxY = minmax[1];
+		yInterval = findOptimalYInterval(maxY);
+		
+		minmax = new double[]{Double.MAX_VALUE, Double.MIN_VALUE};
+		calculateMinMax(this.xCategories, minmax);
+		minX = minmax[0];
+		maxX = minmax[1];
+		xInterval = findOptimalYInterval(maxX);
 	}
 
+	
 	private double findOptimalYInterval(double max) {
 		int base = 1;
-		double[] divisions = new double[] { 1, 2, 2.5, 5 };
+		double[] divisions = new double[] { 0.5, 1, 2, 2.5, 5 };
 
 		while (true) {
 
@@ -84,6 +102,20 @@ public class ScatterGraph extends JPanel {
 			base *= 10;
 		}
 	}
+	
+	
+	private void calculateMinMax(double[] myData, double[] minmax) {
+		for(int i=0; i<myData.length; i++) {
+			if(minmax[0] > myData[i]) {
+				minmax[0] = myData[i];
+			} else if(minmax[1] < myData[i]) {
+				minmax[1] = myData[i];
+			}
+		}
+		if(minmax[0] > 0) minmax[0] = 0.0d;
+	}
+	
+	
 
 	@Override
 	public Dimension getPreferredSize() {
@@ -160,7 +192,7 @@ public class ScatterGraph extends JPanel {
 		
 		// Draw the y axis labels
 		int lastYLabelEnd = Integer.MAX_VALUE;
-		for (double i = yStart; i <= maxY; i += yInterval) {
+		for (double i=yStart; i<=maxY; i+=yInterval) {
 			String label = "" + i;
 			label = label.replaceAll(".0$", ""); // Don't leave trailing .0s where we don't need them.
 			// Calculate the new xOffset depending on the widest ylabel.
@@ -207,18 +239,16 @@ public class ScatterGraph extends JPanel {
 
 		
 		// Now draw the data points
-		double baseWidth = (getWidth() - (xOffset + 10)) / data.length;
-		if (baseWidth < 1) baseWidth = 1;
+		double baseWidth = (getWidth() - (xOffset + 10)) / (maxX-minX);
 
-		// System.out.println("Base Width is "+baseWidth);
-		// Let's find the longest label, and then work out how often we can draw
-		// labels
+//		System.out.println("Base Width is "+baseWidth);
+		// Let's find the longest label, and then work out how often we can draw labels
 		int lastXLabelEnd = 0;
 		
 		// Draw the x axis labels
-		for (int i = 0; i < data.length; i++) {
+		for (double i=minX; i<=maxX; i+=xInterval) {
 			g.setColor(Color.BLACK);
-			String baseNumber = "" + xCategories[i];
+			String baseNumber = "" + i;	
 			int baseNumberWidth = g.getFontMetrics().stringWidth(baseNumber);
 			int baseNumberPosition = (int)((baseWidth / 2) + xOffset + (baseWidth * i) - (baseNumberWidth / 2));
 
@@ -241,18 +271,14 @@ public class ScatterGraph extends JPanel {
 		// We distinguish two inputs since the x label does not start from 0.
 		// used for computing the actual line points as if they were starting from 0.
 		double[] inputVar = new double[data.length];
-		// used for the equation legend as this does not start from 0.
-		double[] legendInputVar = new double[data.length];
 		double[] responseVar = new double[data.length];
 		for (int d = 0; d < data.length; d++) {
-			double x = xOffset + ((baseWidth * d) + (baseWidth * (d+1)))/2;
+			double x = getX(xCategories[d], xOffset)-ovalSize/2;
 			double y = getY(data[d])-ovalSize/2;
 			g.fillOval((int)x, (int)y, (int)(ovalSize), (int)(ovalSize));
 			// TODO this plots correctly but shouldn't .... 
-			inputVar[d] = Double.valueOf(d);  
-			//inputVar[d] = Double.valueOf(xCategories[d]); 
-			//legendInputVar[d] = Double.valueOf(d);
-			legendInputVar[d] = Double.valueOf(xCategories[d]);
+			//inputVar[d] = Double.valueOf(d);  
+			inputVar[d] = Double.valueOf(xCategories[d]); 
 			responseVar[d] = data[d];	
 		}
 		g.setColor(Color.BLACK);
@@ -268,71 +294,54 @@ public class ScatterGraph extends JPanel {
 		// This is our case if we plot log-log..
 		// It seems not in this paper (Appendix A) http://arxiv.org/pdf/0706.1062v2.pdf
 		
-//		if(data.length > 1) {
-//			LinearRegression linReg = new LinearRegression(inputVar, responseVar);
-//			double intercept = linReg.intercept();
-//			double slope = linReg.slope();
-//		
-//			// Let's now calculate the two points (x1, y1) and (xn, yn)
-//			// The point (x1, y1) is where the intercept crosses the x axis (since we are not interested 
-//			// in what there is below): y=ax+b => ax+b=0 . Therefore (x1, y1) = (-b/a, 0). 
-//			// The point (xn, yn) is the last point of our discrete intercept.
-//			
-//			double x1 = -intercept / slope;			
-//			double y1=0;
-//			if(x1 < 0) {
-//				x1 = 0;
-//				y1 = intercept;
-//			}
-//			
-//			
-//			
-//			double xn = inputVar.length-1;
-//			double yn = slope*inputVar[inputVar.length-1] + intercept;
-//
-//			
-//			
-//			// Note that y1 and yn are the actual points calculated from the intercept. These need to be "converted" 
-//			// in real plot coordinates.
-//			// x1 and xn represents the factors of baseWidth on the x-axis. 
-//			
-//			g.setColor(Color.RED);
-//			g.drawLine((int)(xOffset + ((baseWidth * (x1) + (baseWidth * (x1+1)))/2)), 
-//					   getY(y1), 
-//					   (int)(xOffset + ((baseWidth * (xn)) + (baseWidth * (xn+1)))/2), 
-//					   getY(yn));
-//			g.setColor(Color.BLACK);
-//			
-//			// Draw the legend for the intercept
-//			// First we need to find the widest label
-//			LinearRegression legendEquationLinReg = new LinearRegression(legendInputVar, responseVar);
-//			double legendIntercept = legendEquationLinReg.intercept();
-//			double legendSlope = legendEquationLinReg.slope();
-//			double legendRSquare = legendEquationLinReg.R2();
-//			
-//			// Translate line to x for inputVar[0]
-//			//legendIntercept = legendIntercept - slope*inputVar[0];
-//			
-//			String legendInterceptString = "y = " + (float)(legendSlope) + " * x ";
-//			
-//			if(legendIntercept < 0) 
-//				legendInterceptString += " - " + (float)(-legendIntercept);
-//			else 
-//				legendInterceptString += " + " + (float)legendIntercept;
-//			legendInterceptString += " , R^2 = " + (float)legendRSquare;
-//			int width = g.getFontMetrics().stringWidth(legendInterceptString);
-//			
-//			// First draw a box to put the legend in
-//			g.setColor(Color.WHITE);
-//			g.fillRect(xOffset+10, 40, width+8, 23);
-//			g.setColor(Color.LIGHT_GRAY);
-//			g.drawRect(xOffset+10, 40, width+8, 23);
-//	
-//			// Now draw the intercept label
-//			g.setColor(Color.RED);
-//			g.drawString(legendInterceptString, xOffset+13, 60);
-//			g.setColor(Color.BLACK);
-//		}
+		if(data.length > 1) {
+			LinearRegression linReg = new LinearRegression(inputVar, responseVar);
+			double intercept = linReg.intercept();
+			double slope = linReg.slope();
+			double rSquare = linReg.R2();
+			
+			// Let's now calculate the two points (x1, y1) and (xn, yn)
+			// The point (x1, y1) is where the intercept crosses the x axis (since we are not interested 
+			// in what there is below): y=ax+b => ax+b=0 . Therefore (x1, y1) = (-b/a, 0). 
+			// The point (xn, yn) is the last point of our discrete intercept.
+			double x1 = -intercept / slope;			
+			double y1=0;
+			if(x1 < 0) {
+				x1 = 0;
+				y1 = intercept;
+			}
+					
+			// maxX which essentially is inputVar[inputVar.length-1]
+			double xn = maxX;
+			double yn = slope*maxX + intercept;
+
+			g.setColor(Color.RED);
+			g.drawLine(getX(x1, xOffset),
+					   getY(y1),
+					   getX(xn, xOffset),
+					   getY(yn));
+			g.setColor(Color.BLACK);
+			
+			// Draw the legend for the intercept
+			String legendString = "y = " + (float)(slope) + " * x ";
+			if(intercept < 0) 
+				legendString += " - " + (float)(-intercept);
+			else 
+				legendString += " + " + (float)intercept;
+			legendString += " , R^2 = " + (float)rSquare;
+			int width = g.getFontMetrics().stringWidth(legendString);
+			
+			// First draw a box to put the legend in
+			g.setColor(Color.WHITE);
+			g.fillRect(xOffset+10, 45, width+8, 20);
+			g.setColor(Color.LIGHT_GRAY);
+			g.drawRect(xOffset+10, 45, width+8, 20);
+	
+			// Now draw the legend label
+			g.setColor(Color.RED);
+			g.drawString(legendString, xOffset+13, 60);
+			g.setColor(Color.BLACK);
+		}
 		
 	}
 	
@@ -342,7 +351,9 @@ public class ScatterGraph extends JPanel {
 		return (getHeight() - 40) - (int) (((getHeight() - 80) / (maxY - minY)) * y);
 	}
 	
-	
+	private int getX(double x, int xOffset) {
+		return  xOffset + (int) (((getWidth() - 80) / (maxX - minX)) * x);
+	}
 
 	
 	public static void main(String[] args) {
@@ -353,14 +364,12 @@ public class ScatterGraph extends JPanel {
 				Random r = new Random();
 				int sampleSize = 1000;
 				double[] data = new double[sampleSize];
-				String[] xCategories = new String[sampleSize];
-				double minY = Double.MAX_VALUE;
-				double maxY = Double.MIN_VALUE;
+				double[] xCategories = new double[sampleSize];
 				for(int i=0; i<sampleSize; i++) {
-					data[i] = (r.nextGaussian()*0.9 + 10)*i;
-					xCategories[i] = Integer.toString(i);
-					if(data[i] > maxY) maxY = data[i];
-					else if(data[i] < minY) minY = data[i];
+					data[i] = Math.log((r.nextGaussian()*1.5 + 10)*i + 50);
+					xCategories[i] = Math.log(i + 50);
+//					data[i] = ((r.nextGaussian()*1.5 + 10)*i + 50);
+//					xCategories[i] = (i + 50);
 				}
 					
 				String xLabel = "xLabel";
@@ -369,7 +378,7 @@ public class ScatterGraph extends JPanel {
 				String graphTitle = "Graph Title";
 
 				JFrame frame = new JFrame();
-				ScatterGraph scatterGraph = new ScatterGraph(data, minY, maxY, xLabel, yLabel, xCategories, graphTitle);
+				ScatterGraph scatterGraph = new ScatterGraph(data, xCategories, xLabel, yLabel, graphTitle);
 
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				frame.setSize(500, 500);
