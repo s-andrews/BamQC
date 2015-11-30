@@ -161,16 +161,23 @@ public class CompactScatterGraph extends JPanel {
 		
 		
 		// Draw the y axis labels
+		int lastYLabelEnd = Integer.MAX_VALUE;
 		for (double i = yStart; i <= maxY; i += yInterval) {
 			String label = "" + i;
-			label = label.replaceAll(".0$", ""); // Don't leave trailing .0s
-													// where we don't need them.
+			label = label.replaceAll(".0$", ""); // Don't leave trailing .0s where we don't need them.
+			// Calculate the new xOffset depending on the widest ylabel.
 			int width = g.getFontMetrics().stringWidth(label);
 			if (width > xOffset) {
 				xOffset = width;
 			}
-
-			g.drawString(label, yLabelRightShift+6, getY(i) + (g.getFontMetrics().getAscent() / 2));
+			// place the y axis labels so that they don't overlap when the plot is resized.
+			int baseNumberHeight = g.getFontMetrics().getHeight();
+			int baseNumberPosition = getY(i)+(baseNumberHeight/2);
+			if (baseNumberPosition + baseNumberHeight < lastYLabelEnd) {
+				// Draw the y axis labels
+				g.drawString(label, yLabelRightShift+6, baseNumberPosition);
+				lastYLabelEnd = baseNumberPosition + 2;
+			}
 		}
 		
 		

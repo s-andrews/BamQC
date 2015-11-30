@@ -156,15 +156,23 @@ public class SeparateLineGraph extends JPanel {
 		}
 		
 		double midY = minY+((maxY-minY)/2);
+		int lastYLabelEnd = Integer.MAX_VALUE;
 		for (int d=0;d<data.length;d++) {
 			String label = xTitles[d];
 			int width = g.getFontMetrics().stringWidth(label);
 			if (width > xOffset) {
 				xOffset = width;
 			}
-			
-			g.drawString(label, yLabelRightShift+6, getY(midY, d) + (g.getFontMetrics().getAscent() / 2));
+			// place the y axis labels so that they don't overlap when the plot is resized.
+			int baseNumberHeight = g.getFontMetrics().getHeight();
+			int baseNumberPosition = getY(midY, d)+(baseNumberHeight/2);
+			if (baseNumberPosition + baseNumberHeight < lastYLabelEnd) {
+				// Draw the y axis labels
+				g.drawString(label, yLabelRightShift+6, baseNumberPosition);
+				lastYLabelEnd = baseNumberPosition + 2;
+			}
 		}
+
 
 		// Give the x axis a bit of breathing space
 		xOffset = xOffset + yLabelRightShift + 8;

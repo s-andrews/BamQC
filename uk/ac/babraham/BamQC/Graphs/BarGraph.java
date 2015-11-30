@@ -26,12 +26,16 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
+
+import uk.ac.babraham.BamQC.Utilities.FormatNumber;
 
 public class BarGraph extends JPanel {
 
@@ -161,17 +165,26 @@ public class BarGraph extends JPanel {
 		}
 		
 		// Draw the y axis labels
+		int lastYLabelEnd = Integer.MAX_VALUE;
 		for (double i = yStart; i <= maxY; i += yInterval) {
 			String label = "" + i;
-			label = label.replaceAll(".0$", ""); // Don't leave trailing .0s
-													// where we don't need them.
+			label = label.replaceAll(".0$", ""); // Don't leave trailing .0s where we don't need them.	
+			// Calculate the new xOffset depending on the widest ylabel.
 			int width = g.getFontMetrics().stringWidth(label);
 			if (width > xOffset) {
 				xOffset = width;
 			}
-
-			g.drawString(label, yLabelRightShift+6, getY(i) + (g.getFontMetrics().getAscent() / 2));
+			// place the y axis labels so that they don't overlap when the plot is resized.
+			int baseNumberHeight = g.getFontMetrics().getHeight();
+			int baseNumberPosition = getY(i)+(baseNumberHeight/2);
+			if (baseNumberPosition + baseNumberHeight < lastYLabelEnd) {
+				// Draw the y axis labels
+				g.drawString(label, yLabelRightShift+6, baseNumberPosition);
+				lastYLabelEnd = baseNumberPosition + 2;
+			}
 		}
+		
+		
 
 		// Give the x axis a bit of breathing space
 		xOffset = xOffset + yLabelRightShift + 8;
