@@ -163,14 +163,19 @@ public class ScatterGraph extends JPanel {
 			((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		}
 		
-		double yStart;
-
+		double yStart, xStart;
 		if (minY % yInterval == 0) {
 			yStart = minY;
-		}
-		else {
+		} else {
 			yStart = yInterval * (((int) minY / yInterval) + 1);
 		}
+		
+		if (minX % xInterval == 0) {
+			xStart = minX;
+		} else {
+			xStart = xInterval * (((int) minX / xInterval) + 1);
+		}
+		
 
 		int xOffset = 0;
 
@@ -246,11 +251,11 @@ public class ScatterGraph extends JPanel {
 		int lastXLabelEnd = 0;
 		
 		// Draw the x axis labels
-		for (double i=minX; i<=maxX; i+=xInterval) {
+		for (double i=xStart; i<=maxX; i+=xInterval) {
 			g.setColor(Color.BLACK);
 			String baseNumber = "" + i;	
 			int baseNumberWidth = g.getFontMetrics().stringWidth(baseNumber);
-			int baseNumberPosition = (int)((baseWidth / 2) + xOffset + (baseWidth * i) - (baseNumberWidth / 2));
+			int baseNumberPosition = (int)( + xOffset + (baseWidth * i) - (baseNumberWidth / 2));
 
 			if (baseNumberPosition > lastXLabelEnd) {
 				g.drawString(baseNumber, baseNumberPosition, getHeight() - 25);
