@@ -20,6 +20,7 @@
 
 package uk.ac.babraham.BamQC.Graphs;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -31,6 +32,8 @@ import java.util.Random;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+
+import org.apache.commons.math3.util.Precision;
 
 import uk.ac.babraham.BamQC.Utilities.LinearRegression;
 
@@ -254,13 +257,19 @@ public class ScatterGraph extends JPanel {
 		for (double i=xStart; i<=maxX; i+=xInterval) {
 			g.setColor(Color.BLACK);
 			String baseNumber = "" + i;	
+			baseNumber = baseNumber.replaceAll(".0$", ""); // Don't leave trailing .0s where we don't need them.
+			// Calculate the new xOffset depending on the widest ylabel.
 			int baseNumberWidth = g.getFontMetrics().stringWidth(baseNumber);
-			int baseNumberPosition = (int)( + xOffset + (baseWidth * i) - (baseNumberWidth / 2));
+			int baseNumberPosition = (int)(xOffset + (baseWidth * i) - (baseNumberWidth / 2));
 
 			if (baseNumberPosition > lastXLabelEnd) {
 				g.drawString(baseNumber, baseNumberPosition, getHeight() - 25);
 				lastXLabelEnd = baseNumberPosition + baseNumberWidth + 5;
 			}
+			// Now draw vertical lines across from the y axis
+			g.setColor(new Color(180,180,180));
+			g.drawLine((int)(xOffset + (baseWidth * i)), getHeight() - 40, (int)(xOffset + (baseWidth * i)), 40);
+			g.setColor(Color.BLACK);
 		}
 		
 		
@@ -320,31 +329,37 @@ public class ScatterGraph extends JPanel {
 			double xn = maxX;
 			double yn = slope*maxX + intercept;
 
+			if (g instanceof Graphics2D) {
+				((Graphics2D)g).setStroke(new BasicStroke(1.5f));
+			}
 			g.setColor(Color.RED);
 			g.drawLine(getX(x1, xOffset),
 					   getY(y1),
 					   getX(xn, xOffset),
 					   getY(yn));
 			g.setColor(Color.BLACK);
+			if (g instanceof Graphics2D) {
+				((Graphics2D)g).setStroke(new BasicStroke(1));
+			}			
 			
 			// Draw the legend for the intercept
-			String legendString = "y = " + (float)(slope) + " * x ";
+			String legendString = "y = " + Precision.round(slope, 3) + "x";
 			if(intercept < 0) 
-				legendString += " - " + (float)(-intercept);
+				legendString += " - " + Precision.round(-intercept, 3);
 			else 
-				legendString += " + " + (float)intercept;
-			legendString += " , R^2 = " + (float)rSquare;
+				legendString += " + " + Precision.round(intercept, 3);
 			int width = g.getFontMetrics().stringWidth(legendString);
 			
 			// First draw a box to put the legend in
 			g.setColor(Color.WHITE);
-			g.fillRect(xOffset+10, 45, width+8, 20);
+			g.fillRect(xOffset+10, 45, width+8, 35);
 			g.setColor(Color.LIGHT_GRAY);
-			g.drawRect(xOffset+10, 45, width+8, 20);
+			g.drawRect(xOffset+10, 45, width+8, 35);
 	
 			// Now draw the legend label
 			g.setColor(Color.RED);
 			g.drawString(legendString, xOffset+13, 60);
+			g.drawString("R^2 = " + Precision.round(rSquare, 3), xOffset+13, 76);
 			g.setColor(Color.BLACK);
 		}
 		
@@ -357,7 +372,8 @@ public class ScatterGraph extends JPanel {
 	}
 	
 	private int getX(double x, int xOffset) {
-		return  xOffset + (int) (((getWidth() - 80) / (maxX - minX)) * x);
+		return  xOffset + (int) (((getWidth() - 40) / (maxX - minX)) * x);
+		//return  xOffset + (int) (((getWidth() - 80) / (maxX - minX)) * x);
 	}
 
 	
