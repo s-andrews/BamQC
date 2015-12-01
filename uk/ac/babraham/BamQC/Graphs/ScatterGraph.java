@@ -373,7 +373,6 @@ public class ScatterGraph extends JPanel {
 	
 	private int getX(double x, int xOffset) {
 		return  xOffset + (int) (((getWidth() - 40) / (maxX - minX)) * x);
-		//return  xOffset + (int) (((getWidth() - 80) / (maxX - minX)) * x);
 	}
 
 	
