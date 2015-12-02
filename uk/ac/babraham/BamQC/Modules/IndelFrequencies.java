@@ -178,17 +178,17 @@ public class IndelFrequencies extends AbstractQCModule {
 			String title = String.format("First Read Indel Frequencies ( total deletions: %.3f %%, total insertions: %.3f %% )", 
 					totDel*100.0f/totBases, totIns*100.0f/totBases);	
 			// add 10% to the top for improving the visualisation of the plot.
-			resultsPanel.add(new LineGraph(firstIndelData, 0d, firstMaxY+firstMaxY*0.1, "Position in Read (bp)", "Frequency", indelNames, xCategories, title));	
+			resultsPanel.add(new LineGraph(firstIndelData, 0d, firstMaxY+firstMaxY*0.1, "Position in Read (bp)", "Frequency (%)", indelNames, xCategories, title));	
 			
 			String title2 = "Second Read Indel Frequencies";	
 			// add 10% to the top for improving the visualisation of the plot.
-			resultsPanel.add(new LineGraph(secondIndelData, 0d, secondMaxY+secondMaxY*0.1, "Position in Read (bp)", "Frequency", indelNames, xCategories, title2));
+			resultsPanel.add(new LineGraph(secondIndelData, 0d, secondMaxY+secondMaxY*0.1, "Position in Read (bp)", "Frequency (%)", indelNames, xCategories, title2));
 		} else {
 			resultsPanel.setLayout(new GridLayout(1,1));
 			String title = String.format("Read Indel Frequencies ( total deletions: %.3f %%, total insertions: %.3f %% )", 
 					totDel*100.0f/totBases, totIns*100.0f/totBases);	
 			// add 10% to the top for improving the visualisation of the plot.
-			resultsPanel.add(new LineGraph(firstIndelData, 0d, firstMaxY+firstMaxY*0.1, "Position in Read (bp)", "Frequency", indelNames, xCategories, title));	
+			resultsPanel.add(new LineGraph(firstIndelData, 0d, firstMaxY+firstMaxY*0.1, "Position in Read (bp)", "Frequency (%)", indelNames, xCategories, title));	
 		}
 
 		return resultsPanel;

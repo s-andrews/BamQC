@@ -91,7 +91,7 @@ public class FeatureCoverage extends AbstractQCModule {
 
 	@Override
 	public String name() {
-		return "Feature Type Read Counts";
+		return "Feature Coverage";
 	}
 
 	@Override
@@ -104,13 +104,13 @@ public class FeatureCoverage extends AbstractQCModule {
 
 	@Override
 	public boolean raisesError() {
-		if(datasetIsEmpty) 
-			return true;
 		return false;
 	}
 
 	@Override
 	public boolean raisesWarning() {
+		if(datasetIsEmpty) 
+			return true;
 		return false;
 	}
 
