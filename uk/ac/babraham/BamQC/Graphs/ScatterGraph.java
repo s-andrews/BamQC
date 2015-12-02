@@ -79,13 +79,13 @@ public class ScatterGraph extends JPanel {
 		double[] minmax = new double[]{Double.MAX_VALUE, Double.MIN_VALUE};
 		calculateMinMax(this.data, minmax);
 		minY = minmax[0];
-		maxY = minmax[1];
+		maxY = minmax[1] + minmax[1]*0.1;  // let's give some extra 10% space
 		yInterval = findOptimalYInterval(maxY);
 		
 		minmax = new double[]{Double.MAX_VALUE, Double.MIN_VALUE};
 		calculateMinMax(this.xCategories, minmax);
 		minX = minmax[0];
-		maxX = minmax[1];
+		maxX = minmax[1] + minmax[1]*0.1;  // let's give some extra 10% space
 		xInterval = findOptimalYInterval(maxX);
 	}
 
@@ -326,17 +326,17 @@ public class ScatterGraph extends JPanel {
 			double rSquare = linReg.R2();
 			
 			// Let's now calculate the two points (x1, y1) and (xn, yn)
-			// The point (x1, y1) is where the intercept crosses the x axis (since we are not interested 
-			// in what there is below): y=ax+b => ax+b=0 . Therefore (x1, y1) = (-b/a, 0). 
-			// The point (xn, yn) is the last point of our discrete intercept.
-			double x1 = -intercept / slope;			
-			double y1=0;
-			if(x1 < 0) {
-				x1 = 0;
-				y1 = intercept;
-			}
-					
-			// maxX which essentially is inputVar[inputVar.length-1]
+			// (x1, y1). We need to skip the areas where x1<minY and y1>maxY
+			double x1 = minX;		
+			double y1 = slope*minX + intercept;
+			if(y1 < minY) {
+				x1 = (minY - intercept)/slope;
+				y1 = minY;
+			} else if(y1 > maxY) {
+				x1 = (maxY - intercept)/slope;
+				y1 = maxY;
+			}					
+			// (xn, yn). maxX which essentially is inputVar[inputVar.length-1]
 			double xn = maxX;
 			double yn = slope*maxX + intercept;
 
