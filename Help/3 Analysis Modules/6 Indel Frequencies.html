@@ -12,25 +12,26 @@
 <h1>Indel Frequencies</h1>
 <h2>Summary</h2>
 <p>
-The Indel Frequencies module generates some simple composition
-statistics for the file analysed.
+The Indel Frequencies module shows the frequencies of deletions and insertions 
+for the first and second reads. If no read is second, only one plot is shown. 
 </p>
 
 
 
 <h2>Warning</h2>
 <p>
-Indel Frequencies never raises a warning.
+Indel Frequencies raises a warning if the total indel percent is above 0.5%.
 </p>
 
 <h2>Failure</h2>
 <p>
-Indel Frequencies never raises an error.
+Indel Frequencies raises an error if the total indel percent is above 1%.
 </p>
 
 <h2>Common reasons for warnings</h2>
 <p>
-This module never raises warnings or errors
+This module raises warnings or errors if the total indel percent is above a 
+certain threshold.
 </p>
 
 </body>

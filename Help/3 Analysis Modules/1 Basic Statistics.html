@@ -13,30 +13,61 @@
 <h2>Summary</h2>
 <p>
 The Basic Statistics module generates some simple composition
-statistics for the file analysed.
+statistics for the file analysed. This module also shows a summary for understanding 
+why other modules are not shown and helps identify inconsistencies within the file.
 </p>
 
 <ul>
 <li>Filename: The original filename of the file which was analysed</li>
-<li>File type: Says whether the file appeared to contain actual base calls or
-colorspace data which had to be converted to base calls</li>
-<li>Encoding: Says which ASCII encoding of quality values was found in this
-file.
-</li><li>Total Sequences: A count of the total number of sequences processed.
-There are two values reported, actual and estimated.  At the moment these
-will always be the same.  In the future it may be possible to analyse just
-a subset of sequences and estimate the total number, to speed up the analysis,
-but since we have found that problematic sequences are not evenly distributed
-through a file we have disabled this for now.</li>
-<li>Filtered Sequences: If running in Casava mode sequences flagged to be 
-filtered will be removed from all analyses. The number of such sequences
-removed will be reported here. The total sequences count above will not include
-these filtered sequences and will the number of sequences actually used for the
-rest of the analysis.</li>
-<li>Sequence Length: Provides the length of the shortest and longest sequence
-in the set.  If all sequences are the same length only one value is reported.
-</li>
-<li>%GC: The overall %GC of all bases in all sequences</li>
+<li>Command generating Sam/Bam file: The full command used for generating 
+the file analysed by BamQC</li>
+<li>Has annotation: If an annotation file or a genome was set before analysing 
+the file</li>
+<li>Annotation file name: The file name or the genome used for annotating the 
+Sam/Bam file</li>
+<li>Total feature types: The number of feature types (e.g. gene, transcript, 
+etc)</li>
+<li>Total chromosomes: The number of chromosomes including those provided with 
+the annotation if this was set</li>
+<li>Sufficient genome coverage: If there is not enough genome coverage, the 
+analysis "Genome Coverage" is not shown</li>
+<li>Total Sequences: A count of the total number of sequences processed</li>
+<li>Percent primary alignment: The percent of sequences which are not secondary 
+or supplementary</li>
+<li>Percent sequences failed vendor QC: The percent of sequences with failed 
+vendor quality check flag set on</li>
+<li>Percent marked duplicate: The percent of sequences with duplicate flag set 
+on</li>
+<li>Percent sequences spliced: The percent of spliced sequences</li>
+<li>Percent sequences paired: The percent of sequences marked as paired</li>
+<li>Percent sequences properly paired: The percent of sequences marked as 
+properly paired</li>
+<li>Percent singletons: The percent of sequences representing singletons</li>
+<li>Percent sequences unmapped: The percent of unmapped sequences. These are 
+excluded from the detection of the variant calls</li>
+<li>Percent sequences without MD Tag String: The percent of sequences which do 
+not contain the optional tag field "MD". As this field contains information about 
+SNPs, this percent reports the number of sequences excluded from 
+the detection of SNPs (see modules: "SNP Frequencies" and "SNP Frequencies by Type"). 
+If the percent is 100, those modules are not shown</li>
+<li>Percent sequences without Cigar String: The percent of sequences which do
+not contain the field "Cigar". As this field contains information about Indels 
+and Soft Clips, this percent reports the number of sequences excluded from the 
+detection of Indels and Soft Clips (see modules: "Indel Frequencies" and 
+"Soft Clip Length Distributions"). If the percent is 100, those modules are not shown</li>
+<li>Percent sequences with inconsistent Cigar or MD Tag Strings: The percent of 
+sequences reporting an inconsistency between the fields "Cigar" and the optional 
+tag field "MD". These sequences are discarded from the detection of variant 
+calls</li>
+<li>Percent sequences discarded for variant call detection: The total percent 
+of sequences discarded from the detection of variant calls. This is the sum 
+of the previous four percent values.</li>
+<li>Percent indels: The percent of indels among the sequences. If 100, 
+the module "Indel Frequencies" is not shown</li>
+<li>Percent SNPs: The percent of SNPs among the sequences. If 100, 
+the modules "SNP Frequencies" and "SNP Frequencies by Type" is not shown</li>
+<li>Percent soft clips: The percent of soft clips among the sequences. If 100, 
+the module "Soft Clip Length Distributions" is not shown</li>
 </ul>
 
 <h2>Warning</h2>

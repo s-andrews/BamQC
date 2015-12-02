@@ -12,25 +12,28 @@
 <h1>Mapping Quality Distribution</h1>
 <h2>Summary</h2>
 <p>
-The Mapping Quality Distribution module generates some simple composition
-statistics for the file analysed.
+The Mapping Quality Distribution module shows the distribution of the mapping 
+quality for the reads in the Sam/Bam file. 
 </p>
 
 
 
 <h2>Warning</h2>
 <p>
-Mapping Quality Distribution never raises a warning.
+Mapping Quality Distribution raises a warning if the fraction (percent/read_number) 
+of reads with lowest quality mapping value is below 0.75.
 </p>
 
 <h2>Failure</h2>
 <p>
-Mapping Quality Distribution never raises an error.
+Mapping Quality Distribution raises an error if the fraction (percent/read_number) 
+of reads with lowest quality mapping value is below 0.50.
 </p>
 
 <h2>Common reasons for warnings</h2>
 <p>
-This module never raises warnings or errors
+This module can raise warnings or errors when the fraction of reads with lowest 
+quality mapping value is below a certain threshold.
 </p>
 
 </body>

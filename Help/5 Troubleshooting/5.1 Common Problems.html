@@ -1,0 +1,57 @@
+<html>
+
+<head>
+<title>Common Problems</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>Common Problems</h1>
+<p>
+There are a few common problems which can arise when running BamQC.  Below are the
+most common things you are likely to see along with a work-round to get you going again.
+</p>
+
+<h2>BamQC fails to start</h2>
+
+<p>
+SeqMonk is a java application. This means that in order to run BamQC you need to have installed 
+a java runtime environment (JRE). If you do not have a JRE installed then BamQC will not start.
+</p>
+<p>
+There are a number of free available JREs. BamQC has been tested to work with Sun JRE v1.6+
+running under Windows, Linux and MacOSX. If you don't have this JRE already you can get it from 
+https://www.java.com/en/download/. Other java environments/versions may also work, but we 
+haven't tested them.
+</p>
+
+<h2>BamQC runs slowly or dies whilst loading data</h2>
+
+<p>
+The nature of the data BamQC has to deal with is that it is very large. Both genome annotations and 
+sequence data take up huge amounts of memory. BamQC requires at least 1GB of RAM for small experiments,
+and large experiments may require more. 
+</p>
+
+<h2>BamQC won't download new genomes</h2>
+
+<p>
+If BamQC fails to import new genomes it's probably because it was unable to contact the web server 
+which provides this data. In order to do this your machine needs to be able to access the internet.
+</p>
+<p>
+If your machine is networked and genome importing still doesn't work then the most common cause is 
+the proxy server settings (under Network from Edit -> Preferences). If your network uses a proxy server 
+you should enter its details here. If not then the proxy server name should be left blank. 
+</p>
+
+
+
+</body>
+</html>

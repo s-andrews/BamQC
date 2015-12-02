@@ -1,0 +1,85 @@
+<html>
+
+<head>
+<title>BamQC Preferences</title>
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+	}
+	li {
+	padding-bottom: 1em
+	}
+ </style>
+</head>
+<body>
+<h1>BamQC Preferences</h1>
+<p>
+If you are unsure about changing a preference then it's probably best to leave it
+alone.
+</p>
+<p>
+All of your preferences are stored in a file called bamqc_prefs.txt.  This will
+be present in your 'home' directory.  On unix based filesystems this will be the
+top level of your personal workspace.  On windows it will normally be under
+Documents and Settings/[your username].  If you want to completely reset your 
+preferences you can simply delete this file and a default file will be created the
+next time BamQC is run.
+</p>
+<p>
+There are 2 groups of preference settings which can be accessed via the tabs at
+the top of the window.
+</p>
+<ol>
+<li>Files - allows you to set the default location where BamQC will look for
+different types of files</li>
+<li>Network - allows you to enter settings which may be required to access the internet
+from your machine</li>
+</ol>
+
+<h2>Files</h2>
+<p>
+There are two file locations which can be set.  To change these just press the browse
+button on the right of each field and select the directory you want.
+</p>
+<p>
+The file locations you can specify are:
+</p>
+<ul>
+<li>Genome Base Location - This is the directory under which your genome files will be stored.
+These are automatically downloaded from the SeqMonk server.  By default this folder is 
+inside the BamQC installation.  This folder needs to be writable by users of the program.
+It can also contain a large amount of data.  You may wish to change this to a local drive, or
+have the same genome folder shared by several users to save on disk space.</li>
+<li>Default Save Location - This is the folder containing only the genomes at the moment but might 
+contain other data used by BamQC in the future.</li>
+</ul>
+<p>
+Although you can set default locations here BamQC will also remember the last folder you
+used in the current session and use that again once you have changed from the default in
+a given session.  The preferred directory will be remembered for the next time you open the
+program.
+</p>
+
+<h2>Network</h2>
+<p>
+Depending on the setup of your network you may not be able to access the internet 
+directly, but must instead route your connection via a proxy server.  Since BamQC 
+requires access to the network to be able to download genome annotation files it
+needs to know if your network requires a proxy.
+</p>
+<p>
+If your network uses a proxy you need to fill in the HTTP proxy server and 
+HTTP proxy port boxes.  The name of the server should be provided without an http://
+prefix (ie wwwcache.example.com rather than http://wwwcache.example.com). If you don't
+use a proxy then the server box should be empty (it doesn't matter what is in the 
+port box in this case).
+</p>
+<p>
+The final option is to specify a location for the SeqMonk data server.  Although it
+is possible for sites to run their own data servers this is not likely to be common
+and you should leave this alone unless you are absolutely sure that you need to change
+it.
+</p>
+
+</body>
+</html>

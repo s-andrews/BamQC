@@ -12,8 +12,15 @@
 <h1>Genome Coverage</h1>
 <h2>Summary</h2>
 <p>
-The Genome Coverage module generates some simple composition
-statistics for the file analysed.
+The Genome Coverage module shows how the chromosomes are covered within the file. 
+If the number of chromosomes is below 50, a coverage per chromosome is shown 
+separately. Otherwise, the coverages are shown sequentially. The chromosome 
+coverages are shown in red and represent z-scores, where the grey horizontal line 
+is the mean value. Regions without coverage (e.g. centromeres) are indicated with 
+a black horizontal line located just below the coverage lines. If no coverage 
+is reported for a chromosome, it means that that chromosome is not covered 
+within the Sam/Bam file. This module is shown if there is at least one 
+chromosome is covered.
 </p>
 
 
