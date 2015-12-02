@@ -108,6 +108,17 @@ public class ScatterGraph extends JPanel {
 	
 	
 	private void calculateMinMax(double[] myData, double[] minmax) {
+		if(myData.length == 1) {
+			// let's deal with this case separately.
+			if(myData[0] >= 0) {
+				minmax[0] = 0.0d;
+				minmax[1] = myData[0];
+			} else {
+				minmax[0] = myData[0];
+				minmax[1] = 0.0d;
+			}
+			return;
+		}
 		for(int i=0; i<myData.length; i++) {
 			if(minmax[0] > myData[i]) {
 				minmax[0] = myData[i];
