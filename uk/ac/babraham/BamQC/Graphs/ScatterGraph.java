@@ -157,18 +157,9 @@ public class ScatterGraph extends JPanel {
 		return width;
 	}
 
-	public void paint(Graphics g, int width, int height) {
-		this.height = height;
-		this.width = width;
-		paint(g);
-		this.height = -1;
-		this.width = -1;
-	}
-
 	@Override
-	public void paint(Graphics g) {
-		super.paint(g);
-
+	protected void paintComponent(Graphics g) {
+		
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, getWidth(), getHeight());
 		g.setColor(Color.BLACK);

@@ -26,8 +26,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -35,7 +33,6 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 
-import uk.ac.babraham.BamQC.Utilities.FormatNumber;
 
 public class BarGraph extends JPanel {
 
@@ -116,17 +113,8 @@ public class BarGraph extends JPanel {
 		return width;
 	}
 
-	public void paint(Graphics g, int width, int height) {
-		this.height = height;
-		this.width = width;
-		paint(g);
-		this.height = -1;
-		this.width = -1;
-	}
-
 	@Override
-	public void paint(Graphics g) {
-		super.paint(g);
+	protected void paintComponent(Graphics g) {
 
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, getWidth(), getHeight());
