@@ -80,7 +80,7 @@ public class BamQCMenuBar extends JMenuBar implements ActionListener {
 		fileGFFOpenNetwork.addActionListener(this);
 		fileMenu.add(fileGFFOpenNetwork);
 		
-		fileGFFOpen = new JMenuItem("Set GFF/GTF Annotation File ...");
+		fileGFFOpen = new JMenuItem("Set GFF/GTF Annotation File");
 		fileGFFOpen.setMnemonic(KeyEvent.VK_A);
 		fileGFFOpen.setAccelerator(KeyStroke.getKeyStroke('A', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		fileGFFOpen.setActionCommand("open_gff");
@@ -167,7 +167,7 @@ public class BamQCMenuBar extends JMenuBar implements ActionListener {
 		
 		helpMenu.addSeparator();
 		
-		helpLicense = new JMenuItem("License...");
+		helpLicense = new JMenuItem("License");
 		helpLicense.setActionCommand("help_license");
 		helpLicense.setMnemonic(KeyEvent.VK_L);
 		helpLicense.setAccelerator(KeyStroke.getKeyStroke('L', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
