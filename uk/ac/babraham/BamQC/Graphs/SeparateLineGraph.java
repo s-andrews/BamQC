@@ -233,17 +233,7 @@ public class SeparateLineGraph extends JPanel {
 			// First check whether we are starting with points having 0 coverage.
 			int i=0;
 			lastY = getY(data[d][i],d);
-			for (; i<data[d].length && Double.isInfinite(data[d][i]); i++) {
-				// TODO 
-				// Darken the area if these points have 0 coverage
-//				g.setColor(new Color(100, 100, 100));
-//				g.fillRect((baseWidth/2)+xOffset+(baseWidth*(i)), (int)(minY), (baseWidth/2)+xOffset+(baseWidth*(i+1)), getY(minY,d));
-				
-				// if there is no coverage in the beginning we don't plot anything 
-//				g.setColor(Color.BLACK);				
-//				g.drawLine((int)((baseWidth/2)+xOffset+(baseWidth*(i))), getY(minY*0.75,d), (int)((baseWidth/2)+xOffset+(baseWidth*(i+1))), getY(minY*0.75,d));
-//				g.setColor(COLOURS[0]);
-			}
+			for (; i<data[d].length && Double.isInfinite(data[d][i]); i++) { }
 			
 			if(i<data[d].length) {
 				// This point has non-zero coverage
@@ -256,11 +246,7 @@ public class SeparateLineGraph extends JPanel {
 				if (Double.isNaN(data[d][i])) break;
 				// Check whether we have points with null coverage
 				if (Double.isInfinite(data[d][i]) ) {
-					// TODO 
-					// Darken the area if these points have 0 coverage
-//					g.setColor(new Color(100, 100, 100));
-//					g.fillRect((baseWidth/2)+xOffset+(baseWidth*(i-1)), (int)(minY), (baseWidth/2)+xOffset+(baseWidth*i), getY(minY,d));
-					g.setColor(Color.BLACK);
+					g.setColor(Color.BLUE);
 					g.drawLine((int)((baseWidth/2)+xOffset+(baseWidth*(i-1))), getY(minY*0.75,d), (int)((baseWidth/2)+xOffset+(baseWidth*i)), getY(minY*0.75,d));
 					g.setColor(COLOURS[0]);
 					lastY = getY(midY,d);

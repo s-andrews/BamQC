@@ -164,7 +164,7 @@ public class LineWithHorizontalBarGraph extends JPanel {
 		if (width > xOffsetLineGraph) {
 			xOffsetLineGraph = width;
 		}
-		g.drawString(label, 2, getY(midY)+(g.getFontMetrics().getAscent()/2));
+		g.drawString(label, 2, (int)getY(midY)+(g.getFontMetrics().getAscent()/2));
 
 		// calculate maxX
 		maxX=0;
@@ -207,17 +207,19 @@ public class LineWithHorizontalBarGraph extends JPanel {
 		// Add 3px either side for a bit of space;
 		leftSpace += 6;
 
-		int xPos=0;
-		int xOffsetBarGraph=0;
+		double xPos = 0;
+		double xOffsetBarGraph = 0;
 		// set y coordinates
-		int yPos=+80;
-		int yOffset=60;
-		int cumulativeXOffset = 0;
+		int yPos = +80;
+		int yOffset = getHeight()/10;
+		double cumulativeXOffset = 0;
 		
 		
-				
+
+		
+		// Draw the first plot
 		for(int i=0; i<barData.length; i++) {
-			int xValue = getX(Math.min(barData[i], maxX), leftSpace);
+			double xValue = getX(Math.min(barData[i], maxX), leftSpace);
 			// set xPos and xOffset
 			if(cumulativeXOffset==0) 
 				xPos=leftSpace;
@@ -225,12 +227,17 @@ public class LineWithHorizontalBarGraph extends JPanel {
 				xPos=cumulativeXOffset;
 			xOffsetBarGraph=xValue-leftSpace;
 			
+			// increase the cumulative X offset to get a measure for this plot, 
+			// as we need this for scaling the second plot.
+			cumulativeXOffset = xPos+xOffsetBarGraph;
+			
 			// draw the stacked horizontal bar scaffolds
-			Rectangle r = new Rectangle(xPos, yPos, xOffsetBarGraph, yOffset);
+			Rectangle r = new Rectangle((int)xPos, yPos, (int)xOffsetBarGraph, yOffset);
 			g.setColor(new Color(200,0,0));
 			g.fillRect((int)r.getX(), (int)r.getY(), (int)r.getWidth(), (int)r.getHeight());
 			g.setColor(Color.BLACK);
 			g.drawRect((int)r.getX(), (int)r.getY(), (int)r.getWidth(), (int)r.getHeight());
+			
 			// TOOL TIPS management
 			// add rectangle coordinates and tooltip to these two lists
 			//chrPositionStr = FormatNumber.compactIntegerRange(chrPosition, (int)barData[i]);
@@ -242,14 +249,9 @@ public class LineWithHorizontalBarGraph extends JPanel {
 			tips.add(barLabels[i] + " : " + chrPositionStr);
 			chrPosition = chrPosition + (int)barData[i];
 			
-			
-			// increase the cumulative X offset to get a measure for this plot, 
-			// as we need this for scaling the second plot.
-			cumulativeXOffset = xPos+xOffsetBarGraph;
-			
 			// draw grey lines to annotate the second plots
 			g.setColor(new Color(230, 230, 230));
-			g.drawLine(cumulativeXOffset, getHeight()-40-1, cumulativeXOffset, 140);
+			g.drawLine((int)cumulativeXOffset, getHeight()-40-1, (int)cumulativeXOffset, yPos+getHeight()/10);
 			g.setColor(Color.BLACK);	
 			
 		}
@@ -263,12 +265,10 @@ public class LineWithHorizontalBarGraph extends JPanel {
 		// Now draw horizontal lines across from the y axis (2nd plot)
 		// First draw faint boxes over alternating bases so you can see which is which
 		// Let's find the longest label, and then work out how often we can draw labels
-		double baseWidth = 1;	
-		int lastY = 0;
-
+		double lastY = 0;
 		// Now draw the data points
 		// Set the width for the plot line
-		baseWidth = 1.0*(cumulativeXOffset)/lineData.length;			
+		double baseWidth = 1.0*(cumulativeXOffset)/lineData.length;			
 
 		int lastXLabelEnd = 0;
 		for(int i=0; i<lineData.length; i++) {
@@ -287,9 +287,7 @@ public class LineWithHorizontalBarGraph extends JPanel {
 		
 		// Draw an horizontal line behind the line graph.
 		g.setColor(new Color(128,128,128));
-		// TODO remove once finished
-		//g.drawLine(xOffsetLineGraph, getYOld(midY,0), getWidth()-10, getYOld(midY,0));
-		g.drawLine(xOffsetLineGraph, getY(midY), getWidth()-10, getY(midY));
+		g.drawLine(xOffsetLineGraph, (int)getY(midY), getWidth()-10, (int)getY(midY));
 		g.setColor(Color.BLACK);
 		
 		
@@ -309,18 +307,7 @@ public class LineWithHorizontalBarGraph extends JPanel {
 		// First check whether we are starting with points having 0 coverage.
 		int i=0;
 		lastY = getY(lineData[i]);
-		for (; i<lineData.length && Double.isInfinite(lineData[i]); i++) {
-			// TODO not sure about this
-			// Darken the area if these points have 0 coverage
-//				g.setColor(new Color(100, 100, 100));
-//				g.fillRect((baseWidth/2)+xOffset+(baseWidth*(i)), (int)(minY), (baseWidth/2)+xOffset+(baseWidth*(i+1)), getY(minY,d));
-			
-			// if there is no coverage in the beginning we don't plot anything 
-//				g.setColor(Color.BLACK);				
-//				// NOTE HORIZONTAL POSITION!!
-//				g.drawLine((int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i))), getY(minY*0.75,d), (int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i+1))), getY(minY*0.75,d));
-//				g.setColor(COLOURS[0]);
-		}
+		for (; i<lineData.length && Double.isInfinite(lineData[i]); i++) { }
 		
 		if(i<lineData.length) {
 			// This point has non-zero coverage
@@ -331,37 +318,32 @@ public class LineWithHorizontalBarGraph extends JPanel {
 			if (Double.isNaN(lineData[i])) break;
 			// Check whether we have points with null coverage (the commented code removes 
 			// an additional spike found at the beginning.
-			if (Double.isInfinite(lineData[i]) ) { // || 
-				// TODO not sure about this
-				// Darken the area if these points have 0 coverage
-//				g.setColor(new Color(100, 100, 100));
-//				g.fillRect((baseWidth/2)+xOffset+(baseWidth*(i-1)), (int)(minY), (baseWidth/2)+xOffset+(baseWidth*i), getY(minY,d));
-				g.setColor(Color.BLACK);
-				// NOTE HORIZONTAL POSITION!!
-				g.drawLine((int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i-1))), getY(minY*0.75), (int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*i)), getY(minY*0.75));
+			if (Double.isInfinite(lineData[i]) ) {
+				g.setColor(Color.BLUE);
+				g.drawLine((int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i-1))), (int)getY(minY*0.40), (int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*i)), (int)getY(minY*0.40));
 				g.setColor(COLOURS[0]);
 				lastY = getY(midY);
 				continue;
 			}
 				
-			int thisY = getY(lineData[i]);
-			g.drawLine((int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i-1))), lastY, (int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*i)), thisY);
+			double thisY = getY(lineData[i]);
+			g.drawLine((int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*(i-1))), (int)lastY, (int)((baseWidth/2)+xOffsetLineGraph+(baseWidth*i)), (int)thisY);
 		
 			lastY = thisY;
 		}	
 	}
 
-
-	private int getY(double y) {
+	
+	private double getY(double y) {
 		int totalPlotArea = getHeight()-160;
-		return (getHeight()-30) - (int)((totalPlotArea/(maxY-minY))*(y-minY));		
+		return (getHeight()-30) - ((totalPlotArea/(maxY-minY))*(y-minY));		
 	}
 	
-	
-	private int getX(double value, int longestLabel) {
+	// Leave this to return a double instead of an int. It scales correctly when the plot changes size.
+	private double getX(double value, int longestLabel) {
 		int lengthToUse = getWidth()-(longestLabel+20);
-		double proportion = value/maxX;		
-		return longestLabel+(int)(lengthToUse*proportion);
+		double proportion = 1.0*value/maxX;		
+		return longestLabel+(lengthToUse*proportion);
 	}
 
 
@@ -422,7 +404,8 @@ public class LineWithHorizontalBarGraph extends JPanel {
         
     }
 
-}
+}
+
 
 
 
