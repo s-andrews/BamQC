@@ -76,7 +76,7 @@ public class FeatureCoverage extends AbstractQCModule {
 		readCounts = new double[featureNames.length];
 		for (int i=0;i<readCounts.length;i++) {
 			readCounts[i] = values.get(i);
-			if(readCounts[i] > 0.0) { 
+			if(datasetIsEmpty && readCounts[i] > 0.0) { 
 				datasetIsEmpty = false;
 			}
 		}
