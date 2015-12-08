@@ -269,14 +269,13 @@ public class GenomeCoverage extends AbstractQCModule {
 		
 		
 		/* Set up of a stacked row chart representing chromosome coverages. */
-		double maxLimit = maxCoverage*(1.5*maxCoverage);
 		String title = "Genome Coverage ( red: z-score, blue: region with no coverage )";
 		
 		
 		/* plot the data */
 		JPanel resultsPanel = new JPanel();
 		resultsPanel.setLayout(new javax.swing.BoxLayout(resultsPanel, javax.swing.BoxLayout.PAGE_AXIS));
-		resultsPanel.add(new LineWithHorizontalBarGraph(fullBinLengths, fullBinCounts, 0-maxLimit, maxLimit, "Genome Position", chromosomeNames, "", labels, title, "Scaffold ( for name:position, hover the mouse on the red bars )"));
+		resultsPanel.add(new LineWithHorizontalBarGraph(fullBinLengths, fullBinCounts, 0-maxCoverage, maxCoverage, "Genome Position", chromosomeNames, "", labels, title, "Scaffold ( for name:position, hover the mouse on the red bars )"));
 		
 		return resultsPanel;
 	}

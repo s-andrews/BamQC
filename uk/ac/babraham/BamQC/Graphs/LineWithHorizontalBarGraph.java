@@ -81,8 +81,8 @@ public class LineWithHorizontalBarGraph extends JPanel {
 	public LineWithHorizontalBarGraph(double[] barData, double[] lineData, double minY, double maxY, String xLabel, String[] barLabels, String xTitle, String[] xCategories, String graphTitle, String barDataLabel) {
 		this.barData = barData;
 		this.lineData = lineData;
-		this.minY = minY;
-		this.maxY = maxY;
+		this.minY = 0-minY*(1.5*minY);
+		this.maxY = maxY*(1.5*maxY);
 		this.barLabels = barLabels;		
 		this.xTitle = xTitle;
 		this.xLabel = xLabel;
