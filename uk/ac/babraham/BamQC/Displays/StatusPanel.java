@@ -20,8 +20,6 @@
 package uk.ac.babraham.BamQC.Displays;
 
 import java.awt.BorderLayout;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -42,8 +40,6 @@ public class StatusPanel extends JPanel implements ProgressListener {
 	private JLabel textLabel = new JLabel(" ",JLabel.LEFT);
 	
 	private JLabel progressLabel = new JLabel(" ", JLabel.RIGHT);
-	
-	private List<ProgressListener> progressListeners = new ArrayList<ProgressListener>();
 	
 	/**
 	 * Instantiates a new status panel.
