@@ -91,7 +91,7 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	//		setSize(1280, 720);
 			setSize(800,600);
-			setMinimumSize(new Dimension(500, 400));
+	//		setMinimumSize(new Dimension(660, 440));
 			setLocationRelativeTo(null);
 
 			menu = new BamQCMenuBar(this);
