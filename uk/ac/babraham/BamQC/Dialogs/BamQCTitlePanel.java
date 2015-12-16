@@ -107,7 +107,12 @@ public class BamQCTitlePanel extends JPanel {
 		JLabel copyright4 = new JLabel("Base64 encoding \u00a9Robert Harder, 2012", JLabel.CENTER);
 		copyright4.setFont(new Font("Dialog",Font.PLAIN,10));
 		c.add(copyright4,constraints);
-
+		constraints.gridy++;
+		
+		JLabel copyright5 = new JLabel("Apache Commons (lang, math) \u00a9Apache Software Foundation, 2015", JLabel.CENTER);
+		copyright5.setFont(new Font("Dialog",Font.PLAIN,10));
+		c.add(copyright5,constraints);
+		
 		add(c,BorderLayout.CENTER);
 	}
 	
