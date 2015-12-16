@@ -20,6 +20,7 @@
 package uk.ac.babraham.BamQC;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -90,6 +91,7 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	//		setSize(1280, 720);
 			setSize(800,600);
+			setMinimumSize(new Dimension(500, 400));
 			setLocationRelativeTo(null);
 
 			menu = new BamQCMenuBar(this);
