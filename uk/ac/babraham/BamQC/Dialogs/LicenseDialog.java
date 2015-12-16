@@ -17,6 +17,10 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Dialogs;
 
 import java.awt.Font;
@@ -30,6 +34,7 @@ import uk.ac.babraham.BamQC.BamQCApplication;
 
 /**
  * The Class LicenseDialog shows a text representation of the GPL
+ * @author Simon Andrews
  */
 public class LicenseDialog extends JDialog {
 

@@ -17,10 +17,21 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Optimised data structures (removed unneeded concurrency), optimised algorithm.
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.DataTypes.Genome;
 
 import java.util.HashMap;
 
+/**
+ * 
+ * @author Simon Andrews
+ * @author Piero Dalle Pezze
+ *
+ */
 public class ChromosomeFactory {
 
 	HashMap<String,Chromosome> chromosomes = new HashMap<String, Chromosome>();

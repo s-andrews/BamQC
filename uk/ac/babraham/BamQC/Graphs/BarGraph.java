@@ -17,7 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Added y axis label, antialiasing, axes numbers resizing to avoid overlapping.
+ * - Bart Ailey: Class creation.
+ */
 package uk.ac.babraham.BamQC.Graphs;
 
 import java.awt.Color;
@@ -33,7 +37,11 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 
-
+/**
+ * @author Bart Ailey
+ * @author Piero Dalle Pezze
+ *
+ */
 public class BarGraph extends JPanel {
 
 	private static final long serialVersionUID = -7292512222510200683L;

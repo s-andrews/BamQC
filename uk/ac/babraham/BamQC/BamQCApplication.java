@@ -17,6 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Added genome annotation, Statusbar, improved menu, overall class improvement.
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC;
 
 import java.awt.BorderLayout;
@@ -59,7 +64,11 @@ import uk.ac.babraham.BamQC.DataTypes.ProgressListener;
 import uk.ac.babraham.BamQC.Displays.StatusPanel;
 
 
-
+/**
+ * @author Simon Andrews
+ * @author Piero Dalle Pezze
+ *
+ */
 public class BamQCApplication extends JFrame implements ProgressListener {
 	
 	private static Logger log = Logger.getLogger(BamQCApplication.class);	

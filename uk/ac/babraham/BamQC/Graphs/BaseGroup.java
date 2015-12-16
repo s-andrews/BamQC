@@ -17,6 +17,10 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Graphs;
 
 import java.util.Vector;
@@ -28,7 +32,7 @@ import uk.ac.babraham.BamQC.BamQCConfig;
  * which positions within a read can be put such that early positions
  * get a group to themselves and later positions get averaged so that
  * general trends can still be observed.
- *
+ * @author Simon Andrews
  */
 public class BaseGroup {
 

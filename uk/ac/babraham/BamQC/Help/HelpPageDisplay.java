@@ -17,6 +17,10 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Help;
 
 import java.awt.BorderLayout;
@@ -36,6 +40,7 @@ import javax.swing.event.HyperlinkListener;
 
 /**
  * The Class HelpPageDisplay.
+ * @author Simon Andrews
  */
 public class HelpPageDisplay extends JPanel implements HyperlinkListener {
 

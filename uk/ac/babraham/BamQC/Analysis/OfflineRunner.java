@@ -17,6 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: added annotation, edited runMappedFiles
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Analysis;
 
 import java.io.File;
@@ -33,6 +38,12 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFactory;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 import uk.ac.babraham.BamQC.Sequence.SequenceFormatException;
 
+/**
+ * 
+ * @author Simon Andrews
+ * @author Piero Dalle Pezze
+ *
+ */
 public class OfflineRunner implements AnalysisListener {
 	
 	private AtomicInteger filesRemaining;

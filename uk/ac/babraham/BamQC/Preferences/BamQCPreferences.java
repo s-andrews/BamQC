@@ -17,6 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Imported from SeqMonk and adjusted for BamQC
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Preferences;
 
 import java.io.BufferedReader;
@@ -36,6 +41,8 @@ import org.apache.commons.lang3.SystemUtils;
  * A set of preferences, both temporary and permanent which are used
  * throughout BamQC.  Permanent preferences can be loaded from and
  * saved to a preferences file allowing persistence between sessions.
+ * @author Simon Andrews
+ * @author Piero Dalle Pezze
  */
 public class BamQCPreferences {
 

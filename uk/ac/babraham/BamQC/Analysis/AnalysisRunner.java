@@ -17,6 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Added progresslisteners, annotation, optimisation in module execution.
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Analysis;
 
 import java.awt.GraphicsEnvironment;
@@ -39,7 +44,11 @@ import uk.ac.babraham.BamQC.Modules.QCModule;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 import uk.ac.babraham.BamQC.Sequence.SequenceFormatException;
 
-
+/**
+ * @author Simon Andrews
+ * @author Piero Dalle Pezze
+ *
+ */
 public class AnalysisRunner implements Runnable {
 	
 	private static Logger log = Logger.getLogger(AnalysisRunner.class);	

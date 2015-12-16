@@ -17,6 +17,10 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Utilities;
 
 import java.awt.Color;
@@ -24,6 +28,7 @@ import java.awt.Color;
 /**
  * Provides a range of colours which form a smooth gradient
  * from Blue through Green to Red.
+ * @author Simon Andrews
  */
 public class HotColdColourGradient {
 	

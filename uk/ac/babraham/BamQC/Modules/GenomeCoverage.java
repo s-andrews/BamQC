@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2014 Bart Ailey Eagle Genomics Ltd
+ * Copyright Copyright 2014 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -17,7 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Added two plots, added report, added information for regions without coverage. 
+ * - Bart Ailey: Class creation.
+ */
 package uk.ac.babraham.BamQC.Modules;
 
 import java.io.IOException;

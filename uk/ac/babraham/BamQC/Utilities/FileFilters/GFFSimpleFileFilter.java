@@ -17,11 +17,21 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Imported from SeqMonk and adjusted for BamQC
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Utilities.FileFilters;
 
 import java.io.File;
 import java.io.FileFilter;
 
+/**
+ * 
+ * @author Simon Andrews
+ *
+ */
 public class GFFSimpleFileFilter implements FileFilter {
 
 	@Override

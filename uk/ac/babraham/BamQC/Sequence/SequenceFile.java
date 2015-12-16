@@ -17,6 +17,10 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Sequence;
 
 import java.io.File;
@@ -25,6 +29,11 @@ import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
 import net.sf.samtools.SAMRecord;
 
+/**
+ * 
+ * @author Simon Andrews
+ *
+ */
 public interface SequenceFile {
 
 	public boolean hasNext();

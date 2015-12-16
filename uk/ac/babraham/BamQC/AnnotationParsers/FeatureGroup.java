@@ -1,3 +1,8 @@
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Moved in a separate class. 
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.AnnotationParsers;
 
 import java.util.ArrayList;
@@ -8,6 +13,8 @@ import uk.ac.babraham.BamQC.DataTypes.Genome.SplitLocation;
 
 /**
  * The Class featureGroup.
+ * @author Simon Andrews
+ * @author Piero Dalle Pezze
  */
 public class FeatureGroup {
 

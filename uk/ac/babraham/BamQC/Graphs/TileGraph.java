@@ -17,7 +17,10 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
+/*
+ * Changelog: 
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Graphs;
 
 import java.awt.BasicStroke;
@@ -31,6 +34,11 @@ import javax.swing.JPanel;
 import uk.ac.babraham.BamQC.Modules.ModuleConfig;
 import uk.ac.babraham.BamQC.Utilities.HotColdColourGradient;
 
+/**
+ * 
+ * @author Simon Andrews
+ *
+ */
 public class TileGraph extends JPanel {
 
 	private static final long serialVersionUID = -4332412677932412243L;

@@ -17,6 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Taken code from SeqMonk and adjusted for BamQC.
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Menu;
 
 import java.awt.Toolkit;
@@ -40,6 +45,11 @@ import uk.ac.babraham.BamQC.Dialogs.EditPreferencesDialog;
 import uk.ac.babraham.BamQC.Dialogs.LicenseDialog;
 import uk.ac.babraham.BamQC.Help.HelpDialog;
 
+/** 
+ * @author Simon Andrews
+ * @author Piero Dalle Pezze
+ *
+ */
 public class BamQCMenuBar extends JMenuBar implements ActionListener {
 
 	private static final long serialVersionUID = -1301056504996459340L;

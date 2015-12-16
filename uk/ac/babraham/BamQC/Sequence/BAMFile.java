@@ -17,6 +17,10 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Sequence;
 
 import java.io.File;
@@ -34,6 +38,11 @@ import net.sf.samtools.SAMRecord;
 import net.sf.samtools.SAMSequenceDictionary;
 import net.sf.samtools.SAMSequenceRecord;
 
+/**
+ * 
+ * @author Simon Andrews
+ *
+ */
 public class BAMFile implements SequenceFile {
 
 	private File file;

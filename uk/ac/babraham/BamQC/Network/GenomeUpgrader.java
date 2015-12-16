@@ -17,6 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Imported from SeqMonk and adjusted for BamQC
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Network;
 
 import java.util.Enumeration;
@@ -25,6 +30,11 @@ import java.util.Vector;
 import uk.ac.babraham.BamQC.Network.DownloadableGenomes.GenomeAssembly;
 import uk.ac.babraham.BamQC.DataTypes.ProgressListener;
 
+/** 
+ * 
+ * @author Simon Andrews
+ *
+ */
 public class GenomeUpgrader implements Runnable, ProgressListener {
 
 	private GenomeAssembly [] genomes;

@@ -17,6 +17,10 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Simon Andrews: Class Creation.
+ */
 package uk.ac.babraham.BamQC.DataTypes.Genome;
 
 import java.util.Arrays;
@@ -26,6 +30,7 @@ import uk.ac.babraham.BamQC.BamQCException;
 /**
  * SplitLocation can be used to represent complex genomic
  * positions built up from several sublocations.
+ * @author Simon Andrews
  */
 public class SplitLocation extends Location {
 

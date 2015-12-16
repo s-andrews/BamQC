@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2014 Bart Ailey Eagle Genomics Ltd
+ * Copyright Copyright 2014 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -16,6 +16,11 @@
  *    You should have received a copy of the GNU General Public License
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Added y axis label, antialiasing, axes numbers resizing to avoid overlapping, report.
+ * - Bart Ailey: Class creation.
  */
 package uk.ac.babraham.BamQC.Modules;
 
@@ -35,6 +40,11 @@ import uk.ac.babraham.BamQC.Graphs.BarGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
+/**
+ * @author Bart Ailey
+ * @author Piero Dalle Pezze
+ *
+ */
 public class MappingQualityDistribution extends AbstractQCModule {
 
 	private static Logger log = Logger.getLogger(MappingQualityDistribution.class);

@@ -17,6 +17,10 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Dialogs;
 
 import java.awt.GridBagConstraints;
@@ -26,6 +30,11 @@ import java.awt.Insets;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+/**
+ * 
+ * @author Simon Andrews
+ *
+ */
 public class WelcomePanel extends JPanel {
 
 	private static final long serialVersionUID = 2018308540239092880L;

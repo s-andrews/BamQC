@@ -17,6 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Optimised data structures (removed unneeded concurrency), optimised algorithm.
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.DataTypes.Genome;
 
 import java.util.Collections;
@@ -34,6 +39,8 @@ import org.apache.log4j.Logger;
  * The feature objects we store will be split up by chromosome. They will be further
  * split into sequence level chunks so that we can avoid having to do lengthy linear
  * searches even when we're having random positions thrown at us.
+ * @author Simon Andrews
+ * @author Piero Dalle Pezze
  */
 public class FeatureSubclass {
 

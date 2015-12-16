@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2014 Bart Ailey Eagle Genomics Ltd
+ * Copyright Copyright 2014 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -17,6 +17,10 @@
  *    along with FastQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Bart Ailey: Class creation.
+ */
 package uk.ac.babraham.BamQC.Modules;
 
 import java.util.ArrayList;
@@ -24,6 +28,11 @@ import java.util.List;
 
 import uk.ac.babraham.BamQC.Statistics.NormalDistribution;
 
+/**
+ * 
+ * @author Bart Ailey
+ *
+ */
 public class NormalDistributionModeler {
 
 	private List<Double> distribution = new ArrayList<Double>();

@@ -17,7 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Added y axis label, antialiasing, axes numbers resizing to avoid overlapping, added report.
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Modules;
 
 import java.io.IOException;
@@ -33,6 +37,11 @@ import uk.ac.babraham.BamQC.Graphs.HorizontalBarGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
+/**
+ * @author Simon Andrews
+ * @author Piero Dalle Pezze
+ *
+ */
 public class FeatureCoverage extends AbstractQCModule {
 
 	private String [] featureNames = null;

@@ -17,7 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Corrected null pointer exception
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Modules;
 
 import java.awt.GridLayout;
@@ -38,6 +42,11 @@ import uk.ac.babraham.BamQC.Graphs.LineGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
+/**
+ * @author Simon Andrews
+ * @author Piero Dalle Pezze
+ *
+ */
 public class SoftClipDistribution extends AbstractQCModule {
 
 	// logger

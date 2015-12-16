@@ -17,7 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: added printouts.
+ * - Bart Ailey: Class creation.
+ */
 package test.java.uk.ac.babraham.BamQC.Modules;
 
 import static org.junit.Assert.*;

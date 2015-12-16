@@ -17,11 +17,21 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Optimised data structures, optimised algorithm, use of system library.
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.DataTypes.Genome;
 
 import java.io.Serializable;
 
 
+/** 
+ * @author Simon Andrews
+ * @author Piero Dalle Pezze
+ *
+ */
 public class Chromosome implements Comparable<Chromosome>, Serializable {
 
 

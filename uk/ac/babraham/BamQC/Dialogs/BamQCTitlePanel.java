@@ -17,6 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Updated licenses, authors, added antialias
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Dialogs;
 
 import java.awt.BorderLayout;
@@ -39,8 +44,9 @@ import uk.ac.babraham.BamQC.BamQCApplication;
 
 /**
  * The Class BamQCTitlePanel.
+ * @author Simon Andrews
+ * @author Piero Dalle Pezze
  */
-
 public class BamQCTitlePanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 

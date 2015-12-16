@@ -1,3 +1,7 @@
+/*
+ * Changelog: 
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.AnnotationParsers;
 
 import java.io.BufferedReader;
@@ -11,6 +15,11 @@ import java.util.HashMap;
 import uk.ac.babraham.BamQC.BamQCConfig;
 import uk.ac.babraham.BamQC.Modules.ModuleConfig;
 
+/**
+ * 
+ * @author Simon Andrews
+ *
+ */
 public class BiotypeMapping {
 
 	private HashMap<String, String> mappings = new HashMap<String, String>();

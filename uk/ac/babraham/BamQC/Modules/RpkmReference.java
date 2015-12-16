@@ -1,3 +1,8 @@
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Added plot and reports.
+ * - Bart Ailey: Class creation.
+ */
 package uk.ac.babraham.BamQC.Modules;
 
 import java.io.IOException;
@@ -19,6 +24,11 @@ import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 import uk.ac.babraham.BamQC.Utilities.CalculateDistribution;
 
+/** 
+ * @author Bart Ailey
+ * @author Piero Dalle Pezze
+ *
+ */
 public class RpkmReference extends AbstractQCModule {
 
 	public final static int BIN_SIZE = ModuleConfig.getParam("RpkmReference_bin_size", "ignore").intValue();

@@ -17,6 +17,10 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Class creation.
+ */
 package uk.ac.babraham.BamQC.Dialogs;
 
 import java.util.Vector;
@@ -29,6 +33,7 @@ import uk.ac.babraham.BamQC.DataTypes.ProgressListener;
 /**
  * The Class ProgressDialog is a generic progress message showing the progress. 
  * We print all the output on the command line rather than a JDialog.
+ * @author Piero Dalle Pezze
  */
 public class ProgressTextDialog implements Runnable, ProgressListener {
 

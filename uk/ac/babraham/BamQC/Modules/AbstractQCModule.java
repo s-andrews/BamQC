@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-12 Pierre Lindenbaum
+ * Copyright Copyright 2010-12 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -17,7 +17,10 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
+/*
+ * Changelog: 
+ * - Pierre Lindenbaum: Class creation.
+ */
 package uk.ac.babraham.BamQC.Modules;
 
 import java.awt.Graphics;
@@ -35,6 +38,11 @@ import javax.swing.table.TableModel;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Utilities.ImageToBase64;
 
+/** 
+ * 
+ * @author Pierre Lindenbaum
+ *
+ */
 public abstract class AbstractQCModule implements QCModule {
 
 	protected void simpleXhtmlReport(HTMLReportArchive report,BufferedImage img,String alt) throws XMLStreamException {

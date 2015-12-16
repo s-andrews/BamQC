@@ -17,10 +17,16 @@
  *    along with SeqMonk; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Imported from SeqMonk and adjusted for BamQC
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC;
 
 /**
  * A generic exception class representing logic exceptions generated within BamQC
+ * @author Simon Andrews
  */
 public class BamQCException extends Exception {
 

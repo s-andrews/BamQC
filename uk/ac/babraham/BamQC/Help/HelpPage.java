@@ -17,6 +17,10 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Help;
 
 import java.io.BufferedReader;
@@ -31,6 +35,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 /**
  * The Class HelpPage represents a single page of information in 
  * the help system
+ * @author Simon Andrews
  */
 public class HelpPage extends DefaultMutableTreeNode {
 	

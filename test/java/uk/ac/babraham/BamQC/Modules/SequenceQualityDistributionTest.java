@@ -17,7 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Added printout.
+ * - Bart Ailey: Class creation.
+ */
 package test.java.uk.ac.babraham.BamQC.Modules;
 
 import static org.junit.Assert.*;
@@ -35,6 +39,12 @@ import org.junit.Test;
 
 import uk.ac.babraham.BamQC.Modules.SequenceQualityDistribution;
 
+/**
+ * 
+ * @author Bart Ailey
+ * @author Piero Dalle Pezze
+ *
+ */
 public class SequenceQualityDistributionTest {
 
 	private static Logger log = Logger.getLogger(SequenceQualityDistributionTest.class);

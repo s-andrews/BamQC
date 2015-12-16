@@ -17,6 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: annotation, command, variant calls, splices, creation of new table having multilines.
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Modules;
 
 import java.awt.BorderLayout;
@@ -40,6 +45,11 @@ import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 import uk.ac.babraham.BamQC.Utilities.MultiLineTableCellRenderer;
 
+/**
+ * @author Simon Andrews
+ * @author Piero Dalle Pezze
+ *
+ */
 public class BasicStatistics extends AbstractQCModule {
 
 	private String filename = "";

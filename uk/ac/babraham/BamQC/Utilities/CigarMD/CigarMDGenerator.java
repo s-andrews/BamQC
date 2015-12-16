@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2015 Piero Dalle Pezze
+ * Copyright Copyright 2015 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -17,7 +17,10 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Class creation.
+ */
 package uk.ac.babraham.BamQC.Utilities.CigarMD;
 
 import java.util.ArrayList;
@@ -39,6 +42,7 @@ import net.sf.samtools.SAMRecord;
  * 7G24^AA7C49 Combined CIGAR+MDTag: 7m1uGT24m2dAA5m1iG2m1uCA49m
  * 
  * Note: G in 1iG is SAM read- dependent.
+ * @author Piero Dalle Pezze
  */
 public class CigarMDGenerator {
 

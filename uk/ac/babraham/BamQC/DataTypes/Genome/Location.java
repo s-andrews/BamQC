@@ -17,6 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Merging with SeqMonk: Location.java 
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.DataTypes.Genome;
 
 import java.io.Serializable;
@@ -25,6 +30,8 @@ import java.io.Serializable;
  * A simple class to represent a simple location in the genome.
  * For complex positions containing sublocations you should use
  * the SplitLocation class instead.
+ * @author Simon Andrews
+ * @author Piero Dalle Pezze
  */
 public class Location implements Serializable, Comparable<Location> {
 	

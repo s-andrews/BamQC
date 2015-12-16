@@ -17,6 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Added protoFeatures, code optimisation, progress listener.
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.AnnotationParsers;
 
 import java.io.BufferedReader;
@@ -34,6 +39,8 @@ import uk.ac.babraham.BamQC.DataTypes.Genome.Location;
 
 /**
  * The Class GFFAnnotationParser reads sequence features from GFFv3 files
+ * @author Simon Andrews
+ * @author Piero Dalle Pezze
  */
 public class GFF3AnnotationParser extends AnnotationParser {
 

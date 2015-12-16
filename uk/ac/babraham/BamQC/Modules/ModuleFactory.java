@@ -17,10 +17,20 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Use of ModuleConfig for skipping modules which the user does not want to visualise.
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Modules;
 
 import java.util.ArrayList;
 
+/**
+ * @author Simon Andrews
+ * @author Piero Dalle Pezze
+ *
+ */
 public class ModuleFactory {
 
 	public static QCModule [] getStandardModuleList () {

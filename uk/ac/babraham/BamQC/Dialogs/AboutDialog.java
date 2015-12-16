@@ -17,6 +17,10 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Dialogs;
 
 import javax.swing.*;
@@ -31,6 +35,7 @@ import java.awt.event.*;
  * and copyright assignments.  This is just a thin shell around the 
  * BamQCTitlePanel which actually holds the relevant information and
  * which is also used on the welcome screen.
+ * @author Simon Andrews
  */
 public class AboutDialog extends JDialog {
 	private static final long serialVersionUID = 1L;

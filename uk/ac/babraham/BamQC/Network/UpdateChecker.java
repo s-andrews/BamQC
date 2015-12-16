@@ -17,6 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Imported from SeqMonk and adjusted for BamQC
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Network;
 
 import java.io.BufferedInputStream;
@@ -32,6 +37,7 @@ import uk.ac.babraham.BamQC.BamQCException;
  * The UpdateChecker allows the program to check on the main BamQC
  * site to determine if a newer version of the program has been
  * released so we can prompt the user to get the update.
+ * @author Simon Andrews
  */
 public class UpdateChecker {
 

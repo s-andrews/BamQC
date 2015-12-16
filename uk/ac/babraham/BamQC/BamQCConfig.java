@@ -17,6 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Imported from SeqMonk and adjusted for BamQC (added annotation etc..)
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC;
 
 import java.io.File;
@@ -30,6 +35,11 @@ import uk.ac.babraham.BamQC.Network.DownloadableGenomes.GenomeAssembly;
 import uk.ac.babraham.BamQC.Network.DownloadableGenomes.GenomeSpecies;
 import uk.ac.babraham.BamQC.Preferences.BamQCPreferences;
 
+/**
+ * @author Simon Andrews
+ * @author Piero Dalle Pezze
+ *
+ */
 public class BamQCConfig {
 	
 	private static BamQCConfig instance = new BamQCConfig();

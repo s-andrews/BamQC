@@ -17,6 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Code taken from SeqMonk. Simplified for the needs of BamQC.
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Dialogs;
 
 import java.awt.BorderLayout;
@@ -43,6 +48,8 @@ import uk.ac.babraham.BamQC.Preferences.BamQCPreferences;
 
 /**
  * A Dialog to allow the viewing and editing of all BamQC preferences.
+ * @author Simon Andrews
+ * @author Piero Dalle Pezze
  */
 public class EditPreferencesDialog extends JDialog implements ActionListener {
 

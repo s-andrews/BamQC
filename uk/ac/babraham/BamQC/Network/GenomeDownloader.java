@@ -17,6 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Imported from SeqMonk and adjusted for BamQC
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Network;
 
 import java.io.BufferedInputStream;
@@ -42,6 +47,7 @@ import uk.ac.babraham.BamQC.Preferences.BamQCPreferences;
  * The GenomeDownloader actually performs the network interaction required
  * to download a new genome from the main genome database and install it
  * in the local genome cache.
+ * @author Simon Andrews
  */
 public class GenomeDownloader implements Runnable {
 

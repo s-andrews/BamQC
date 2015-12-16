@@ -17,6 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: updated paramteres, changed data structure for optimisation
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Modules;
 
 import java.io.BufferedReader;
@@ -29,6 +34,11 @@ import java.util.HashMap;
 
 import uk.ac.babraham.BamQC.BamQCConfig;
 
+/**
+ * @author Simon Andrews
+ * @author Piero Dalle Pezze
+ *
+ */
 public class ModuleConfig {
 
 	private static HashMap<String, Double> parameters = readParams();

@@ -17,6 +17,10 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Class creation.
+ */
 package uk.ac.babraham.BamQC.Graphs;
 
 import java.awt.Color;
@@ -36,6 +40,11 @@ import javax.swing.JPanel;
 import uk.ac.babraham.BamQC.Utilities.AxisScale;
 import uk.ac.babraham.BamQC.Utilities.FormatNumber;
 
+/**
+ * 
+ * @author Piero Dalle Pezze
+ *
+ */
 public class HorizontalBarGraph extends JPanel {
 
 	private static final long serialVersionUID = -4964032131806305960L;

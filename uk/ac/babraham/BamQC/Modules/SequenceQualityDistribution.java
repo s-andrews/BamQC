@@ -1,3 +1,8 @@
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Added reports.
+ * - Bart Ailey: Class creation.
+ */
 package uk.ac.babraham.BamQC.Modules;
 
 import java.io.IOException;
@@ -16,6 +21,11 @@ import uk.ac.babraham.BamQC.Graphs.BarGraph;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
+/**
+ * @author Bart Ailey 
+ * @author Piero Dalle Pezze
+ *
+ */
 public class SequenceQualityDistribution extends AbstractQCModule {
 
 	private static Logger log = Logger.getLogger(SequenceQualityDistribution.class);

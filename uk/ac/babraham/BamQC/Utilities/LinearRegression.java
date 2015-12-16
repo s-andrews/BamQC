@@ -11,6 +11,7 @@ package uk.ac.babraham.BamQC.Utilities;
  *  estimates for the slope and <em>y</em>-intercept.
  *  
  *  Source code: http://algs4.cs.princeton.edu/14analysis/LinearRegression.java
+ *  (GPLv3 License)
  *
  *  @author Robert Sedgewick
  *  @author Kevin Wayne

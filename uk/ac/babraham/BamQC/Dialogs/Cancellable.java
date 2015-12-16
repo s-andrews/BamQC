@@ -17,11 +17,16 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Dialogs;
 
 /**
  * An interface to indicate that a class performs a long running task which
  * can be cancelled.
+ * @author Simon Andrews
  */
 public interface Cancellable {
 	

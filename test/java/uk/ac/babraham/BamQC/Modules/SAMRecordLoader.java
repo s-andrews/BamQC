@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2015 Piero Dalle Pezze
+ * Copyright Copyright 2015 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -17,7 +17,10 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Class creation.
+ */
 package test.java.uk.ac.babraham.BamQC.Modules;
 
 import java.io.File;
@@ -34,6 +37,7 @@ import net.sf.samtools.SAMRecord;
 /** 
  * The purpose of this class is to load a small SAM/BAM file in an ArrayList 
  * and return it to the user. It is convenient for test cases.
+ * @author Piero Dalle Pezze
  */
 public class SAMRecordLoader {
 

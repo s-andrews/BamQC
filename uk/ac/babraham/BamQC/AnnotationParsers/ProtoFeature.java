@@ -1,3 +1,7 @@
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Class creation. Code taken from Location.java and adjusted. 
+ */
 package uk.ac.babraham.BamQC.AnnotationParsers;
 
 
@@ -12,6 +16,7 @@ import uk.ac.babraham.BamQC.DataTypes.Genome.Location;
 /**
  * The Class ProtoFeature. This class represents a feature with temporary location 
  * parameters which can still be updated. 
+ * @author Piero Dalle Pezze
  */
 public class ProtoFeature {
 

@@ -17,6 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Code taken from SeqMonk.
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Displays.HTMLDisplay;
 
 import javax.swing.JDialog;
@@ -25,6 +30,11 @@ import javax.swing.JScrollPane;
 
 import uk.ac.babraham.BamQC.BamQCApplication;
 
+/**
+ * 
+ * @author Simon Andrews
+ *
+ */
 public class HTMLDisplayDialog extends JDialog {
 
 	private static final long serialVersionUID = -665506733941526484L;

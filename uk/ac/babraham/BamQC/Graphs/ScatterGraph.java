@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2014 Bart Ailey Eagle Genomics Ltd
+ * Copyright Copyright 2014 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -17,7 +17,10 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Class creation.
+ */
 package uk.ac.babraham.BamQC.Graphs;
 
 import java.awt.BasicStroke;
@@ -37,6 +40,11 @@ import org.apache.commons.math3.util.Precision;
 
 import uk.ac.babraham.BamQC.Utilities.LinearRegression;
 
+/**
+ * 
+ * @author Piero Dalle Pezze
+ *
+ */
 public class ScatterGraph extends JPanel {
 
 	private static final long serialVersionUID = -7292512222510200683L;

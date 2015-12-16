@@ -17,6 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Optimised data structures (removed unneeded concurrency), optimised algorithmm, merged with SeqMonk:Feature.java
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.DataTypes.Genome;
 
 import java.io.Serializable;
@@ -24,6 +29,8 @@ import java.io.Serializable;
 
 /**
  * The Class Feature represents a single annotation feature
+ * @author Simon Andrews
+ * @author Piero Dalle Pezze
  */
 public class Feature implements Comparable<Feature>, Serializable {
 	

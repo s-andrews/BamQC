@@ -17,6 +17,11 @@
  *    along with SeqMonk; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Code taken from SeqMonk. Added progressLabel
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Displays;
 
 import java.awt.BorderLayout;
@@ -32,6 +37,8 @@ import uk.ac.babraham.BamQC.DataTypes.ProgressListener;
 /**
  * The Class StatusPanel shows the interactive bar at the bottom
  * of the main application screen.
+ * @author Simon Andrews
+ * @author Piero Dalle Pezze
  */
 public class StatusPanel extends JPanel implements ProgressListener {
 

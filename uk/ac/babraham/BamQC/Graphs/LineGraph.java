@@ -17,6 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Added y axis label, antialiasing, axes numbers resizing to avoid overlapping.
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Graphs;
 
 import java.awt.BasicStroke;
@@ -34,6 +39,12 @@ import javax.swing.JPanel;
 import uk.ac.babraham.BamQC.Utilities.AxisScale;
 import uk.ac.babraham.BamQC.Utilities.FormatNumber;
 
+/**
+ * 
+ * @author Simon Andrews
+ * @author Piero Dalle Pezze
+ *
+ */
 public class LineGraph extends JPanel {
 
 	private static final long serialVersionUID = -7893883434501058128L;

@@ -17,6 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Imported from SeqMonk and adjusted for BamQC
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Network.DownloadableGenomes;
 
 import java.io.BufferedReader;
@@ -30,6 +35,11 @@ import java.util.Vector;
 
 import uk.ac.babraham.BamQC.Preferences.BamQCPreferences;
 
+/**
+ * 
+ * @author Simon Andrews
+ *
+ */
 public class DownloadableGenomeSet {
 
 	private Hashtable <String, GenomeSpecies> seenSpecies;

@@ -17,6 +17,10 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Results;
 
 import java.awt.BorderLayout;
@@ -40,6 +44,11 @@ import uk.ac.babraham.BamQC.DataTypes.ProgressListener;
 import uk.ac.babraham.BamQC.Modules.QCModule;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
+/** 
+ * 
+ * @author Simon Andrews
+ *
+ */
 public class ResultsPanel extends JPanel implements ListSelectionListener, AnalysisListener, ProgressListener {
 
 	private static final long serialVersionUID = 2141753423963373692L;

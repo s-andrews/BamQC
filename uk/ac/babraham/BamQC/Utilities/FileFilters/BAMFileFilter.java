@@ -17,12 +17,21 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Utilities.FileFilters;
 
 import java.io.File;
 
 import javax.swing.filechooser.FileFilter;
 
+/**
+ * 
+ * @author Simon Andrews
+ *
+ */
 public class BAMFileFilter extends FileFilter {
 
 	@Override

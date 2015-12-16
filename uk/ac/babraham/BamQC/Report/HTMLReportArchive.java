@@ -17,6 +17,10 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Report;
 
 import java.awt.image.BufferedImage;
@@ -58,6 +62,12 @@ import uk.ac.babraham.BamQC.Modules.QCModule;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 import uk.ac.babraham.BamQC.Utilities.ImageToBase64;
 
+
+/**
+ * 
+ * @author Simon Andrews
+ *
+ */
 public class HTMLReportArchive {
 	private XMLStreamWriter xhtml=null;
 	private StringBuffer data = new StringBuffer();

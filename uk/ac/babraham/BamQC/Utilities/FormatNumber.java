@@ -17,6 +17,10 @@
  *    along with SeqMonk; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Class creation.
+ */
 package uk.ac.babraham.BamQC.Utilities;
 
 import java.text.DecimalFormat;

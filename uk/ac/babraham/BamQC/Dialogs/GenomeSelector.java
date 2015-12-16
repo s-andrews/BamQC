@@ -17,6 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Code taken from SeqMonk.
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Dialogs;
 
 import java.awt.BorderLayout;
@@ -42,6 +47,7 @@ import uk.ac.babraham.BamQC.Preferences.BamQCPreferences;
 
 /**
  * The Class GenomeSelector shows a tree of the currently available genomes
+ * @author Simon Andrews
  */
 public class GenomeSelector extends JDialog {
 	

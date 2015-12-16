@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2015 Piero Dalle Pezze
+ * Copyright Copyright 2015 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -17,7 +17,10 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Class creation.
+ */
 package test.java.uk.ac.babraham.BamQC.Modules;
 
 import static org.junit.Assert.*;
@@ -37,6 +40,11 @@ import org.junit.Test;
 import uk.ac.babraham.BamQC.Modules.SoftClipDistribution;
 
 
+/**
+ * 
+ * @author Piero Dalle Pezze
+ *
+ */
 public class SoftClipDistributionTest {
 	
 	private static Logger log = Logger.getLogger(SoftClipDistributionTest.class);

@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2014 Bart Ailey Eagle Genomics Ltd
+ * Copyright Copyright 2014 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -17,7 +17,10 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Class creation.
+ */
 package uk.ac.babraham.BamQC.Graphs;
 
 import java.awt.Color;
@@ -33,8 +36,9 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 
-/*
+/**
  * Just plot the data towards xCategories. Not more, no less, therefore x-y values without data are not shown.
+ * @author Piero Dalle Pezze
  */
 public class CompactScatterGraph extends JPanel {
 

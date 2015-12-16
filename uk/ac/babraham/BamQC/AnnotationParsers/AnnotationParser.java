@@ -17,7 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: added parseGenome() and additional methods for making it upper class of GenomeParser 
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.AnnotationParsers;
 
 import java.io.File;
@@ -33,6 +37,8 @@ import uk.ac.babraham.BamQC.Dialogs.Cancellable;
  * The Class AnnotationParser provides the core methods which must be
  * implemented by a class wanting to be able to import features into
  * a BamQC AnnotationSet.
+ * @author Simon Andrews
+ * @author Piero Dalle Pezze
  */
 public abstract class AnnotationParser implements Cancellable, ProgressListener {
 	

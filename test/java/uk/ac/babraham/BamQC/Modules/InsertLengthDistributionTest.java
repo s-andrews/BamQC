@@ -1,3 +1,8 @@
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Added printouts.
+ * - Bart Ailey: Class creation.
+ */
 package test.java.uk.ac.babraham.BamQC.Modules;
 
 import static org.junit.Assert.*;
@@ -17,6 +22,12 @@ import org.junit.Test;
 
 import uk.ac.babraham.BamQC.Modules.InsertLengthDistribution;
 
+/**
+ * 
+ * @author Bart Ailey
+ * @author Piero Dalle Pezze
+ *
+ */
 public class InsertLengthDistributionTest {
 
 	private static Logger log = Logger.getLogger(InsertLengthDistributionTest.class);

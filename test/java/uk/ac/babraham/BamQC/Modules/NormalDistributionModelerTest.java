@@ -1,3 +1,8 @@
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Added printout.
+ * - Bart Ailey: Class creation.
+ */
 package test.java.uk.ac.babraham.BamQC.Modules;
 
 import static org.junit.Assert.assertEquals;
@@ -13,6 +18,12 @@ import org.junit.Test;
 
 import uk.ac.babraham.BamQC.Modules.NormalDistributionModeler;
 
+/**
+ * 
+ * @author Bart Ailey
+ * @author Piero Dalle Pezze
+ *
+ */
 public class NormalDistributionModelerTest {
 
 	private static Logger log = Logger.getLogger(NormalDistributionModelerTest.class);

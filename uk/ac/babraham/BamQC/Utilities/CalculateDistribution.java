@@ -17,11 +17,16 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Utilities;
 
 
 /**
  * This class calculates a distribution of values for compacting multiple bars in a histogram.
+ * @author Simon Andrews
  */
 public class CalculateDistribution {
 	

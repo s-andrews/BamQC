@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2010-12 Piero Dalle Pezze
+ * Copyright Copyright 2010-12 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -16,6 +16,10 @@
  *    You should have received a copy of the GNU General Public License
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Class creation.
  */
 package uk.ac.babraham.BamQC.Graphs;
 
@@ -36,6 +40,11 @@ import javax.swing.JPanel;
 import uk.ac.babraham.BamQC.Utilities.AxisScale;
 import uk.ac.babraham.BamQC.Utilities.FormatNumber;
 
+/**
+ * 
+ * @author Piero Dalle Pezze
+ *
+ */
 public class StackedHorizontalBarGraph extends JPanel {
 
 	private static final long serialVersionUID = -5947375412672203276L;

@@ -17,6 +17,10 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Analysis;
 
 import java.util.concurrent.LinkedBlockingDeque;
@@ -26,6 +30,11 @@ import uk.ac.babraham.BamQC.BamQCConfig;
 import uk.ac.babraham.BamQC.Modules.QCModule;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 
+/**
+ * 
+ * @author Simon Andrews
+ *
+ */
 public class AnalysisQueue implements Runnable, AnalysisListener {
 
 	private static AnalysisQueue instance = new AnalysisQueue();

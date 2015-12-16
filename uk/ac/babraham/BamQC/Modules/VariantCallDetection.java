@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2015 Piero Dalle Pezze
+ * Copyright Copyright 2015 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -17,7 +17,10 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Class creation.
+ */
 package uk.ac.babraham.BamQC.Modules;
 
 import java.io.IOException;
@@ -40,9 +43,11 @@ import uk.ac.babraham.BamQC.Utilities.CigarMD.CigarMDOperator;
 
 
 
-
-
-
+/**
+ * 
+ * @author Piero Dalle Pezze
+ *
+ */
 public class VariantCallDetection extends AbstractQCModule {
 
 	// logger

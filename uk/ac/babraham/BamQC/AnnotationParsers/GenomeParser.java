@@ -17,6 +17,11 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Piero Dalle Pezze: Code from SeqMonk and removed un-necessary parts (only left extraction of location).
+ * Added progress listeners.
+ */
 package uk.ac.babraham.BamQC.AnnotationParsers;
 
 import java.io.BufferedReader;
@@ -40,6 +45,8 @@ import uk.ac.babraham.BamQC.Utilities.FileFilters.GFFSimpleFileFilter;
 /**
  * The Class can either do a full parse of the original EMBL format files, or parse 
  * included gff / gtf files if present.
+ * @author Simon Andrews
+ * @author Piero Dalle Pezze
  */
 public class GenomeParser extends AnnotationParser {
 

@@ -17,6 +17,10 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
+/*
+ * Changelog: 
+ * - Simon Andrews: Class creation.
+ */
 package uk.ac.babraham.BamQC.Help;
 
 
@@ -35,6 +39,7 @@ import javax.swing.tree.DefaultTreeModel;
 
 /**
  * The Class HelpDialog is the root window of the help system.
+ * @author Simon Andrews
  */
 public class HelpDialog extends JDialog implements TreeSelectionListener {
 	
