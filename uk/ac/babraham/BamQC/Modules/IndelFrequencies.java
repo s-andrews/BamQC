@@ -129,6 +129,8 @@ public class IndelFrequencies extends AbstractQCModule {
 	@Override	
 	public JPanel getResultsPanel() {
 		
+		// compute the totals
+		variantCallDetection.computeTotals();
 		
 		long totDel = variantCallDetection.getTotalDeletions(), 
 			 totIns = variantCallDetection.getTotalInsertions(),
@@ -240,9 +242,14 @@ public class IndelFrequencies extends AbstractQCModule {
 
 	@Override	
 	public boolean ignoreInReport() {
-		if(ModuleConfig.getParam("IndelFrequencies", "ignore") > 0 || variantCallDetection == null || 
-		   (variantCallDetection.getTotalDeletions() == 0 && variantCallDetection.getTotalInsertions() == 0)) 
+		if(ModuleConfig.getParam("IndelFrequencies", "ignore") > 0 || variantCallDetection == null) 
 			return true; 
+
+		// compute the totals
+		variantCallDetection.computeTotals();
+		if(variantCallDetection.getTotalDeletions() == 0 && variantCallDetection.getTotalInsertions() == 0) 
+			return true; 
+		
 		return false;
 	}
 

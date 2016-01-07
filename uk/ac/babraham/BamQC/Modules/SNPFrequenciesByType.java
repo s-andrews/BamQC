@@ -100,7 +100,9 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 
 	@Override	
 	public JPanel getResultsPanel() {
-		//variantCallDetection.computeTotals();
+
+		// compute the totals
+		variantCallDetection.computeTotals();
 		
 		JPanel resultsPanel = new JPanel();
 		// first/second identify the first or second segments respectively.
@@ -196,9 +198,14 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 	@Override	
 	public boolean ignoreInReport() {
 		if(ModuleConfig.getParam("SNPFrequenciesByType", "ignore") > 0 || 
-		   variantCallDetection == null || 
-		   variantCallDetection.getTotalMutations() == 0) 
+			variantCallDetection == null) 
 			return true; 
+				
+		// compute the totals
+		variantCallDetection.computeTotals();
+		if(variantCallDetection.getTotalMutations() == 0) 
+			return true; 
+				
 		return false;
 	}
 

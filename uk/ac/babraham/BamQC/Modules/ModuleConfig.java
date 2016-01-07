@@ -51,7 +51,6 @@ public class ModuleConfig {
 		// Please, use the following format: ClassName_field
 		params.put("AnnotationSet_annotation_cache_capacity:ignore", 50000d);
 		
-		params.put("VariantCallPosition_array_length:ignore", 150d);
 		params.put("VariantCallPosition_indel_seqpercent_xaxis_threshold:ignore", 5d);
 		params.put("VariantCallPosition_indel_threshold:warn", 0.5d);	
 		params.put("VariantCallPosition_indel_threshold:error", 1d);

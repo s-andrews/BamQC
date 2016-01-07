@@ -384,6 +384,9 @@ public class BasicStatistics extends AbstractQCModule {
 		// extract these results
 		// Variant Call Detection Summaries
 		if(vcd != null) {
+			// compute the totals
+			vcd.computeTotals();
+			
 			totalSplicedReads = vcd.getTotalSplicedReads();
 			totalSkippedReads = vcd.getSkippedReads();
 			totalReadsWithoutMDString = vcd.getReadWithoutMDString();

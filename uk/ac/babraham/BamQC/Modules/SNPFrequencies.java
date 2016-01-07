@@ -125,6 +125,9 @@ public class SNPFrequencies extends AbstractQCModule {
 
 	@Override	
 	public JPanel getResultsPanel() {
+		
+		// compute the totals
+		variantCallDetection.computeTotals();
 
 		long totSNPs = variantCallDetection.getTotalMutations(),
 			 totBases = variantCallDetection.getTotal();
@@ -227,9 +230,14 @@ public class SNPFrequencies extends AbstractQCModule {
 	@Override	
 	public boolean ignoreInReport() {
 		if(ModuleConfig.getParam("SNPFrequencies", "ignore") > 0 || 
-		   variantCallDetection == null || 
-		   variantCallDetection.getTotalMutations() == 0) 
+		   variantCallDetection == null) 
 			return true; 
+		
+		// compute the totals
+		variantCallDetection.computeTotals();
+		if(variantCallDetection.getTotalMutations() == 0) 
+			return true; 
+		
 		return false;
 	}
 
