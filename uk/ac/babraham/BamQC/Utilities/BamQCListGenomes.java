@@ -41,9 +41,8 @@ import uk.ac.babraham.BamQC.Network.DownloadableGenomes.GenomeSpecies;
 
 
 /** 
- * 
+ * A simple class for listing the genomes available at the Babraham servers.
  * @author Piero Dalle Pezze
- *
  */
 public class BamQCListGenomes {
 	
