@@ -147,7 +147,7 @@ public class BamQCListGenomes {
 	 * http://pubs.opengroup.org/onlinepubs/009695399/utilities/xcu_chap02.html#tag_02_13_01
 	 * 
 	 * @author Neil Traft (http://stackoverflow.com/questions/1247772/is-there-an-equivalent-of-java-util-regex-for-glob-type-patterns)
-	 * @author Piero Dalle Pezze
+	 * @author Piero Dalle Pezze (small edits at the end).
 	 * 
 	 * @param pattern A glob pattern.
 	 * @param matchWholeString true if the whole string is matched, false if only a substring is matched.
@@ -245,28 +245,6 @@ public class BamQCListGenomes {
 	    }
 	    return sb.toString();
 	}
-	
-	
-	
-	public static String convertGlobToRegexSimple(String pattern) {
-	    String out = "^";
-	    for(int i = 0; i < pattern.length(); ++i) {
-	        final char c = pattern.charAt(i);
-	        switch(c) {
-	        	case '*': out += ".*"; break;
-	        	case '?': out += '.'; break;
-	        	case '.': out += "\\."; break;
-	        	case '\\': out += "\\\\"; break;
-	        	default: out += c;
-	        }
-	    }
-	    out += '$';
-	    return out;
-	}
-	
-	
-	
-	
 	
 
 	public static void main(String[] args) {
