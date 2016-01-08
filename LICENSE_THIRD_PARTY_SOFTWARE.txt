@@ -1,0 +1,50 @@
+            Third-party software incorporated into
+                   the BamQC distribution
+
+BamQC uses the following third-party software libraries; these
+are distributed along with BamQC and placed in the source code
+repository.  The license statements for these third-party
+software libraries can be found at the web addresses noted
+below.
+
+
+1. Picard 1.103 -- http://broadinstitute.github.io/picard/
+  [checked 2015-12-16]
+  Copyright (C) The Broad Institute
+  Distributed under the MIT License.
+
+2. jbzip2 0.9.1 -- https://code.google.com/archive/p/jbzip2/
+  [checked 2015-12-16]
+  Copyright (C) Apache Software Foundation
+  Distributed under the MIT License.
+
+3. Base64 2.3.7 -- http://iharder.net/base64
+  [checked 2015-12-16]
+  Copyright (C) Robert Harder
+  Distributed under Public Domain.
+
+4. Commons Lang 3.4 -- http://commons.apache.org/proper/commons-lang/
+  [checked 2015-12-16]
+  Copyright (C) Apache Software Foundation
+  Distributed under the Apache License 2.0.
+
+5. Commons Math 3.5 -- https://commons.apache.org/proper/commons-math/
+  [checked 2015-12-16]
+  Copyright (C) Apache Software Foundation
+  Distributed under the Apache License 2.0.
+
+6. log4j 1.2.16 -- http://logging.apache.org/log4j/1.2/
+  [checked 2015-12-16]
+  Copyright (C) Apache Software Foundation
+  Distributed under the Apache License 2.0.
+
+7. JUnit 4.11 -- http://junit.org/
+  [checked 2015-12-16]
+  Copyright (C) JUnit Team
+  Distributed under the Eclipse Public License 1.0.
+  
+8. Hamcrest 1.3 -- http://hamcrest.org/
+  [checked 2015-12-16]
+  Copyright (C) Hamcrest Team
+  Distributed under the BSD 3-Clause License. 
+ 

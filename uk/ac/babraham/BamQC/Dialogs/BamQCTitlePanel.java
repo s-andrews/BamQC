@@ -118,6 +118,21 @@ public class BamQCTitlePanel extends JPanel {
 		JLabel copyright5 = new JLabel("Apache Commons (lang, math) \u00a9Apache Software Foundation, 2015", JLabel.CENTER);
 		copyright5.setFont(new Font("Dialog",Font.PLAIN,10));
 		c.add(copyright5,constraints);
+		constraints.gridy++;
+		
+		JLabel copyright6 = new JLabel("Apache log4j \u00a9Apache Software Foundation, 2012", JLabel.CENTER);
+		copyright6.setFont(new Font("Dialog",Font.PLAIN,10));
+		c.add(copyright6,constraints);
+		constraints.gridy++;
+		
+		JLabel copyright7 = new JLabel("JUnit \u00a9 JUnit Team, 2015", JLabel.CENTER);
+		copyright7.setFont(new Font("Dialog",Font.PLAIN,10));
+		c.add(copyright7,constraints);
+		constraints.gridy++;
+		
+		JLabel copyright8 = new JLabel("Hamcrest \u00a9 Hamcrest Team, 2012", JLabel.CENTER);
+		copyright8.setFont(new Font("Dialog",Font.PLAIN,10));
+		c.add(copyright8,constraints);
 		
 		add(c,BorderLayout.CENTER);
 	}
