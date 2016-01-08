@@ -105,7 +105,7 @@ public class BasicStatisticsTest {
 		assertEquals(17, basicStats.getPrimaryCount());
 		assertEquals(17, basicStats.getPairedCount());
 		assertEquals(15, basicStats.getProperPairCount());
-		assertEquals(15, basicStats.getUnmappedCount());
+		assertEquals(2, basicStats.getUnmappedCount());
 		assertEquals(1, basicStats.getDuplicateCount());
 		assertEquals(1, basicStats.getQcFailCount());
 		assertEquals(0, basicStats.getSingletonCount());

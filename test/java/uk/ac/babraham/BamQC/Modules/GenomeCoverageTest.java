@@ -99,13 +99,13 @@ public class GenomeCoverageTest {
 
 		String[] chromosomeNames = genomeCoverage.getChromosomeNames();
 		assertEquals(2, chromosomeNames.length);		
-		assertEquals("chromosome 6", chromosomeNames[0]);
-		assertEquals("chromosome 13", chromosomeNames[1]);
+		assertEquals("13", chromosomeNames[0]);
+		assertEquals("6", chromosomeNames[1]);
 
 		long[] coverage = genomeCoverage.getCoverage();	
-		assertEquals(99, coverage.length);
+		assertEquals(20, coverage.length);
 		assertEquals(0, coverage[0]);
-		assertEquals(2, coverage[98]);
+		assertEquals(2, coverage[19]);
 		
 	}
 	
