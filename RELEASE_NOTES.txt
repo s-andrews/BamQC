@@ -1,7 +1,7 @@
 RELEASE NOTES FOR BamQC v0.1
 ----------------------------
 
-FastQC v0.1 is a beta release it should work in its present state but
+BamQC v0.1 is a beta release it should work in its present state but
 we are keen to get feedback on the program.  In particular we are
 interested to hear if anyone has:
 
@@ -12,6 +12,6 @@ suggestions for how these could be improved.
 
 You can report feedback either though our bug reporting tool at:
 
-www.bioinformatics.bbsrc.ac.uk/bugzilla/
+https://github.com/s-andrews/BamQC/issues
 
-...or directly to simon.andrews@bbsrc.ac.uk
+...or directly to simon.andrews@babraham.ac.uk
