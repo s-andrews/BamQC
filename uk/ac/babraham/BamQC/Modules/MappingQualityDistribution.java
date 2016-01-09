@@ -69,12 +69,12 @@ public class MappingQualityDistribution extends AbstractQCModule {
 	public void processSequence(SAMRecord read) {
 		int quality = read.getMappingQuality();
 
-		log.debug("quality = " + quality);
+		//log.debug("quality = " + quality);
 
 		distribution[quality]++;
 		readNumber++;
 		
-		log.debug("quality count = " + distribution[quality]);
+		//log.debug("quality count = " + distribution[quality]);
 
 		if (distribution[quality] > maxCount) {
 			maxCount = distribution[quality];
