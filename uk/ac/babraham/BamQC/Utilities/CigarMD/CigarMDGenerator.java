@@ -195,8 +195,8 @@ public class CigarMDGenerator {
 		if (mdString == null || mdString.length() == 0) {
 			log.info("Read " + readString + " does not have MD string.");
 			errorType = 2;
-			// TODO return false;
 			mdString = null;
+			// We continue processing as indels detection does not require the MD string.
 		} else {
 			// In some reads the bases in the MD string can be in lower case. The read and cigar strings are already set to upper case 
 			// for us by the samtools library. This doesn't happen with the mdString though. Let's set this to upper case once for all now, 
