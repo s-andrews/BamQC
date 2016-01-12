@@ -95,6 +95,7 @@ public class CigarMDGenerator {
 
 	/**
 	 * Constructor. It generates a CigarMD string from the SAMRecord read.
+	 * @param read The SAMRecord to use
 	 */
 	public CigarMDGenerator(SAMRecord read) {
 		computeCigarMDTag(read);
@@ -135,7 +136,7 @@ public class CigarMDGenerator {
 
 	/**
 	 * Returns true if the read is a first segment, false if it is a second.
-	 * @return
+	 * @return true if read is a first segment.
 	 */
 	public boolean isFirst() {
 		return isFirst;
@@ -145,6 +146,7 @@ public class CigarMDGenerator {
 	/**
 	 * It generates a string combining information from CIGAR and MD tag. This CigarMD string is null if it could not be created.
 	 * In this last case, an error message can be retrieved using the message getErrorType().
+	 * @param read the SAMRecord to parse.
 	 */
 	public void generateCigarMD(SAMRecord read) {
 		reset();
@@ -160,7 +162,7 @@ public class CigarMDGenerator {
 	// Private methods here
 	/**
 	 * It generates a string combining information from CIGAR and MD tag.
-	 * @ return true if the CigarMD string has been computed, false otherwise.
+	 * @return true if the CigarMD string has been computed, false otherwise.
 	 */
 	private boolean computeCigarMDTag(SAMRecord read) {
 	
@@ -456,7 +458,11 @@ public class CigarMDGenerator {
 
 	// These methods process the MD string for each CIGAR operator.
 	
-	/** Add a new Match element to the CigarMD Object. */
+	/** 
+	 * Add a new Match element to the CigarMD Object. 
+	 * @param temporaryCigarElementLength The length of the current Cigar element (Match) being processed.
+	 * @return the length of the current Cigar element (Match) after being processed.
+	 */
 	private int addMatchToCigarMD(int temporaryCigarElementLength) {
 		// update the position of the currentBaseCall and the parser.
 		if(mdString != null && temporaryMDElementLength <= temporaryCigarElementLength) {
@@ -473,7 +479,12 @@ public class CigarMDGenerator {
 		return temporaryCigarElementLength;
 	}
 	
-	/** Add a new Mismatch element to the CigarMD Object. */
+	/** 
+	 * Add a new Mismatch element to the CigarMD Object.
+	 * @param temporaryCigarElementLength The length of the current Cigar element (Mismatch) being processed.
+	 * @param bases the bases representing the mismatch.
+	 * @return the length of the current Cigar element (Match) after being processed.
+	 */
 	private int addMismatchToCigarMD(int temporaryCigarElementLength, StringBuilder bases) {
 		// update the position of the currentBaseCall and the parser.
 		if(temporaryMDElementLength <= temporaryCigarElementLength) {
@@ -491,7 +502,11 @@ public class CigarMDGenerator {
 	}
 	
 	
-	/** Process the MD string once found the CIGAR operator M. */
+	/** 
+	 * Process the MD string once found the CIGAR operator M. 
+	 * @read the SAMRecord to process.
+	 * @return true if the Cigar operator M has been processed correctly.
+	 */
 	private boolean processMDtagCigarOperatorM(SAMRecord read) { 
 		// The temporary length of the current Cigar element
 		int temporaryCigarElementLength = currentCigarElementLength;
@@ -654,7 +669,11 @@ public class CigarMDGenerator {
 	}
 	
 	
-	/** Process the MD string once found the CIGAR operator I. */
+	/** 
+	 * Process the MD string once found the CIGAR operator I. 
+	 * @read the SAMRecord to process.
+	 * @return true if the Cigar operator I has been processed correctly.
+	 */
 	private boolean processMDtagCigarOperatorI(SAMRecord read) {
 		// The MD string does not contain information regarding an insertion.
 		// NOTE: readString is already in upper case by samtools library, even if in the file, the read was in lowercase.
@@ -680,7 +699,11 @@ public class CigarMDGenerator {
 	}
 
 	
-	/** Process the MD string once found the CIGAR operator D. */
+	/** 
+	 * Process the MD string once found the CIGAR operator D.
+	 * @read the SAMRecord to process.
+	 * @return true if the Cigar operator D has been processed correctly.
+	 */
 	private boolean processMDtagCigarOperatorD(SAMRecord read) {
 		if(mdString != null) {
 			if(temporaryMDElementLength != 0) {
@@ -750,7 +773,9 @@ public class CigarMDGenerator {
 	}
 	
 	
-	/** Process the MD string once found the CIGAR operator N. */
+	/** 
+	 * Process the MD string once found the CIGAR operator N. 
+	 */
 	private void processMDtagCigarOperatorN() {
 		// As far as I see the MD string contains information about skipped regions in the read.
 		// Skipped regions are not reported in the read, so don't update currentBaseCallPosition.

@@ -50,16 +50,6 @@ public enum CigarMDOperator {
     x(true, true,   'x')
     ;
 
-    // There is no internal representation of CigarMDOperator in BAM file
-//    private static final byte OP_M = 0;
-//    private static final byte OP_I = 1;
-//    private static final byte OP_D = 2;
-//    private static final byte OP_N = 3;
-//    private static final byte OP_S = 4;
-//    private static final byte OP_H = 5;
-//    private static final byte OP_P = 6;
-//    private static final byte OP_EQ = 7;
-//    private static final byte OP_X = 8;
 
     private final boolean consumesReadBases;
     private final boolean consumesReferenceBases;
@@ -124,70 +114,6 @@ public enum CigarMDOperator {
         }
     }
 
-// Bam/SAM files do not have CigarMD strings
-//    /**
-//     * @param i CIGARMD operator in binary form as appears in a BAMRecord.
-//     * @return CigarMDOperator enum value corresponding to the given int value.
-//     */
-//    public static CigarMDOperator binaryToEnum(final int i) {
-//        switch(i) {
-//            case OP_M:
-//                return M;
-//            case OP_I:
-//                return I;
-//            case OP_D:
-//                return D;
-//            case OP_N:
-//                return N;
-//            case OP_S:
-//                return S;
-//            case OP_H:
-//                return H;
-//            case OP_P:
-//                return P;
-//            case OP_EQ:
-//                return EQ;
-//            case OP_X:
-//                return X;
-//            default:
-//                throw new IllegalArgumentException("Unrecognized CigarOperator: " + i);
-//        }
-//    }
-//
-//    /**
-//     *
-//     * @param e CigarOperator enum value.
-//     * @return CIGAR operator corresponding to the enum value in binary form as appears in a BAMRecord.
-//     */
-//    public static int enumToBinary(final CigarOperator e) {
-//        switch(e) {
-//            case M:
-//                return OP_M;
-//            case I:
-//                return OP_I;
-//            case D:
-//                return OP_D;
-//            case N:
-//                return OP_N;
-//            case S:
-//                return OP_S;
-//            case H:
-//                return OP_H;
-//            case P:
-//                return OP_P;
-//            case EQ:
-//                return OP_EQ;
-//            case X:
-//                return OP_X;
-//            default:
-//                throw new IllegalArgumentException("Unrecognized CigarOperator: " + e);
-//        }
-//    }
-//
-//    /** Returns the character that should be used within a SAM file. */
-//    public static byte enumToCharacter(final CigarOperator e) {
-//        return e.character;
-//    }
 
     /** Returns the CigarMD operator as it would be seen in a SAM file. */
     @Override 

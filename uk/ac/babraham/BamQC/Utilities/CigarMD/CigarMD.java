@@ -43,10 +43,17 @@ public class CigarMD {
 	// Store this as StringBuilder for maximising efficiency in the concatenation process.
 	private StringBuilder cigarMDString;
 
+	/**
+	 * Constructor.
+	 */
 	public CigarMD() { 
 		cigarMDString = new StringBuilder(); 
 	}
 
+	/**
+	 * Constructor from a list of CigarMD elements.
+	 * @param cigarMDElements
+	 */
 	public CigarMD(final List<CigarMDElement> cigarMDElements) {
 		this.cigarMDElements.addAll(cigarMDElements);
 		
@@ -56,28 +63,51 @@ public class CigarMD {
 		}
 	}
 
+	/**
+	 * Return the list of CigarMD elements.
+	 * @return the CigarMD elements.
+	 */
 	public List<CigarMDElement> getCigarMDElements() {
 		return Collections.unmodifiableList(cigarMDElements);
 	}
 
+	/**
+	 * Return the i-th CigarMD element.
+	 * @param i the i-th element to retrieve.
+	 * @return the i-th element
+	 */
 	public CigarMDElement getCigarMDElement(final int i) {
 		return cigarMDElements.get(i);
 	}
 
+	/**
+	 * Add an element to the CigarMD object.
+	 * @param cigarMDElement to add.
+	 */
 	public void add(final CigarMDElement cigarMDElement) {
 		cigarMDElements.add(cigarMDElement);
 		cigarMDString.append(cigarMDElement.toString());
 	}
-	
+
+	/**
+	 * Return the number of CigarMD elements.
+	 * @return the size of CigarMD.
+	 */
 	public int numCigarMDElements() {
 		return cigarMDElements.size();
 	}
 
+	/**
+	 * Return true if the CigarMD object is empty.
+	 * @return True if CigarMD is empty.
+	 */
 	public boolean isEmpty() {
 		return cigarMDElements.isEmpty();
 	}
 
 	/**
+	 * Return the number of reference bases that the read covers, excluding
+	 *         padding.
 	 * @return The number of reference bases that the read covers, excluding
 	 *         padding.
 	 */
@@ -103,6 +133,8 @@ public class CigarMD {
 	}
 
 	/**
+	 * Return the number of reference bases that the read covers, including
+	 *         padding.
 	 * @return The number of reference bases that the read covers, including
 	 *         padding.
 	 */
@@ -128,6 +160,7 @@ public class CigarMD {
 	}
 
 	/**
+	 * Return the number of read bases that the read covers.
 	 * @return The number of read bases that the read covers.
 	 */
 	public int getReadLength() {
@@ -135,6 +168,7 @@ public class CigarMD {
 	}
 
 	/**
+	 * Return the number of read bases that the read covers.
 	 * @return The number of read bases that the read covers.
 	 */
 	public static int getReadLength(final List<CigarMDElement> cigarMDElements) {
@@ -147,138 +181,9 @@ public class CigarMD {
 		return length;
 	}
 
-	// THIS NEEDS SOME THINKING
-	// /**
-	// * Exhaustive validation of CIGAR.
-	// * Note that this method deliberately returns null rather than
-	// Collections.emptyList() if there
-	// * are no validation errors, because callers tend to assume that if a
-	// non-null list is returned, it is modifiable.
-	// * @param readName For error reporting only. May be null if not known.
-	// * @param recordNumber For error reporting only. May be -1 if not known.
-	// * @return List of validation errors, or null if no errors.
-	// */
-	// public List<SAMValidationError> isValid(final String readName, final long
-	// recordNumber) {
-	// if (this.isEmpty()) {
-	// return null;
-	// }
-	// List<SAMValidationError> ret = null;
-	// boolean seenRealOperator = false;
-	// for (int i = 0; i < cigarElements.size(); ++i) {
-	// final CigarElement element = cigarElements.get(i);
-	// // clipping operator can only be at start or end of CIGAR
-	// final CigarOperator op = element.getOperator();
-	// if (isClippingOperator(op)) {
-	// if (op == CigarOperator.H) {
-	// if (i != 0 && i != cigarElements.size() - 1) {
-	// if (ret == null) ret = new ArrayList<SAMValidationError>();
-	// ret.add(new SAMValidationError(SAMValidationError.Type.INVALID_CIGAR,
-	// "Hard clipping operator not at start or end of CIGAR", readName,
-	// recordNumber));
-	// }
-	// } else {
-	// if (op != CigarOperator.S) throw new
-	// IllegalStateException("Should never happen: " + op.name());
-	// if (i == 0 || i == cigarElements.size() - 1) {
-	// // Soft clip at either end is fine
-	// } else if (i == 1) {
-	// if (cigarElements.size() == 3 && cigarElements.get(2).getOperator() ==
-	// CigarOperator.H) {
-	// // Handle funky special case in which S operator is both one from the
-	// beginning and one
-	// // from the end.
-	// } else if (cigarElements.get(0).getOperator() != CigarOperator.H) {
-	// if (ret == null) ret = new ArrayList<SAMValidationError>();
-	// ret.add(new SAMValidationError(SAMValidationError.Type.INVALID_CIGAR,
-	// "Soft clipping CIGAR operator can only be inside of hard clipping operator",
-	// readName, recordNumber));
-	// }
-	// } else if (i == cigarElements.size() - 2) {
-	// if (cigarElements.get(cigarElements.size() - 1).getOperator() !=
-	// CigarOperator.H) {
-	// if (ret == null) ret = new ArrayList<SAMValidationError>();
-	// ret.add(new SAMValidationError(SAMValidationError.Type.INVALID_CIGAR,
-	// "Soft clipping CIGAR operator can only be inside of hard clipping operator",
-	// readName, recordNumber));
-	// }
-	// } else {
-	// if (ret == null) ret = new ArrayList<SAMValidationError>();
-	// ret.add(new SAMValidationError(SAMValidationError.Type.INVALID_CIGAR,
-	// "Soft clipping CIGAR operator can at start or end of read, or be inside of hard clipping operator",
-	// readName, recordNumber));
-	// }
-	//
-	// }
-	// } else if (isRealOperator(op)) {
-	// // Must be at least one real operator (MIDN)
-	// seenRealOperator = true;
-	// // There should be an M or P operator between any pair of IDN operators
-	// if (isInDelOperator(op)) {
-	// for (int j = i+1; j < cigarElements.size(); ++j) {
-	// final CigarOperator nextOperator = cigarElements.get(j).getOperator();
-	// // Allow
-	// if ((isRealOperator(nextOperator) && !isInDelOperator(nextOperator)) ||
-	// isPaddingOperator(nextOperator)) {
-	// break;
-	// }
-	// if (isInDelOperator(nextOperator) && op == nextOperator) {
-	// if (ret == null) ret = new ArrayList<SAMValidationError>();
-	// ret.add(new SAMValidationError(SAMValidationError.Type.INVALID_CIGAR,
-	// "No M or N operator between pair of " + op.name() +
-	// " operators in CIGAR", readName, recordNumber));
-	// }
-	// }
-	// }
-	// } else if (isPaddingOperator(op)) {
-	// if (i == 0) {
-	// /*
-	// * Removed restriction that padding not be the first operator because if a
-	// read starts in the middle of a pad
-	// * in a padded reference, it is necessary to precede the read with padding
-	// so that alignment start refers to a
-	// * position on the unpadded reference.
-	// */
-	// } else if (i == cigarElements.size() - 1) {
-	// if (ret == null) ret = new ArrayList<SAMValidationError>();
-	// ret.add(new SAMValidationError(SAMValidationError.Type.INVALID_CIGAR,
-	// "Padding operator not valid at end of CIGAR", readName, recordNumber));
-	// } else if (!isRealOperator(cigarElements.get(i-1).getOperator()) ||
-	// !isRealOperator(cigarElements.get(i+1).getOperator())) {
-	// if (ret == null) ret = new ArrayList<SAMValidationError>();
-	// ret.add(new SAMValidationError(SAMValidationError.Type.INVALID_CIGAR,
-	// "Padding operator not between real operators in CIGAR", readName,
-	// recordNumber));
-	// }
-	// }
-	// }
-	// if (!seenRealOperator) {
-	// if (ret == null) ret = new ArrayList<SAMValidationError>();
-	// ret.add(new SAMValidationError(SAMValidationError.Type.INVALID_CIGAR,
-	// "No real operator (M|I|D|N) in CIGAR", readName, recordNumber));
-	// }
-	// return ret;
-	// }
-//
-//	private static boolean isRealOperator(final CigarMDOperator op) {
-//		return op == CigarMDOperator.m || op == CigarMDOperator.u
-//				|| op == CigarMDOperator.eq || op == CigarMDOperator.x
-//				|| op == CigarMDOperator.i || op == CigarMDOperator.d
-//				|| op == CigarMDOperator.n;
-//	}
-//
-//	private static boolean isInDelOperator(final CigarMDOperator op) {
-//		return op == CigarMDOperator.i || op == CigarMDOperator.d;
-//	}
-//
-//	private static boolean isClippingOperator(final CigarMDOperator op) {
-//		return op == CigarMDOperator.s || op == CigarMDOperator.h;
-//	}
-//
-//	private static boolean isPaddingOperator(final CigarMDOperator op) {
-//		return op == CigarMDOperator.p;
-//	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean equals(final Object o) {
 		if (this == o)
@@ -296,11 +201,17 @@ public class CigarMD {
 		return true;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int hashCode() {
 		return cigarMDElements != null ? cigarMDElements.hashCode() : 0;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString() {
 		return cigarMDString.toString();

@@ -32,24 +32,45 @@ public class CigarMDElement {
     private final CigarMDOperator operator;
     private final String bases;
 
+    /**
+     * Constructor.
+     * @param length The length of the CigarMD element.
+     * @param operator The operator of the CigarMD element.
+     * @param bases The bases for this CigarMD element.
+     */
     public CigarMDElement(final int length, final CigarMDOperator operator, final String bases) {
         this.length = length;
         this.operator = operator;
         this.bases = bases;
     }
 
+    /**
+     * Return the length of the CigarMD element.
+     * @return the length
+     */
     public int getLength() {
         return length;
     }
 
+    /**
+     * Return the operator of the CigarMD element.
+     * @return the operator
+     */
     public CigarMDOperator getOperator() {
         return operator;
     }
     
+    /**
+     * Return the bases for the CigarMD element.
+     * @return the bases
+     */
     public String getBases() {
         return bases;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
@@ -64,13 +85,19 @@ public class CigarMDElement {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         int result = length;
         result = 31 * result + (operator != null ? operator.hashCode() : 0);
         return result;
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
     	return new StringBuilder().append(length).append(operator).append(bases).toString();
