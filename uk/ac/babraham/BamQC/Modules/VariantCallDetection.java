@@ -214,7 +214,6 @@ public class VariantCallDetection extends AbstractQCModule {
 	
 	
 	// @Override methods
-	
 	@Override
 	public void processSequence(SAMRecord read) {
 
@@ -308,12 +307,9 @@ public class VariantCallDetection extends AbstractQCModule {
 
 	}
 	
-	
 	@Override	
 	public void processFile(SequenceFile file) {}
 	
-	
-
 	@Override	
 	public void processAnnotationSet(AnnotationSet annotation) { }	
 
@@ -492,7 +488,7 @@ public class VariantCallDetection extends AbstractQCModule {
 	
 
 	
-	/* Process the MD string once found the CigarMD operator m (match). */
+	/** Process the MD string once found the CigarMD operator m (match). */
 	private void processMDtagCigarOperatorM() {
 		int numMatches = currentCigarMDElement.getLength();
 		totalMatches = totalMatches + numMatches;
@@ -506,7 +502,7 @@ public class VariantCallDetection extends AbstractQCModule {
 		currentPosition = currentPosition + numMatches;
 	}
 	
-	/* Process the MD string once found the CigarMD operator u (mismatch). 
+	/** Process the MD string once found the CigarMD operator u (mismatch). 
 	 * So far this element is indicated as 1u{ACGT}ref{ACGT}read
 	 * to indicate a mutation from reference to read.
 	 * In the future the length will correspond to the number of adjacent mutations.
@@ -559,7 +555,7 @@ public class VariantCallDetection extends AbstractQCModule {
 		currentPosition = currentPosition + numMutations;
 	}	
 	
-	/* Process the MD string once found the CigarMD operator i (insertion). */	
+	/** Process the MD string once found the CigarMD operator i (insertion). */	
 	private void processMDtagCigarOperatorI() {
 		int numInsertions = currentCigarMDElement.getLength();
 		String insertedBases = currentCigarMDElement.getBases();
@@ -591,7 +587,7 @@ public class VariantCallDetection extends AbstractQCModule {
 		currentPosition = currentPosition + numInsertions;
 	}
 	
-	/* Process the MD string once found the CigarMD operator d (deletion). */	
+	/** Process the MD string once found the CigarMD operator d (deletion). */	
 	private void processMDtagCigarOperatorD() {
 		int numDeletions = currentCigarMDElement.getLength();
 		String deletedBases = currentCigarMDElement.getBases();
@@ -639,7 +635,7 @@ public class VariantCallDetection extends AbstractQCModule {
 	
 	// Have to test the following code.
 	
-	/* Process the MD string once found the CigarMD operator n. */	
+	/** Process the MD string once found the CigarMD operator n. */	
 	private void processMDtagCigarOperatorN() {
 		int numSkipped = currentCigarMDElement.getLength();		
 		totalSkippedRegions = totalSkippedRegions + numSkipped;
@@ -649,7 +645,7 @@ public class VariantCallDetection extends AbstractQCModule {
 //	    
 	}
 	
-	/* Process the MD string once found the CigarMD operator s. */	
+	/** Process the MD string once found the CigarMD operator s. */	
 	private void processMDtagCigarOperatorS() {
 		int numSoftClips = currentCigarMDElement.getLength();
 		totalSoftClips = totalSoftClips + numSoftClips;
@@ -659,7 +655,7 @@ public class VariantCallDetection extends AbstractQCModule {
 //	    
 	}
 	
-	/* Process the MD string once found the CigarMD operator h. */	
+	/** Process the MD string once found the CigarMD operator h. */	
 	private void processMDtagCigarOperatorH() {
 		int numHardClips = currentCigarMDElement.getLength();		
 		totalHardClips = totalHardClips + numHardClips;
@@ -669,7 +665,7 @@ public class VariantCallDetection extends AbstractQCModule {
 //	    
 	}
 	
-	/* Process the MD string once found the CigarMD operator p. */
+	/** Process the MD string once found the CigarMD operator p. */
 	private void processMDtagCigarOperatorP() {
 		int numPaddings = currentCigarMDElement.getLength();		
 		totalPaddings = totalPaddings + numPaddings;
@@ -679,12 +675,12 @@ public class VariantCallDetection extends AbstractQCModule {
 //	    
 	}	
 	
-	/* Process the MD string once found the CigarMD operator =. */	
+	/** Process the MD string once found the CigarMD operator =. */	
 	private void processMDtagCigarOperatorEQ() {
 		// is this operator used?
 	}	
 	
-	/* Process the MD string once found the CigarMD operator X. */	
+	/** Process the MD string once found the CigarMD operator X. */	
 	private void processMDtagCigarOperatorNEQ() {
 		// is this operator used?
 	}
@@ -699,25 +695,42 @@ public class VariantCallDetection extends AbstractQCModule {
 	
 	// Getter methods
 	
-	/** Returns the calculated CigarMD or null if this is empty 
+	/** 
+	 * Return the calculated CigarMD or null if this is empty 
 	 * @return CigarMD or null
 	 */
 	public CigarMD getCigarMD() {
 		return cigarMD;
 	}
 	
+	/**
+	 * Return the number of contributing reads per position.
+	 * @return the number of contributing reads per position.
+	 */
     public HashMap<Integer, Long> getContributingReadsPerPos() {
 		return contributingReadsPerPos;
 	}
 	
+    /**
+     * Return true if paired reads exist.
+     * @return true if paired reads exist.
+     */
 	public boolean existPairedReads() {
 		return existPairedReads;
 	}
 	
+	/**
+	 * The SNPs computed from the first reads.
+	 * @return SNPs for the first reads.
+	 */
 	public HashMap<String, Long> getFirstSNPs() {
 		return firstSNPs;
 	}
 	
+	/**
+	 * The SNPs computed from the second reads.
+	 * @return SNPs for the second reads.
+	 */
 	public HashMap<String, Long> getSecondSNPs() {
 		return secondSNPs;
 	}
@@ -731,106 +744,204 @@ public class VariantCallDetection extends AbstractQCModule {
 //		return deletions;
 //	}
 
+	/**
+	 * The total number of mutations (SNPs).
+	 * @return The total number of SNPs.
+	 */
 	public long getTotalMutations() {
 		return totalMutations;
 	}
 
+	/**
+	 * The total number of insertions.
+	 * @return The total number of insertions.
+	 */	
 	public long getTotalInsertions() {
 		return totalInsertions;
 	}
 
+	/**
+	 * The total number of deletions.
+	 * @return The total number of deletions.
+	 */
 	public long getTotalDeletions() {
 		return totalDeletions;
 	}
 
+	/**
+	 * The total number of matches.
+	 * @return The total number of matches.
+	 */	
 	public long getTotalMatches() {
 		return totalMatches;
 	}
-	
+
+	/**
+	 * The total number of skipped regions.
+	 * @return The total number of skipped regions.
+	 */	
 	public long getTotalSkippedRegions() {
 		return totalSkippedRegions;
 	}
 
+	/**
+	 * The total number of soft clips.
+	 * @return The total number of soft clips.
+	 */	
 	public long getTotalSoftClips() {
 		return totalSoftClips;
 	}
 
+	/**
+	 * The total number of hard clips.
+	 * @return The total number of hard clips.
+	 */	
 	public long getTotalHardClips() {
 		return totalHardClips;
 	}
 
+	/**
+	 * The total number of paddings.
+	 * @return The total number of paddings.
+	 */		
 	public long getTotalPaddings() {
 		return totalPaddings;
 	}
 
+	/**
+	 * The total number of bases.
+	 * @return The total number of bases.
+	 */		
 	public long getTotal() {
 		return total;
 	}
-	
+
+	/**
+	 * The total number of spliced reads.
+	 * @return The total number of spliced reads.
+	 */	
 	public long getTotalSplicedReads() {
 		return splicedReads;
 	}
 
+	/**
+	 * The number of unknown bases in the read.
+	 * @return The number of unknown bases.
+	 */		
 	public long getReadUnknownBases() {
 		return readUnknownBases;
 	}	
 	
+	/**
+	 * The number of unknown bases in the reference.
+	 * @return The number of unknown bases.
+	 */		
 	public long getReferenceUnknownBases() {
 		return referenceUnknownBases;
 	}	
-	
+
+	/**
+	 * The number of skipped reads.
+	 * @return The number of skipped reads.
+	 */			
 	public long getSkippedReads() {
 		return skippedReads;
 	}	
 	
+	/**
+	 * The number of reads without MD String.
+	 * @return The number of reads without MD String.
+	 */
 	public long getReadWithoutMDString() {
 		return readWithoutMDString;
 	}
 
+	/**
+	 * The number of reads without Cigar String.
+	 * @return The number of reads without Cigar String.
+	 */	
 	public long getReadWithoutCigarString() {
 		return readWithoutCigarString;
 	}
-	
+
+	/**
+	 * The number of reads with inconsistencies between Cigar and MD String.
+	 * @return The number of reads with inconsistencies between Cigar and MD String.
+	 */	
 	public long getInconsistentCigarMDStrings() {
 		return inconsistentCigarMDStrings;
 	}
 	
+	/**
+	 * The total number of reads.
+	 * @return The total number of reads.
+	 */	
 	public long getTotalReads() {
 		return totalReads;
 	}
 
+	/**
+	 * The SNP positions for the first reads.
+	 * @return The SNP positions for the first reads.
+	 */	
 	public long[] getFirstSNPPos() {
 		return firstSNPPos;
 	}
 	
+	/**
+	 * The SNP positions for the second reads.
+	 * @return The SNP positions for the second reads.
+	 */		
 	public long[] getSecondSNPPos() {
 		return secondSNPPos;
 	}
 
+	/**
+	 * The insertion positions for the first reads.
+	 * @return The insertion positions for the first reads.
+	 */		
 	public long[] getFirstInsertionPos() {
 		return firstInsertionPos;
 	}
 
+	/**
+	 * The deletion positions for the first reads.
+	 * @return The deletion positions for the first reads.
+	 */	
 	public long[] getFirstDeletionPos() {
 		return firstDeletionPos;
 	}
 	
+	/**
+	 * The insertion positions for the second reads.
+	 * @return The insertion positions for the second reads.
+	 */		
 	public long[] getSecondInsertionPos() {
 		return secondInsertionPos;
 	}
 
+	/**
+	 * The deletion positions for the second reads.
+	 * @return The deletion positions for the second reads.
+	 */	
 	public long[] getSecondDeletionPos() {
 		return secondDeletionPos;
 	}	
-	
+
+	/**
+	 * The match positions.
+	 * @return The match positions.
+	 */	
 	public long[] getMatchPos() {
 		return matchPos;
 	}	
 	
+	/**
+	 * The positions for all reads.
+	 * @return The positions for all reads.
+	 */	
 	public long[] getTotalPos() {
 		return totalPos;
 	}
-	
 
-	
 }

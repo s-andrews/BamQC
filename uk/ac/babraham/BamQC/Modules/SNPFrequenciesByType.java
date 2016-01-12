@@ -86,10 +86,10 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 	
 	
 	// @Override methods
-	
+
 	@Override
 	public void processSequence(SAMRecord read) { }
-	
+
 	@Override	
 	public void processFile(SequenceFile file) { }
 
@@ -240,6 +240,9 @@ public class SNPFrequenciesByType extends AbstractQCModule {
 		
 	}
 	
+	/**
+	 * Rename the plot Y axis.
+	 */
 	private void renameYAxis() {
 		for(int i=0; i<	snpTypeNames.length; i++) {
 			snpTypeNames[i] = snpTypeNames[i].charAt(0) + "->" + snpTypeNames[i].charAt(1);

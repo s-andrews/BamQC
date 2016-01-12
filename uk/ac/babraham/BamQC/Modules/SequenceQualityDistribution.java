@@ -34,6 +34,9 @@ public class SequenceQualityDistribution extends AbstractQCModule {
 	
 	private double[] distributionDouble = null;
 
+	/**
+	 * Constructor.
+	 */
 	public SequenceQualityDistribution() {}
 
 	private void addAverage(int average) {

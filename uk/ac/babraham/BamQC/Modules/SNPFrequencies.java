@@ -110,11 +110,10 @@ public class SNPFrequencies extends AbstractQCModule {
 	
 	
 	// @Override methods
-	
+
 	@Override
 	public void processSequence(SAMRecord read) { }
-	
-	
+
 	@Override	
 	public void processFile(SequenceFile file) { }
 
