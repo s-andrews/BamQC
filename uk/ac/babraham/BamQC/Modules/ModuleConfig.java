@@ -62,8 +62,8 @@ public class ModuleConfig {
 		params.put("GenomeCoverage_plot_bins_all_chromosomes:ignore", 500d);		
 		params.put("GenomeCoverage_plot_bins_per_chromosome:ignore", 100d);
 		
-		params.put("InsertLengthDistribution_max_insert_size:ignore", 5000.0d);
-		params.put("InsertLengthDistribution_bin_size:ignore", 25.0d);
+		params.put("InsertLengthDistribution_max_insert_size:ignore", 10000.0d);
+		params.put("InsertLengthDistribution_bin_size:ignore", 1.0d);
 		params.put("InsertLengthDistribution_percentage_deviation:error", 50.0d);
 		params.put("InsertLengthDistribution_percentage_deviation:warn", 75.0d);
 
