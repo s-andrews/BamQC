@@ -357,8 +357,8 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 			new HTMLReportArchive(selectedPanel.sequenceFile(), selectedPanel.modules(), reportFile);
 		} 
 		catch (Exception e) {
-			JOptionPane.showMessageDialog(this, "Failed to create archive: "+e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-			log.warn("Failed to create archive: " + e.getMessage());
+			JOptionPane.showMessageDialog(this, "Failed to create archive: "+e, "Error", JOptionPane.ERROR_MESSAGE);
+			log.error("Failed to create archive: " + e, e);
 		}
 	}
 	

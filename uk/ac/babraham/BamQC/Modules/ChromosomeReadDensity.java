@@ -102,9 +102,9 @@ public class ChromosomeReadDensity extends AbstractQCModule {
 		for (int c=0; c<chromosomes.length; c++) {
 //			readNumber[c] = chromosomes[c].seqCount();
 //			chromosomeLength[c] = chromosomes[c].length();
+			chromosomeNames[c] = chromosomes[c].name();
 			readNumber[c] = Precision.round(Math.log(chromosomes[c].seqCount()), 2);
 			chromosomeLength[c] = Precision.round(Math.log(chromosomes[c].length()), 2);
-			chromosomeNames[c] = chromosomes[c].name();
 		}
 		
 	}
@@ -112,13 +112,13 @@ public class ChromosomeReadDensity extends AbstractQCModule {
 	
 	@Override
 	public JPanel getResultsPanel() {
-		String title = "Chromosome Read Density";
+		String title = "Chromosome Read Density ( hover the mouse on the blue dots for names )";
 		String xLabel = "Log Chromosome Length";
 		String yLabel = "Log Read Number";
 		if(readNumber.length < 1) {
-			return new ScatterGraph(new double[1], new double[1], xLabel, yLabel, title);
+			return new ScatterGraph(new double[1], new double[1], new String[1], xLabel, yLabel, title);
 		}		
-		return new ScatterGraph(readNumber, chromosomeLength, xLabel, yLabel, title);
+		return new ScatterGraph(readNumber, chromosomeLength, chromosomeNames, xLabel, yLabel, title);
 	}
 
 	

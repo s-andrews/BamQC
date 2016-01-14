@@ -28,20 +28,30 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.event.MouseInputAdapter;
 
 import org.apache.commons.math3.util.Precision;
 
 import uk.ac.babraham.BamQC.Utilities.LinearRegression;
 
 /**
- * 
+ * A class for drawing a scatter plot.
  * @author Piero Dalle Pezze
  *
  */
@@ -49,36 +59,45 @@ public class ScatterGraph extends JPanel {
 
 	private static final long serialVersionUID = -7292512222510200683L;
 
-	private String xLabel;
-	private String yLabel;
-	private double[] data;
-	private double[] xCategories;
-	private String graphTitle;
-	private double minX;
-	private double maxX;
-	private double xInterval;
-	private double minY;
-	private double maxY;
-	private double yInterval;
-	private int height = -1;
-	private int width = -1;
+	protected String xLabel;
+	protected String yLabel;
+	protected double[] data;
+	protected double[] xCategories;
+	protected String[] toolTipLabels;
+	protected String graphTitle;
+	protected double minX;
+	protected double maxX;
+	protected double xInterval;
+	protected double minY;
+	protected double maxY;
+	protected double yInterval;
+	protected int height = -1;
+	protected int width = -1;
 
-	public ScatterGraph(double[] data, double[] xCategories, String xLabel, String yLabel, String graphTitle) {
-		initialise(data, xCategories, xLabel, yLabel, graphTitle);
+	// TOOL TIPS management
+	private List<Rectangle> rectangles = null;
+	private List<String> tips = null;
+	private JWindow toolTip = null;
+    private JLabel label = new JLabel();
+	private Tipster tipster = null;
+	
+	public ScatterGraph(double[] data, double[] xCategories, String[] toolTipLabels, String xLabel, String yLabel, String graphTitle) {
+		initialise(data, xCategories, toolTipLabels, xLabel, yLabel, graphTitle);
 	}
 
 	
-	public ScatterGraph(double[] data, String[] xCategories, String xLabel, String yLabel, String graphTitle) {
+	public ScatterGraph(double[] data, String[] xCategories, String[] toolTipLabels, String xLabel, String yLabel, String graphTitle) {
 		double[] myCategories = new double[xCategories.length];
 		for (int i=0; i<xCategories.length; i++) {
 			myCategories[i] = Double.parseDouble(xCategories[i]);
 		}
-		initialise(data, myCategories, xLabel, yLabel, graphTitle);
+		initialise(data, myCategories, toolTipLabels, xLabel, yLabel, graphTitle);
 	}
 	
-	private void initialise(double[] data, double[] xCategories, String xLabel, String yLabel, String graphTitle) {
+	private void initialise(double[] data, double[] xCategories, String[] toolTipLabels, String xLabel, String yLabel, String graphTitle) {
 		this.data = data;
 		this.xCategories = xCategories;
+		this.toolTipLabels = toolTipLabels;
 		this.xLabel = xLabel;
 		this.yLabel = yLabel;
 		this.graphTitle = graphTitle;		
@@ -95,6 +114,20 @@ public class ScatterGraph extends JPanel {
 		minX = minmax[0];
 		maxX = minmax[1] + minmax[1]*0.1;  // let's give some extra 10% space
 		xInterval = findOptimalYInterval(maxX);
+		
+		// TOOL TIPS management
+        label.setHorizontalAlignment(JLabel.CENTER);
+        label.setOpaque(true);
+    	label.setBackground(Color.WHITE);
+        label.setBorder(UIManager.getBorder("ToolTip.border"));
+        if(!GraphicsEnvironment.isHeadless()) {
+        	toolTip = new JWindow();
+        	toolTip.add(label);
+    		// Tool tips
+            tipster = new Tipster(this);
+            addMouseMotionListener(tipster);
+        }
+        setOpaque(true);
 	}
 
 	
@@ -227,11 +260,7 @@ public class ScatterGraph extends JPanel {
 				lastYLabelEnd = baseNumberPosition + 2;
 			}
 		}
-		
-		
-		
-		
-		
+
 		
 		// Give the x axis a bit of breathing space
 		xOffset = xOffset + yLabelRightShift + 8;
@@ -288,6 +317,11 @@ public class ScatterGraph extends JPanel {
 		g.drawLine(xOffset, getHeight() - 40, getWidth() - 10, getHeight() - 40);
 		g.drawLine(xOffset, getHeight() - 40, xOffset, 40);
 		
+		
+		// Initialise the arrays containing the tooltips
+		rectangles = new ArrayList<Rectangle>();
+		tips = new ArrayList<String>();
+		
 
 		g.setColor(Color.BLUE);
 		// Draw the data points
@@ -300,14 +334,15 @@ public class ScatterGraph extends JPanel {
 			double x = getX(xCategories[d], xOffset)-ovalSize/2;
 			double y = getY(data[d])-ovalSize/2;
 			g.fillOval((int)x, (int)y, (int)(ovalSize), (int)(ovalSize));
-			// TODO this plots correctly but shouldn't .... 
-			//inputVar[d] = Double.valueOf(d);  
 			inputVar[d] = Double.valueOf(xCategories[d]); 
-			responseVar[d] = data[d];	
+			responseVar[d] = data[d];
+
+			// Tool tips
+			Rectangle r = new Rectangle((int)x, (int)y, (int)(ovalSize), (int)(ovalSize));
+			rectangles.add(r);
+			tips.add(toolTipLabels[d]);
 		}
 		g.setColor(Color.BLACK);
-		
-		
 		
 		
 		
@@ -386,6 +421,66 @@ public class ScatterGraph extends JPanel {
 	}
 
 	
+	///////////////////////
+	// TOOL TIPS management
+    ///////////////////////
+	public void showToolTip(int index, Point p) {
+        if(GraphicsEnvironment.isHeadless()) {
+        	return;
+        }
+    	p.setLocation(p.getX()+10, p.getY()+25);
+        label.setText(tips.get(index));
+        toolTip.pack();
+        toolTip.setLocation(p);
+        toolTip.setVisible(true);
+    }
+ 
+    public void hideToolTip() {
+        if(GraphicsEnvironment.isHeadless()) {
+        	return;
+        }
+        toolTip.dispose();
+    }
+ 
+    public boolean isToolTipShowing() {
+        if(GraphicsEnvironment.isHeadless()) {
+        	return false;
+        }
+        return toolTip.isShowing();
+    }
+     
+    class Tipster extends MouseInputAdapter {
+        private ScatterGraph toolTips;
+     
+        public Tipster(ScatterGraph tt) {
+            toolTips = tt;
+        }
+     
+        @Override
+    	public void mouseMoved(MouseEvent e) {
+            if(GraphicsEnvironment.isHeadless()) {
+            	return;
+            }
+            Point p = e.getPoint();
+            boolean traversing = false;
+            for(int j = 0; j < toolTips.rectangles.size(); j++) {
+                Rectangle r = toolTips.rectangles.get(j);
+                if(r.contains(p)) {
+                    SwingUtilities.convertPointToScreen(p, toolTips);
+                    toolTips.showToolTip(j, p);
+                    traversing = true;
+                    break;
+                }
+            }
+            if(!traversing && toolTips.isToolTipShowing())
+            	toolTips.hideToolTip();
+        }
+        
+    }
+	
+	
+	
+	
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 
@@ -395,11 +490,11 @@ public class ScatterGraph extends JPanel {
 				int sampleSize = 1000;
 				double[] data = new double[sampleSize];
 				double[] xCategories = new double[sampleSize];
+				String[] toolTipsLabels = new String[sampleSize];
 				for(int i=0; i<sampleSize; i++) {
 					data[i] = Math.log((r.nextGaussian()*1.5 + 10)*i + 50);
 					xCategories[i] = Math.log(i + 50);
-//					data[i] = ((r.nextGaussian()*1.5 + 10)*i + 50);
-//					xCategories[i] = (i + 50);
+					toolTipsLabels[i] = String.valueOf(i);
 				}
 					
 				String xLabel = "xLabel";
@@ -408,7 +503,7 @@ public class ScatterGraph extends JPanel {
 				String graphTitle = "Graph Title";
 
 				JFrame frame = new JFrame();
-				ScatterGraph scatterGraph = new ScatterGraph(data, xCategories, xLabel, yLabel, graphTitle);
+				ScatterGraph scatterGraph = new ScatterGraph(data, xCategories, toolTipsLabels, xLabel, yLabel, graphTitle);
 
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				frame.setSize(500, 500);

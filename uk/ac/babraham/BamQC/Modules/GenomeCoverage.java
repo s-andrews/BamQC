@@ -279,7 +279,7 @@ public class GenomeCoverage extends AbstractQCModule {
 		/* plot the data */
 		JPanel resultsPanel = new JPanel();
 		resultsPanel.setLayout(new javax.swing.BoxLayout(resultsPanel, javax.swing.BoxLayout.PAGE_AXIS));
-		resultsPanel.add(new LineWithHorizontalBarGraph(fullBinLengths, fullBinCounts, 0-maxCoverage, maxCoverage, "Genome Position", chromosomeNames, "", labels, title, "Scaffold ( for name:position, hover the mouse on the red bars )"));
+		resultsPanel.add(new LineWithHorizontalBarGraph(fullBinLengths, fullBinCounts, 0-maxCoverage, maxCoverage, "Genome Position", chromosomeNames, "", labels, title, "Scaffold ( hover the mouse on the red bars for name:position )"));
 		
 		return resultsPanel;
 	}

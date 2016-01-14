@@ -102,11 +102,14 @@ public class LineWithHorizontalBarGraph extends JPanel {
 		// TOOL TIPS management
         label.setHorizontalAlignment(JLabel.CENTER);
         label.setOpaque(true);
-        label.setBackground(UIManager.getColor("ToolTip.white"));
+    	label.setBackground(Color.WHITE);
         label.setBorder(UIManager.getBorder("ToolTip.border"));
         if(!GraphicsEnvironment.isHeadless()) {
         	toolTip = new JWindow();
         	toolTip.add(label);
+    		// Tool tips
+            tipster = new Tipster(this);
+            addMouseMotionListener(tipster);
         }
         setOpaque(true);
 	}
@@ -138,7 +141,7 @@ public class LineWithHorizontalBarGraph extends JPanel {
 	
 	@Override
 	public int getHeight () {
-		if (height <0) {
+		if (height < 0) {
 			return super.getHeight();
 		}
 		return height;
@@ -202,10 +205,6 @@ public class LineWithHorizontalBarGraph extends JPanel {
 			
 		// Now draw the horizontal bar (1st plot)
 		// First we need to find the widest label
-		
-		// Initialise the arrays containing the tooltips
-		rectangles = new ArrayList<Rectangle>();
-		tips = new ArrayList<String>();
 		int chrPosition = 0;
 		String chrPositionStr = "";
 		
@@ -223,7 +222,10 @@ public class LineWithHorizontalBarGraph extends JPanel {
 		double cumulativeXOffset = 0;
 		
 		
-
+		// Initialise the arrays containing the tooltips
+		rectangles = new ArrayList<Rectangle>();
+		tips = new ArrayList<String>();
+		
 		
 		// Draw the first plot
 		for(int i=0; i<barData.length; i++) {
@@ -263,12 +265,7 @@ public class LineWithHorizontalBarGraph extends JPanel {
 			g.setColor(Color.BLACK);	
 			
 		}
-		
-        tipster = new Tipster(this);
-        addMouseListener(tipster);
-        addMouseMotionListener(tipster);
-		
-		
+
 		
 		// Now draw horizontal lines across from the y axis (2nd plot)
 		// First draw faint boxes over alternating bases so you can see which is which
