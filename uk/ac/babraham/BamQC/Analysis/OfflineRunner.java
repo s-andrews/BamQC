@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.log4j.Logger;
 
 import uk.ac.babraham.BamQC.BamQCConfig;
 import uk.ac.babraham.BamQC.Modules.ModuleFactory;
@@ -45,6 +46,8 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFormatException;
  *
  */
 public class OfflineRunner implements AnalysisListener {
+	
+	private static Logger log = Logger.getLogger(OfflineRunner.class);
 	
 	private AtomicInteger filesRemaining;
 	private boolean showUpdates = true;
@@ -99,7 +102,7 @@ public class OfflineRunner implements AnalysisListener {
 				// first control
 				File file = new File(bamfiles[i]);
 				if (!file.exists() || ! file.canRead()) {
-					System.err.println("Skipping '"+file.getAbsolutePath()+"' which didn't exist, or couldn't be read");
+					log.warn("Skipping '"+file.getAbsolutePath()+"' which didn't exist, or couldn't be read");
 					continue;
 				}
 				
@@ -108,7 +111,7 @@ public class OfflineRunner implements AnalysisListener {
 					File[] subdirFiles = file.listFiles();
 					for(int j=0; j<subdirFiles.length; j++) {
 						if(!isMappedFile(subdirFiles[j].getName())) {
-							System.err.println("Skipping '"+subdirFiles[j].getAbsolutePath()+"' as not a .sam or .bam file");
+							log.warn("Skipping '"+subdirFiles[j].getAbsolutePath()+"' as not a .sam or .bam file");
 							continue;
 						}
 						files.add(subdirFiles[j]);
@@ -117,7 +120,7 @@ public class OfflineRunner implements AnalysisListener {
 				// we have a file. if this is a mapped file, load it.
 				else { 
 					if(!isMappedFile(file.getName())) {
-						System.err.println("Skipping '"+file.getAbsolutePath()+"' as not a .sam or .bam file");
+						log.warn("Skipping '"+file.getAbsolutePath()+"' as not a .sam or .bam file");
 						continue;
 					}
 					files.add(file);
@@ -136,13 +139,11 @@ public class OfflineRunner implements AnalysisListener {
 				processFile(files.elementAt(i));
 			}
 			catch (SequenceFormatException e) {
-				System.err.println("Format error in "+files.elementAt(i) + " : " + e.getLocalizedMessage());
-				e.printStackTrace();
+				log.error("Format error in "+files.elementAt(i) + " : " + e.getLocalizedMessage(), e);
 				filesRemaining.decrementAndGet();
 			}
 			catch (IOException e) {
-				System.err.println("File "+files.elementAt(i) + " broken : "  + e.getLocalizedMessage());
-				e.printStackTrace();
+				log.error("File "+files.elementAt(i) + " broken : "  + e.getLocalizedMessage(), e);
 				filesRemaining.decrementAndGet();
 			}
 		}
@@ -208,27 +209,27 @@ public class OfflineRunner implements AnalysisListener {
 		
 		if (percentComplete % 5 == 0) {
 			if (percentComplete == 105) {
-				if (showUpdates) System.err.println("It seems our guess for the total number of records wasn't very good.  Sorry about that.");
+				if (showUpdates) System.out.println("It seems our guess for the total number of records wasn't very good.  Sorry about that.");
 			}
 			if (percentComplete > 100) {
-				if (showUpdates) System.err.println("Still going at "+percentComplete+"% complete for "+file.name());
+				if (showUpdates) System.out.println("Still going at "+percentComplete+"% complete for "+file.name());
 			}
 			else {
-				if (showUpdates) System.err.println("Approx "+percentComplete+"% complete for "+file.name());
+				if (showUpdates) System.out.println("Approx "+percentComplete+"% complete for "+file.name());
 			}
 		}
 	}
 
 	@Override
 	public void analysisExceptionReceived(SequenceFile file, Exception e) {
-		System.err.println("Failed to process file "+file.name());
-		e.printStackTrace();
+		log.error("Failed to process file "+file.name(), e);
 		filesRemaining.decrementAndGet();
 	}
 
 	@Override
 	public void analysisStarted(SequenceFile file) {
-		if (showUpdates) System.err.println("Started analysis of "+file.name());
+		if (showUpdates) 
+			System.out.println("Started analysis of "+file.name());
 		
 	}
 	

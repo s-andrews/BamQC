@@ -66,7 +66,7 @@ public class AnalysisQueue implements Runnable, AnalysisListener {
 	public void run() {
 
 		while (true) {
-//			System.err.println("Status available="+availableSlots+" used="+usedSlots+" queue="+queue.size());
+//			log.debug("Status available="+availableSlots+" used="+usedSlots+" queue="+queue.size());
 			if (availableSlots.intValue() > usedSlots.intValue() && queue.size() > 0) {
 				usedSlots.incrementAndGet();
 				AnalysisRunner currentRun = queue.removeFirst();

@@ -38,6 +38,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
+import org.apache.log4j.Logger;
+
 import uk.ac.babraham.BamQC.BamQCApplication;
 import uk.ac.babraham.BamQC.BamQCException;
 import uk.ac.babraham.BamQC.Dialogs.AboutDialog;
@@ -52,6 +54,8 @@ import uk.ac.babraham.BamQC.Help.HelpDialog;
  */
 public class BamQCMenuBar extends JMenuBar implements ActionListener {
 
+	private static Logger log = Logger.getLogger(BamQCMenuBar.class);
+	
 	private static final long serialVersionUID = -1301056504996459340L;
 	/** The main application */
 	private BamQCApplication application;
@@ -247,14 +251,14 @@ public class BamQCMenuBar extends JMenuBar implements ActionListener {
 				new HelpDialog(application,new File(URLDecoder.decode(ClassLoader.getSystemResource("Help").getFile(),"UTF-8")));
 			} 
 			catch (UnsupportedEncodingException e1) {
-				e1.printStackTrace();
+				log.error(e1, e1);
 			}
 		}
 		else if (action.equals("help_license")) {
 			try {
 				new LicenseDialog(application);
 			} catch (IOException e) {
-				e.printStackTrace();
+				log.error(e, e);
 			}
 		}
 		else if (action.equals("about")) {

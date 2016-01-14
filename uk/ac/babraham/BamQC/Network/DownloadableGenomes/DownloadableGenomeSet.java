@@ -33,6 +33,8 @@ import java.sql.Date;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+
 import uk.ac.babraham.BamQC.Preferences.BamQCPreferences;
 
 /**
@@ -42,6 +44,8 @@ import uk.ac.babraham.BamQC.Preferences.BamQCPreferences;
  */
 public class DownloadableGenomeSet {
 
+	private static Logger log = Logger.getLogger(DownloadableGenomeSet.class);
+	
 	private Hashtable <String, GenomeSpecies> seenSpecies;
 	private Vector<GenomeSpecies> species = new Vector<GenomeSpecies>();
 	
@@ -173,7 +177,7 @@ public class DownloadableGenomeSet {
 			
 			
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error(e, e);
 		}
 		
 		

@@ -33,7 +33,6 @@ import javax.xml.stream.XMLStreamException;
 
 import net.sf.samtools.SAMRecord;
 
-import org.apache.log4j.Logger;
 
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.Graphs.BarGraph;
@@ -47,7 +46,7 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFile;
  */
 public class MappingQualityDistribution extends AbstractQCModule {
 
-	private static Logger log = Logger.getLogger(MappingQualityDistribution.class);
+	//private static Logger log = Logger.getLogger(MappingQualityDistribution.class);
 
 	private final static int QUALITY_MAP_SIZE = 256;
 	private static final double ERROR_FRACTION = ModuleConfig.getParam("MappingQualityDistribution_fraction", "error");

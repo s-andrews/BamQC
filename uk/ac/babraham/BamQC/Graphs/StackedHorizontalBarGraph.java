@@ -85,7 +85,7 @@ public class StackedHorizontalBarGraph extends JPanel {
 			if(tempSum > maxX) maxX = tempSum;
 			else if(tempSum < minX) minX = tempSum;				
 		}
-//		System.err.println("maxX is "+maxX);
+//		log.debug("maxX is "+maxX);
 		this.xInterval = new AxisScale (minX, maxX).getInterval();
 	}
 	

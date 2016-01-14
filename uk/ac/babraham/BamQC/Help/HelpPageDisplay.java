@@ -38,12 +38,17 @@ import javax.swing.JScrollPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
+import org.apache.log4j.Logger;
+
+
 /**
  * The Class HelpPageDisplay.
  * @author Simon Andrews
  */
 public class HelpPageDisplay extends JPanel implements HyperlinkListener {
 
+	private static Logger log = Logger.getLogger(HelpPageDisplay.class);
+	
 	private static final long serialVersionUID = 6274584311171948484L;
 	/** The html pane. */
 	public JEditorPane htmlPane;
@@ -60,10 +65,10 @@ public class HelpPageDisplay extends JPanel implements HyperlinkListener {
 				htmlPane = new HelpEditor(page.getFile().toURI().toURL());
 			}
 			catch (MalformedURLException e) {
-				e.printStackTrace();
+				log.error(e, e);
 			}
 			catch (IOException e) {
-				e.printStackTrace();
+				log.error(e, e);
 			}
 			
 			htmlPane.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
@@ -118,7 +123,7 @@ public class HelpPageDisplay extends JPanel implements HyperlinkListener {
 			try {
 				htmlPane.setPage(h.getURL());
 			} catch (IOException e) {
-				e.printStackTrace();
+				log.error(e, e);
 			}
 		}
 	}

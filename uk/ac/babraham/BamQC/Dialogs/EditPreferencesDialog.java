@@ -43,6 +43,8 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
+import org.apache.log4j.Logger;
+
 import uk.ac.babraham.BamQC.BamQCApplication;
 import uk.ac.babraham.BamQC.Preferences.BamQCPreferences;
 
@@ -53,9 +55,8 @@ import uk.ac.babraham.BamQC.Preferences.BamQCPreferences;
  */
 public class EditPreferencesDialog extends JDialog implements ActionListener {
 
-	/**
-	 * 
-	 */
+	private static Logger log = Logger.getLogger(EditPreferencesDialog.class);
+	
 	private static final long serialVersionUID = -9120924960274548107L;
 
 	/** The genome base. */
@@ -276,7 +277,7 @@ public class EditPreferencesDialog extends JDialog implements ActionListener {
 			try {
 				p.savePreferences();
 			} catch (IOException e) {
-				e.printStackTrace();
+				log.error(e, e);
 			}
 			setVisible(false);
 		}

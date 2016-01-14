@@ -26,6 +26,9 @@ package uk.ac.babraham.BamQC.DataTypes.Genome;
 
 import java.io.Serializable;
 
+import org.apache.log4j.Logger;
+
+
 /**
  * A simple class to represent a simple location in the genome.
  * For complex positions containing sublocations you should use
@@ -34,6 +37,8 @@ import java.io.Serializable;
  * @author Piero Dalle Pezze
  */
 public class Location implements Serializable, Comparable<Location> {
+	
+	private static Logger log = Logger.getLogger(Location.class);
 	
 	private static final long serialVersionUID = 4931115654048485228L;
 
@@ -73,7 +78,7 @@ public class Location implements Serializable, Comparable<Location> {
 	public Location (int start, int end, int strand) {
 		setPosition(start, end, strand);
 		if (strand != strand()) {
-			System.err.println("Strand "+strand+" didn't match "+strand());
+			log.error("Strand "+strand+" didn't match "+strand());
 		}
 	}
 		

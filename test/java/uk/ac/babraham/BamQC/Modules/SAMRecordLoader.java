@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
+
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMFormatException;
 import net.sf.samtools.SAMRecord;
@@ -41,6 +43,8 @@ import net.sf.samtools.SAMRecord;
  */
 public class SAMRecordLoader {
 
+	private static Logger log = Logger.getLogger(SAMRecordLoader.class);	
+	
 	// Load the whole SAM file, as this is very short. (3-10 lines).
 	// Clearly this is not a correct approach generally.
 	public static ArrayList<SAMRecord> loadSAMFile(String filename) {
@@ -51,7 +55,7 @@ public class SAMRecordLoader {
 		try {
 			fis = new FileInputStream(file);
 		} catch (FileNotFoundException ex) { 
-			System.err.println("File " + filename + " does not exist"); 
+			log.error("File " + filename + " does not exist", ex); 
 			return samRecords;
 		}
 		// Set the default validation Stringency
@@ -64,7 +68,7 @@ public class SAMRecordLoader {
 				samRecord = it.next();
 				samRecords.add(samRecord);
 			} catch (SAMFormatException sfe) { 
-				System.err.println("SAMFormatException");
+				log.error(sfe, sfe);
 			}
 		}
 		// close the file streams
@@ -72,7 +76,7 @@ public class SAMRecordLoader {
 			samReader.close();
 			fis.close();
 		} catch (IOException ioe) {
-			ioe.printStackTrace();
+			log.error(ioe, ioe);
 			return samRecords;
 		}
 		return samRecords;

@@ -52,6 +52,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
@@ -69,6 +70,9 @@ import uk.ac.babraham.BamQC.Utilities.ImageToBase64;
  *
  */
 public class HTMLReportArchive {
+	
+	private static Logger log = Logger.getLogger(HTMLReportArchive.class);
+	
 	private XMLStreamWriter xhtml=null;
 	private StringBuffer data = new StringBuffer();
 	private QCModule [] modules;
@@ -180,7 +184,7 @@ public class HTMLReportArchive {
 				}
 			}
 		catch (Exception e) {
-			e.printStackTrace();
+			log.error(e, e);
 		}
 		
 		
@@ -201,34 +205,41 @@ public class HTMLReportArchive {
 	}
 	
 	private void unzipZipFile (File file) throws IOException {
-		ZipFile zipFile = new ZipFile(file);
-		Enumeration<? extends ZipEntry> entries = zipFile.entries();
-		int size;
-		byte [] buffer = new byte[1024];
-		
-		while (entries.hasMoreElements()) {
-			ZipEntry entry = entries.nextElement();
+		ZipFile zipFile = null;
+		try {
+			zipFile = new ZipFile(file);
+			Enumeration<? extends ZipEntry> entries = zipFile.entries();
+			int size;
+			byte [] buffer = new byte[1024];
 			
-//			System.out.println("Going to extract '"+entry.getName()+"'");
-			
-			if (entry.isDirectory()) {
-				File dir = new File(file.getParent()+"/"+entry.getName());
-				if (dir.exists() && dir.isDirectory()) continue; // Don't need to do anything
-				if (dir.exists() && ! dir.isDirectory()) throw new IOException ("File exists with dir name "+dir.getName());
-				if (!dir.mkdir()) throw new IOException("Failed to make dir for "+dir.getName());
-				continue;
+			while (entries.hasMoreElements()) {
+				ZipEntry entry = entries.nextElement();
+				
+				log.debug("Going to extract '"+entry.getName()+"'");
+				
+				if (entry.isDirectory()) {
+					File dir = new File(file.getParent()+"/"+entry.getName());
+					if (dir.exists() && dir.isDirectory()) continue; // Don't need to do anything
+					if (dir.exists() && ! dir.isDirectory()) throw new IOException ("File exists with dir name "+dir.getName());
+					if (!dir.mkdir()) throw new IOException("Failed to make dir for "+dir.getName());
+					continue;
+				}
+	
+				BufferedInputStream bis = new BufferedInputStream(zipFile.getInputStream(entry));
+				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file.getParent()+"/"+entry.getName()),buffer.length);
+				while ((size = bis.read(buffer,0,buffer.length)) != -1) {
+					bos.write(buffer,0,size);
+				}
+				bos.flush();
+				bos.close();
+				bis.close();
 			}
-
-			BufferedInputStream bis = new BufferedInputStream(zipFile.getInputStream(entry));
-			BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file.getParent()+"/"+entry.getName()),buffer.length);
-			while ((size = bis.read(buffer,0,buffer.length)) != -1) {
-				bos.write(buffer,0,size);
-			}
-			bos.flush();
-			bos.close();
-			bis.close();
+		} catch(IOException e) {
+			throw e;
+		} finally {
+			if(zipFile != null)
+				zipFile.close();
 		}
-		zipFile.close();
 	}
 
 	public XMLStreamWriter xhtmlStream ()
@@ -393,13 +404,12 @@ public class HTMLReportArchive {
 			return (ImageToBase64.imageToBase64(b));
 		}
 		catch (IOException ioe) {
-			ioe.printStackTrace();
+			log.error(ioe, ioe);
 			return "Failed";
 		}
 	}
 	
-	private void closeDocument () throws XMLStreamException
-		{
+	private void closeDocument () throws XMLStreamException {
 		xhtml.writeEndElement();//div
 		xhtml.writeStartElement("div");
 		xhtml.writeAttribute("class", "footer");
@@ -413,7 +423,7 @@ public class HTMLReportArchive {
 		
 		xhtml.writeEndElement();//body
 		xhtml.writeEndElement();//html
-		}
+	}
 	
 	
 	

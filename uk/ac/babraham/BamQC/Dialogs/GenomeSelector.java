@@ -42,6 +42,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.apache.log4j.Logger;
+
 import uk.ac.babraham.BamQC.BamQCApplication;
 import uk.ac.babraham.BamQC.Preferences.BamQCPreferences;
 
@@ -50,6 +52,8 @@ import uk.ac.babraham.BamQC.Preferences.BamQCPreferences;
  * @author Simon Andrews
  */
 public class GenomeSelector extends JDialog {
+	
+	private static Logger log = Logger.getLogger(GenomeSelector.class);
 	
 	/**
 	 * 
@@ -91,6 +95,7 @@ public class GenomeSelector extends JDialog {
 			}
 		} 
 		catch (FileNotFoundException e) {
+			log.error("Couldn't find the folder containing your genomes.  Please check your file preferences");
 			JOptionPane.showMessageDialog(application, "Couldn't find the folder containing your genomes.  Please check your file preferences", "Error getting genomes", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
@@ -103,7 +108,7 @@ public class GenomeSelector extends JDialog {
 				// Skip folders which don't contain any assemblies, or for
 				// which assemblies can't be listed
 				if (assemblies == null) {
-					System.err.println("Skipping genomes folder "+genomes[i].getAbsolutePath()+" since I can't list files");
+					log.warn("Skipping genomes folder "+genomes[i].getAbsolutePath()+" since I can't list files");
 					continue;
 				}
 				
@@ -118,7 +123,7 @@ public class GenomeSelector extends JDialog {
 					root.add(genomeNode);
 				}
 				else {
-					System.err.println("Skipping genomes folder "+genomes[i].getAbsolutePath()+" which didn't contain any assemblies");
+					log.warn("Skipping genomes folder "+genomes[i].getAbsolutePath()+" which didn't contain any assemblies");
 				}
 			}
 		}
@@ -189,7 +194,7 @@ public class GenomeSelector extends JDialog {
 				try {
 					new GenomeDownloadSelector(application);
 				} catch (Exception e) {
-					e.printStackTrace();
+					log.error(e, e);
 				}
 				setVisible(false);
 				dispose();

@@ -32,6 +32,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 
+import org.apache.log4j.Logger;
+
 import uk.ac.babraham.BamQC.BamQCConfig;
 
 /**
@@ -41,6 +43,8 @@ import uk.ac.babraham.BamQC.BamQCConfig;
  */
 public class ModuleConfig {
 
+	private static Logger log = Logger.getLogger(ModuleConfig.class);
+	
 	private static HashMap<String, Double> parameters = readParams();
 
 	private static HashMap<String, Double> readParams() {
@@ -113,11 +117,11 @@ public class ModuleConfig {
 
 				String[] sections = line.split("\\s+");
 				if (sections.length != 3) {
-					System.err.println("Config line '" + line + "' didn't contain the 3 required sections");
+					log.error("Config line '" + line + "' didn't contain the 3 required sections");
 				}
 
 				if (!(sections[1].equals("warn") || sections[1].equals("error") || sections[1].equals("ignore"))) {
-					System.err.println("Second config field must be error, warn or ignore, not '" + sections[1] + "'");
+					log.error("Second config field must be error, warn or ignore, not '" + sections[1] + "'");
 					continue;
 				}
 
@@ -126,7 +130,7 @@ public class ModuleConfig {
 					value = Double.parseDouble(sections[2]);
 				}
 				catch (NumberFormatException nfe) {
-					System.err.println("Value " + sections[2] + " didn't look like a number");
+					log.error("Value " + sections[2] + " didn't look like a number");
 					continue;
 				}
 				String key = sections[0] + ":" + sections[1];
@@ -135,7 +139,7 @@ public class ModuleConfig {
 			}
 		}
 		catch (IOException e) {
-			e.printStackTrace();
+			log.error(e, e);
 		}
 		finally {
 			try {
@@ -143,7 +147,7 @@ public class ModuleConfig {
 					br.close();
 				}
 			} catch(IOException e) {
-				e.printStackTrace();
+				log.error(e, e);
 			}
 		}
 		return params;

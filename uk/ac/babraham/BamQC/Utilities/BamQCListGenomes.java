@@ -26,12 +26,12 @@ package uk.ac.babraham.BamQC.Utilities;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.Properties;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
+import org.apache.log4j.Logger;
 
 import uk.ac.babraham.BamQC.Preferences.BamQCPreferences;
 import uk.ac.babraham.BamQC.Network.DownloadableGenomes.DownloadableGenomeSet;
@@ -46,6 +46,7 @@ import uk.ac.babraham.BamQC.Network.DownloadableGenomes.GenomeSpecies;
  */
 public class BamQCListGenomes {
 	
+	private static Logger log = Logger.getLogger(BamQCListGenomes.class);
 
 	/**
 	 * Return the list of genomes available on the Babraham server or null if this list cannot be downloaded.
@@ -98,9 +99,9 @@ public class BamQCListGenomes {
 			}
 			
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error(e, e);
 		} catch (PatternSyntaxException e) {
-			e.printStackTrace();
+			log.error("The regular expression " + regex + " is not valid.", e);
 			System.out.println("The regular expression " + regex + " is not valid.");
 		}
 		return gs;

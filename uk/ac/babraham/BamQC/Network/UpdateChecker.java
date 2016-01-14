@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.apache.log4j.Logger;
+
 import uk.ac.babraham.BamQC.BamQCApplication;
 import uk.ac.babraham.BamQC.BamQCException;
 
@@ -41,6 +43,8 @@ import uk.ac.babraham.BamQC.BamQCException;
  */
 public class UpdateChecker {
 
+	private static Logger log = Logger.getLogger(UpdateChecker.class);
+	
 	private static String latestVersion = null;
 	
 	/**
@@ -85,7 +89,7 @@ public class UpdateChecker {
 			}
 			else if (thisNumber > remoteNumber) {
 				// This version is higher
-				System.err.println("Local version ("+thisVersion+") is higher than the remote ("+remoteVersion+")");
+				log.error("Local version ("+thisVersion+") is higher than the remote ("+remoteVersion+")");
 				return false;
 			}
 		}
@@ -105,7 +109,7 @@ public class UpdateChecker {
 			return true;
 		}
 		else if (thisSections.length > remoteSections.length) {
-			System.err.println("Local version ("+thisVersion+") is higher than the remote ("+remoteVersion+")");			
+			log.error("Local version ("+thisVersion+") is higher than the remote ("+remoteVersion+")");			
 		}
 		
 		
@@ -146,7 +150,7 @@ public class UpdateChecker {
 			return latestVersion;
 		}
 		catch (IOException e) {
-			e.printStackTrace();
+			log.error("Couldn't contact the update server to check for updates", e);
 			throw new BamQCException("Couldn't contact the update server to check for updates");
 		}
 	}

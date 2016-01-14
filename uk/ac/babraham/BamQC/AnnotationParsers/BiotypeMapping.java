@@ -12,6 +12,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 
+import org.apache.log4j.Logger;
+
 import uk.ac.babraham.BamQC.BamQCConfig;
 import uk.ac.babraham.BamQC.Modules.ModuleConfig;
 
@@ -22,6 +24,8 @@ import uk.ac.babraham.BamQC.Modules.ModuleConfig;
  */
 public class BiotypeMapping {
 
+	private static Logger log = Logger.getLogger(BiotypeMapping.class);
+	
 	private HashMap<String, String> mappings = new HashMap<String, String>();
 	private static BiotypeMapping biotypeMapping = null;
 	
@@ -57,7 +61,7 @@ public class BiotypeMapping {
 
 				String[] sections = line.split("\\s+");
 				if (sections.length != 2) {
-					System.err.println("Biotype mapping line '" + line + "' didn't contain the 2 required sections");
+					log.error("Biotype mapping line '" + line + "' didn't contain the 2 required sections");
 				}
 
 				mappings.put(sections[0], sections[1]);
@@ -65,7 +69,7 @@ public class BiotypeMapping {
 			}
 		}
 		catch (IOException e) {
-			e.printStackTrace();
+			log.error(e, e);
 		}
 		finally {
 			try{ 
@@ -73,7 +77,7 @@ public class BiotypeMapping {
 					br.close();
 				}
 			} catch(IOException e) {
-				e.printStackTrace();
+				log.error(e, e);
 			}
 		}
 

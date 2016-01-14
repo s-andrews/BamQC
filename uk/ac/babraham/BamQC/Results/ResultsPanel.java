@@ -38,7 +38,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import uk.ac.babraham.BamQC.BamQCConfig;
 import uk.ac.babraham.BamQC.Analysis.AnalysisListener;
 import uk.ac.babraham.BamQC.DataTypes.ProgressListener;
 import uk.ac.babraham.BamQC.Modules.QCModule;

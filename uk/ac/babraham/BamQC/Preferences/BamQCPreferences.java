@@ -36,6 +36,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.apache.commons.lang3.SystemUtils;
+import org.apache.log4j.Logger;
+
 
 /**
  * A set of preferences, both temporary and permanent which are used
@@ -46,6 +48,8 @@ import org.apache.commons.lang3.SystemUtils;
  */
 public class BamQCPreferences {
 
+	private static Logger log = Logger.getLogger(BamQCPreferences.class);
+	
 	/** The single instantiated instance of preferences */
 	private static BamQCPreferences p = new BamQCPreferences();
 	
@@ -136,7 +140,7 @@ public class BamQCPreferences {
 				savePreferences();
 			} 
 			catch (IOException e) {
-				e.printStackTrace();
+				log.error(e, e);
 			}
 		}
 		updateProxyInfo();
@@ -218,16 +222,16 @@ public class BamQCPreferences {
 					}
 				}
 				else {
-					System.err.println("Unknown preference '"+sections[0]+"'");
+					log.error("Unknown preference '"+sections[0]+"'");
 				}
 				
 			}
 			br.close();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			log.error(e, e);
 		}
 		catch (IOException e) {
-			e.printStackTrace();
+			log.error(e, e);
 		}
 	
 	}

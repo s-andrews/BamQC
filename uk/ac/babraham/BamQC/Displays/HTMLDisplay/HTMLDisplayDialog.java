@@ -28,6 +28,8 @@ import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
 
+import org.apache.log4j.Logger;
+
 import uk.ac.babraham.BamQC.BamQCApplication;
 
 /**
@@ -37,13 +39,15 @@ import uk.ac.babraham.BamQC.BamQCApplication;
  */
 public class HTMLDisplayDialog extends JDialog {
 
+	private static Logger log = Logger.getLogger(HTMLDisplayDialog.class);
+	
 	private static final long serialVersionUID = -665506733941526484L;
 
 	public HTMLDisplayDialog (String html) {
 		
 		super(BamQCApplication.getInstance(),"Crash Report Help");
 		
-		System.err.println("Making help dialog");
+		log.debug("Making help dialog");
 		
 		JEditorPane jep = new JEditorPane("text/html", html);
 		

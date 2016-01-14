@@ -24,8 +24,7 @@
 package uk.ac.babraham.BamQC.Dialogs;
 
 import java.util.Vector;
-
-
+import org.apache.log4j.Logger;
 import uk.ac.babraham.BamQC.DataTypes.ProgressListener;
 
 
@@ -37,6 +36,7 @@ import uk.ac.babraham.BamQC.DataTypes.ProgressListener;
  */
 public class ProgressTextDialog implements Runnable, ProgressListener {
 
+	private static Logger log = Logger.getLogger(ProgressTextDialog.class);
 	
 	/** The warning count. */
 	private int warningCount = 0;
@@ -87,7 +87,7 @@ public class ProgressTextDialog implements Runnable, ProgressListener {
 		if (reportedException != null && reportedException == e) return;
 		reportedException = e;
 		if (! ignoreExceptions) {
-			e.printStackTrace();
+			log.error(e, e);
 		}
 	}
 

@@ -6,7 +6,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
+
 public class UtilityTest {
+	
+	private static Logger log = Logger.getLogger(UtilityTest.class);	
 
 	private static final String INSERT_SIZES_FILENAME = "test/resources/bamInsertSizeCounts.txt";
 	
@@ -30,7 +35,7 @@ public class UtilityTest {
 			}
 		}
 		catch (IOException e) {
-			e.printStackTrace();
+			log.error(e, e);
 			throw new RuntimeException("Cannot open file " + INSERT_SIZES_FILENAME);
 		} finally {
 			try {
@@ -38,7 +43,7 @@ public class UtilityTest {
 					reader.close();
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				log.error(e, e);
 			}
 		}
 		return insertSizes;
@@ -62,7 +67,7 @@ public class UtilityTest {
 			}
 		}
 		catch (IOException e) {
-			e.printStackTrace();
+			log.error(e, e);
 			throw new RuntimeException("Cannot open file " + INSERT_SIZES_FILENAME);
 		} finally {
 			try {
@@ -70,7 +75,7 @@ public class UtilityTest {
 					reader.close();
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				log.error(e, e);
 			}
 		}
 		return insertSizes;

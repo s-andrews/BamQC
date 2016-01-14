@@ -80,7 +80,7 @@ public class HorizontalBarGraph extends JPanel {
 			if (values[v] > maxX) maxX = values[v];
 			else if (values[v] < minX) minX = values[v];
 		}
-//		System.err.println("maxX is "+maxX);
+//		log.debug("maxX is "+maxX);
 		
 		this.xInterval = new AxisScale (minX, maxX).getInterval();
 	}

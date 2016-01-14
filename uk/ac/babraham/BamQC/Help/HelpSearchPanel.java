@@ -39,12 +39,17 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.log4j.Logger;
+
+
 /**
  * The Class HelpSearchPanel.
  * @author Simon Andrews
  */
 public class HelpSearchPanel extends JPanel implements ActionListener, ListSelectionListener, Runnable {
 
+	private static Logger log = Logger.getLogger(HelpSearchPanel.class);
+	
 	private static final long serialVersionUID = -3900154761896012849L;
 
 	/** The root. */
@@ -136,7 +141,7 @@ public class HelpSearchPanel extends JPanel implements ActionListener, ListSelec
 				results = root.findPagesForTerm(queryField.getText().trim());
 			} 
 			catch (IOException e) {
-				e.printStackTrace();
+				log.error(e);
 				searchButton.setEnabled(true);
 				return;
 			}

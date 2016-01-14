@@ -25,11 +25,10 @@
 package uk.ac.babraham.BamQC;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.IOException;
+import java.io.IOException; 
 
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
@@ -190,12 +189,11 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 				errorPanel.setLayout(new BorderLayout());
 				errorPanel.add(new JLabel("File format error: "+e.getLocalizedMessage(), JLabel.CENTER),BorderLayout.CENTER);
 				fileTabs.addTab(files[i].getName(), errorPanel);
-				e.printStackTrace();
+				log.error(e, e);
 				continue;
 			}
 			catch (IOException e) {
-				System.err.println("File broken");
-				e.printStackTrace();
+				log.error("File broken", e);
 				JOptionPane.showMessageDialog(this, "Couldn't read file:"+e.getLocalizedMessage(), "Error reading file", JOptionPane.ERROR_MESSAGE);
 				continue;
 			}

@@ -40,7 +40,6 @@ import net.sf.samtools.SAMRecord;
 import uk.ac.babraham.BamQC.BamQCConfig;
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
-import uk.ac.babraham.BamQC.DataTypes.Genome.ChromosomeFactory;
 import uk.ac.babraham.BamQC.Report.HTMLReportArchive;
 import uk.ac.babraham.BamQC.Sequence.SequenceFile;
 import uk.ac.babraham.BamQC.Utilities.MultiLineTableCellRenderer;

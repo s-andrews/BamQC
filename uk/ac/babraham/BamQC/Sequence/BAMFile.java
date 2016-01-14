@@ -29,6 +29,8 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
 import net.sf.samtools.SAMFileHeader;
@@ -45,6 +47,8 @@ import net.sf.samtools.SAMSequenceRecord;
  */
 public class BAMFile implements SequenceFile {
 
+	private static Logger log = Logger.getLogger(SequenceFile.class);
+	
 	private File file;
 	private boolean onlyMapped;
 	private SAMFileHeader header;
@@ -117,7 +121,7 @@ public class BAMFile implements SequenceFile {
 			return percent;
 		} 
 		catch (IOException e) {
-			e.printStackTrace();
+			log.error(e, e);
 		}
 		return 0;
 	}
@@ -152,7 +156,7 @@ public class BAMFile implements SequenceFile {
 					fis.close();
 				}
 				catch (IOException ioe) {
-					ioe.printStackTrace();
+					log.error(ioe, ioe);
 				}
 				return;
 			}
