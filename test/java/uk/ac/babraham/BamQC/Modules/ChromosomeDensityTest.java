@@ -58,30 +58,17 @@ public class ChromosomeDensityTest {
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		System.out.println("Set up : ChromosomeReadDensityTest");	
 	}
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-		System.out.println("Tear down : ChromosomeReadDensityTest");
 	}
 
 	@Before
 	public void setUp() throws Exception {	
 		chromosomeReadDensity = new ChromosomeReadDensity();
 		annotationSet = new AnnotationSet();
-	}
-
-	@After
-	public void tearDown() throws Exception { 
-		samRecords = null;
-		chromosomeReadDensity = null;
-	}
-
-	@Test
-	public void testChromosomeDensity() {
-		log.info("testChromosomeReadDensity");
-
+		
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_annot.sam");
 		String annotationFile = new String(new File("").getAbsolutePath() + "/test/resources/example_annot.gtf");
 		samRecords = SAMRecordLoader.loadSAMFile(filename);		
@@ -95,19 +82,29 @@ public class ChromosomeDensityTest {
 			parser.parseAnnotation(annotationSet, new File(annotationFile));
 		}
 		catch (Exception e) {
-			System.out.println("Annotation not parsed correctly!! Sort it out please..!");
+			log.error("Annotation not parsed correctly!! Sort it out please..!", e);
 			return;
 		}
 
 
 		for(SAMRecord read : samRecords) {
 			annotationSet.processSequenceNoCache(read);
-			chromosomeReadDensity.processSequence(read);
 		}
 		
 		chromosomeReadDensity.processAnnotationSet(annotationSet);
-
 		
+	}
+
+	@After
+	public void tearDown() throws Exception { 
+		samRecords = null;
+		chromosomeReadDensity = null;
+	}
+
+	@Test
+	public void testChromosomeDensity() {
+		System.out.println("Running test ChromosomeReadDensityTest.testChromosomeReadDensity");	
+		log.info("Running test ChromosomeReadDensityTest.testChromosomeReadDensity");
 		
 		String[] chromosomeNames = chromosomeReadDensity.getChromosomeNames();
 		double[] logReadNumber = chromosomeReadDensity.getLogReadNumber();
@@ -119,11 +116,36 @@ public class ChromosomeDensityTest {
 //			System.out.println(logChromosomeLength[i]);
 //		}
 		
-		assertEquals(4, chromosomeNames.length);		
+		assertEquals(4, chromosomeNames.length);
+		
+		assertEquals("3", chromosomeNames[0]);
+		assertEquals(0.0, logReadNumber[0], 0.01);
+		assertEquals(14.95, logChromosomeLength[0], 0.01);
+		
+		assertEquals("9", chromosomeNames[1]);
+		assertEquals(0.0, logReadNumber[1], 0.01);
+		assertEquals(17.38, logChromosomeLength[1], 0.01);
+		
+		assertEquals("5", chromosomeNames[2]);
+		assertEquals(0.0, logReadNumber[2], 0.01);
+		assertEquals(18.13, logChromosomeLength[2], 0.01);
+
 		assertEquals("1", chromosomeNames[3]);
 		assertEquals(2.4, logReadNumber[3], 0.01);
 		assertEquals(18.41, logChromosomeLength[3], 0.01);
 		
 	}
 
+	@Test
+	public void testBooleans() {
+		System.out.println("Running test ChromosomeReadDensityTest.testBooleans");	
+		log.info("Running test ChromosomeReadDensityTest.testBooleans");
+		
+		assertFalse(chromosomeReadDensity.ignoreInReport());
+		assertTrue(chromosomeReadDensity.needsToSeeAnnotation());
+		assertFalse(chromosomeReadDensity.raisesError());
+		assertFalse(chromosomeReadDensity.raisesWarning());
+		assertFalse(chromosomeReadDensity.needsToSeeSequences());
+	}
+	
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2014 Bart Ailey Eagle Genomics Ltd
+ * Copyright Copyright 2014 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -19,7 +19,7 @@
  */
 /*
  * Changelog: 
- * - Piero Dalle Pezze: Added printout.
+ * - Piero Dalle Pezze: Added printout, testBooleans, class standardization.
  * - Bart Ailey: Class creation.
  */
 package test.java.uk.ac.babraham.BamQC.Modules;
@@ -32,9 +32,7 @@ import net.sf.samtools.SAMRecord;
 
 import org.apache.log4j.Logger;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import uk.ac.babraham.BamQC.Modules.SequenceQualityDistribution;
@@ -53,16 +51,6 @@ public class SequenceQualityDistributionTest {
 	private TestObjectFactory testObjectFactory = null;
 	private List<SAMRecord> samRecords = null;
 	
-	
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		System.out.println("Set up : SequenceQualityDistributionTest");	
-	}
-
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-		System.out.println("Tear down : SequenceQualityDistributionTest");	
-	}
 
 	@Before
 	public void setUp() throws Exception {
@@ -80,7 +68,8 @@ public class SequenceQualityDistributionTest {
 
 	@Test
 	public void testProcessSequence() {
-		log.info("testDistribution");
+		System.out.println("Running test SequenceQualityDistributionTest.testProcessSequence");
+		log.info("Running test SequenceQualityDistributionTest.testProcessSequence");
 		
 		for (SAMRecord samRecord : samRecords) {
 			sequenceQualityDistribution.processSequence(samRecord);
@@ -98,7 +87,8 @@ public class SequenceQualityDistributionTest {
 
 	@Test(expected= IndexOutOfBoundsException.class)
 	public void testProcessSequenceException() {
-		log.info("testProcessSequenceException");
+		System.out.println("Running test SequenceQualityDistributionTest.testProcessSequenceException");
+		log.info("Running test SequenceQualityDistributionTest.testProcessSequenceException");
 		
 		for (SAMRecord samRecord : samRecords) {
 			sequenceQualityDistribution.processSequence(samRecord);
@@ -106,6 +96,18 @@ public class SequenceQualityDistributionTest {
 		List<Integer> distribution = sequenceQualityDistribution.getDistribution();
 		
 		assertEquals(0, (int) distribution.get(7));
+	}
+	
+	@Test
+	public void testBooleans() {
+		System.out.println("Running test SequenceQualityDistributionTest.testBooleans");	
+		log.info("Running test SequenceQualityDistributionTest.testBooleans");
+		
+		assertTrue(sequenceQualityDistribution.ignoreInReport());
+		assertFalse(sequenceQualityDistribution.needsToSeeAnnotation());
+		assertFalse(sequenceQualityDistribution.raisesError());
+		assertFalse(sequenceQualityDistribution.raisesWarning());
+		assertTrue(sequenceQualityDistribution.needsToSeeSequences());
 	}
 	
 }

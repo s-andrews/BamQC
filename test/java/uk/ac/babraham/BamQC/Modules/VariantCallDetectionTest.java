@@ -35,9 +35,7 @@ import net.sf.samtools.SAMRecord;
 
 import org.apache.log4j.Logger;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import uk.ac.babraham.BamQC.Modules.VariantCallDetection;
@@ -62,19 +60,6 @@ public class VariantCallDetectionTest {
 		log.debug("--------------");				
 	}
 	
-	
-	
-	
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		System.out.println("Set up : VariantCallDetection");	
-	}
-
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-		System.out.println("Tear down : VariantCallDetection");
-	}		
-	
 	@Before
 	public void setUp() throws Exception {	
 		variantCallDetection = new VariantCallDetection();		
@@ -85,12 +70,11 @@ public class VariantCallDetectionTest {
 		samRecords = null;
 		variantCallDetection = null;		
 	}
-
-	
 	
 	@Test
 	public void testRecordWithoutMDString() {
-		log.info("testRecordWithoutMDString");
+		System.out.println("Running test VariantCallDetection.testRecordWithoutMDString");
+		log.info("Running test VariantCallDetection.testRecordWithoutMDString");
 		
 		TestObjectFactory testObjectFactory = new TestObjectFactory();
 		samRecords = testObjectFactory.getSamRecords();	
@@ -103,7 +87,9 @@ public class VariantCallDetectionTest {
 	
 	@Test
 	public void testCigarOperM() {
-		log.info("testCigarOperM");
+		System.out.println("Running test VariantCallDetection.testCigarOperM");
+		log.info("Running test VariantCallDetection.testCigarOperM");
+		
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_M.sam");
 		samRecords = SAMRecordLoader.loadSAMFile(filename);		
 		if(samRecords.isEmpty()) { 
@@ -130,7 +116,9 @@ public class VariantCallDetectionTest {
 
 	@Test
 	public void testCigarOperMD() {
-		log.info("testCigarOperMD");
+		System.out.println("Running test VariantCallDetection.testCigarOperMD");
+		log.info("Running test VariantCallDetection.testCigarOperMD");
+		
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MD.sam");
 		samRecords = SAMRecordLoader.loadSAMFile(filename);		
 		if(samRecords.isEmpty()) { 
@@ -154,7 +142,9 @@ public class VariantCallDetectionTest {
 	
 	@Test
 	public void testCigarOperMI() {
-		log.info("testCigarOperMI");
+		System.out.println("Running test VariantCallDetection.testCigarOperMI");
+		log.info("Running test VariantCallDetection.testCigarOperMI");
+		
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MI.sam");
 		samRecords = SAMRecordLoader.loadSAMFile(filename);		
 		if(samRecords.isEmpty()) { 
@@ -178,7 +168,9 @@ public class VariantCallDetectionTest {
 	
 	@Test
 	public void testCigarOperMID() {
-		log.info("testCigarOperMID");
+		System.out.println("Running test VariantCallDetection.testCigarOperMID");
+		log.info("Running test VariantCallDetection.testCigarOperMID");
+		
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_MID.sam");
 		samRecords = SAMRecordLoader.loadSAMFile(filename);		
 		if(samRecords.isEmpty()) { 
@@ -203,7 +195,9 @@ public class VariantCallDetectionTest {
 	
 	@Test
 	public void testCigarOperFull() {
-		log.info("testCigarOperFull");
+		System.out.println("Running test VariantCallDetection.testCigarOperFull");
+		log.info("Running test VariantCallDetection.testCigarOperFull");
+		
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_full.sam");
 		samRecords = SAMRecordLoader.loadSAMFile(filename);		
 		if(samRecords.isEmpty()) { 
@@ -240,7 +234,9 @@ public class VariantCallDetectionTest {
 	
 	@Test
 	public void testReversedReads() {
-		log.info("testReversedReads");
+		System.out.println("Running test VariantCallDetection.testReversedReads");
+		log.info("Running test VariantCallDetection.testReversedReads");
+		
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/snp_examples.fastq_bowtie2.sam");
 		samRecords = SAMRecordLoader.loadSAMFile(filename);		
 		if(samRecords.isEmpty()) { 
@@ -276,7 +272,9 @@ public class VariantCallDetectionTest {
 	
 	@Test
 	public void testStatistics() {
-		log.info("testStatistics");
+		System.out.println("Running test VariantCallDetection.testStatistics");
+		log.info("Running test VariantCallDetection.testStatistics");
+		
 		String filename;
 		// some test cases
 		//filename = new String(new File("").getAbsolutePath() + "/test/resources/example_M.sam");
@@ -362,7 +360,9 @@ public class VariantCallDetectionTest {
 	@Test
 	public void testErrors() {
 		// This is THE most important test for this module. All reads intentionally contain errors.
-		log.info("testErrors");
+		System.out.println("Running test VariantCallDetection.testErrors");
+		log.info("Running test VariantCallDetection.testErrors");
+		
 		String filename;
 		filename = new String(new File("").getAbsolutePath() + "/test/resources/example_vc_errors.sam");
 		
@@ -381,4 +381,23 @@ public class VariantCallDetectionTest {
 			}
 		}
 	}
+	
+	@Test
+	public void testBooleans() {
+		System.out.println("Running test VariantCallDetection.testBooleans");	
+		log.info("Running test VariantCallDetection.testBooleans");
+		
+		TestObjectFactory testObjectFactory = new TestObjectFactory();
+		samRecords = testObjectFactory.getSamRecords();
+		for (SAMRecord samRecord : samRecords) {
+			variantCallDetection.processSequence(samRecord);
+		}
+		
+		assertTrue(variantCallDetection.ignoreInReport());
+		assertFalse(variantCallDetection.needsToSeeAnnotation());
+		assertFalse(variantCallDetection.raisesError());
+		assertFalse(variantCallDetection.raisesWarning());
+		assertTrue(variantCallDetection.needsToSeeSequences());
+	}
+	
 }

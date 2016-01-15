@@ -32,9 +32,7 @@ import net.sf.samtools.SAMRecord;
 
 import org.apache.log4j.Logger;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import uk.ac.babraham.BamQC.AnnotationParsers.AnnotationParser;
@@ -56,31 +54,15 @@ public class FeatureCoverageTest {
 	private AnnotationSet annotationSet = null;
 	private FeatureCoverage featureCoverage = null;
 	
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		System.out.println("Set up : FeatureCoverageTest");	
-	}
-
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-		System.out.println("Tear down : FeatureCoverageTest");
-	}
+	private String[] featureNames = null;
+	private double[] readCounts = null;
+	
 
 	@Before
 	public void setUp() throws Exception {	
 		featureCoverage = new FeatureCoverage();
 		annotationSet = new AnnotationSet();
-	}
-
-	@After
-	public void tearDown() throws Exception { 
-		samRecords = null;
-		featureCoverage = null;
-	}
-
-	@Test
-	public void testFeatureCoverage() {
-		log.info("testFeatureCoverage");
+		
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/example_annot.sam");
 		String annotationFile = new String(new File("").getAbsolutePath() + "/test/resources/example_annot.gtf");
 		samRecords = SAMRecordLoader.loadSAMFile(filename);		
@@ -106,22 +88,79 @@ public class FeatureCoverageTest {
 		
 		featureCoverage.processAnnotationSet(annotationSet);
 
+		featureNames = featureCoverage.getFeatureNames();
+		readCounts = featureCoverage.getReadCounts();
 		
-		
-		String[] featureNames = featureCoverage.getFeatureNames();
-		double[] readCounts = featureCoverage.getReadCounts();
+		// Use a simple BubbleSort to sort featuresNames (and their readCounts)
+		// NOTE: for some reason jvm 8 returns the feature names (and their readCounts) 
+		// with a different order, and therefore this test fails on that jvm.
+	    for (int i = 0; i < featureNames.length; i++) {
+	        for (int j = 1; j < featureNames.length - i; j++) {
+	          if (featureNames[j-1].compareTo(featureNames[j]) > 0) {
+	        	  String tempName = featureNames[j-1];
+	        	  featureNames[j-1] = featureNames[j];
+	        	  featureNames[j] = tempName;
+	        	  double tempCount = readCounts[j-1];
+	        	  readCounts[j-1] = readCounts[j];
+	        	  readCounts[j] = tempCount;
+	          }
+	        }
+	      }
+	}
+
+	@After
+	public void tearDown() throws Exception { 
+		samRecords = null;
+		annotationSet = null;
+		featureCoverage = null;
+		featureNames = null;
+		readCounts = null;
+	}
+
+	@Test
+	public void testFeatureCoverage() {
+		System.out.println("Running test FeatureCoverageTest.testFeatureCoverage");
+		log.info("Running test FeatureCoverageTest.testFeatureCoverage");
 		
 //		for(int i=0; i<featureNames.length; i++) {
 //			System.out.println(featureNames[i]);
 //			System.out.println(readCounts[i]);
 //		}
 		
-		assertEquals(7, featureNames.length);		
-		assertEquals("gene_ensembl_havana", featureNames[3]);
-		assertEquals(3L, (long)readCounts[3]);
-		assertEquals("CDS_ensembl_havana", featureNames[6]);
-		assertEquals(1L, (long)readCounts[6]);
+		assertEquals(7, featureNames.length);
 		
+		assertEquals("CDS_ensembl_havana", featureNames[0]);
+		assertEquals(1, (long)readCounts[0]);
+		
+		assertEquals("gene_ensembl", featureNames[1]);
+		assertEquals(0L, (long)readCounts[1]);
+		
+		assertEquals("gene_ensembl_havana", featureNames[2]);
+		assertEquals(3L, (long)readCounts[2]);
+		
+		assertEquals("gene_havana", featureNames[3]);
+		assertEquals(1L, (long)readCounts[3]);
+		
+		assertEquals("transcript_ensembl", featureNames[4]);
+		assertEquals(0L, (long)readCounts[4]);
+		
+		assertEquals("transcript_ensembl_havana", featureNames[5]);
+		assertEquals(2L, (long)readCounts[5]);
+		
+		assertEquals("transcript_havana", featureNames[6]);
+		assertEquals(3L, (long)readCounts[6]);
+	}
+	
+	@Test
+	public void testBooleans() {
+		System.out.println("Running test FeatureCoverageTest.testBooleans");	
+		log.info("Running test FeatureCoverageTest.testBooleans");
+		
+		assertFalse(featureCoverage.ignoreInReport());
+		assertTrue(featureCoverage.needsToSeeAnnotation());
+		assertFalse(featureCoverage.raisesError());
+		assertFalse(featureCoverage.raisesWarning());
+		assertFalse(featureCoverage.needsToSeeSequences());
 	}
 
 }

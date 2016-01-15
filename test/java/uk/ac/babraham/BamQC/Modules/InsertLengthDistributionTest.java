@@ -1,6 +1,25 @@
+/**
+ * Copyright Copyright 2015 Simon Andrews
+ *
+ *    This file is part of BamQC.
+ *
+ *    BamQC is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 3 of the License, or
+ *    (at your option) any later version.
+ *
+ *    BamQC is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with BamQC; if not, write to the Free Software
+ *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
 /*
  * Changelog: 
- * - Piero Dalle Pezze: Added printouts.
+ * - Piero Dalle Pezze: Added printouts, testBooleans
  * - Bart Ailey: Class creation.
  */
 package test.java.uk.ac.babraham.BamQC.Modules;
@@ -15,9 +34,7 @@ import net.sf.samtools.SAMRecord;
 
 import org.apache.log4j.Logger;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import uk.ac.babraham.BamQC.Modules.InsertLengthDistribution;
@@ -36,20 +53,8 @@ public class InsertLengthDistributionTest {
 	private TestObjectFactory testObjectFactory = null;
 	private List<SAMRecord> samRecords = null;
 
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		System.out.println("Set up : InsertLengthDistributionTest");	
-	}
-
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-		System.out.println("Tear down : InsertLengthDistributionTest");	
-	}
-
 	@Before
 	public void setUp() throws Exception {
-		testObjectFactory = new TestObjectFactory();
-		samRecords = testObjectFactory.getSamRecords();
 		insertLengthDistribution = new InsertLengthDistribution();
 	}
 
@@ -62,8 +67,12 @@ public class InsertLengthDistributionTest {
 
 	@Test(expected = IndexOutOfBoundsException.class)
 	public void testProcessSequence() {
-		log.info("testProcessSequence");
+		System.out.println("Running test InsertLengthDistributionTest.testProcessSequence");
+		log.info("Running test InsertLengthDistributionTest.testProcessSequence");
 
+		testObjectFactory = new TestObjectFactory();
+		samRecords = testObjectFactory.getSamRecords();
+		
 		for (SAMRecord samRecord : samRecords) {
 			insertLengthDistribution.processSequence(samRecord);
 		}
@@ -86,8 +95,12 @@ public class InsertLengthDistributionTest {
 
 	@Test
 	public void testProcessSequenceRaise() {
-		log.info("testProcessSequenceRaise");
+		System.out.println("Running test InsertLengthDistributionTest.testProcessSequenceRaise");
+		log.info("Running test InsertLengthDistributionTest.testProcessSequenceRaise");
 
+		testObjectFactory = new TestObjectFactory();
+		samRecords = testObjectFactory.getSamRecords();
+		
 		samRecords.get(0).setInferredInsertSize(7);
 		samRecords.get(1).setInferredInsertSize(3);
 		samRecords.get(2).setInferredInsertSize(1);
@@ -101,6 +114,10 @@ public class InsertLengthDistributionTest {
 
 	@Test
 	public void testProcessSequenceRaiseCalculation() {
+
+		System.out.println("Running test InsertLengthDistributionTest.testProcessSequenceRaiseCalculation");
+		log.info("Running test InsertLengthDistributionTest.testProcessSequenceRaiseCalculation");
+			
 		List<Long> insertSizes = UtilityTest.readInsertSizesLong();
 		int index = 0;
 		SAMFileHeader samFileHeader = TestObjectFactory.getInstance();
@@ -121,4 +138,25 @@ public class InsertLengthDistributionTest {
 		assertFalse(insertLengthDistribution.raisesWarning());
 	}
 
+	@Test
+	public void testBooleans() {
+		System.out.println("Running test InsertLengthDistributionTest.testBooleans");	
+		log.info("Running test InsertLengthDistributionTest.testBooleans");
+		
+		testObjectFactory = new TestObjectFactory();
+		samRecords = testObjectFactory.getSamRecords();
+		samRecords.get(0).setInferredInsertSize(7);
+		samRecords.get(1).setInferredInsertSize(3);
+		samRecords.get(2).setInferredInsertSize(1);
+		for (SAMRecord samRecord : samRecords) {
+			insertLengthDistribution.processSequence(samRecord);
+		}
+		
+		assertFalse(insertLengthDistribution.ignoreInReport());
+		assertFalse(insertLengthDistribution.needsToSeeAnnotation());
+		assertTrue(insertLengthDistribution.raisesError());
+		assertTrue(insertLengthDistribution.raisesWarning());
+		assertTrue(insertLengthDistribution.needsToSeeSequences());
+	}
+	
 }
