@@ -28,6 +28,8 @@ package test.java.uk.ac.babraham.BamQC.Modules;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
+import org.junit.runner.JUnitCore;
+import org.junit.internal.TextListener;
 
 @RunWith(Suite.class)
 @SuiteClasses({
@@ -44,4 +46,12 @@ import org.junit.runners.Suite.SuiteClasses;
 	VariantCallDetectionTest.class
 	})
 
-public class AllTests { }
+
+public class AllTests { 
+    /* Main method used to run the tests programmatically */
+    public static void main(String args[]) {
+        JUnitCore junit = new JUnitCore();
+        junit.addListener(new TextListener(System.out));
+        junit.run(AllTests.class);
+    }
+}
