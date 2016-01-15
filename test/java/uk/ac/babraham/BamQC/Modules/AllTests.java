@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2014 Bart Ailey Eagle Genomics Ltd
+ * Copyright Copyright 2014 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -39,7 +39,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	MappingQualityDistributionTest.class,
 	NormalDistributionModelerTest.class,
 	RpkmReferenceTest.class,
-	//SequenceQualityDistributionTest.class,	
+	SequenceQualityDistributionTest.class,	
 	SoftClipDistributionTest.class,
 	VariantCallDetectionTest.class
 	})
