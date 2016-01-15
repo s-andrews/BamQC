@@ -32,9 +32,7 @@ import net.sf.samtools.SAMRecord;
 
 import org.apache.log4j.Logger;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import uk.ac.babraham.BamQC.Modules.SoftClipDistribution;
@@ -52,30 +50,10 @@ public class SoftClipDistributionTest {
 	private SoftClipDistribution softClipDistribution = null;
 	private List<SAMRecord> samRecords = null;
 	
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		System.out.println("Set up : SoftClipDistributionTest");
-	}
-
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-		System.out.println("Tear down : SoftClipDistributionTest");
-	}
-
 	@Before
 	public void setUp() throws Exception {
 		softClipDistribution = new SoftClipDistribution();
-	}
-
-	@After
-	public void tearDown() throws Exception {
-		samRecords = null;
-		softClipDistribution = null;
-	}
-
-	@Test
-	public void testSoftClipDistribution() {
-		log.info("testSoftClipDistribution");
+		
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/test_header.sam");
 		samRecords = SAMRecordLoader.loadSAMFile(filename);		
 		if(samRecords.isEmpty()) { 
@@ -86,14 +64,44 @@ public class SoftClipDistributionTest {
 		for (SAMRecord read : samRecords) {
 			softClipDistribution.processSequence(read);
 		}
-	
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		samRecords = null;
+		softClipDistribution = null;
+	}
+
+	@Test
+	public void testSoftClipDistribution() {
+		System.out.println("Running test SoftClipDistributionTest.testSoftClipDistribution");
+		log.info("Running test SoftClipDistributionTest.testSoftClipDistribution");
+		
 		long[] leftClipCounts = softClipDistribution.getLeftClipCounts();
 		long[] rightClipCounts = softClipDistribution.getRightClipCounts();
+		
+//		for(int i=0; i<leftClipCounts.length; i++) {
+//			System.out.println(leftClipCounts[i]);
+//		}
+//		for(int i=0; i<rightClipCounts.length; i++) {
+//			System.out.println(rightClipCounts[i]);
+//		}
 		
 		assertEquals(1, leftClipCounts.length);
 		assertEquals(15, leftClipCounts[0]);
 		assertEquals(15, rightClipCounts[0]);
+	}
 	
+	@Test
+	public void testBooleans() {
+		System.out.println("Running test SoftClipDistributionTest.testBooleans");	
+		log.info("Running test SoftClipDistributionTest.testBooleans");
+		
+		assertTrue(softClipDistribution.ignoreInReport());
+		assertFalse(softClipDistribution.needsToSeeAnnotation());
+		assertFalse(softClipDistribution.raisesError());
+		assertFalse(softClipDistribution.raisesWarning());
+		assertTrue(softClipDistribution.needsToSeeSequences());
 	}
 
 }

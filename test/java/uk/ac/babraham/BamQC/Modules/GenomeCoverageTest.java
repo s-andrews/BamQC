@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2014 Bart Ailey Eagle Genomics Ltd
+ * Copyright Copyright 2015 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -19,7 +19,7 @@
  */
 /*
  * Changelog: 
- * - Piero Dalle Pezze: added printouts, adapted to the new GenomeCoverage module.
+ * - Piero Dalle Pezze: added printouts, testBooleans, adapted to the new GenomeCoverage module.
  * - Bart Ailey: Class creation.
  */
 package test.java.uk.ac.babraham.BamQC.Modules;
@@ -33,9 +33,7 @@ import net.sf.samtools.SAMRecord;
 
 import org.apache.log4j.Logger;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
@@ -52,39 +50,13 @@ public class GenomeCoverageTest {
 	
 	private GenomeCoverage genomeCoverage = null;
 	private AnnotationSet annotationSet = null;
-//	private TestObjectFactory testObjectFactory = null;
 	private List<SAMRecord> samRecords = null;
 	
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		System.out.println("Set up : GenomeCoverageTest");	
-	}
-
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-		System.out.println("Tear down : GenomeCoverageTest");	
-	}
-
 	@Before
 	public void setUp() throws Exception {
 		genomeCoverage = new GenomeCoverage();
 		annotationSet = new AnnotationSet();
-//		genomeCoverage.setBinNucleotides(1000, new long[]{0});
-//		testObjectFactory = new TestObjectFactory();
-//		samRecords = testObjectFactory.getSamRecords();
-	}
-
-	@After
-	public void tearDown() throws Exception {
-		genomeCoverage = null;
-		annotationSet = null;
-//		testObjectFactory = null;
-		samRecords = null;
-	}
-
-	@Test
-	public void testGenomeCoverage() {
-		log.info("testGenomeCoverage");
+		
 		String filename = new String(new File("").getAbsolutePath() + "/test/resources/genome_coverage.sam");
 		samRecords = SAMRecordLoader.loadSAMFile(filename);		
 		if(samRecords.isEmpty()) { 
@@ -96,58 +68,67 @@ public class GenomeCoverageTest {
 			annotationSet.processSequenceNoCache(read);
 		}
 		genomeCoverage.processAnnotationSet(annotationSet);
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		genomeCoverage = null;
+		annotationSet = null;
+		samRecords = null;
+	}
+
+	@Test
+	public void testGenomeCoverage() {
+		System.out.println("Running test GenomeCoverageTest.testGenomeCoverage");	
+		log.info("Running test GenomeCoverageTest.testGenomeCoverage");
 
 		String[] chromosomeNames = genomeCoverage.getChromosomeNames();
+		long[] coverage = genomeCoverage.getCoverage();	
+		
+//		for(int i=0; i < chromosomeNames.length; i++) {
+//			System.out.println(chromosomeNames[i]);
+//		}
+//		for(int i=0; i < coverage.length; i++) {
+//			System.out.println(coverage[i]);
+//		}
+		
 		assertEquals(2, chromosomeNames.length);		
 		assertEquals("13", chromosomeNames[0]);
 		assertEquals("6", chromosomeNames[1]);
 
-		long[] coverage = genomeCoverage.getCoverage();	
 		assertEquals(20, coverage.length);
 		assertEquals(0, coverage[0]);
+		assertEquals(0, coverage[1]);
+		assertEquals(0, coverage[2]);
+		assertEquals(0, coverage[3]);
+		assertEquals(0, coverage[4]);
+		assertEquals(0, coverage[5]);
+		assertEquals(0, coverage[6]);
+		assertEquals(0, coverage[7]);
+		assertEquals(0, coverage[8]);
+		assertEquals(0, coverage[9]);
+		assertEquals(0, coverage[10]);
+		assertEquals(0, coverage[11]);
+		assertEquals(0, coverage[12]);
+		assertEquals(0, coverage[13]);
+		assertEquals(0, coverage[14]);
+		assertEquals(0, coverage[15]);
+		assertEquals(0, coverage[16]);
+		assertEquals(0, coverage[17]);
+		assertEquals(0, coverage[18]);
 		assertEquals(2, coverage[19]);
-		
 	}
 	
-	
-//	@Test
-//	public void testProcessSequence() {
-//		log.info("testProcessSequence");
-//		int count = 0;
-//		for (SAMRecord samRecord : samRecords) {
-//			genomeCoverage.processSequence(samRecord);
-//			
-//			double[] coverageReference = genomeCoverage.getCoverage();
-//			
-//			if (count == 0) {
-//				assertEquals(0.900, coverageReference[0], 0.0000001);
-//			}
-//			count++;
-//		}
-//		double[] coverageReference = genomeCoverage.getCoverage();
-//		
-//		assertEquals(1.4, coverageReference[0], 0.000001);
-//		assertEquals(1.5, coverageReference[1], 0.000001);
-//		assertEquals(0.6, coverageReference[2], 0.000001);
-//		
-//		genomeCoverage.reset();
-//		coverageReference = genomeCoverage.getCoverage();
-//		
-//		assertEquals(1.4, coverageReference[0], 0.000001);
-//		assertEquals(1.5, coverageReference[1], 0.000001);
-//		assertEquals(0.6, coverageReference[2], 0.000001);
-//	}
-
-//	@Test
-//	public void testBooleans() {
-//		log.info("testBooleans");
-//		
-//		assertFalse(genomeCoverage.ignoreInReport());
-//		assertFalse(genomeCoverage.needsToSeeAnnotation());
-//		assertFalse(genomeCoverage.raisesError());
-//		assertFalse(genomeCoverage.raisesWarning());
-//		
-//		assertTrue(genomeCoverage.needsToSeeSequences());
-//	}
+	@Test
+	public void testBooleans() {
+		System.out.println("Running test GenomeCoverageTest.testBooleans");	
+		log.info("Running test GenomeCoverageTest.testBooleans");
+		
+		assertFalse(genomeCoverage.ignoreInReport());
+		assertTrue(genomeCoverage.needsToSeeAnnotation());
+		assertFalse(genomeCoverage.raisesError());
+		assertFalse(genomeCoverage.raisesWarning());
+		assertFalse(genomeCoverage.needsToSeeSequences());
+	}
 
 }

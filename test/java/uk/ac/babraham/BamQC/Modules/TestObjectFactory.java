@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2014 Bart Ailey Eagle Genomics Ltd
+ * Copyright Copyright 2014 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -17,7 +17,10 @@
  *    along with BamQC; if not, write to the Free Software
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
+/*
+ * Changelog: 
+ * - Bart Ailey: Class creation.
+ */
 package test.java.uk.ac.babraham.BamQC.Modules;
 
 import java.util.ArrayList;
@@ -30,6 +33,11 @@ import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMRecord;
 import net.sf.samtools.SAMSequenceRecord;
 
+/**
+ * 
+ * @author Bart Ailey
+ *
+ */
 public class TestObjectFactory {
 
 	//private static Logger log = Logger.getLogger(TestObjectFactory.class);

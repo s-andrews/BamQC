@@ -36,9 +36,11 @@ import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMFormatException;
 import net.sf.samtools.SAMRecord;
 
+
 /** 
  * The purpose of this class is to load a small SAM/BAM file in an ArrayList 
  * and return it to the user. It is convenient for test cases.
+ * 
  * @author Piero Dalle Pezze
  */
 public class SAMRecordLoader {

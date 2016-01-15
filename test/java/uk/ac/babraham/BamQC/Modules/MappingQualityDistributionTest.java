@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2014 Bart Ailey Eagle Genomics Ltd
+ * Copyright Copyright 2015 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -19,7 +19,7 @@
  */
 /*
  * Changelog: 
- * - Piero Dalle Pezze: added printouts.
+ * - Piero Dalle Pezze: added printouts, testBooleans
  * - Bart Ailey: Class creation.
  */
 package test.java.uk.ac.babraham.BamQC.Modules;
@@ -32,13 +32,16 @@ import net.sf.samtools.SAMRecord;
 
 import org.apache.log4j.Logger;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import uk.ac.babraham.BamQC.Modules.MappingQualityDistribution;
 
+/**
+ * 
+ * @author Bart Ailey
+ * @author Piero Dalle Pezze
+ */
 public class MappingQualityDistributionTest {
 
 	private static Logger log = Logger.getLogger(MappingQualityDistributionTest.class);
@@ -47,21 +50,10 @@ public class MappingQualityDistributionTest {
 	private TestObjectFactory testObjectFactory = null;
 	private List<SAMRecord> samRecords = null;
 	
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		System.out.println("Set up : MappingQualityDistributionTest");	
-	}
-
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-		System.out.println("Tear down : MappingQualityDistributionTest");	
-	}
-
 	@Before
 	public void setUp() throws Exception {
 		testObjectFactory = new TestObjectFactory();
 		samRecords = testObjectFactory.getSamRecords();
-		
 		qualityDistribution = new MappingQualityDistribution();
 	}
 
@@ -74,7 +66,9 @@ public class MappingQualityDistributionTest {
 
 	@Test
 	public void testDistribution() {
-		log.info("testDistribution");
+		System.out.println("Running test MappingQualityDistributionTest.testDistribution");	
+		log.info("Running test MappingQualityDistributionTest.testDistribution");
+		
 		for (SAMRecord samRecord : samRecords) {
 			qualityDistribution.processSequence(samRecord);
 		}
@@ -84,6 +78,7 @@ public class MappingQualityDistributionTest {
 		assertEquals(1, distribution[255]);
 		assertEquals(1, distribution[10]);
 		assertEquals(1, qualityDistribution.getMaxCount());
+		
 		
 		for (int i = 1; i < 256; i++) {
 			if (i != 10 && i != 255) {
@@ -125,5 +120,17 @@ public class MappingQualityDistributionTest {
 		assertEquals(0, distributionFloat.length);
 		
 		assertEquals(0.0d, qualityDistribution.getFraction(), 0.0001);
+	}
+	
+	@Test
+	public void testBooleans() {
+		System.out.println("Running test MappingQualityDistributionTest.testBooleans");	
+		log.info("Running test MappingQualityDistributionTest.testBooleans");
+		
+		assertFalse(qualityDistribution.ignoreInReport());
+		assertFalse(qualityDistribution.needsToSeeAnnotation());
+		assertTrue(qualityDistribution.raisesError());
+		assertTrue(qualityDistribution.raisesWarning());
+		assertTrue(qualityDistribution.needsToSeeSequences());
 	}
 }

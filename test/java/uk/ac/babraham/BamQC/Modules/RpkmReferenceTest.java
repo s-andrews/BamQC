@@ -1,5 +1,5 @@
 /**
- * Copyright Copyright 2014 Bart Ailey Eagle Genomics Ltd
+ * Copyright Copyright 2014 Simon Andrews
  *
  *    This file is part of BamQC.
  *
@@ -19,11 +19,17 @@
  */
 /*
  * Changelog: 
- * - Piero Dalle Pezze: Added printout. 
+ * - Piero Dalle Pezze: Added printout. Added testBooleans.
  * - Bart Ailey: Class creation.
  */
 package test.java.uk.ac.babraham.BamQC.Modules;
 
+/**
+ * 
+ * @author Bart Ailey
+ * @author Piero Dalle Pezze
+ *
+ */
 import static org.junit.Assert.*;
 
 import java.util.List;
@@ -32,9 +38,7 @@ import net.sf.samtools.SAMRecord;
 
 import org.apache.log4j.Logger;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import uk.ac.babraham.BamQC.Modules.RpkmReference;
@@ -47,16 +51,6 @@ public class RpkmReferenceTest {
 	private TestObjectFactory testObjectFactory = null;
 	private List<SAMRecord> samRecords = null;
 	
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		System.out.println("Set up : RpkmReferenceTest");	
-	}
-
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-		System.out.println("Tear down : RpkmReferenceTest");	
-	}
-
 	@Before
 	public void setUp() throws Exception {
 		rpkmReference = new RpkmReference();
@@ -73,7 +67,8 @@ public class RpkmReferenceTest {
 
 	@Test
 	public void testProcessSequence() {
-		log.info("testProcessSequence");
+		System.out.println("Running test RpkmReferenceTest.testProcessSequence");
+		log.info("Running test RpkmReferenceTest.testProcessSequence");
 		
 		int count = 0;
 		for (SAMRecord samRecord : samRecords) {
@@ -91,4 +86,16 @@ public class RpkmReferenceTest {
 		assertEquals(3.5E-3, coverageReference[0], 0.000001);
 	}
 
+	@Test
+	public void testBooleans() {
+		System.out.println("Running test RpkmReferenceTest.testBooleans");	
+		log.info("Running test RpkmReferenceTest.testBooleans");
+		
+		assertTrue(rpkmReference.ignoreInReport());
+		assertFalse(rpkmReference.needsToSeeAnnotation());
+		assertFalse(rpkmReference.raisesError());
+		assertFalse(rpkmReference.raisesWarning());
+		assertTrue(rpkmReference.needsToSeeSequences());
+	}
+	
 }
