@@ -334,6 +334,7 @@ public class ScatterGraph extends JPanel {
 			double x = getX(xCategories[d], xOffset)-ovalSize/2;
 			double y = getY(data[d])-ovalSize/2;
 			g.fillOval((int)x, (int)y, (int)(ovalSize), (int)(ovalSize));
+			g.drawString(toolTipLabels[d], (int)x+2, (int)y+16);
 			inputVar[d] = Double.valueOf(xCategories[d]); 
 			responseVar[d] = data[d];
 
