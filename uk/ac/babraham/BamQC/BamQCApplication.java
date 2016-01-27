@@ -183,6 +183,17 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 			
 			try {
 				sequenceFile = SequenceFactory.getSequenceFile(files[i]);
+
+				AnalysisRunner runner = new AnalysisRunner(sequenceFile);
+
+				ResultsPanel rp = new ResultsPanel(sequenceFile);
+				runner.addProgressListener(rp);
+				runner.addAnalysisListener(rp);
+				fileTabs.addTab(sequenceFile.name(), rp);
+				
+				QCModule [] moduleList = ModuleFactory.getStandardModuleList();
+		
+				runner.startAnalysis(moduleList);
 			}
 			catch (SequenceFormatException e) {
 				JPanel errorPanel = new JPanel();
@@ -193,22 +204,15 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 				continue;
 			}
 			catch (IOException e) {
-				log.error("File broken", e);
-				JOptionPane.showMessageDialog(this, "Couldn't read file:"+e.getLocalizedMessage(), "Error reading file", JOptionPane.ERROR_MESSAGE);
+				log.error("File "  + files[i].getAbsolutePath() + " broken", e);
+				JOptionPane.showMessageDialog(this, "Couldn't read file: "+e.getLocalizedMessage(), "Error reading file", JOptionPane.ERROR_MESSAGE);
 				continue;
 			}
-
-			AnalysisRunner runner = new AnalysisRunner(sequenceFile);
-
-			ResultsPanel rp = new ResultsPanel(sequenceFile);
-			runner.addProgressListener(rp);
-			runner.addAnalysisListener(rp);
-			fileTabs.addTab(sequenceFile.name(), rp);
-			
-
-			QCModule [] moduleList = ModuleFactory.getStandardModuleList();
-	
-			runner.startAnalysis(moduleList);
+			catch (Exception e) {
+				log.error("Failed to process the file " + files[i].getAbsolutePath(), e);
+				JOptionPane.showMessageDialog(this, "Failed to process the file: "+e.getLocalizedMessage(), "Error processing file", JOptionPane.ERROR_MESSAGE);
+				continue;
+			}
 		}
 		return true;
 	}
