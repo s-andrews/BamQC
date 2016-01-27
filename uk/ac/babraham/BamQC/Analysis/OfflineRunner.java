@@ -146,6 +146,10 @@ public class OfflineRunner implements AnalysisListener {
 				log.error("File "+files.elementAt(i) + " broken : "  + e.getLocalizedMessage(), e);
 				filesRemaining.decrementAndGet();
 			}
+			catch (Exception e) {
+				log.error("Failed to process "+files.elementAt(i), e);
+				filesRemaining.decrementAndGet();
+			}
 		}
 		
 		// We need to hold this class open as otherwise the main method
