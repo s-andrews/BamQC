@@ -19,7 +19,7 @@
  */
 /*
  * Changelog: 
- * - Piero Dalle Pezze: Added two plots, added report, added information for regions without coverage. 
+ * - Piero Dalle Pezze: Added two plots, added report, added information for regions without coverage. Added logging.
  * - Bart Ailey: Class creation.
  */
 package uk.ac.babraham.BamQC.Modules;
@@ -31,8 +31,9 @@ import java.util.Collections;
 import javax.swing.JPanel;
 import javax.xml.stream.XMLStreamException;
 
-import net.sf.samtools.SAMRecord;
+import org.apache.log4j.Logger;
 
+import net.sf.samtools.SAMRecord;
 import uk.ac.babraham.BamQC.DataTypes.Genome.AnnotationSet;
 import uk.ac.babraham.BamQC.DataTypes.Genome.Chromosome;
 import uk.ac.babraham.BamQC.Graphs.LineWithHorizontalBarGraph;
@@ -44,6 +45,9 @@ import uk.ac.babraham.BamQC.Modules.ModuleConfig;
 
 public class GenomeCoverage extends AbstractQCModule {
 
+	// logger
+	private static Logger log = Logger.getLogger(GenomeCoverage.class);
+	
 	private int plotTypeChromosomesThreshold = ModuleConfig.getParam("GenomeCoverage_plot_type_chromosomes_threshold", "ignore").intValue();
 
 	private String [] chromosomeNames = null;
@@ -132,9 +136,13 @@ public class GenomeCoverage extends AbstractQCModule {
 		if(chromosomeNames.length <= plotTypeChromosomesThreshold) {
 			plotBinsPerChromosome = ModuleConfig.getParam("GenomeCoverage_plot_bins_per_chromosome", "ignore").intValue();
 		} else {
-			plotBinsPerChromosome = ModuleConfig.getParam("GenomeCoverage_plot_bins_all_chromosomes", "ignore").intValue() / chromosomes.length;
+			plotBinsPerChromosome = ModuleConfig.getParam("GenomeCoverage_plot_bins_all_chromosomes", "ignore").intValue();
+			if(plotBinsPerChromosome > chromosomes.length) {
+				plotBinsPerChromosome = plotBinsPerChromosome / chromosomes.length;
+			} else { 
+				plotBinsPerChromosome = 1;
+			}
 		}
-
 		
 		int binsToUse = plotBinsPerChromosome;
 		
@@ -144,10 +152,18 @@ public class GenomeCoverage extends AbstractQCModule {
 			binRatio = 1;
 			binsToUse = maxBins;
 		}
+		
+		log.debug("chromosomeNames.length: " + chromosomeNames.length);
+		log.debug("plotTypeChromosomesThreshold: " + plotTypeChromosomesThreshold);
+		log.debug("plotBinsPerChromosome: " + plotBinsPerChromosome);
+		log.debug("maxBins: " + maxBins);
+		log.debug("binRatio: " + binRatio);
+		log.debug("binsToUse: " + binsToUse);
+		
 				
 		for (int c=0;c<chromosomes.length;c++) {
 			chromosomeNames[c] = chromosomes[c].name();
-//			System.out.println("Chromosome is " + chromosomes[c].name());
+//			log.debug("Chromosome is " + chromosomes[c].name());
 			coverage = chromosomes[c].getBinCountData();
 			binCounts[c] = new double[binsToUse];
 			
