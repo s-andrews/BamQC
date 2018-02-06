@@ -76,7 +76,7 @@ public class BamQCApplication extends JFrame implements ProgressListener {
 	
 	private static final long serialVersionUID = -1761781589885333860L;
 
-	public static final String VERSION = "0.1.0_devel";
+	public static final String VERSION = "0.1.25_devel";
 	
 	private BamQCMenuBar menu;
 	
