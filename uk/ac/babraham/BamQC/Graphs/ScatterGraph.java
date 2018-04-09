@@ -35,6 +35,7 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -46,9 +47,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.MouseInputAdapter;
 
+import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.apache.commons.math3.util.Precision;
 
-import uk.ac.babraham.BamQC.Utilities.LinearRegression;
 
 /**
  * A class for drawing a scatter plot.
@@ -328,15 +329,16 @@ public class ScatterGraph extends JPanel {
 		double ovalSize = 5;
 		// We distinguish two inputs since the x label does not start from 0.
 		// used for computing the actual line points as if they were starting from 0.
-		double[] inputVar = new double[data.length];
-		double[] responseVar = new double[data.length];
+		double[][] dataMatrix = new double[data.length][2]; // (x1,y1), (x2, y2), ..
+		
 		for (int d = 0; d < data.length; d++) {
 			double x = getX(xCategories[d], xOffset)-ovalSize/2;
 			double y = getY(data[d])-ovalSize/2;
 			g.fillOval((int)x, (int)y, (int)(ovalSize), (int)(ovalSize));
 			g.drawString(toolTipLabels[d], (int)x+2, (int)y+16);
-			inputVar[d] = Double.valueOf(xCategories[d]); 
-			responseVar[d] = data[d];
+			
+			dataMatrix[d][0] = Double.valueOf(xCategories[d]);
+			dataMatrix[d][1] = data[d];
 
 			// Tool tips
 			Rectangle r = new Rectangle((int)x, (int)y, (int)(ovalSize), (int)(ovalSize));
@@ -345,23 +347,21 @@ public class ScatterGraph extends JPanel {
 		}
 		g.setColor(Color.BLACK);
 		
-		
-		
-		
+
 		// Draw the intercept 
 		
-		// WARNING: Is drawing a least squares regression line asserting that "the distribution follows a power law" correct?
-		// This is our case if we plot log-log..
-		// It seems not in this paper (Appendix A) http://arxiv.org/pdf/0706.1062v2.pdf
-		
-		if(data.length > 1) {
-			LinearRegression linReg = new LinearRegression(inputVar, responseVar);
-			double intercept = linReg.intercept();
-			double slope = linReg.slope();
-			double rSquare = linReg.R2();
+		if(data.length > 1) {	
+			SimpleRegression linReg = new SimpleRegression(true);
+			linReg.addData(dataMatrix);
+			linReg.regress();
+			double intercept = linReg.getIntercept();
+			double slope = linReg.getSlope();
+			double r = linReg.getR();
+			
 			
 			// Let's now calculate the two points (x1, y1) and (xn, yn)
 			// (x1, y1). We need to skip the areas where x1<minY and y1>maxY
+
 			double x1 = minX;		
 			double y1 = slope*minX + intercept;
 			if(y1 < minY) {
@@ -371,10 +371,11 @@ public class ScatterGraph extends JPanel {
 				x1 = (maxY - intercept)/slope;
 				y1 = maxY;
 			}					
-			// (xn, yn). maxX which essentially is inputVar[inputVar.length-1]
+			// (xn, yn). maxX which essentially is dataMatrix[dataMatrix.length-1][0]
 			double xn = maxX;
 			double yn = slope*maxX + intercept;
 
+			
 			if (g instanceof Graphics2D) {
 				((Graphics2D)g).setStroke(new BasicStroke(1.5f));
 			}
@@ -405,7 +406,7 @@ public class ScatterGraph extends JPanel {
 			// Now draw the legend label
 			g.setColor(Color.RED);
 			g.drawString(legendString, xOffset+13, 60);
-			g.drawString("R^2 = " + Precision.round(rSquare, 3), xOffset+13, 76);
+			g.drawString("r = " + Precision.round(r, 3), xOffset+13, 76);
 			g.setColor(Color.BLACK);
 		}
 		
@@ -498,8 +499,8 @@ public class ScatterGraph extends JPanel {
 					toolTipsLabels[i] = String.valueOf(i);
 				}
 					
-				String xLabel = "xLabel";
-				String yLabel = "yLabel";
+				String xLabel = "log x";
+				String yLabel = "log y";
 				//String yLabel = null;
 				String graphTitle = "Graph Title";
 

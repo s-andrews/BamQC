@@ -15,7 +15,17 @@ SoftClipDistribution			ignore	0
 VariantCallDetection			ignore	0
 
 
-# Annotation Module.
+# BasicStatistics module
+BasicStatistics_tot_seq_threshold			warn	0	
+BasicStatistics_tot_seq_threshold			error	0
+BasicStatistics_unmapped_percent_threshold	warn	50	
+BasicStatistics_unmapped_percent_threshold	error	90
+
+
+# ChromosomeReadDensity Module
+#ChromosomeReadDensity
+
+# Annotation Module
 AnnotationSet_annotation_cache_capacity   ignore   50000
 
 # Indel/SNP modules		
