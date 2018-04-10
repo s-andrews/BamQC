@@ -126,8 +126,8 @@ public class GenomeCoverageTest {
 		
 		assertFalse(genomeCoverage.ignoreInReport());
 		assertTrue(genomeCoverage.needsToSeeAnnotation());
-		assertFalse(genomeCoverage.raisesError());
-		assertFalse(genomeCoverage.raisesWarning());
+		assertTrue(genomeCoverage.raisesError());
+		assertTrue(genomeCoverage.raisesWarning());
 		assertFalse(genomeCoverage.needsToSeeSequences());
 	}
 
