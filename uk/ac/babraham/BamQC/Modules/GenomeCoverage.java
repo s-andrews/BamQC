@@ -48,16 +48,20 @@ public class GenomeCoverage extends AbstractQCModule {
 	// logger
 	private static Logger log = Logger.getLogger(GenomeCoverage.class);
 	
-	private int plotTypeChromosomesThreshold = ModuleConfig.getParam("GenomeCoverage_plot_type_chromosomes_threshold", "ignore").intValue();
+	private static final double ERROR_UNCOVERED_GENOME_PERCENT_THRESHOLD = ModuleConfig.getParam("GenomeCoverage_uncovered_genome_percent_threshold", "error");
+	private static final double WARNING_UNCOVERED_GENOME_PERCENT_THRESHOLD = ModuleConfig.getParam("GenomeCoverage_uncovered_genome_percent_threshold", "warn");
+	private static final int PLOT_TYPE_CHROMOSOMES_THRESHOLD = ModuleConfig.getParam("GenomeCoverage_plot_type_chromosomes_threshold", "ignore").intValue();
+
+	private long regionsWithNoCoverage = 0L;
 
 	private String [] chromosomeNames = null;
 	private double [][] binCounts = null;
 	private long [] coverage = null;
 	private double maxCoverage = 0.0;
 	
+	private int binsToUse = 0;
 	private int maxBins = 1;
 	
-
 
 	@Override
 	public void processSequence(SAMRecord read) { }
@@ -84,11 +88,19 @@ public class GenomeCoverage extends AbstractQCModule {
 
 	@Override
 	public boolean raisesError() {
+		long binCountsSize = chromosomeNames.length * binsToUse;
+		if(100.0d * regionsWithNoCoverage / binCountsSize > ERROR_UNCOVERED_GENOME_PERCENT_THRESHOLD) {
+			return true;
+		}
 		return false;
 	}
 
 	@Override
 	public boolean raisesWarning() {
+		long binCountsSize = chromosomeNames.length * binsToUse;
+		if(100.0d * regionsWithNoCoverage / binCountsSize > WARNING_UNCOVERED_GENOME_PERCENT_THRESHOLD) {
+			return true;
+		}
 		return false;
 	}
 
@@ -107,7 +119,7 @@ public class GenomeCoverage extends AbstractQCModule {
 
 		Chromosome [] chromosomes = annotation.chromosomeFactory().getAllChromosomes();
 		
-		if(chromosomes.length <= plotTypeChromosomesThreshold) {
+		if(chromosomes.length <= PLOT_TYPE_CHROMOSOMES_THRESHOLD) {
 			// This will plot the chromosomes from 1 (top) to n (bottom)
 			Arrays.sort(chromosomes, Collections.reverseOrder());
 		} else {
@@ -133,7 +145,7 @@ public class GenomeCoverage extends AbstractQCModule {
 		// configuration of how many bins per chromosome we want to plot.
 		// This is the number of bins per chromosome for the official plot getResultsPanel()
 		int plotBinsPerChromosome = 0; 
-		if(chromosomeNames.length <= plotTypeChromosomesThreshold) {
+		if(chromosomeNames.length <= PLOT_TYPE_CHROMOSOMES_THRESHOLD) {
 			plotBinsPerChromosome = ModuleConfig.getParam("GenomeCoverage_plot_bins_per_chromosome", "ignore").intValue();
 		} else {
 			plotBinsPerChromosome = ModuleConfig.getParam("GenomeCoverage_plot_bins_all_chromosomes", "ignore").intValue();
@@ -144,7 +156,7 @@ public class GenomeCoverage extends AbstractQCModule {
 			}
 		}
 		
-		int binsToUse = plotBinsPerChromosome;
+		binsToUse = plotBinsPerChromosome;
 		
 		double binRatio = maxBins/(double)plotBinsPerChromosome;
 				
@@ -154,7 +166,7 @@ public class GenomeCoverage extends AbstractQCModule {
 		}
 		
 		log.debug("chromosomeNames.length: " + chromosomeNames.length);
-		log.debug("plotTypeChromosomesThreshold: " + plotTypeChromosomesThreshold);
+		log.debug("plotTypeChromosomesThreshold: " + PLOT_TYPE_CHROMOSOMES_THRESHOLD);
 		log.debug("plotBinsPerChromosome: " + plotBinsPerChromosome);
 		log.debug("maxBins: " + maxBins);
 		log.debug("binRatio: " + binRatio);
@@ -192,6 +204,7 @@ public class GenomeCoverage extends AbstractQCModule {
 					if(binCounts[c][i] <= 0) {
 						// Let's label these points having null coverage so that we don't miss them
 						binCounts[c][i] = Double.NEGATIVE_INFINITY;
+						regionsWithNoCoverage++;
 						continue;
 					} 
 					// scale to log to enlarge the data differences. log_e makes it smaller than log_10.
@@ -227,7 +240,7 @@ public class GenomeCoverage extends AbstractQCModule {
 				chromosomeNames[i] = chromosomeNames[i].substring(3);
 		}
 		
-		if(chromosomeNames.length <= plotTypeChromosomesThreshold) {
+		if(chromosomeNames.length <= PLOT_TYPE_CHROMOSOMES_THRESHOLD) {
 			// plots the genome coverage for each chromosome separately
 			return getSeparateChromosomeResultsPanel();
 		}

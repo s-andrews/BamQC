@@ -52,6 +52,9 @@ public class SoftClipDistribution extends AbstractQCModule {
 	// logger
 	private static Logger log = Logger.getLogger(SoftClipDistribution.class);
 	
+	private static final long ERROR_CLIP_NUMBER = ModuleConfig.getParam("SoftClipDistribution_clip_number_threshold", "error").longValue();
+	private static final long WARNING_CLIP_NUMBER = ModuleConfig.getParam("SoftClipDistribution_clip_number_threshold", "warn").longValue();
+
 	private long [] leftClipCounts = new long[1];
 	private long [] rightClipCounts = new long[1];
 	
@@ -172,11 +175,31 @@ public class SoftClipDistribution extends AbstractQCModule {
 
 	@Override
 	public boolean raisesError() {
+		for(int i=0; i<leftClipCounts.length; i++) {
+			if(leftClipCounts[i] > ERROR_CLIP_NUMBER) {
+				return true;
+			}
+		}
+		for(int i=0; i<leftClipCounts.length; i++) {
+			if(rightClipCounts[i] > ERROR_CLIP_NUMBER) {
+				return true;
+			}
+		}
 		return false;
 	}
 
 	@Override
 	public boolean raisesWarning() {
+		for(int i=0; i<leftClipCounts.length; i++) {
+			if(leftClipCounts[i] > WARNING_CLIP_NUMBER) {
+				return true;
+			}
+		}
+		for(int i=0; i<leftClipCounts.length; i++) {
+			if(rightClipCounts[i] > WARNING_CLIP_NUMBER) {
+				return true;
+			}
+		}
 		return false;
 	}
 

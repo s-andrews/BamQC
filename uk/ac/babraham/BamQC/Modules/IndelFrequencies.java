@@ -49,6 +49,9 @@ public class IndelFrequencies extends AbstractQCModule {
 
 	private static Logger log = Logger.getLogger(IndelFrequencies.class);	
 	
+	private static final double ERROR_INDEL_MAX_FREQ = ModuleConfig.getParam("VariantCallPosition_indel_max_freq_threshold", "error");
+	private static final double WARNING_INDEL_MAX_FREQ = ModuleConfig.getParam("VariantCallPosition_indel_max_freq_threshold", "warn");
+	
 	private String[] indelNames = {"Deletions", "Insertions"};
 	
 	double[] dFirstDeletionPos = null;		
@@ -214,19 +217,55 @@ public class IndelFrequencies extends AbstractQCModule {
 
 	@Override	
 	public boolean raisesError() {
-		double indelPercent = 100.0d*(variantCallDetection.getTotalDeletions() + variantCallDetection.getTotalInsertions() ) 
-							  / variantCallDetection.getTotal();
-		if(indelPercent > ModuleConfig.getParam("VariantCallPosition_indel_threshold", "error").doubleValue())
-			return true;		
+		for(int i=0; i<dFirstDeletionPos.length; i++) {
+			if(dFirstDeletionPos[i] > ERROR_INDEL_MAX_FREQ) {
+				return true;
+			}
+		}
+		for(int i=0; i<dFirstInsertionPos.length; i++) {
+			if(dFirstInsertionPos[i] > ERROR_INDEL_MAX_FREQ) {
+				return true;
+			}
+		}
+		if(variantCallDetection.existPairedReads()) {
+			for(int i=0; i<dSecondDeletionPos.length; i++) {
+				if(dSecondDeletionPos[i] > ERROR_INDEL_MAX_FREQ) {
+					return true;
+				}
+			}
+			for(int i=0; i<dSecondInsertionPos.length; i++) {
+				if(dSecondInsertionPos[i] > ERROR_INDEL_MAX_FREQ) {
+					return true;
+				}
+			}	
+		}
 		return false;
 	}
 
 	@Override	
 	public boolean raisesWarning() {
-		double indelPercent = 100.0d*(variantCallDetection.getTotalDeletions() + variantCallDetection.getTotalInsertions() ) 
-				  / variantCallDetection.getTotal();
-		if(indelPercent > ModuleConfig.getParam("VariantCallPosition_indel_threshold", "warn").doubleValue())
-			return true;		
+		for(int i=0; i<dFirstDeletionPos.length; i++) {
+			if(dFirstDeletionPos[i] > WARNING_INDEL_MAX_FREQ) {
+				return true;
+			}
+		}
+		for(int i=0; i<dFirstInsertionPos.length; i++) {
+			if(dFirstInsertionPos[i] > WARNING_INDEL_MAX_FREQ) {
+				return true;
+			}
+		}
+		if(variantCallDetection.existPairedReads()) {
+			for(int i=0; i<dSecondDeletionPos.length; i++) {
+				if(dSecondDeletionPos[i] > WARNING_INDEL_MAX_FREQ) {
+					return true;
+				}
+			}
+			for(int i=0; i<dSecondInsertionPos.length; i++) {
+				if(dSecondInsertionPos[i] > WARNING_INDEL_MAX_FREQ) {
+					return true;
+				}
+			}	
+		}
 		return false;
 	}
 

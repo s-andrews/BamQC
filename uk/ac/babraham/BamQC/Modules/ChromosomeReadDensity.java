@@ -49,6 +49,9 @@ import uk.ac.babraham.BamQC.Sequence.SequenceFile;
  */
 public class ChromosomeReadDensity extends AbstractQCModule {
 
+	private static final double ERROR_READ_NUMBER = ModuleConfig.getParam("ChromosomeReadDensity_readNumber_threshold", "error");
+	private static final double WARNING_READ_NUMBER = ModuleConfig.getParam("ChromosomeReadDensity_readNumber_threshold", "warn");
+	
 	private String [] chromosomeNames;
 	private double [] readNumber;
 	private double [] chromosomeLength;
@@ -175,11 +178,17 @@ public class ChromosomeReadDensity extends AbstractQCModule {
 
 	@Override
 	public boolean raisesError() {
+		if(readNumber.length < ERROR_READ_NUMBER) {
+			return true;
+		}
 		return false;
 	}
 
 	@Override
 	public boolean raisesWarning() {
+		if(readNumber.length < WARNING_READ_NUMBER) {
+			return true;
+		}
 		return false;
 	}
 

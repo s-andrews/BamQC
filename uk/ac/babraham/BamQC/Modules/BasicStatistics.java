@@ -51,8 +51,8 @@ import uk.ac.babraham.BamQC.Utilities.MultiLineTableCellRenderer;
  */
 public class BasicStatistics extends AbstractQCModule {
 	
-	private static final double ERROR_ACTUAL_COUNT = ModuleConfig.getParam("BasicStatistics_tot_seq_threshold", "error");
-	private static final double WARNING_ACTUAL_COUNT = ModuleConfig.getParam("BasicStatistics_tot_seq_threshold", "warn");
+	private static final double ERROR_ACTUAL_COUNT = ModuleConfig.getParam("BasicStatistics_min_tot_seq_threshold", "error");
+	private static final double WARNING_ACTUAL_COUNT = ModuleConfig.getParam("BasicStatistics_min_tot_seq_threshold", "warn");
 
 	private static final double ERROR_UNMAPPED_PERCENT = ModuleConfig.getParam("BasicStatistics_unmapped_percent_threshold", "error");
 	private static final double WARNING_UNMAPPED_PERCENT = ModuleConfig.getParam("BasicStatistics_unmapped_percent_threshold", "warn");
