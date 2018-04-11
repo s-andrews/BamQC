@@ -20,17 +20,19 @@ for the first and second reads. If no read is second, only one plot is shown.
 
 <h2>Warning</h2>
 <p>
-Indel Frequencies raises a warning if the total indel percent is above 0.5%.
+This module raises a warning if the maximum frequency of indels is above 5% 
+at any position of the read. Deletion and insertions are evaluated separately.
 </p>
 
 <h2>Failure</h2>
 <p>
-Indel Frequencies raises an error if the total indel percent is above 1%.
+This module raises an error if the maximum frequency of indels is above 25% 
+at any position of the read. Deletion and insertions are evaluated separately.
 </p>
 
 <h2>Common reasons for warnings</h2>
 <p>
-This module raises warnings or errors if the total indel percent is above a 
+This module raises warnings or errors if the maximum frequency is above a 
 certain threshold.
 </p>
 

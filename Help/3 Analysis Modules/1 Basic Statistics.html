@@ -72,17 +72,18 @@ the module "Soft Clip Length Distributions" is not shown</li>
 
 <h2>Warning</h2>
 <p>
-Basic Statistics never raises a warning.
+This module raises a warning if the unmapped sequences are above 50%.
 </p>
 
 <h2>Failure</h2>
 <p>
-Basic Statistics never raises an error.
+This module raises an error if the unmapped sequences are above 90%.
 </p>
 
 <h2>Common reasons for warnings</h2>
 <p>
-This module never raises warnings or errors
+This module raises warnings or errors if most of the sequences are unmapped. Unmapped 
+sequences are discarded during variant calling detection.
 </p>
 
 </body>
