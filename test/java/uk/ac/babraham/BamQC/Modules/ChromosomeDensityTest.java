@@ -143,8 +143,8 @@ public class ChromosomeDensityTest {
 		
 		assertFalse(chromosomeReadDensity.ignoreInReport());
 		assertTrue(chromosomeReadDensity.needsToSeeAnnotation());
-		assertFalse(chromosomeReadDensity.raisesError());
-		assertFalse(chromosomeReadDensity.raisesWarning());
+		assertTrue(chromosomeReadDensity.raisesError());
+		assertTrue(chromosomeReadDensity.raisesWarning());
 		assertFalse(chromosomeReadDensity.needsToSeeSequences());
 	}
 	

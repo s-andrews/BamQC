@@ -1,43 +1,79 @@
+# BamQC configuration file
+
+####################
+# MODULE SELECTION #
+####################
+
 # For each of the modules you can choose to not run that
 # module at all by setting the value below to 1 for the
 # modules you want to remove.
-ChromosomeReadDensity			ignore	0
-FeatureCoverage					ignore	0
-GenomeCoverage					ignore	0
-IndelFrequencies				ignore	0
-InsertLengthDistribution		ignore	0
-MappingQualityDistribution		ignore	0
-SequenceQualityDistribution		ignore	1
-SNPFrequencies					ignore	0
-SNPFrequenciesByType			ignore	0
-SoftClipDistribution			ignore	0
-# The following option switches off InsertFrequencies, SNPFrequencies, SNPFrequenciesByType and some statistics in BasicStatistics
-VariantCallDetection			ignore	0
+ChromosomeReadDensity									ignore	0
+FeatureCoverage											ignore	0
+GenomeCoverage											ignore	0
+IndelFrequencies										ignore	0
+InsertLengthDistribution								ignore	0
+MappingQualityDistribution								ignore	0
+# deprecated
+SequenceQualityDistribution								ignore	1
+SNPFrequencies											ignore	0
+SNPFrequenciesByType									ignore	0
+SoftClipDistribution									ignore	0
+# The following option turns off InsertFrequencies, 
+# SNPFrequencies, SNPFrequenciesByType, 
+# and some statistics in BasicStatistics
+VariantCallDetection									ignore	0
 
 
-# Annotation Module.
-AnnotationSet_annotation_cache_capacity   ignore   50000
 
-# Indel/SNP modules		
-VariantCallPosition_indel_seqpercent_xaxis_threshold   	ignore   	5
-VariantCallPosition_indel_threshold   					warn   		0.5	
-VariantCallPosition_indel_threshold   					error   	1
-VariantCallPosition_snp_seqpercent_xaxis_threshold   	ignore   	5 		
-VariantCallPosition_snp_threshold   					warn   		1	
-VariantCallPosition_snp_threshold   					error   	2
+##############################
+# MODULE-SPECIFIC THRESHOLDS #
+##############################
 
-# Genome Coverage module
+# BasicStatistics module
+BasicStatistics_unmapped_percent_threshold				warn	50	
+BasicStatistics_unmapped_percent_threshold				error	90
+
+# ChromosomeReadDensity Module
+ChromosomeReadDensity_readNumber_threshold				warn	25
+ChromosomeReadDensity_readNumber_threshold				error	10
+
+# GenomeCoverage module
 GenomeCoverage_plot_type_chromosomes_threshold			ignore		50
 GenomeCoverage_plot_bins_all_chromosomes   				ignore   	5000		
 GenomeCoverage_plot_bins_per_chromosome   				ignore   	500
+GenomeCoverage_uncovered_genome_percent_threshold		error		10
+GenomeCoverage_uncovered_genome_percent_threshold		warn		5
+
+# Indel/SNP modules		
+VariantCallPosition_indel_seqpercent_xaxis_threshold   	ignore   	5
+VariantCallPosition_indel_max_freq_threshold			warn   		5	
+VariantCallPosition_indel_max_freq_threshold			error   	25
+VariantCallPosition_snp_seqpercent_xaxis_threshold   	ignore   	5 		
+VariantCallPosition_snp_max_freq_threshold   			warn   		5	
+VariantCallPosition_snp_max_freq_threshold   			error   	25
+VariantCallPosition_snp_max_freq_by_type_threshold		warn   		0.5	
+VariantCallPosition_snp_max_freq_by_type_threshold		error   	2.5
 
 # Insert Length Distribution module
-InsertLengthDistribution_max_insert_size   		ignore   	10000.0
-InsertLengthDistribution_bin_size   			ignore   	1.0
-InsertLengthDistribution_percentage_deviation   error   	50.0
-InsertLengthDistribution_percentage_deviation   warn   		75.0
-		
-# MappingQualityDistribution module
-MappingQualityDistribution_fraction   error   	0.50
-MappingQualityDistribution_fraction   warn   	0.75
+InsertLengthDistribution_max_insert_size   				ignore   	10000.0
+InsertLengthDistribution_bin_size   					ignore   	1.0
+InsertLengthDistribution_percentage_deviation   		error   	75.0
+InsertLengthDistribution_percentage_deviation   		warn   		50.0
 
+# MappingQualityDistribution module
+MappingQualityDistribution_fraction   					error   	0.50
+MappingQualityDistribution_fraction   					warn   	0.75
+
+# SoftClipDistribution module 
+SoftClipDistribution_clip_number_threshold				error	100
+SoftClipDistribution_clip_number_threshold				warn	25
+
+# Annotation Module
+AnnotationSet_annotation_cache_capacity   				ignore   50000
+
+
+
+#################################################
+# MODULES WITH CURRENTLY NO EXPLICIT THRESHOLDS #
+#################################################
+# FeatureCoverage module

@@ -50,7 +50,10 @@ import uk.ac.babraham.BamQC.Utilities.MultiLineTableCellRenderer;
  *
  */
 public class BasicStatistics extends AbstractQCModule {
-
+	
+	private static final double ERROR_UNMAPPED_PERCENT = ModuleConfig.getParam("BasicStatistics_unmapped_percent_threshold", "error");
+	private static final double WARNING_UNMAPPED_PERCENT = ModuleConfig.getParam("BasicStatistics_unmapped_percent_threshold", "warn");
+	
 	private String filename = "";
 	private boolean headerParsed = false;
 	private String command = "";
@@ -196,11 +199,17 @@ public class BasicStatistics extends AbstractQCModule {
 	
 	@Override
 	public boolean raisesError() {
+		if(100.0f * unmappedCount/actualCount > ERROR_UNMAPPED_PERCENT) {
+			return true;
+		}
 		return false;
 	}
 
 	@Override
 	public boolean raisesWarning() {
+		if(100.0f * unmappedCount/actualCount > WARNING_UNMAPPED_PERCENT) {
+			return true;
+		}
 		return false;
 	}
 	

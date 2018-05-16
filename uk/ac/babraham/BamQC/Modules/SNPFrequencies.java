@@ -49,6 +49,8 @@ public class SNPFrequencies extends AbstractQCModule {
 
 	private static Logger log = Logger.getLogger(SNPFrequencies.class);	
 	
+	private static final double ERROR_SNP_MAX_FREQ = ModuleConfig.getParam("VariantCallPosition_snp_max_freq_threshold", "error");
+	private static final double WARNING_SNP_MAX_FREQ = ModuleConfig.getParam("VariantCallPosition_snp_max_freq_threshold", "warn");
 	
 	double[] dFirstSNPPos = null;
 	double[] dSecondSNPPos = null;
@@ -202,17 +204,35 @@ public class SNPFrequencies extends AbstractQCModule {
 
 	@Override	
 	public boolean raisesError() {
-		double snpPercent = 100.0d*(variantCallDetection.getTotalMutations()) / variantCallDetection.getTotal();
-		if(snpPercent > ModuleConfig.getParam("VariantCallPosition_snp_threshold", "error").doubleValue())
-			return true;		
+		for(int i=0; i<dFirstSNPPos.length; i++) {
+			if(dFirstSNPPos[i] > ERROR_SNP_MAX_FREQ) {
+				return true;
+			}
+		}
+		if(variantCallDetection.existPairedReads()) {
+			for(int i=0; i<dSecondSNPPos.length; i++) {
+				if(dSecondSNPPos[i] > ERROR_SNP_MAX_FREQ) {
+					return true;
+				}
+			}
+		}		
 		return false;
 	}
 
 	@Override	
 	public boolean raisesWarning() {
-		double snpPercent = 100.0d*(variantCallDetection.getTotalMutations()) / variantCallDetection.getTotal();
-		if(snpPercent > ModuleConfig.getParam("VariantCallPosition_snp_threshold", "warn").doubleValue())
-			return true;		
+		for(int i=0; i<dFirstSNPPos.length; i++) {
+			if(dFirstSNPPos[i] > WARNING_SNP_MAX_FREQ) {
+				return true;
+			}
+		}
+		if(variantCallDetection.existPairedReads()) {
+			for(int i=0; i<dSecondSNPPos.length; i++) {
+				if(dSecondSNPPos[i] > WARNING_SNP_MAX_FREQ) {
+					return true;
+				}
+			}
+		}		
 		return false;
 	}
 

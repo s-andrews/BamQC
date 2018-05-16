@@ -113,13 +113,13 @@ public class FeatureCoverage extends AbstractQCModule {
 
 	@Override
 	public boolean raisesError() {
+		if(datasetIsEmpty) 
+			return true;
 		return false;
 	}
 
 	@Override
 	public boolean raisesWarning() {
-		if(datasetIsEmpty) 
-			return true;
 		return false;
 	}
 

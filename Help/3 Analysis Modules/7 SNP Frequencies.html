@@ -20,17 +20,19 @@ first and second reads. If no read is second, only one plot is shown.
 
 <h2>Warning</h2>
 <p>
-SNP Frequencies raises a warning if the total SNPs percent is above 1%.
+This module raises a warning if the maximum frequency of SNPs is above 5% 
+at any position of the read.
 </p>
 
 <h2>Failure</h2>
 <p>
-SNP Frequencies raises an error if the total SNPs percent is above 2%.
+This module raises an error if the maximum frequency of SNPs is above 25% 
+at any position of the read.
 </p>
 
 <h2>Common reasons for warnings</h2>
 <p>
-This module raises warnings or errors if the total SNPs percent is above a 
+This module raises warnings or errors if the maximum frequency is above a 
 certain threshold.
 </p>
 
